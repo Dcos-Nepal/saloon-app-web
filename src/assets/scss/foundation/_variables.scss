@@ -1,0 +1,52 @@
+/*===========================
+Variables
+===========================*/
+
+/* colors */
+
+$orange: #f47321;
+$orange-secondary: #FF7A00;
+$green: #39D300;
+$yellow: #F5E059;
+$red: #FF0048;
+$blue: #92D5E8;
+
+// light colors
+$light-orange: #f99e58;
+$light-blue: #C7EEF9;
+$light-green: #E8F8E2;
+$light-orange: #FFD6AF;
+$lightest-grey: #F3F2EF;
+
+// grey colors
+$black: #161C21;
+$grey: #666666;
+$light-grey: #959FAE;
+$silver: #CED2D3;
+$white: #F3F4F6;
+
+
+
+/* typography */
+
+// font family
+$normal: "SF Pro Text";
+$heading: "Inter";
+
+// font size
+$fs-xl: 1.5rem;
+$fs-lg: 1.125rem;
+$fs-base: 1rem;
+$fs-sm: 0.85rem;
+$fs-xs: 0.75rem;
+
+// heading font size
+$h-1: 3rem;
+
+
+/* breakpoints */
+$breakpoints: (
+    md: 48rem,
+    lg: 64rem,
+    xl: 80rem,
+)

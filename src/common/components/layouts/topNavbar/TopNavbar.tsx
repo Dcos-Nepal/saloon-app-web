@@ -12,7 +12,7 @@ const TopNavbar = () => {
         </a>
         <form className="ms-4 form-inline navbar-nav me-auto">
           <div className="input-group">
-            <input type="text" className="form-control" placeholder="Search" />
+            <input type="text" className="form-control search-input bg-light-grey" placeholder="Search" />
           </div>
         </form>
         <ul className="d-flex navbar-nav">

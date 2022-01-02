@@ -12,7 +12,6 @@ const localizer = momentLocalizer(moment);
 
 interface IProps {
   events: IEvent[];
-  addEvent: (event: IEvent) => void;
   onSelectSlot: (slotInfo: SlotInfo) => any;
   onSelectEvent: (event: Object, e: SyntheticEvent) => any;
 }
@@ -30,7 +29,23 @@ export const EventCalendar: FC<IProps> = ({
       events={events}
       onSelectSlot={onSelectSlot}
       onSelectEvent={onSelectEvent}
-      style={{ height: 500 }}
+      defaultView="week"
+      eventPropGetter={(event) => {
+        return {
+          className: event.type || "orange-event",
+        };
+      }}
+      dayPropGetter={(day: Date) => {
+        return {
+          style:
+            day.getDay() === 0 || day.getDay() === 6
+              ? {
+                  background: "#FAFAFA",
+                }
+              : {},
+        };
+      }}
+      style={{ height: 600 }}
     />
   );
 };

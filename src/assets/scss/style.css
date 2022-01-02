@@ -1,3 +1,38 @@
+body {
+    color: #111827;
+    background: #F9FAFB;
+    font-family: "SF Pro Display", "SF Pro Text", "Inter";
+}
+
+.txt-grey {
+    color: #71717A;
+}
+
+.txt-dark-grey {
+    color: #666666;
+}
+
+.txt-orange {
+    color: #EC7100;
+}
+
+.txt-light-orange {
+    color: #F99E58;
+}
+
+.txt-bold {
+    font-weight: bold;
+}
+
+.txt-bold-big {
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.rounded-radius {
+    border-radius: 1rem;
+}
+
 .navbar {
     border-bottom: 1px solid #F3F4F6;
     position: sticky;
@@ -10,7 +45,26 @@
 
 .sidebar {
     border-right: 1px solid #F3F4F6;
-    min-height: 100vh;
+    height: calc(100vh - 3.8rem);
+    background-color: #FFFFFF;
+}
+
+.footer {
+    background-color: #FFFFFF;
+    padding: 3rem 2rem;
+    position: absolute;
+    width: calc(100% - 1rem);
+    bottom: 1rem;
+}
+
+.footer ul.social {
+    list-style: none;
+    margin-bottom: 0px !important;
+}
+
+.footer ul li {
+    float: left;
+    margin-right: 1rem;
 }
 
 .hr {
@@ -19,8 +73,17 @@
     background-color: #F3F4F6;
 }
 
+.pointer {
+    cursor: pointer;
+}
+
+.hidden {
+    display: none;
+}
+
 .nav-link {
     color: #161C21;
+    cursor: pointer;
 }
 
 .nav-link-active {
@@ -36,28 +99,169 @@
     background: #FF7A00;
 }
 
-.main-container {
-    background: #F9FAFB;
+.dashed {
+    border: 1px dashed #959FAE;
     padding: 1rem;
+}
+
+.dashed-file {
+    border: 1px dashed #959FAE;
+    padding: 2rem 1rem;
+    width: 100%;
+}
+
+.search-input {
+    background: url(assets/images/Search.svg) no-repeat scroll 0.5rem 0.5rem;
+    background-color: #FFFFFF;
+    padding-left: 2.5rem;
+}
+
+.main-container {
+    margin: 1rem;
+    position: relative;
+    padding-bottom: 10rem;
+}
+
+.body-container {
+    background-color: #FFFFFF;
+    padding: 2rem;
+    border-radius: 0.5rem;
+}
+
+.card {
+    margin-top: 1rem;
+    padding: 1rem;
+    background-color: #FFFFFF;
+    box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.06), 0px 1px 3px rgba(0, 0, 0, 0.1);
+    border-radius: 0.5rem;
 }
 
 .bg-grey {
     background: #F3F4F6;
+    color: #4B5563;
+}
+
+.bg-light-grey {
+    background-color: #F9FAFB;
 }
 
 .bg-light-red {
     background: #FBD5D5;
+    color: #9B1C1C;
 }
 
 .bg-light-blue {
-    background: #E1EFFE
+    background: #E1EFFE;
+    color: #1E429F;
 }
 
 .bg-light-green {
-    background: #DEF7EC
+    background: #DEF7EC;
+    color: #03543F;
 }
 
 .dashboard-h1 {
     font-size: 4rem;
-    color: #4B5563;
+}
+
+.dashboard-main-label {
+    color: #111827;
+    font-family: Inter;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 150%;
+}
+
+
+/* Schedule */
+.orange-event {
+    background: rgba(249, 158, 88, 0.3);
+    color: #161C21;
+    border-left: 3px solid #F47321 !important;
+}
+
+.blue-event {
+    background: rgba(14, 165, 233, 0.1);
+    color: #0369A1;
+    border-left: 3px solid #0EA5E9 !important;
+}
+
+.green-event {
+    background: rgba(16, 185, 129, 0.1);
+    color: #047857;
+    border-left: 3px solid #10B981 !important;
+}
+
+.rbc-toolbar-label {
+    color: #959FAE !important;
+}
+
+.rbc-toolbar .rbc-btn-group:first-child button {
+    background-color: #CED2D3;
+    color: #FFFFFF;
+    margin-right: 2px;
+    border-radius: 2px;
+}
+
+.rbc-toolbar .rbc-btn-group:first-child button:nth-child(2) {
+    float: left;
+}
+
+.rbc-toolbar button {
+    color: #666666;
+    border: none !important;
+}
+
+.rbc-active {
+    background-color: #F47321 !important;
+    color: #FFFFFF !important;
+    border-radius: 4px !important;
+}
+
+/* table */
+.rt-tr-group{
+    background: #FFFFFF;
+}
+.rt-tr-group:nth-of-type(even), .rt-head{
+    background: #F9FAFB;
+}
+
+.rt-tbody {
+    border-top: 1px solid #E5E7EB !important;
+}
+
+.tbody, td, tfoot, th, thead, tr {
+    border: none;
+}
+
+.status {
+    padding: 2px 10px;
+    border-radius: 1rem;
+    font-size: 12px;
+}
+
+.status-green {
+    background-color: #DEF7EC;
+    color: #03543F;
+}
+
+.status-red {
+    background-color: #FBD5D5;
+    color: #9B1C1C;
+}
+
+.status-blue {
+    background-color: #E1EFFE;
+    color: #1E429F;
+}
+
+/* Referral */
+.referral-phone, .referral-phone-1 {
+    width: 14rem;
+}
+
+.referral-phone-1 {
+    margin-left: -10rem;
+    margin-top: 4rem;
 }

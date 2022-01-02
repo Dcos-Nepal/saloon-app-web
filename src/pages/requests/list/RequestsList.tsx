@@ -9,68 +9,68 @@ import TopNavbar from "common/components/layouts/topNavbar";
 import SideNavbar from "common/components/layouts/sideNavbar";
 import Footer from "common/components/layouts/footer";
 
-interface IClient {
+interface IRequest {
   name: string;
-  address: string;
+  requestDate: string;
   contact: string;
   status: string;
 }
 
-const ClientsList = () => {
+const RequestsList = () => {
   const navigate = useNavigate();
 
-  const [clients, setClients] = useState<IClient[]>([]);
+  const [requests, setRequests] = useState<IRequest[]>([]);
 
   useEffect(() => {
-    setClients([
+    setRequests([
       {
         name: "MOCK Adam Johar",
-        address: "NY, US 12 TOMAKIN, New South Wales(NSW), 2537",
+        requestDate: new Date().toDateString(),
         contact: "(+ 101) 123123123",
         status: "Active",
       },
       {
         name: "MOCK Neal Johar",
-        address: "NY, US 13 TOMAKIN, New South Wales(NSW), 2537",
+        requestDate: new Date().toDateString(),
         contact: "(+ 101) 532123",
         status: "Inactive",
       },
       {
         name: "MOCK S. Johar",
-        address: "LA, US 12 TOMAKIN, New South Wales(NSW), 2537",
+        requestDate: new Date().toDateString(),
         contact: "(+ 101) 321113",
         status: "Active",
       },
       {
         name: "MOCK Adam Johar",
-        address: "NY, US 12 TOMAKIN, New South Wales(NSW), 2537",
+        requestDate: new Date().toDateString(),
         contact: "(+ 101) 123123123",
         status: "Active",
       },
       {
         name: "MOCK Adam Anuwa",
-        address: "WS, US 12 TOMAKIN, New South Wales(NSW), 2537",
+        requestDate: new Date().toDateString(),
         contact: "(+ 101) 32112333",
         status: "In progress",
       },
       {
         name: "MOCK Adam Johar",
-        address: "NY, US 12 TOMAKIN, New South Wales(NSW), 2537",
+        requestDate: new Date().toDateString(),
         contact: "(+ 101) 123123123",
         status: "Active",
       },
     ]);
   }, []);
 
-  const columns: Column<IClient>[] = useMemo(
+  const columns: Column<IRequest>[] = useMemo(
     () => [
       {
         Header: "CLIENT NAME",
         accessor: "name",
       },
       {
-        Header: "ADDRESS",
-        accessor: "address",
+        Header: "REQUEST DATE",
+        accessor: "requestDate",
       },
       {
         Header: "CONTACT",
@@ -111,38 +111,38 @@ const ClientsList = () => {
   );
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
-    useTable({ columns, data: clients });
+    useTable({ columns, data: requests });
 
   return (
     <>
       <TopNavbar />
       <div className="container-fluid">
         <div className="row flex-nowrap">
-          <SideNavbar active="Clients" />
+          <SideNavbar active="Requests" />
           <div className="col main-container">
             <div className="row">
               <div className="col d-flex flex-row">
-                <h1>Clients</h1>
+                <h1>Job Requests</h1>
               </div>
               <div className="col">
                 <button
                   onClick={() => {
-                    navigate(endpoints.admin.client.add);
+                    navigate(endpoints.admin.requests.list);
                   }}
                   type="button"
                   className="btn btn-primary d-flex float-end"
                 >
-                  New client
+                  New request
                 </button>
               </div>
-              <label className="txt-grey">{clients.length} clients</label>
+              <label className="txt-grey">{requests.length} Job Requests</label>
             </div>
             <div className="card">
               <div className="row pt-3 m-1 rounded-top bg-grey">
                 <div className="col">
                   <InputField
                     label="Search"
-                    placeholder="Search clients"
+                    placeholder="Search requests"
                     className="search-input"
                   />
                 </div>
@@ -196,4 +196,4 @@ const ClientsList = () => {
   );
 };
 
-export default ClientsList;
+export default RequestsList;

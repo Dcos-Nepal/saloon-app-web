@@ -4,6 +4,10 @@ body {
     font-family: "SF Pro Display", "SF Pro Text", "Inter";
 }
 
+.min-width-22 {
+    min-width: 22rem;
+}
+
 .txt-grey {
     color: #71717A;
 }
@@ -99,6 +103,26 @@ body {
     background: #FF7A00;
 }
 
+.btn-card {
+    /* White */
+    background: #FFFFFF;
+    /* Border */
+    border: 1px solid #D3D4D9;
+    box-sizing: border-box;
+    /* BoxShadow */
+    box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.15);
+    border-radius: 4px;
+}
+
+.btn-long {
+    width: 18rem;
+    min-width: 60%;
+}
+
+.btn-full {
+    width: 100%;
+}
+
 .dashed {
     border: 1px dashed #959FAE;
     padding: 1rem;
@@ -173,6 +197,11 @@ body {
     line-height: 150%;
 }
 
+.hr {
+    background: none;
+    border-bottom: 1px solid #CED2D3;
+    height: 0.75rem;
+}
 
 /* Schedule */
 .orange-event {

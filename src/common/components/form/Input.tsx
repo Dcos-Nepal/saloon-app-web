@@ -6,6 +6,7 @@ const InputField: FC<any> = ({
   className,
   placeholder,
   type = "text",
+  helperComponent,
 }) => {
   return (
     <div className="mb-3">
@@ -19,7 +20,9 @@ const InputField: FC<any> = ({
         className={`form-control ${className}`}
         placeholder={placeholder}
       />
-      <div className="form-text"></div>
+      <div className="form-text">
+        {helperComponent}
+      </div>
     </div>
   );
 };

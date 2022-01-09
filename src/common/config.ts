@@ -1,4 +1,10 @@
 export const endpoints = {
+  auth: {
+    signup: "/signup",
+    signin: "/signin",
+    resetPassword: "/reset-password",
+    changePassword: "/change-password",
+  },
   admin: {
     home: "/",
     client: {

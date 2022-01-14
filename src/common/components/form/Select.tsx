@@ -29,6 +29,8 @@ const SelectField: FC<any> = ({
         classNamePrefix="form-control"
         placeholder={placeholder}
         isMulti={isMulti}
+        menuPortalTarget={document.body} 
+        styles={{ menuPortal: base => ({ ...base, zIndex: 999 }) }}
       />
       <div className="form-text"></div>
     </div>

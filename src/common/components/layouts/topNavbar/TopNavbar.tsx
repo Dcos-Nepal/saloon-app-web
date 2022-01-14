@@ -32,7 +32,16 @@ const TopNavbar: FC<IProps> = ({ loggedIn = true }) => {
                 <box-icon name="bell"></box-icon>
               </li>
               <li className="nav-item">
-                <img src={avatar} height="34px" alt="Orange" />
+                <div className="dropdown dropstart">
+                  <a href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                    <img src={avatar} height="34px" alt="Orange" />
+                  </a>
+                  <ul className="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                    <li><a className="dropdown-item" href="#">View Profile</a></li>
+                    <li><a className="dropdown-item" href="#">Settings</a></li>
+                    <li><a className="dropdown-item" href="#">Logout</a></li>
+                  </ul>
+                </div>
               </li>
             </ul>
           </>

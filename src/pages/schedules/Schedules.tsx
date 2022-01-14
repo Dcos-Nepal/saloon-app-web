@@ -1,19 +1,22 @@
-import { SyntheticEvent, useState } from "react";
+import { SyntheticEvent, useRef, useState } from "react";
 import { SlotInfo } from "react-big-calendar";
 
 import { IEvent } from "../../common/types/events";
 import { EventCalendar } from "../../common/components/EventCalendar";
-import TopNavbar from "common/components/layouts/topNavbar";
-import SideNavbar from "common/components/layouts/sideNavbar";
-import Footer from "common/components/layouts/footer";
+import Modal from "common/components/atoms/Modal";
+import EventDetail from "./EventDetail";
+import useMountedRef from "common/hooks/is-mounted";
 
 const Schedules = () => {
+  const bcRef = useRef();
+  const isMounted = useMountedRef();
+  const [showEventDetail, setShowEventDetail] = useState<IEvent | null>();
   const [events, setEvents] = useState<IEvent[]>([
     {
       id: "0",
       title: "This is event before point of time",
-      start: new Date("2022-01-02T00:41:22.249Z"),
-      end: new Date("2022-01-02T04:41:22.249Z"),
+      start: new Date("2022-01-12T00:41:22.249Z"),
+      end: new Date("2022-01-12T04:41:22.249Z"),
       type: "blue-event",
       allDay: false,
     },
@@ -22,78 +25,89 @@ const Schedules = () => {
       title: "Point in Time Event",
       start: new Date(),
       type: "green-event",
-      end: new Date("2022-01-02T02:41:22.249Z"),
+      end: new Date("2022-01-12T02:41:22.249Z"),
       allDay: false,
     },
     {
       id: "2",
       title: "After Point in Time Event",
-      start: new Date("2022-01-03T03:41:22.249Z"),
-      end: new Date("2022-01-03T08:41:22.249Z"),
+      start: new Date("2022-01-13T03:41:22.249Z"),
+      end: new Date("2022-01-13T08:41:22.249Z"),
       allDay: false,
     },
     {
       id: "3",
       title: "Another day",
-      start: new Date("2022-01-03T21:41:22.249Z"),
-      end: new Date("2022-01-04T04:31:22.249Z"),
+      start: new Date("2022-01-13T21:41:22.249Z"),
+      end: new Date("2022-01-14T04:31:22.249Z"),
       allDay: false,
       type: "green-event",
     },
   ]);
 
-  const addEvent = async (event: IEvent) => {
-    setEvents([...events, event]);
-  };
-
-  // const updateEvent = async (event: IEvent) => {
-  //   setEvents([...events.filter((e) => e.id !== event.id), event]);
-  // };
-
-  const deleteEvent = async (event: IEvent) => {
-    setEvents(events.filter((e) => e.id !== event.id));
+  const onSelectEvent = (event: any, e: SyntheticEvent) => {
+    if (isMounted) {
+      setShowEventDetail(event);
+    }
   };
 
   const onSelectSlot = (slotInfo: SlotInfo) => {
-    console.log({ slotInfo });
-    addEvent({
-      id: events.length.toString(),
-      start: new Date(slotInfo.start),
-      end: new Date(slotInfo.end),
-      title: slotInfo.action,
-      allDay: false,
-    });
+    if (isMounted) {
+      addEvent({
+        id: events.length.toString(),
+        start: new Date(slotInfo.start),
+        end: new Date(slotInfo.end),
+        title: slotInfo.action,
+        allDay: false,
+      });
+    }
   };
 
-  const onSelectEvent = (event: any, e: SyntheticEvent) => {
-    console.log({ event });
-    console.log({ e });
-    deleteEvent(event);
+  const addEvent = async (event: IEvent) => {
+    if (isMounted) {
+      setEvents([...events, event]);
+    }
+  };
+
+  const updateEvent = async (event: IEvent) => {
+    if (isMounted) {
+      setEvents([...events.filter((e) => e.id !== event.id), event]);
+    }
+  };
+
+  const deleteEvent = async (event: IEvent) => {
+    if (isMounted) {
+      if (window.confirm("Are you sure you sant to delete this Event?")) {
+        setEvents(events.filter((e) => e.id !== event.id));
+      }
+    }
   };
 
   return (
     <>
-      <TopNavbar />
-      <div className="container-fluid">
-        <div className="row flex-nowrap">
-          <SideNavbar active="Schedule" />
-          <div className="col main-container">
-            <div className="">
-              <div className="d-flex flex-row">
-                <h1>Schedule</h1>
-              </div>
-            </div>
-            <div className="body-container">
-              <EventCalendar
-                events={events}
-                onSelectSlot={onSelectSlot}
-                onSelectEvent={onSelectEvent}
-              />
-            </div>
-            <Footer />
-          </div>
+      <div className="d-flex flex-row">
+        <h3>Work Schedule</h3>
+      </div>
+      <div className="body-container">
+        <div ref={bcRef.current}>
+          <EventCalendar
+            events={events}
+            onSelectSlot={onSelectSlot}
+            onSelectEvent={onSelectEvent}
+          />
         </div>
       </div>
+      <Modal
+        isOpen={!!showEventDetail}
+        onRequestClose={() => setShowEventDetail(null)}
+      >
+        {(!!showEventDetail && (
+          <EventDetail
+            event={showEventDetail}
+            closeModal={() => setShowEventDetail(null)}
+          />
+        )) || <div></div>}
+      </Modal>
     </>
   );
 };

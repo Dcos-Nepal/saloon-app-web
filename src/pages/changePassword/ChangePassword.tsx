@@ -4,9 +4,18 @@ import { endpoints } from "common/config";
 import LogoFull from "assets/images/LogoFull.svg";
 import ChangePasswordForm from "./ChangePasswordForm";
 import Success from "common/components/atoms/Success";
+import { connect } from "react-redux";
+import { Loader } from "common/components/atoms/Loader";
+import { useEffect } from "react";
 
-const ChangePassword = () => {
+const ChangePassword = (props: any) => {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if(props.isSuccess && props.isFailed === false) {
+      setTimeout(() => navigate(endpoints.auth.signin), 3000);
+    }
+  }, [props.isSuccess, props.isFailed])
 
   return (
     <div className="container-fluid txt-grey">
@@ -15,27 +24,36 @@ const ChangePassword = () => {
           <div className="d-flex justify-content-center mb-5">
             <img src={LogoFull} alt="Orange Cleaning" />
           </div>
-
-          <div className="main-container card bg-white p-4">
-            <div>
-              <h4>Change password</h4>
-              <label>Fill your new password to change</label>
-            </div>
-
-            <ChangePasswordForm />
-          </div>
-
-          <div className="main-container card bg-white p-4">
-            <Success
-              okMsg="Go to login"
-              okHandler={() => navigate(endpoints.auth.signin)}
-              msg="You have successfully changed your password"
-            />
-          </div>
+          {(!props.isLoading && props.isSuccess && props.isFailed === false) ? (
+            <div className="main-container card bg-white p-4">
+              <Success
+                okMsg="Go to login"
+                okHandler={() => navigate(endpoints.auth.signin)}
+                msg="You have successfully changed your password"
+              />
+            </div>) : (
+              <div className="main-container card bg-white p-4">
+                <Loader isLoading={props.isLoading} />
+                <div>
+                  <h4>Change password</h4>
+                  <label>Fill your new password to change</label>
+                </div>
+                <ChangePasswordForm />
+              </div>
+            )
+          }
         </div>
       </div>
     </div>
   );
 };
 
-export default ChangePassword;
+const mapStateToProps = (state: any) => {
+  return ({ 
+    isLoading: state.auth.isLoading,
+    isSuccess: state.auth.isSuccess,
+    isFailed: state.auth.isFailed,
+  });
+};
+
+export default connect(mapStateToProps)(ChangePassword);

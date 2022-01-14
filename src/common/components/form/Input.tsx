@@ -6,6 +6,8 @@ const InputField: FC<any> = ({
   className,
   placeholder,
   type = "text",
+  onChange,
+  onBlur,
   helperComponent,
 }) => {
   return (
@@ -19,6 +21,8 @@ const InputField: FC<any> = ({
         name={name}
         className={`form-control ${className}`}
         placeholder={placeholder}
+        onChange={onChange}
+        onBlur={onBlur}
       />
       <div className="form-text">
         {helperComponent}

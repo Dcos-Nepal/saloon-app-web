@@ -1,6 +1,7 @@
 body {
     color: #111827;
     background: #F9FAFB;
+    font-size: 14px;
     font-family: "SF Pro Display", "SF Pro Text", "Inter";
 }
 
@@ -30,11 +31,11 @@ body {
 
 .txt-bold-big {
     font-weight: bold;
-    font-size: 18px;
+    font-size: 16px;
 }
 
 .rounded-radius {
-    border-radius: 1rem;
+    border-radius: 6px;
 }
 
 .navbar {
@@ -48,17 +49,19 @@ body {
 }
 
 .sidebar {
+    font-size: 16px;
+    display: flex;
     border-right: 1px solid #F3F4F6;
-    height: calc(100vh - 3.8rem);
+    align-items: stretch;
     background-color: #FFFFFF;
 }
 
 .footer {
     background-color: #FFFFFF;
-    padding: 3rem 2rem;
+    padding: 1rem 2rem;
+    width: calc(100% - 1.5rem);
     position: absolute;
-    width: calc(100% - 1rem);
-    bottom: 1rem;
+    bottom: 15px;
 }
 
 .footer ul.social {
@@ -94,13 +97,23 @@ body {
     color: #f47321;
 }
 
-.btn-primary, .btn-primary:hover {
+.btn-primary,
+.btn-primary:visited
+.btn-primary:hover {
     background-color: #f47321;
     border: none;
 }
 
 .btn-primary:hover {
     background: #FF7A00;
+}
+
+.btn-secondary,
+.btn-secondary:visited 
+.btn-secondary:hover {
+    border: 1px solid #f47321;
+    color: #f47321;
+    background: none;
 }
 
 .btn-card {
@@ -169,6 +182,10 @@ body {
     background-color: #F9FAFB;
 }
 
+.bg-background-grey {
+    background-color: #F3F2EF;
+}
+
 .bg-light-red {
     background: #FBD5D5;
     color: #9B1C1C;
@@ -189,8 +206,7 @@ body {
 }
 
 .dashboard-main-label {
-    color: #111827;
-    font-family: Inter;
+    color: #F99E58;
     font-style: normal;
     font-weight: 600;
     font-size: 16px;
@@ -248,11 +264,19 @@ body {
     border-radius: 4px !important;
 }
 
+.rbc-event.rbc-selected {
+    background: #0EA5E9;
+    border-color: #0369A1 !important;
+    color: #FFFFFF;
+}
+
 /* table */
-.rt-tr-group{
+.rt-tr-group {
     background: #FFFFFF;
 }
-.rt-tr-group:nth-of-type(even), .rt-head{
+
+.rt-tr-group:nth-of-type(even),
+.rt-head {
     background: #F9FAFB;
 }
 
@@ -260,7 +284,12 @@ body {
     border-top: 1px solid #E5E7EB !important;
 }
 
-.tbody, td, tfoot, th, thead, tr {
+.tbody,
+td,
+tfoot,
+th,
+thead,
+tr {
     border: none;
 }
 
@@ -286,11 +315,70 @@ body {
 }
 
 /* Referral */
-.referral-phone, .referral-phone-1 {
+.referral-phone,
+.referral-phone-1 {
     width: 14rem;
 }
 
 .referral-phone-1 {
     margin-left: -10rem;
     margin-top: 4rem;
+}
+
+/* Modal */
+.modal-object {
+    min-width: 24rem;
+}
+
+.modal-object--sm {
+    width: 24rem;
+}
+
+.modal-footer {
+    justify-content: flex-start;
+}
+
+/* Overrides */
+.btn-check:checked+.btn-outline-dangerr {
+    color: white;
+    background-color: #F47321;
+}
+
+.btn-outline-dangerr {
+    color: #F47321;
+    border-color: #F47321;
+}
+
+.ReactModal__Overlay--after-open {
+    z-index: 9999;
+}
+
+.card {
+    border-radius: 6px;
+}
+
+input[type]:focus, textarea:focus {
+    box-shadow: none;
+    border: 1px solid #F47321;
+}
+
+/* Animation */
+.fade-appear,
+.fade-enter {
+    opacity: 0;
+}
+
+.fade-appear-active,
+.fade-enter-active {
+    transition: opacity .3s linear;
+    opacity: 1;
+}
+
+.fade-exit {
+    transition: opacity .2s linear;
+    opacity: 1;
+}
+
+.fade-exit-active {
+    opacity: 0;
 }

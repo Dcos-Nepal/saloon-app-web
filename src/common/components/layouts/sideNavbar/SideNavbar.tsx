@@ -19,7 +19,7 @@ const SideNavbar: FC<IProps> = ({ active }) => {
         >
           <li className="nav-item">
             <span
-              onClick={() => navigate(endpoints.admin.home)}
+              onClick={() => navigate('.')}
               className={
                 active === "Overview"
                   ? "nav-link nav-link-active align-middle px-0"
@@ -38,7 +38,7 @@ const SideNavbar: FC<IProps> = ({ active }) => {
           </li>
           <li>
             <span
-              onClick={() => navigate("/schedules")}
+              onClick={() => navigate(endpoints.admin.schedules.calendar)}
               className={
                 active === "Schedule"
                   ? "nav-link nav-link-active align-middle px-0"
@@ -60,7 +60,7 @@ const SideNavbar: FC<IProps> = ({ active }) => {
 
           <li>
             <span
-              onClick={() => navigate("/clients")}
+              onClick={() => navigate(endpoints.admin.client.list)}
               className={
                 active === "Clients"
                   ? "nav-link nav-link-active align-middle px-0"
@@ -120,7 +120,7 @@ const SideNavbar: FC<IProps> = ({ active }) => {
           </li>
           <li>
             <span
-              onClick={() => navigate(endpoints.admin.referral.program)}
+              onClick={() => navigate(endpoints.admin.jobs.list)}
               className={
                 active === "Jobs"
                   ? "nav-link nav-link-active align-middle px-0"
@@ -158,7 +158,7 @@ const SideNavbar: FC<IProps> = ({ active }) => {
           </li>
           <li>
             <span
-              onClick={() => navigate(endpoints.admin.referral.program)}
+              onClick={() => navigate(endpoints.admin.worker.list)}
               className={
                 active === "Workers"
                   ? "nav-link nav-link-active align-middle px-0"

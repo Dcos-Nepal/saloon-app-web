@@ -1,6 +1,6 @@
 const Footer = () => {
   return (
-    <div className="footer rounded-radius">
+    <div className="footer rounded-radius mt-3">
       <div className="row">
         <div className="col copy-right">© 2021 Orange Cleaning.</div>
         <div className="col mr-auto">

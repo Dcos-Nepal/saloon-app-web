@@ -2,26 +2,34 @@ export const endpoints = {
   auth: {
     signup: "/signup",
     signin: "/signin",
+    verifyEmail: "/verify-email/:token",
     resetPassword: "/reset-password",
-    changePassword: "/change-password",
+    changePassword: "/change-password/:pwdToken",
   },
   admin: {
-    home: "/",
+    home: "/dashboard",
     client: {
-      list: "/clients",
-      add: "/clients/add",
+      list: "clients",
+      add: "add",
+    },
+    worker: {
+      list: "workers",
+      add: "add",
     },
     referral: {
-      program: "/referral-program",
+      program: "referral-program",
     },
     schedules: {
-      calendar: "/schedules",
+      calendar: "schedules",
     },
     requests: {
-      list: "/requests",
+      list: "requests",
     },
     quotes: {
-      list: "/quotes",
+      list: "quotes",
     },
+    jobs: {
+      list: "jobs",
+    }
   },
 };

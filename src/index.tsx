@@ -1,10 +1,21 @@
-import React from "react";
+import React, { Suspense } from "react";
 import ReactDOM from "react-dom";
-import "./index.css";
-import App from "./App";
 import reportWebVitals from "./reportWebVitals";
+
+// UI Styles
+import "bootstrap/js/dist/dropdown";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "assets/scss/style.css"
+import "./index.css";
+
+// Redux/Saga/Store
+import { store } from "store/store";
+import { Provider } from "react-redux";
+import { Loader } from "common/components/atoms/Loader";
+
+// Lazy loading the component
+const App = React.lazy(() => import("./App"));
+const ErrorBoundary = React.lazy(() => import("common/components/ErrorBoundary"));
 
 declare global {
   namespace JSX {
@@ -15,9 +26,17 @@ declare global {
 }
 
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
+  <Suspense fallback={<Loader isLoading={true} />}>
+    <ErrorBoundary>
+      <React.StrictMode>
+        <Provider store={store}>
+          <Suspense fallback={<Loader isLoading={true} />}>
+            <App />
+          </Suspense>
+        </Provider>
+      </React.StrictMode>
+    </ErrorBoundary>
+  </Suspense>,
   document.getElementById("root")
 );
 

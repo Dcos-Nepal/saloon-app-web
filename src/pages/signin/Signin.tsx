@@ -1,12 +1,21 @@
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { connect } from "react-redux";
 
 import SigninForm from "./SigninForm";
 import Google from "assets/images/google.svg";
 import LogoFull from "assets/images/LogoFull.svg";
 import { endpoints } from "common/config";
+import { Loader } from "common/components/atoms/Loader";
 
-const Signin = () => {
+const Signin = (props: any) => {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if(props.isSuccess && props.isFailed === false) {
+      navigate(endpoints.admin.home);
+    }
+  }, [props.isSuccess, props.isFailed])
 
   return (
     <div className="container-fluid txt-grey">
@@ -17,6 +26,7 @@ const Signin = () => {
           </div>
 
           <div className="main-container card bg-white p-4">
+            <Loader isLoading={props.isLoading} />
             <div>
               <h4>Welcome</h4>
               <label>Fill your details or continue with google account</label>
@@ -55,4 +65,14 @@ const Signin = () => {
   );
 };
 
-export default Signin;
+const mapStateToProps = (state: any) => {
+  return ({ 
+    isLoading: state.auth.isLoading,
+    isSuccess: state.auth.isSuccess,
+    isFailed: state.auth.isFailed,
+  });
+};
+
+const mapDispatchToProps = (dispatch: any) => ({});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Signin);

@@ -1,3 +1,4 @@
 import Signup from "./Signup";
+import VerifyEmail from "./VerifyEmail";
 
-export default Signup;
+export { Signup, VerifyEmail };

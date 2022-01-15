@@ -1,4 +1,4 @@
-import { AUTH_EMAIL_VERIFY, AUTH_FORGOT_PWD, AUTH_RESET_PWD, AUTH_SIGNIN, AUTH_SIGNUP } from "store/constants";
+import { AUTH_EMAIL_VERIFY, AUTH_FORGOT_PWD, AUTH_RESET_PWD, AUTH_SIGN_IN, AUTH_SIGNUP } from "store/constants";
 
 export const registerUser = (data: any) => {
   return {
@@ -8,7 +8,7 @@ export const registerUser = (data: any) => {
 
 export const signInUser = (data: any) => {
   return {
-    type: AUTH_SIGNIN, payload: data
+    type: AUTH_SIGN_IN, payload: data
   };
 };
 

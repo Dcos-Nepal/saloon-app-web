@@ -3,7 +3,7 @@ import { toast } from 'react-toastify';
 import { getData } from "./storage";
 
 export const getAccessToken = () => {
-  return getData("profile")?.authToken;
+  return getData("accessToken")?.authToken;
 };
 
 export const http = axios.create({
@@ -48,7 +48,7 @@ http.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    // TODO intercepr other API errors here
+    // TODO interceptor other API errors here
     // More ...like 401, 404, 500, etc...
 
     // Return the rejected promise with error details.

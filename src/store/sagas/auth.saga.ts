@@ -4,18 +4,18 @@ import { getMessage } from 'common/messages';
 import { call, put, takeEvery} from 'redux-saga/effects';
 import {
     forgotUserPasswordApi, registerUserApi,
-    resetUserPasswordApi, signInUserApi, vedifyEmailApi
+    resetUserPasswordApi, signInUserApi, verifyEmailApi
 } from 'services/auth.service';
 
 /**
- * Saga Definations
+ * Saga Definitions
  */
 export function* userRegisterSaga() {
     yield takeEvery(actionType.AUTH_SIGNUP, registerUser);
 }
 
 export function* userSignInSaga() {
-    yield takeEvery(actionType.AUTH_SIGNIN, signInUser);
+    yield takeEvery(actionType.AUTH_SIGN_IN, signInUser);
 }
 
 export function* verifyUserEmailSaga() {
@@ -55,21 +55,21 @@ function* signInUser(action: any): any {
         const response = yield call(signInUserApi, action.payload);
 
         if (response.data.success) {
-            yield put({ type: actionType.AUTH_SIGNIN_SUCCESS, payload: response});
+            yield put({ type: actionType.AUTH_SIGN_IN_SUCCESS, payload: response});
             return toast.success(getMessage(response.data.message))
         }
 
-        yield put({ type: actionType.AUTH_SIGNIN_ERROR, payload: response });
+        yield put({ type: actionType.AUTH_SIGN_IN_ERROR, payload: response });
         return toast.error(getMessage(response.data.message));
     } catch (err: any) {
         if (err.exception) toast.error(err.exception.message);
-        yield put({ type: actionType.AUTH_SIGNIN_ERROR, payload: err });
+        yield put({ type: actionType.AUTH_SIGN_IN_ERROR, payload: err });
     }
 }
 
 function* verifyUserEmail(action: any): any {
     try {
-        const response = yield call(vedifyEmailApi, action.payload);
+        const response = yield call(verifyEmailApi, action.payload);
 
         if (response.data.success) {
             yield put({ type: actionType.AUTH_EMAIL_VERIFY_SUCCESS, payload: response});

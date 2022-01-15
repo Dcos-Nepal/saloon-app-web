@@ -1,20 +1,20 @@
 import * as actionType from "../constants";
 
-const comnState = {
+const commonState = {
   isFailed: false,
   isSuccess: false,
   isLoading: false,
 };
 
 const initialState = {
-  signup: {...comnState},
-  signIn: {...comnState},
-  verify: {...comnState},
-  forgotPwd: {...comnState},
-  resetPwd: {...comnState},
+  signup: {...commonState},
+  signIn: {...commonState},
+  verify: {...commonState},
+  forgotPwd: {...commonState},
+  resetPwd: {...commonState},
 };
 
-export default function (state = initialState, action: any) {
+const authReducer = (state = initialState, action: any) => {
   switch (action.type) {
     case actionType.AUTH_SIGNUP: {
       state.signup.isLoading = true;
@@ -26,7 +26,7 @@ export default function (state = initialState, action: any) {
       return {...state};
     }
 
-    case actionType.AUTH_SIGNIN: {
+    case actionType.AUTH_SIGN_IN: {
       state.signIn.isLoading = true;
       return {...state};
     }
@@ -61,7 +61,7 @@ export default function (state = initialState, action: any) {
       return {...state};
     }
 
-    case actionType.AUTH_SIGNIN_SUCCESS: {
+    case actionType.AUTH_SIGN_IN_SUCCESS: {
       state.signIn = {
         isSuccess: true,
         isFailed: false,
@@ -111,7 +111,7 @@ export default function (state = initialState, action: any) {
       return {...state};
     }
 
-    case actionType.AUTH_SIGNIN_ERROR: {
+    case actionType.AUTH_SIGN_IN_ERROR: {
       state.signIn = {
         isSuccess: false,
         isFailed: true,
@@ -146,3 +146,5 @@ export default function (state = initialState, action: any) {
     }
   }
 }
+
+export default authReducer;

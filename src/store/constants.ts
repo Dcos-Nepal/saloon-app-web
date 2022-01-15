@@ -17,10 +17,10 @@ export const AUTH_SIGNUP_ERROR = 'AUTH_SIGNUP_ERROR';
 /**
  * User Login action types
  */
-export const AUTH_SIGNIN = 'AUTH_SIGNIN';
-export const AUTH_SIGNIN_SUCCESS = 'AUTH_SIGNIN_SUCCESS';
-export const AUTH_SIGNIN_LOADING = 'AUTH_SIGNIN_LOADING';
-export const AUTH_SIGNIN_ERROR = 'AUTH_SIGNIN_ERROR';
+export const AUTH_SIGN_IN = 'AUTH_SIGN_IN';
+export const AUTH_SIGN_IN_SUCCESS = 'AUTH_SIGN_IN_SUCCESS';
+export const AUTH_SIGN_IN_LOADING = 'AUTH_SIGN_IN_LOADING';
+export const AUTH_SIGN_IN_ERROR = 'AUTH_SIGN_IN_ERROR';
 
 /**
  * User Forgot Password action types

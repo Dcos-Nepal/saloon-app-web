@@ -41,7 +41,7 @@ http.interceptors.response.use(
     // Checking for Network Error
     if (typeof error === 'object' && error.message === 'Network Error') {
       if (!isConnectionErrorNotified) {
-        toast.error('Connection to server has been lost!', { position: 'top-right' });
+        toast.error('Connection to server has been lost!', { position: 'bottom-center' });
         isConnectionErrorNotified = true;
       }
 

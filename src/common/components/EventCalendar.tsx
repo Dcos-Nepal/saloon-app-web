@@ -30,6 +30,7 @@ export const EventCalendar: FC<IProps> = ({
       onSelectSlot={onSelectSlot}
       onSelectEvent={onSelectEvent}
       defaultView="week"
+      showMultiDayTimes={true}
       eventPropGetter={(event) => {
         return {
           className: event.type || "orange-event",

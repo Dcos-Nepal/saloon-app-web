@@ -38,9 +38,9 @@ const ResetPassword = (props: any) => {
 
 const mapStateToProps = (state: any) => {
   return ({ 
-    isLoading: state.auth.isLoading,
-    isSuccess: state.auth.isSuccess,
-    isFailed: state.auth.isFailed,
+    isLoading: state.auth.resetPwd.isLoading,
+    isSuccess: state.auth.resetPwd.isSuccess,
+    isFailed: state.auth.resetPwd.isFailed,
   });
 };
 

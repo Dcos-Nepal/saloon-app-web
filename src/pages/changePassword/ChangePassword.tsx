@@ -50,9 +50,9 @@ const ChangePassword = (props: any) => {
 
 const mapStateToProps = (state: any) => {
   return ({ 
-    isLoading: state.auth.isLoading,
-    isSuccess: state.auth.isSuccess,
-    isFailed: state.auth.isFailed,
+    isLoading: state.auth.forgotPwd.isLoading,
+    isSuccess: state.auth.forgotPwd.isSuccess,
+    isFailed: state.auth.forgotPwd.isFailed,
   });
 };
 

@@ -65,16 +65,10 @@ const Signup = (props: any) => {
 
 const mapStateToProps = (state: any) => {
   return ({
-    isLoading: state.auth.isLoading,
-    isSuccess: state.auth.isSuccess,
-    isFailed: state.auth.isFailed,
+    isLoading: state.auth.signup.isLoading,
+    isSuccess: state.auth.signup.isSuccess,
+    isFailed: state.auth.signup.isFailed,
   })
 };
 
-const mapDispatchToProps = (dispatch: any) => ({
-  actions: {
-    // TODO add necessary actions here.
-  }
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(Signup);
+export default connect(mapStateToProps)(Signup);

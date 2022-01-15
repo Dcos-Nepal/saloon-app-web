@@ -14,14 +14,12 @@ export const vedifyEmailApi = async (verificationCode: string) => {
 }
 
 export const signInUserApi = async (data: IUserLogin) => {
-  console.log(" Data Received: ", data);
   return await http.post("auth/login", data, {
     headers: { "Accept": "application/json;v=1.0.0" }
   });
 }
 
 export const forgotUserPasswordApi = async (data: IForgotPassword) => {
-  console.log(" Data Received: ", data);
   return await http.post("auth/forgot-password", data, {
     headers: { "Accept": "application/json;v=1.0.0" }
   });

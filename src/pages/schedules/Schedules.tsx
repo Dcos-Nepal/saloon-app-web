@@ -94,6 +94,7 @@ const Schedules = () => {
             events={events}
             onSelectSlot={onSelectSlot}
             onSelectEvent={onSelectEvent}
+            
           />
         </div>
       </div>

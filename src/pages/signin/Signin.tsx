@@ -67,12 +67,10 @@ const Signin = (props: any) => {
 
 const mapStateToProps = (state: any) => {
   return ({ 
-    isLoading: state.auth.isLoading,
-    isSuccess: state.auth.isSuccess,
-    isFailed: state.auth.isFailed,
+    isLoading: state.auth.signIn.isLoading,
+    isSuccess: state.auth.signIn.isSuccess,
+    isFailed: state.auth.signIn.isFailed,
   });
 };
 
-const mapDispatchToProps = (dispatch: any) => ({});
-
-export default connect(mapStateToProps, mapDispatchToProps)(Signin);
+export default connect(mapStateToProps)(Signin);

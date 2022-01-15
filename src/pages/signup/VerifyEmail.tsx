@@ -31,6 +31,9 @@ const VerifyEmail = (props: any) => {
                 okHandler={() => navigate(endpoints.auth.signin)}
               />) : <Loader isLoading={props.isLoading} />
             }
+            {(!props.isSuccess && props.isFailed === true) ? 
+              (<div>Resend Email verification!</div>) : ""
+            }
           </div>
         </div>
       </div>
@@ -40,9 +43,9 @@ const VerifyEmail = (props: any) => {
 
 const mapStateToProps = (state: any) => {
   return ({
-    isLoading: state.auth.isLoading,
-    isSuccess: state.auth.isSuccess,
-    isFailed: state.auth.isFailed,
+    isLoading: state.auth.verify.isLoading,
+    isSuccess: state.auth.verify.isSuccess,
+    isFailed: state.auth.verify.isFailed,
   })
 };
 

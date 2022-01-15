@@ -357,8 +357,10 @@ tr {
     border-radius: 6px;
 }
 
-input[type]:focus, textarea:focus {
-    box-shadow: none;
+.btn:focus,
+input[type]:focus,
+textarea:focus {
+    box-shadow: none !important;
     border: 1px solid #F47321;
 }
 

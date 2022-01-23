@@ -1,10 +1,14 @@
 import { useNavigate } from "react-router-dom";
 import { Column, useTable } from "react-table";
 import { useEffect, useMemo, useState } from "react";
+import * as clientsActions from "../../../store/actions/clients.actions";
 
 import { endpoints } from "common/config";
 import InputField from "common/components/form/Input";
 import SelectField from "common/components/form/Select";
+import { connect } from "react-redux";
+import ReactPaginate from "react-paginate";
+import { Loader } from "common/components/atoms/Loader";
 
 interface IClient {
   name: string;
@@ -13,51 +17,35 @@ interface IClient {
   status: string;
 }
 
-const ClientsList = () => {
+const ClientsList = (props: any) => {
   const navigate = useNavigate();
-
+  const [itemsPerPage] = useState(10);
+  const [offset, setOffset] = useState(1);
+  const [pageCount, setPageCount] = useState(0)
   const [clients, setClients] = useState<IClient[]>([]);
 
   useEffect(() => {
-    setClients([
-      {
-        name: "MOCK Adam Johar",
-        address: "NY, US 12 TOMAKIN, New South Wales(NSW), 2537",
-        contact: "(+ 101) 123123123",
-        status: "Active",
-      },
-      {
-        name: "MOCK Neal Johar",
-        address: "NY, US 13 TOMAKIN, New South Wales(NSW), 2537",
-        contact: "(+ 101) 532123",
-        status: "Inactive",
-      },
-      {
-        name: "MOCK S. Johar",
-        address: "LA, US 12 TOMAKIN, New South Wales(NSW), 2537",
-        contact: "(+ 101) 321113",
-        status: "Active",
-      },
-      {
-        name: "MOCK Adam Johar",
-        address: "NY, US 12 TOMAKIN, New South Wales(NSW), 2537",
-        contact: "(+ 101) 123123123",
-        status: "Active",
-      },
-      {
-        name: "MOCK Adam Anuwa",
-        address: "WS, US 12 TOMAKIN, New South Wales(NSW), 2537",
-        contact: "(+ 101) 32112333",
-        status: "In progress",
-      },
-      {
-        name: "MOCK Adam Johar",
-        address: "NY, US 12 TOMAKIN, New South Wales(NSW), 2537",
-        contact: "(+ 101) 123123123",
-        status: "Active",
-      },
-    ]);
-  }, []);
+    props.actions.fetchClients({roles: 'CLIENT', page: offset, limit: itemsPerPage });
+  }, [offset, itemsPerPage, props.actions]);
+
+  useEffect(() => {
+    if (props.clients?.data?.rows) {
+      setClients(props.clients.data?.rows
+        .map((row: any) => ({
+          name: `${row.firstName} ${row.lastName}`,
+          address: row?.address ? `${row.address?.street1}, ${row.address?.street2}, ${row.address?.city}, ${row.address?.state}, ${row.address?.postalCode}, ${row.address?.country}` : "Address not added!",
+          contact: row.phoneNumber,
+          status: 'some status'
+        }))
+      );
+      setPageCount(Math.ceil(props.clients.data.totalCount / itemsPerPage))
+    }
+  }, [itemsPerPage, props.clients]);
+
+  const handlePageClick = (event: any) => {
+    const selectedPage = event.selected;
+    setOffset(selectedPage + 1)
+  };
 
   const columns: Column<IClient>[] = useMemo(
     () => [
@@ -137,6 +125,7 @@ const ClientsList = () => {
       </div>
       <div className="card">
         <div className="row pt-2 m-1 rounded-top bg-grey">
+          <Loader isLoading={props.isLoading} />
           <div className="col">
             <InputField
               label="Search"
@@ -185,9 +174,35 @@ const ClientsList = () => {
             </tbody>
           </table>
         </div>
+        <div className="row pt-2 m-1 rounded-top">
+          <ReactPaginate
+            previousLabel={"Previous"}
+            nextLabel={"Next"}
+            breakLabel={"..."}
+            breakClassName={"break-me"}
+            pageCount={pageCount}
+            onPageChange={handlePageClick}
+            containerClassName={"pagination"}
+            activeClassName={"active"} />
+        </div>
       </div>
     </>
   );
 };
 
-export default ClientsList;
+const mapStateToProps = (state: any) => {
+  return ({
+    clients: state.clients.clients,
+    isLoading: state.clients.isLoading
+  })
+};
+
+const mapDispatchToProps = (dispatch: any) => ({
+  actions: {
+    fetchClients: (payload: any) => {
+      dispatch(clientsActions.fetchClients(payload));
+    }
+  },
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(ClientsList);

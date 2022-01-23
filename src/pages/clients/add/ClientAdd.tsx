@@ -1,6 +1,4 @@
 import { useNavigate } from "react-router-dom";
-
-import { endpoints } from "common/config";
 import ClientDetailForm from "./ClientDetailForm";
 import PropertyDetail from "./PropertyDetail";
 

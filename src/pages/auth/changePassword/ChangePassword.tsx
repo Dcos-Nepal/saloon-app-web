@@ -15,7 +15,7 @@ const ChangePassword = (props: any) => {
     if(props.isSuccess && props.isFailed === false) {
       setTimeout(() => navigate(endpoints.auth.signin), 3000);
     }
-  }, [props.isSuccess, props.isFailed])
+  }, [props.isSuccess, props.isFailed, navigate])
 
   return (
     <div className="container-fluid txt-grey">

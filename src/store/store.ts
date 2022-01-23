@@ -1,7 +1,8 @@
 import { createStore, applyMiddleware, compose } from "redux";
 import createSagaMiddleware from "redux-saga";
 import rootReducer from "./reducers/index";
-import { forgotPasswordSaga, resetPasswordSaga, userRegisterSaga, userSignInSaga, verifyUserEmailSaga } from "./sagas";
+import { fetchClientsSaga, fetchWorkersSaga, forgotPasswordSaga, resetPasswordSaga, userRegisterSaga, userSignInSaga, verifyUserEmailSaga } from "./sagas";
+import { fetchJobRequestsSaga } from "./sagas/job-reqs.saga";
 
 declare global {
   interface Window {
@@ -27,4 +28,6 @@ sagaMiddleware.run(userSignInSaga);
 sagaMiddleware.run(verifyUserEmailSaga);
 sagaMiddleware.run(forgotPasswordSaga);
 sagaMiddleware.run(resetPasswordSaga);
-// Add more here
+sagaMiddleware.run(fetchJobRequestsSaga);
+sagaMiddleware.run(fetchClientsSaga);
+sagaMiddleware.run(fetchWorkersSaga);

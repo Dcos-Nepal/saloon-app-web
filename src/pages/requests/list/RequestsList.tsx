@@ -1,80 +1,72 @@
 import { useNavigate } from "react-router-dom";
 import { Column, useTable } from "react-table";
 import { useEffect, useMemo, useState } from "react";
+import * as jobReqActions from "../../../store/actions/job-requests.actions";
 
 import { endpoints } from "common/config";
 import InputField from "common/components/form/Input";
 import SelectField from "common/components/form/Select";
-import TopNavbar from "common/components/layouts/topNavbar";
-import SideNavbar from "common/components/layouts/sideNavbar";
-import Footer from "common/components/layouts/footer";
+import { connect } from "react-redux";
+import { Loader } from "common/components/atoms/Loader";
+import ReactPaginate from "react-paginate";
 
 interface IRequest {
   name: string;
+  title: string;
   requestDate: string;
   contact: string;
   status: string;
 }
 
-const RequestsList = () => {
+const RequestsList = (props: any) => {
   const navigate = useNavigate();
-
+  const [postsPerPage] = useState(10);
+  const [offset, setOffset] = useState(1);
+  const [pageCount, setPageCount] = useState(0)
   const [requests, setRequests] = useState<IRequest[]>([]);
 
   useEffect(() => {
-    setRequests([
-      {
-        name: "MOCK Adam Johar",
-        requestDate: new Date().toDateString(),
-        contact: "(+ 101) 123123123",
-        status: "Active",
-      },
-      {
-        name: "MOCK Neal Johar",
-        requestDate: new Date().toDateString(),
-        contact: "(+ 101) 532123",
-        status: "Inactive",
-      },
-      {
-        name: "MOCK S. Johar",
-        requestDate: new Date().toDateString(),
-        contact: "(+ 101) 321113",
-        status: "Active",
-      },
-      {
-        name: "MOCK Adam Johar",
-        requestDate: new Date().toDateString(),
-        contact: "(+ 101) 123123123",
-        status: "Active",
-      },
-      {
-        name: "MOCK Adam Anuwa",
-        requestDate: new Date().toDateString(),
-        contact: "(+ 101) 32112333",
-        status: "In progress",
-      },
-      {
-        name: "MOCK Adam Johar",
-        requestDate: new Date().toDateString(),
-        contact: "(+ 101) 123123123",
-        status: "Active",
-      },
-    ]);
-  }, []);
+    props.actions.fetchJobRequests({page: offset, limit: postsPerPage});
+  }, [offset, postsPerPage, props.actions]);
+
+  useEffect(() => {
+    if (props.itemList?.data?.rows) {
+      setRequests(props.itemList.data?.rows
+        .map((row: any) => ({
+          name: row.client,
+          title: row.name,
+          requestDate: new Date(row.createdAt).toDateString(),
+          status: row.status,
+          updatedDate: new Date(row.updatedAt).toDateString(),
+        }))
+      );
+      setPageCount(Math.ceil(props.itemList.data.totalCount / postsPerPage));
+    }
+  }, [postsPerPage, props.itemList]);
+
+  const handlePageClick = (event: any) => {
+    const selectedPage = event.selected;
+    setOffset(selectedPage + 1)
+  };
 
   const columns: Column<IRequest>[] = useMemo(
     () => [
       {
+        Header: "REQUEST TITLE",
+        accessor: "title",
+      },
+      {
         Header: "CLIENT NAME",
-        accessor: "name",
+        accessor: (row: any) => {
+          return (<div>
+            <div><b>{row.name.firstName} {row.name.firstName}</b></div>
+            <small>{row.name.email} / {row.name.phoneNumber}</small>
+          </div>);
+        }
       },
       {
         Header: "REQUEST DATE",
         accessor: "requestDate",
-      },
-      {
-        Header: "CONTACT",
-        accessor: "contact",
       },
       {
         Header: "STATUS",
@@ -91,7 +83,7 @@ const RequestsList = () => {
               {row.status}
             </span>
             <label className="txt-grey ms-2">
-              {new Date().toLocaleString()}
+              {row.updatedDate}
             </label>
           </div>
         ),
@@ -140,6 +132,7 @@ const RequestsList = () => {
       </div>
       <div className="card">
         <div className="row pt-2 m-1 rounded-top bg-grey">
+          <Loader isLoading={props.isLoading} />
           <div className="col">
             <InputField
               label="Search"
@@ -188,9 +181,35 @@ const RequestsList = () => {
             </tbody>
           </table>
         </div>
+        <div className="row pt-2 m-1 rounded-top">
+          <ReactPaginate
+            previousLabel={"Previous"}
+            nextLabel={"Next"}
+            breakLabel={"..."}
+            breakClassName={"break-me"}
+            pageCount={pageCount}
+            onPageChange={handlePageClick}
+            containerClassName={"pagination"}
+            activeClassName={"active"} />
+        </div>
       </div>
     </>
   );
 };
 
-export default RequestsList;
+const mapStateToProps = (state: any) => {
+  return ({
+    itemList: state.jobRequests.itemList,
+    isLoading: state.jobRequests.isLoading
+  })
+};
+
+const mapDispatchToProps = (dispatch: any) => ({
+  actions: {
+    fetchJobRequests: (payload: any) => {
+      dispatch(jobReqActions.fetchJobRequests(payload));
+    }
+  },
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(RequestsList);

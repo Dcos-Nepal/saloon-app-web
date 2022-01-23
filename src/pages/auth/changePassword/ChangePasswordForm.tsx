@@ -2,7 +2,7 @@ import { connect } from "react-redux";
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import InputField from "common/components/form/Input";
-import * as authActions from "../../store/actions/auth.actions";
+import * as authActions from "../../../store/actions/auth.actions";
 import { useParams } from "react-router-dom";
 
 const ChangePassword = (props: any) => {
@@ -29,7 +29,6 @@ const ChangePassword = (props: any) => {
     enableReinitialize: true,
     initialValues: InitForgotPassword,
     onSubmit: async (userData: any) => {
-      debugger;
       // Set Password Token
       userData.passwordToken = pwdToken;
 

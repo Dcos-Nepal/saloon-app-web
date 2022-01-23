@@ -1,6 +1,6 @@
 import { connect } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import * as authActions from "../../store/actions/auth.actions";
+import * as authActions from "../../../store/actions/auth.actions";
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 

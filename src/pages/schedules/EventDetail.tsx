@@ -47,7 +47,7 @@ const EventDetail: FC<IProps> = ({ closeModal, event }) => {
 
         <div className="row">
           <h5>Location</h5>
-          <div>43 Hamley Crescent / Mansfield Park, South Australia 5012</div>
+          <div>43 Halley Crescent / Mansfield Park, South Australia 5012</div>
         </div>
 
         <div className="hr mb-3"></div>

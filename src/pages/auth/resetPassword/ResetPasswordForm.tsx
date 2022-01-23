@@ -2,7 +2,7 @@ import { connect } from "react-redux";
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import InputField from "common/components/form/Input";
-import * as authActions from "../../store/actions/auth.actions";
+import * as authActions from "../../../store/actions/auth.actions";
 
 const ResetPassword = (props: any) => {
   const InitForgotPassword = {

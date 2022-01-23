@@ -15,7 +15,7 @@ const Signup = (props: any) => {
     if (props.isSuccess && props.isFailed === false) {
       navigate(endpoints.auth.signin);
     }
-  }, [props.isSuccess, props.isFailed])
+  }, [props.isSuccess, props.isFailed, navigate])
 
   return (
     <div className="container-fluid txt-grey">

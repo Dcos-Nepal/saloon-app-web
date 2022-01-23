@@ -3,7 +3,7 @@ import { Route, Routes } from "react-router-dom";
 import ClientAdd from "./add";
 import ClientsList from "./list";
 
-const Cients = () => {
+const Clients = () => {
   return (
     <>
       <Routes>
@@ -17,4 +17,4 @@ const Cients = () => {
   );
 };
 
-export default Cients;
+export default Clients;

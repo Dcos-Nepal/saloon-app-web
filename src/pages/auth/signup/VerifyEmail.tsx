@@ -1,5 +1,5 @@
 import { useEffect,  } from "react";
-import * as authActions from "../../store/actions/auth.actions";
+import * as authActions from "../../../store/actions/auth.actions";
 import { useNavigate, useParams } from "react-router-dom";
 import { endpoints } from "common/config";
 import { connect } from "react-redux";

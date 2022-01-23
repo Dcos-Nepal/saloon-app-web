@@ -1,3 +1,4 @@
+import { setData } from "utils/storage";
 import * as actionType from "../constants";
 
 const commonState = {
@@ -62,6 +63,13 @@ const authReducer = (state = initialState, action: any) => {
     }
 
     case actionType.AUTH_SIGN_IN_SUCCESS: {
+      const {data: {token: { access_token }, user}} = action.payload;
+
+      // Set data in the Local Storage
+      setData('user', user);
+      setData('accessToken', access_token);
+
+      // Update State
       state.signIn = {
         isSuccess: true,
         isFailed: false,

@@ -37,3 +37,59 @@ export const AUTH_RESET_PWD = 'AUTH_RESET_PWD';
 export const AUTH_RESET_PWD_SUCCESS = 'AUTH_RESET_PWD_SUCCESS';
 export const AUTH_RESET_PWD_LOADING = 'AUTH_RESET_PWD_LOADING';
 export const AUTH_RESET_PWD_ERROR = 'AUTH_RESET_PWD_ERROR';
+
+/**
+ * Load Clients Listing action types
+ */
+export const FETCH_CLIENTS = 'FETCH_CLIENTS';
+export const FETCH_CLIENTS_SUCCESS = 'FETCH_CLIENTS_SUCCESS';
+export const FETCH_CLIENTS_LOADING = 'FETCH_CLIENTS_LOADING';
+export const FETCH_CLIENTS_ERROR = 'FETCH_CLIENTS_ERROR';
+
+/**
+ * Load Workers Listing action types
+ */
+export const FETCH_WORKERS = 'FETCH_WORKERS';
+export const FETCH_WORKERS_SUCCESS = 'FETCH_WORKERS_SUCCESS';
+export const FETCH_WORKERS_LOADING = 'FETCH_WORKERS_LOADING';
+export const FETCH_WORKERS_ERROR = 'FETCH_WORKERS_ERROR';
+
+/**
+ * Load Job Requests Listing action types
+ */
+export const FETCH_JOB_REQUESTS = 'FETCH_JOB_REQUESTS';
+export const FETCH_JOB_REQUESTS_SUCCESS = 'FETCH_JOB_REQUESTS_SUCCESS';
+export const FETCH_JOB_REQUESTS_LOADING = 'FETCH_JOB_REQUESTS_LOADING';
+export const FETCH_JOB_REQUESTS_ERROR = 'FETCH_JOB_REQUESTS_ERROR';
+
+/**
+ * Load Job Line Items Listing action types
+ */
+export const SEARCH_LINE_ITEMS = 'SEARCH_LINE_ITEMS';
+export const SEARCH_LINE_ITEMS_SUCCESS = 'SEARCH_LINE_ITEMS_SUCCESS';
+export const SEARCH_LINE_ITEMS_LOADING = 'SEARCH_LINE_ITEMS_LOADING';
+export const SEARCH_LINE_ITEMS_ERROR = 'SEARCH_LINE_ITEMS_ERROR';
+
+/**
+ * Load Job Quotes Listing action types
+ */
+export const FETCH_QUOTES = 'FETCH_QUOTES';
+export const FETCH_QUOTES_SUCCESS = 'FETCH_QUOTES_SUCCESS';
+export const FETCH_QUOTES_LOADING = 'FETCH_QUOTES_LOADING';
+export const FETCH_QUOTES_ERROR = 'FETCH_QUOTES_ERROR';
+
+/**
+ * Load Job Listing action types
+ */
+export const FETCH_JOBS = 'FETCH_JOBS';
+export const FETCH_JOBS_SUCCESS = 'FETCH_JOBS_SUCCESS';
+export const FETCH_JOBS_LOADING = 'FETCH_JOBS_LOADING';
+export const FETCH_JOBS_ERROR = 'FETCH_JOBS_ERROR';
+
+/**
+ * Load Job Schedule action types
+ */
+export const FETCH_JOB_SCHEDULE = 'FETCH_JOB_SCHEDULE';
+export const FETCH_JOB_SCHEDULE_SUCCESS = 'FETCH_JOB_SCHEDULE_SUCCESS';
+export const FETCH_JOB_SCHEDULE_LOADING = 'FETCH_JOB_SCHEDULE_LOADING';
+export const FETCH_JOB_SCHEDULE_ERROR = 'FETCH_JOB_SCHEDULE_ERROR';

@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router-dom";
 import WorkerDetailForm from "./WorkerDetailForm";
-import PropertyDetail from "./PropertyDetail";
 
 const WorkerAdd = () => {
   const navigate = useNavigate();
@@ -18,7 +17,7 @@ const WorkerAdd = () => {
           <span className="col">Back to previous</span>
         </div>
         <div className="d-flex flex-row">
-          <h3>New Worker</h3>
+          <h3>Add New Worker</h3>
         </div>
       </div>
       <div className="row m-1">
@@ -26,10 +25,6 @@ const WorkerAdd = () => {
           <h5>Worker Details</h5>
           <WorkerDetailForm />
         </div>
-        {/* <div className="col card ms-3">
-          <h5>Property Details</h5>
-          <PropertyDetail />
-        </div> */}
       </div>
     </>
   );

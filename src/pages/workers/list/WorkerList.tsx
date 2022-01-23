@@ -1,10 +1,14 @@
 import { useNavigate } from "react-router-dom";
 import { Column, useTable } from "react-table";
 import { useEffect, useMemo, useState } from "react";
+import ReactPaginate from 'react-paginate';
+import * as workersActions from "../../../store/actions/workers.actions";
 
 import { endpoints } from "common/config";
 import InputField from "common/components/form/Input";
 import SelectField from "common/components/form/Select";
+import { connect } from "react-redux";
+import { Loader } from "common/components/atoms/Loader";
 
 interface IClient {
   name: string;
@@ -13,51 +17,35 @@ interface IClient {
   status: string;
 }
 
-const WorkerList = () => {
+const WorkerList = (props: any) => {
   const navigate = useNavigate();
-
-  const [clients, setClients] = useState<IClient[]>([]);
+  const [postsPerPage] = useState(10);
+  const [offset, setOffset] = useState(1);
+  const [pageCount, setPageCount] = useState(0)
+  const [workers, setWorkers] = useState<IClient[]>([]);
 
   useEffect(() => {
-    setClients([
-      {
-        name: "MOCK Adam Johar",
-        address: "NY, US 12 TOMAKIN, New South Wales(NSW), 2537",
-        contact: "(+ 101) 123123123",
-        status: "Active",
-      },
-      {
-        name: "MOCK Neal Johar",
-        address: "NY, US 13 TOMAKIN, New South Wales(NSW), 2537",
-        contact: "(+ 101) 532123",
-        status: "Inactive",
-      },
-      {
-        name: "MOCK S. Johar",
-        address: "LA, US 12 TOMAKIN, New South Wales(NSW), 2537",
-        contact: "(+ 101) 321113",
-        status: "Active",
-      },
-      {
-        name: "MOCK Adam Johar",
-        address: "NY, US 12 TOMAKIN, New South Wales(NSW), 2537",
-        contact: "(+ 101) 123123123",
-        status: "Active",
-      },
-      {
-        name: "MOCK Adam Anuwa",
-        address: "WS, US 12 TOMAKIN, New South Wales(NSW), 2537",
-        contact: "(+ 101) 32112333",
-        status: "In progress",
-      },
-      {
-        name: "MOCK Adam Johar",
-        address: "NY, US 12 TOMAKIN, New South Wales(NSW), 2537",
-        contact: "(+ 101) 123123123",
-        status: "Active",
-      },
-    ]);
-  }, []);
+    props.actions.fetchWorkers({ roles: 'WORKER', page: offset, limit: postsPerPage });
+  }, [offset, postsPerPage, props.actions]);
+
+  useEffect(() => {
+    if (props.workers?.data?.rows) {
+      setWorkers(props.workers.data?.rows
+        .map((row: any) => ({
+          name: `${row.firstName} ${row.lastName}`,
+          address: row?.address ? `${row.address.street1}, ${row.address.street2}, ${row.address.city}, ${row.address.state}, ${row.address.postalCode}, ${row.address.country}` : "Address not added!",
+          contact: row.phoneNumber,
+          status: 'some status'
+        }))
+      );
+      setPageCount(Math.ceil(props.workers.data.totalCount / postsPerPage));
+    }
+  }, [postsPerPage, props.workers]);
+
+  const handlePageClick = (event: any) => {
+    const selectedPage = event.selected;
+    setOffset(selectedPage + 1)
+  };
 
   const columns: Column<IClient>[] = useMemo(
     () => [
@@ -114,7 +102,7 @@ const WorkerList = () => {
   );
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
-    useTable({ columns, data: clients });
+    useTable({ columns, data: workers });
 
   return (
     <>
@@ -133,14 +121,15 @@ const WorkerList = () => {
             New Worker
           </button>
         </div>
-        <label className="txt-grey">{clients.length} clients</label>
+        <label className="txt-grey">{workers.length} workers</label>
       </div>
       <div className="card">
         <div className="row pt-2 m-1 rounded-top bg-grey">
+          <Loader isLoading={props.isLoading} />
           <div className="col">
             <InputField
               label="Search"
-              placeholder="Search clients"
+              placeholder="Search workers"
               className="search-input"
             />
           </div>
@@ -184,9 +173,36 @@ const WorkerList = () => {
             </tbody>
           </table>
         </div>
+        <div className="row pt-2 m-1 rounded-top">
+          <ReactPaginate
+            previousLabel={"Previous"}
+            nextLabel={"Next"}
+            breakLabel={"..."}
+            breakClassName={"break-me"}
+            pageCount={pageCount}
+            onPageChange={handlePageClick}
+            containerClassName={"pagination"}
+            activeClassName={"active"} />
+        </div>
       </div>
     </>
   );
 };
 
-export default WorkerList;
+
+const mapStateToProps = (state: any) => {
+  return ({
+    workers: state.workers.workers,
+    isLoading: state.workers.isLoading
+  })
+};
+
+const mapDispatchToProps = (dispatch: any) => ({
+  actions: {
+    fetchWorkers: (payload: any) => {
+      dispatch(workersActions.fetchWorkers(payload));
+    }
+  },
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(WorkerList);

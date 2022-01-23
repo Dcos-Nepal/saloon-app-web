@@ -1,10 +1,10 @@
 import { Route, Routes, BrowserRouter as Router } from "react-router-dom";
 
-import { Signup, VerifyEmail } from "pages/signup";
-import Signin from "pages/signin";
+import { Signup, VerifyEmail } from "pages/auth/signup";
+import Signin from "pages/auth/signin";
 import { endpoints } from "common/config";
-import ResetPassword from "pages/resetPassword";
-import ChangePassword from "pages/changePassword";
+import ResetPassword from "pages/auth/resetPassword";
+import ChangePassword from "pages/auth/changePassword";
 import Dashboard from "pages/dashboard";
 
 const AllRoutes = () => {

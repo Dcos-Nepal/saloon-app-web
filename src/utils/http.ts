@@ -2,8 +2,8 @@ import axios from "axios";
 import { toast } from 'react-toastify';
 import { getData } from "./storage";
 
-export const getAccessToken = () => {
-  return getData("accessToken")?.authToken;
+export const getAccessToken = async () => {
+  return await getData("accessToken");
 };
 
 export const http = axios.create({
@@ -21,8 +21,8 @@ let isConnectionErrorNotified = false;
  * This interceptor adds Authorization header in each request if the access token is available.
  * @return Request Object
  */
-http.interceptors.request.use((request: any) => {
-  const authToken = getAccessToken();
+http.interceptors.request.use(async (request: any) => {
+  const authToken = await getAccessToken();
   if (authToken) {
     request.headers["Authorization"] = `Bearer ${authToken}`;
   }

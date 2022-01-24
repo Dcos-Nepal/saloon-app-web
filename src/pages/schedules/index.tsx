@@ -1,3 +1,3 @@
-import Schedules from "./Schedules";
+import Schedule from "./Schedule";
 
-export default Schedules;
+export default Schedule;

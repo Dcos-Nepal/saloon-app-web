@@ -1,6 +1,7 @@
 import { combineReducers } from "redux";
 import authReducer from "./auth.reducer";
 import clientsReducer from "./clients.reducer";
+import { eventsById, weekendsVisible } from "./events.reducer";
 import jobRequestReducer from "./job-reqs.reducer";
 import workersReducer from "./workers.reducer";
 
@@ -9,4 +10,6 @@ export default combineReducers({
   clients: clientsReducer,
   workers: workersReducer,
   jobRequests: jobRequestReducer,
+  weekendsVisible,
+  eventsById
 });

@@ -13,6 +13,10 @@ body {
     color: #71717A;
 }
 
+.txt-black {
+    color: #161C21;
+}
+
 .txt-dark-grey {
     color: #666666;
 }
@@ -46,6 +50,10 @@ body {
 
 .border-bottom {
     border-bottom: 1px solid #F3F4F6;
+}
+
+.border-top-orange {
+    border-top: 0.25rem solid #F99E58;
 }
 
 .sidebar {

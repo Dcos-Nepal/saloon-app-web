@@ -23,13 +23,20 @@ export const endpoints = {
       calendar: "schedules",
     },
     requests: {
+      add: "add",
       list: "requests",
     },
     quotes: {
+      add: "add",
+      detail: ":id",
       list: "quotes",
+      edit: ":id/edit",
     },
     jobs: {
+      add: "add",
       list: "jobs",
-    }
+      detail: ":id",
+      edit: ":id/edit",
+    },
   },
 };

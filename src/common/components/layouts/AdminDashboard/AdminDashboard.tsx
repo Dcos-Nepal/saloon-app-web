@@ -12,7 +12,8 @@ const Clients = React.lazy(() => import("pages/clients/index"));
 const Workers = React.lazy(() => import("pages/workers/index"));
 const Jobs = React.lazy(() => import("pages/jobs/index"));
 const ReferralProgram = React.lazy(() => import("pages/referral"));
-const RequestsList = React.lazy(() => import("pages/requests/list/RequestsList"));
+const Requests = React.lazy(() => import("pages/requests"));
+const Quotes = React.lazy(() => import("pages/quotes"));
 
 interface IProps {
   location?: any;
@@ -63,6 +64,14 @@ const AdminDashboard: FC<IProps> = (): JSX.Element => {
           }
         />
         <Route
+          path={endpoints.admin.quotes.list + "/*"}
+          element={
+            <Suspense fallback={<Loader isLoading={true} />}>
+              <Quotes />
+            </Suspense>
+          }
+        />
+        <Route
           path={endpoints.admin.referral.program}
           element={
             <Suspense fallback={<Loader isLoading={true} />}>
@@ -71,10 +80,10 @@ const AdminDashboard: FC<IProps> = (): JSX.Element => {
           }
         />
         <Route
-          path={endpoints.admin.requests.list}
+          path={endpoints.admin.requests.list + "/*"}
           element={
             <Suspense fallback={<Loader isLoading={true} />}>
-              <RequestsList />
+              <Requests />
             </Suspense>
           }
         />

@@ -5,102 +5,125 @@ import { useEffect, useMemo, useState } from "react";
 import InputField from "common/components/form/Input";
 import SelectField from "common/components/form/Select";
 import Modal from "common/components/atoms/Modal";
-import JobAdd from "./JobAdd";
 import { endpoints } from "common/config";
+import ReactPaginate from "react-paginate";
 
-interface IClient {
-  jobNumber: string;
+interface IQuote {
+  quoteNumber: string;
   client: string;
   address: string;
-  schedule: string;
-  invoice: string;
-  status: string;
+  createdDate: string;
+  title: string;
+  total: string;
 }
 
-const JobsList = () => {
+const QuotesList = () => {
   const navigate = useNavigate();
 
-  const [jobs, setJobs] = useState<IClient[]>([]);
-  const [isAddJobOpen, setIsAddJobOpen] = useState(false);
+  const [quotes, setQuotes] = useState<IQuote[]>([]);
 
   useEffect(() => {
-    setJobs([
+    setQuotes([
       {
-        jobNumber: "#1",
+        quoteNumber: "#1",
         client: "MOCK Adam Johar",
         address: "NY, US 12 TOMAKIN, New South Wales(NSW), 2537",
-        schedule: "Aug 19, 2021 Every 2 weeks on Mondays",
-        invoice: "Invoice info",
-        status: "Active",
+        createdDate: "Aug 19, 2021",
+        title: "Window cleaning",
+        total: "$110.00",
       },
       {
-        jobNumber: "#2",
+        quoteNumber: "#2",
         client: "MOCK Neal Johar",
         address: "NY, US 13 TOMAKIN, New South Wales(NSW), 2537",
-        schedule: "Aug 19, 2021 Every 2 weeks on Mondays",
-        invoice: "Invoice info",
-        status: "Inactive",
+        createdDate: "Aug 19, 2021",
+        title: "Window cleaning",
+        total: "$110.00",
       },
       {
-        jobNumber: "#12",
+        quoteNumber: "#12",
         client: "MOCK S. Johar",
         address: "LA, US 12 TOMAKIN, New South Wales(NSW), 2537",
-        schedule: "Aug 19, 2021 Every 2 weeks on Mondays",
-        invoice: "Invoice info",
-        status: "Active",
+        createdDate: "Aug 19, 2021",
+        title: "Window cleaning",
+        total: "$110.00",
       },
       {
-        jobNumber: "#3",
+        quoteNumber: "#3",
         client: "MOCK Adam Johar",
         address: "NY, US 12 TOMAKIN, New South Wales(NSW), 2537",
-        schedule: "Aug 19, 2021 Every 2 weeks on Mondays",
-        invoice: "Invoice info",
-        status: "Active",
+        createdDate: "Aug 19, 2021",
+        title: "Window cleaning",
+        total: "$110.00",
       },
       {
-        jobNumber: "#4",
+        quoteNumber: "#4",
         client: "MOCK Adam Anuwa",
         address: "WS, US 4 TOMAKIN, New South Wales(NSW), 2537",
-        schedule: "Aug 19, 2021 Every 2 weeks on Mondays",
-        invoice: "Invoice info",
-        status: "In progress",
+        createdDate: "Aug 19, 2021",
+        title: "Window cleaning",
+        total: "$110.00",
       },
       {
-        jobNumber: "#5",
+        quoteNumber: "#5",
         client: "MOCK Adam Johar",
         address: "NY, US 12 TOMAKIN, New South Wales(NSW), 2537",
-        schedule: "Aug 19, 2021 Every 2 weeks on Mondays",
-        invoice: "Invoice info",
-        status: "Active",
+        createdDate: "Aug 19, 2021",
+        title: "Window cleaning",
+        total: "$110.00",
       },
     ]);
   }, []);
 
-  const columns: Column<IClient>[] = useMemo(
+  const columns: Column<IQuote>[] = useMemo(
     () => [
       {
         Header: "#NO.",
-        accessor: "jobNumber",
+        accessor: "quoteNumber",
       },
       {
-        Header: "CLIENT",
+        Header: "CLIENT NAME",
         accessor: "client",
       },
       {
-        Header: "TITLE/ADDRESS",
+        Header: "ADDRESS",
         accessor: "address",
       },
       {
-        Header: "SCHEDULE",
-        accessor: "schedule",
+        Header: "CREATED DATE",
+        accessor: "createdDate",
       },
       {
-        Header: "INVOICING",
-        accessor: "invoice",
+        Header: "TITLE",
+        accessor: "title",
       },
       {
-        Header: "Total",
-        accessor: (row: any) => <div>$0.00</div>,
+        Header: "TOTAL",
+        accessor: (row: any) => (
+          <div>
+            {row.total}
+            <span className="ms-2">
+              <box-icon
+                name="star"
+                size="xs"
+                type="solid"
+                color="#F5E059"
+              ></box-icon>
+              <box-icon
+                name="star"
+                size="xs"
+                type="solid"
+                color="#F5E059"
+              ></box-icon>
+              <box-icon
+                name="star"
+                size="xs"
+                type="solid"
+                color="#F5E059"
+              ></box-icon>
+            </span>
+          </div>
+        ),
       },
       {
         Header: " ",
@@ -117,16 +140,12 @@ const JobsList = () => {
               <box-icon name="dots-vertical-rounded"></box-icon>
             </a>
             <ul className="dropdown-menu" aria-labelledby="dropdownMenuLink">
-              <li
-                onClick={() =>
-                  navigate(endpoints.admin.jobs.detail)
-                }
-              >
+              <li onClick={() => navigate(endpoints.admin.quotes.detail)}>
                 <a className="dropdown-item" href="#">
                   View Detail
                 </a>
               </li>
-              <li onClick={() => navigate(endpoints.admin.jobs.edit)}>
+              <li onClick={() => navigate(endpoints.admin.quotes.edit)}>
                 <a className="dropdown-item" href="#">
                   Edit
                 </a>
@@ -145,40 +164,40 @@ const JobsList = () => {
   );
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
-    useTable({ columns, data: jobs });
+    useTable({ columns, data: quotes });
 
   return (
     <>
       <div className="row">
         <div className="col d-flex flex-row">
-          <h3>Jobs</h3>
+          <h3>Quotes</h3>
         </div>
         <div className="col">
           <button
-            onClick={() => setIsAddJobOpen(true)}
+            onClick={() => navigate(endpoints.admin.quotes.add)}
             type="button"
             className="btn btn-primary d-flex float-end"
           >
-            New job
+            New quotes
           </button>
         </div>
-        <label className="txt-grey">{jobs.length} Jobs</label>
+        <label className="txt-grey">{quotes.length} quotes</label>
       </div>
       <div className="card">
         <div className="row pt-2 m-1 rounded-top bg-grey">
           <div className="col-4">
             <InputField
               label="Search"
-              placeholder="Search jobs"
+              placeholder="Search quotes"
               className="search-input"
             />
           </div>
           <div className="col row">
             <div className="col">
-              <SelectField label="Status" placeholder="All" />
+              <SelectField label="Due" placeholder="All" />
             </div>
             <div className="col">
-              <SelectField label="Sort" placeholder="First name" />
+              <SelectField label="Sort" placeholder="total" />
             </div>
             <div className="col">
               <SelectField label="Type" placeholder="All" />
@@ -212,15 +231,21 @@ const JobsList = () => {
             </tbody>
           </table>
         </div>
+        <div className="row pt-2 m-1 rounded-top">
+          <ReactPaginate
+            previousLabel={"Previous"}
+            nextLabel={"Next"}
+            breakLabel={"..."}
+            breakClassName={"break-me"}
+            pageCount={1}
+            onPageChange={()=>{}}
+            containerClassName={"pagination"}
+            activeClassName={"active"}
+          />
+        </div>
       </div>
-      <Modal
-        isOpen={isAddJobOpen}
-        onRequestClose={() => setIsAddJobOpen(false)}
-      >
-        <JobAdd closeModal={() => setIsAddJobOpen(false)} />
-      </Modal>
     </>
   );
 };
 
-export default JobsList;
+export default QuotesList;

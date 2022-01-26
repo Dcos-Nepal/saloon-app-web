@@ -120,7 +120,7 @@ const RequestsList = (props: any) => {
         <div className="col">
           <button
             onClick={() => {
-              navigate(endpoints.admin.requests.list);
+              navigate(endpoints.admin.requests.add);
             }}
             type="button"
             className="btn btn-primary d-flex float-end"

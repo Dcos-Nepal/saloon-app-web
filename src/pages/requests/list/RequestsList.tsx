@@ -1,14 +1,19 @@
-import { useNavigate } from "react-router-dom";
+import React from "react";
 import { Column, useTable } from "react-table";
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
+import ReactPaginate from "react-paginate";
+import { connect } from "react-redux";
+
 import * as jobReqActions from "../../../store/actions/job-requests.actions";
 
-import { endpoints } from "common/config";
 import InputField from "common/components/form/Input";
 import SelectField from "common/components/form/Select";
-import { connect } from "react-redux";
+
 import { Loader } from "common/components/atoms/Loader";
-import ReactPaginate from "react-paginate";
+import { useNavigate } from "react-router-dom";
+import { endpoints } from "common/config";
+
+const AddRequestForm = React.lazy(() => import("../AddRequestForm"));
 
 interface IRequest {
   name: string;
@@ -123,7 +128,7 @@ const RequestsList = (props: any) => {
               navigate(endpoints.admin.requests.add);
             }}
             type="button"
-            className="btn btn-primary d-flex float-end"
+            className="btn btn-primary d-flex float-end" data-bs-toggle="modal" data-bs-target="#job-request-form"
           >
             New request
           </button>
@@ -193,6 +198,11 @@ const RequestsList = (props: any) => {
             activeClassName={"active"} />
         </div>
       </div>
+      <div className="modal fade" id="job-request-form" tabIndex={-1} aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <Suspense fallback={<Loader isLoading={true} />}>
+          <AddRequestForm />
+        </Suspense>
+      </div>
     </>
   );
 };
@@ -201,7 +211,7 @@ const mapStateToProps = (state: any) => {
   return ({
     itemList: state.jobRequests.itemList,
     isLoading: state.jobRequests.isLoading
-  })
+  });
 };
 
 const mapDispatchToProps = (dispatch: any) => ({

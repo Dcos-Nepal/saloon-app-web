@@ -10,7 +10,12 @@ const EventDetail: FC<IProps> = ({ closeModal, event }) => {
   return (
     <div className="modal-object--sm">
       <div className="modal-header row bg-background-grey">
-        <h5 className="col">Mr. Dan Din - Regular clean</h5>
+        <h5 className="col-10">Mr. Dan Din - Regular clean</h5>
+        <div className="col-2">
+          <span onClick={closeModal} className="pointer d-flex float-end">
+            <box-icon name="x" />
+          </span>
+        </div>
       </div>
       <div className="modal-body">
         <div className="row">

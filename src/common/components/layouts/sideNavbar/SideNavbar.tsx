@@ -95,7 +95,7 @@ const SideNavbar: FC<IProps> = ({ active }) => {
                   name="inbox"
                 ></box-icon>
               </span>
-              <span className="ms-2 d-none d-sm-inline">Request</span>
+              <span className="ms-2 d-none d-sm-inline">Requests</span>
             </span>
           </li>
           <li>

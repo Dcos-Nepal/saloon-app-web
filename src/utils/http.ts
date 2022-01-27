@@ -1,9 +1,17 @@
 import axios from "axios";
 import { toast } from 'react-toastify';
-import { getData } from "./storage";
+import { getData, setData } from "./storage";
 
 export const getAccessToken = async () => {
   return await getData("accessToken");
+};
+
+export const setAccessToken = async (token: string) => {
+  return await setData("accessToken", token);
+};
+
+export const getRefreshToken = async () => {
+  return await getData("refreshToken");
 };
 
 export const http = axios.create({
@@ -37,7 +45,7 @@ http.interceptors.request.use(async (request: any) => {
  */
 http.interceptors.response.use(
   response => Promise.resolve(response),
-  error => {
+  async (error) => {
     // Checking for Network Error
     if (typeof error === 'object' && error.message === 'Network Error') {
       if (!isConnectionErrorNotified) {
@@ -48,8 +56,27 @@ http.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    // TODO interceptor other API errors here
-    // More ...like 401, 404, 500, etc...
+    const originalConfig = error.config;
+
+    if (originalConfig.url !== "/signin" && error.response) {
+      // Access Token was expired
+      if (error.response.status === 401 && !originalConfig._retry) {
+        originalConfig._retry = true;
+
+        try {
+          const rs = await http.put("/v1.0.0/auth/refresh", {
+            refreshToken: getRefreshToken(),
+          });
+
+          const { accessToken } = rs.data;
+          setAccessToken(accessToken);
+
+          return http(originalConfig);
+        } catch (_error) {
+          return Promise.reject(_error);
+        }
+      }
+    }
 
     // Return the rejected promise with error details.
     return Promise.reject(error.response.data);

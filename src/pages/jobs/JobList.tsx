@@ -149,17 +149,25 @@ const JobsList = () => {
 
   return (
     <>
-      <div className="row">
-        <div className="col d-flex flex-row">
-          <h3>Jobs</h3>
+      <div className="row d-flex flex-row">
+        <div className="col ">
+          <h3 className="extra">Jobs</h3>
         </div>
-        <div className="col">
+        <div className="col d-flex flex-row align-items-center justify-content-end">
           <button
             onClick={() => setIsAddJobOpen(true)}
             type="button"
+            className="btn btn-secondary d-flex float-end"
+          >
+            Add Job Quickly
+          </button>
+          <div>&nbsp;</div>
+          <button
+            onClick={() => navigate(endpoints.admin.jobs.add)}
+            type="button"
             className="btn btn-primary d-flex float-end"
           >
-            New job
+            Create a Job
           </button>
         </div>
         <label className="txt-grey">{jobs.length} Jobs</label>

@@ -4,6 +4,7 @@ import reportWebVitals from "./reportWebVitals";
 
 // UI Styles
 import "bootstrap/js/dist/dropdown";
+import "bootstrap/js/dist/modal";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "assets/scss/style.css"
 import "./index.css";

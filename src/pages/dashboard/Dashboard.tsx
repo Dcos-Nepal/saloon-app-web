@@ -1,5 +1,5 @@
 import TopNavbar from "../../common/components/layouts/topNavbar";
-import SideNavbar from "../../common/components/layouts/sideNavbar";
+import SideNavbar from "../../common/components/layouts/sidebar";
 import AdminDashboard from "common/components/layouts/AdminDashboard";
 
 const Dashboard = () => {

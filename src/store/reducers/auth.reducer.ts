@@ -63,11 +63,12 @@ const authReducer = (state = initialState, action: any) => {
     }
 
     case actionType.AUTH_SIGN_IN_SUCCESS: {
-      const {data: {token: { access_token }, user}} = action.payload;
+      const {data: {token: { access_token, refreshToken }, user}} = action.payload;
 
       // Set data in the Local Storage
       setData('user', user);
       setData('accessToken', access_token);
+      setData('refreshToken', refreshToken);
 
       // Update State
       state.signIn = {

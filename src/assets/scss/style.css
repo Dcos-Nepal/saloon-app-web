@@ -5,6 +5,8 @@ body {
     font-family: "SF Pro Display", "SF Pro Text", "Inter";
 }
 
+a { color: #666666;}
+
 .min-width-22 {
     min-width: 22rem;
 }
@@ -363,7 +365,6 @@ tr {
     border-radius: 6px;
 }
 
-.btn:focus,
 input[type]:focus,
 textarea:focus {
     box-shadow: none !important;
@@ -395,6 +396,17 @@ textarea:focus {
     box-shadow: 0px 0px 10px grey;
 }
 
+.table {
+    margin-bottom: 0;
+}
+
+.extra {
+    border-left: 4px solid orange;
+    padding-left: 10px;
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
+}
+
 /* Calendar Customization*/
 .cfc-event {
     width: 100%;
@@ -420,17 +432,17 @@ textarea:focus {
 
 .cfc-event-bg-red {
     border-left: 3px solid orange;
-    background-color:  rgb(13 110 253 / 25%);
+    background-color: rgb(13 110 253 / 25%);
 }
 
 .cfc-event-bg-green {
     border-left: 3px solid rgb(38, 218, 98);
-    background-color:  rgb(13 110 253 / 25%);
+    background-color: rgb(13 110 253 / 25%);
 }
 
 .cfc-event-bg-blue {
     border-left: 3px solid rgb(30, 139, 241);
-    background-color:  rgb(13 110 253 / 25%);
+    background-color: rgb(13 110 253 / 25%);
 }
 
 .fc-col-header-cell a,
@@ -449,7 +461,8 @@ textarea:focus {
 }
 
 .fc-timegrid-event .fc-event-main {
-   padding: 0; /* padding: 1px 1px 0; */
+    padding: 0;
+    /* padding: 1px 1px 0; */
 }
 
 .fc-event:focus:after {
@@ -459,4 +472,64 @@ textarea:focus {
 .fc-event:focus,
 .fc-timegrid-event-harness-inset .fc-timegrid-event {
     box-shadow: none !important;
+}
+
+.fc-daygrid-dot-event {
+    padding: 0 !important;
+}
+
+.fc-day-sun,
+.fc-day-sat {
+    background-color: #e9eaf1;
+}
+
+.border-red {
+    border-left: 3px solid red;
+    border-bottom: 3px solid rgb(250, 250, 250);
+}
+
+.border-orange {
+    border-left: 3px solid orange;
+    border-bottom: 3px solid rgb(252, 240, 219);
+}
+
+.border-green {
+    border-left: 3px solid rgb(28, 224, 44);
+    border-bottom: 3px solid rgb(252, 240, 219);
+}
+
+.border-blue {
+    border-left: 3px solid rgb(38, 97, 224);
+    border-bottom: 3px solid rgb(252, 240, 219);
+}
+
+.blank-state {
+    margin-top: 5px;
+    padding: 40px 20px;
+    font-size: 100%;
+    color: #737373;
+    text-align: center;
+    background-color: #f9f9f9;
+}
+
+.blank-state h1,
+.blank-state p {
+    font-weight: 300;
+}
+
+.blank-state p {
+    margin-bottom: 10px;
+}
+
+.blank-state.blank-state-lg {
+    padding: 90px 45px;
+    font-size: 150%;
+}
+
+.blank-state.blank-state-sm {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 90px 45px;
+    font-size: 85%;
 }

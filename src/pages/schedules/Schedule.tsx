@@ -11,8 +11,8 @@ import { getHashValues } from 'utils';
 import EventActions from 'store/actions/events.actions';
 import { IEvent } from 'common/types/events';
 import Modal from 'common/components/atoms/Modal';
-import EventDetail from './EventDetail';
 import useMountedRef from 'common/hooks/is-mounted';
+import EventDetail from './EventDetail';
 
 const DemoApp = (props: any) => {
   const isMounted = useMountedRef();
@@ -55,40 +55,6 @@ const DemoApp = (props: any) => {
       end: "22022-01-13T09:00:00+02:00"
     }
   ]);
-
-  const renderSidebar = () => {
-    return (
-      <div className='demo-app-sidebar'>
-        <div className='demo-app-sidebar-section'>
-          <h2>Instructions</h2>
-          <ul>
-            <li>Select dates and you will be prompted to create a new event</li>
-            <li>Drag, drop, and resize events</li>
-            <li>Click an event to delete it</li>
-          </ul>
-        </div>
-        <div className='demo-app-sidebar-section'>
-          <label>
-            <input
-              type='checkbox'
-              checked={props.weekendsVisible}
-              onChange={props.toggleWeekends}
-            ></input>
-            toggle weekends
-          </label>
-        </div>
-        <div className='demo-app-sidebar-section'>
-          <h2>All Events ({events.length})</h2>
-          <ul>
-            {events.map(renderSidebarEvent)}
-          </ul>
-        </div>
-      </div>
-    )
-  }
-
-  // handlers for user actions
-  // ------------------------------------------------------------------------------------------
 
   const handleDateSelect = (selectInfo: any) => {
     let calendarApi = selectInfo.view.calendar
@@ -173,26 +139,27 @@ const DemoApp = (props: any) => {
         eventClick={handleEventClick}
         eventAdd={handleEventAdd}
         eventChange={handleEventChange} // Called on drag-n-drop/resize
-        eventRemove={handleEventRemove} />
-      <div>
+        eventRemove={handleEventRemove}
+      />
+      <div className='form-group'>
         <label>
           <input
             type='checkbox'
             checked={props.weekendsVisible}
             onChange={props.toggleWeekends}
           ></input>
-          &nbsp;Toggle weekends
+          &nbsp;Toggle Weekends
         </label>
       </div>
       <Modal
         isOpen={!!showEventDetail}
         onRequestClose={() => setShowEventDetail(null)}
       >
-        {(!!showEventDetail && (
+        {(!!showEventDetail) ? (
           <EventDetail
             event={showEventDetail}
             closeModal={() => setShowEventDetail(null)} />
-        )) || <div></div>}
+        ) : <></>}
       </Modal>
     </>
   )
@@ -207,15 +174,6 @@ function renderEventContent(eventInfo: any) {
     <div className={backgroundClass}>
       <div>{eventInfo.event.title}</div>
     </div>
-  )
-}
-
-function renderSidebarEvent(plainEventObject: any) {
-  return (
-    <li key={plainEventObject.id}>
-      <b>{formatDate(plainEventObject.start, { year: 'numeric', month: 'short', day: 'numeric' })}</b>
-      <i>{plainEventObject.title}</i>
-    </li>
   )
 }
 

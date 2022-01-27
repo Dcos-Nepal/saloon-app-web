@@ -128,7 +128,7 @@ const WorkerList = (props: any) => {
     <>
       <div className="row">
         <div className="col d-flex flex-row">
-          <h3>Workers</h3>
+          <h3 className="extra">Workers</h3>
         </div>
         <div className="col">
           <button

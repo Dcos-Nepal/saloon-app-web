@@ -11,6 +11,7 @@
     "@fullcalendar/rrule": "^5.10.1",
     "@fullcalendar/timegrid": "^5.10.1",
     "@material-ui/pickers": "^3.3.10",
+    "@primer/octicons-react": "^16.3.0",
     "autoprefixer": "^10.0.2",
     "axios": "^0.24.0",
     "bootstrap": "^5.1.3",

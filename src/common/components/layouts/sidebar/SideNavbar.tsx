@@ -1,6 +1,8 @@
 import "boxicons";
-import { endpoints } from "common/config";
 import { FC } from "react";
+import { endpoints } from "common/config";
+
+import {CalendarIcon, HomeIcon} from '@primer/octicons-react'
 import { useNavigate } from "react-router-dom";
 
 interface IProps {
@@ -27,11 +29,7 @@ const SideNavbar: FC<IProps> = ({ active }) => {
               }
             >
               <span className="mt-2">
-                <box-icon
-                  color={active === "Overview" ? "#f47321" : "#161C21"}
-                  size="16px"
-                  name="home"
-                />
+                <HomeIcon size={'small'}/>
               </span>
               <span className="ms-2 d-none d-sm-inline">Overview</span>
             </span>
@@ -46,11 +44,7 @@ const SideNavbar: FC<IProps> = ({ active }) => {
               }
             >
               <span className="mt-2">
-                <box-icon
-                  color={active === "Schedule" ? "#f47321" : "#161C21"}
-                  size="16px"
-                  name="calendar"
-                />
+                <CalendarIcon size={'small'}/>
               </span>
               <span className="ms-2 d-none d-sm-inline">Schedule</span>
             </span>

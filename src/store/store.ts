@@ -2,7 +2,7 @@ import { createStore, applyMiddleware, compose } from "redux";
 import createSagaMiddleware from "redux-saga";
 import rootReducer from "./reducers/index";
 import { fetchClientsSaga, fetchWorkersSaga, forgotPasswordSaga, resetPasswordSaga, userRegisterSaga, userSignInSaga, verifyUserEmailSaga } from "./sagas";
-import { fetchJobRequestsSaga } from "./sagas/job-reqs.saga";
+import { fetchJobRequestsSaga, addJobRequestSaga } from "./sagas/job-reqs.saga";
 import { fetchQuotesSaga } from "./sagas/quotes.saga";
 
 declare global {
@@ -29,6 +29,7 @@ sagaMiddleware.run(userSignInSaga);
 sagaMiddleware.run(verifyUserEmailSaga);
 sagaMiddleware.run(forgotPasswordSaga);
 sagaMiddleware.run(resetPasswordSaga);
+sagaMiddleware.run(addJobRequestSaga);
 sagaMiddleware.run(fetchJobRequestsSaga);
 sagaMiddleware.run(fetchClientsSaga);
 sagaMiddleware.run(fetchWorkersSaga);

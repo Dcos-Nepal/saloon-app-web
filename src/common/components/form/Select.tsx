@@ -11,6 +11,7 @@ const SelectField: FC<any> = ({
   value,
   className,
   isDisabled,
+  helperComponent,
   isMulti = false,
 }) => {
   return (
@@ -29,10 +30,10 @@ const SelectField: FC<any> = ({
         classNamePrefix="form-control"
         placeholder={placeholder}
         isMulti={isMulti}
-        menuPortalTarget={document.body} 
+        menuPortalTarget={document.body}
         styles={{ menuPortal: base => ({ ...base, zIndex: 999 }) }}
       />
-      <div className="form-text"></div>
+      <div className="form-text">{helperComponent}</div>
     </div>
   );
 };

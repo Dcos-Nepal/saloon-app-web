@@ -16,13 +16,18 @@ const messages: Record<string, string> = ({
   'REGISTRATION.MISSING_MANDATORY_PARAMETERS': "User email and password are required.",
   'REGISTRATION.ERROR': "Error registering a user.",
 
+  /**
+   * Common Message
+   */
+  'COMMON.SUCCESS': "Action succeed!"
+
   // OTHER related messages
 });
 
 /**
  * Gets the message for message hash map
  *
- * @param key 
+ * @param key
  * @returns String
  */
 export const getMessage = (key: string) => {

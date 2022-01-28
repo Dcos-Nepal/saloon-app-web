@@ -198,11 +198,11 @@ const RequestsList = (props: any) => {
             activeClassName={"active"} />
         </div>
       </div>
-      <div className="modal fade" id="job-request-form" tabIndex={-1} aria-labelledby="exampleModalLabel" aria-hidden="true">
+      {/* <div className="modal fade" id="job-request-form" tabIndex={-1} aria-labelledby="exampleModalLabel" aria-hidden="true">
         <Suspense fallback={<Loader isLoading={true} />}>
           <AddRequestForm />
         </Suspense>
-      </div>
+      </div> */}
     </>
   );
 };

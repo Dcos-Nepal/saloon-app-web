@@ -1,6 +1,6 @@
 import axios from "axios";
 import { toast } from 'react-toastify';
-import { getData, setData } from "./storage";
+import { clearData, getData, setData } from "./storage";
 
 export const getAccessToken = async () => {
   return await getData("accessToken");
@@ -58,21 +58,30 @@ http.interceptors.response.use(
 
     const originalConfig = error.config;
 
-    if (originalConfig.url !== "/signin" && error.response) {
+    if (originalConfig.url !== "/login" && error.response) {
+
       // Access Token was expired
       if (error.response.status === 401 && !originalConfig._retry) {
         originalConfig._retry = true;
 
         try {
           const rs = await http.put("/v1.0.0/auth/refresh", {
-            refreshToken: getRefreshToken(),
+            refreshToken: await getRefreshToken(),
           });
 
-          const { accessToken } = rs.data;
-          setAccessToken(accessToken);
+          const { accessToken, refreshToken } = rs.data.data;
+          setData('accessToken', accessToken);
+          setData('refreshToken', refreshToken);
 
+          // Updates Authorization Token of previous API call
+          originalConfig.headers.Authorization = `Bearer ${accessToken}`;
+
+          // Call previous failed API call
           return http(originalConfig);
         } catch (_error) {
+          toast.error("Your session expired!", {position: 'bottom-center'});
+          clearData();
+          window.location.href = "/";
           return Promise.reject(_error);
         }
       }

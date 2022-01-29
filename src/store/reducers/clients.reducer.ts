@@ -29,6 +29,27 @@ const clientsReducer = (state = initialState, action: any) => {
       return {...state};
     }
 
+    case actionType.ADD_CLIENT: {
+      state.isLoading = true;
+      return { ...state };
+    }
+
+    case actionType.ADD_CLIENT_SUCCESS: {
+      state.currentUser = action.payload;
+      state.isLoading = false;
+      state.isFailed = false;
+      state.isSuccess = true;
+      return { ...state };
+    }
+
+    case actionType.ADD_CLIENT_ERROR: {
+      state.isSuccess = false;
+      state.isLoading = false;
+      state.isFailed = true;
+      state.currentUser = action.payload;
+      return { ...state };
+    }
+
     default: {
       return { ...state };
     }

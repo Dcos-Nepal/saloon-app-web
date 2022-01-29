@@ -39,6 +39,14 @@ export const AUTH_RESET_PWD_LOADING = "AUTH_RESET_PWD_LOADING";
 export const AUTH_RESET_PWD_ERROR = "AUTH_RESET_PWD_ERROR";
 
 /**
+ * Create Client action types
+ */
+export const ADD_CLIENT = "ADD_CLIENT";
+export const ADD_CLIENT_SUCCESS = "ADD_CLIENT_SUCCESS";
+export const ADD_CLIENT_LOADING = "ADD_CLIENT_LOADING";
+export const ADD_CLIENT_ERROR = "ADD_CLIENT_ERROR";
+
+/**
  * Load Clients Listing action types
  */
 export const FETCH_CLIENTS = "FETCH_CLIENTS";

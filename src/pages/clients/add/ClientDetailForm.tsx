@@ -131,7 +131,7 @@ const ClientDetailForm: FC<IProps> = ({ actions }) => {
             </label>
           </div>
           <div className="mb-3">
-            <label className="bold mb-2">Contact details</label>
+            <label className="txt-bold mb-2">Contact details</label>
             {Array.from(Array(phoneNumberCount), (_, index) => (
               <div className="row">
                 <div className="col-1 pt-2 mt-4 ps-3 pointer">
@@ -184,9 +184,114 @@ const ClientDetailForm: FC<IProps> = ({ actions }) => {
                 phoneNumberCount < 5 ? phoneNumberCount + 1 : phoneNumberCount
               );
             }}
-            className="dashed bold txt-orange pointer"
+            className="dashed bold txt-orange pointer mb-3"
           >
             + Add Phone number
+          </div>
+
+          <div className="mb-3">
+            <label className="txt-bold mt-2 mb-2">Address</label>
+
+            <InputField
+              label="Street 1"
+              placeholder="Enter street 1"
+              name="street1"
+              // helperComponent={
+              //   formik.errors.street1 && formik.touched.street1 ? (
+              //     <div className="txt-red">{formik.errors.street1}</div>
+              //   ) : null
+              // }
+              // onChange={formik.handleChange}
+              // onBlur={formik.handleBlur}
+            />
+            <InputField
+              label="Street 2"
+              placeholder="Enter street 2"
+              name="street2"
+              // helperComponent={
+              //   formik.errors.street2 && formik.touched.street2 ? (
+              //     <div className="txt-red">{formik.errors.street2}</div>
+              //   ) : null
+              // }
+              // onChange={formik.handleChange}
+              // onBlur={formik.handleBlur}
+            />
+            <div className="mb-3 row">
+              <div className="col">
+                <InputField
+                  label="City"
+                  placeholder="Enter city"
+                  name="city"
+                  // helperComponent={
+                  //   formik.errors.city && formik.touched.city ? (
+                  //     <div className="txt-red">{formik.errors.city}</div>
+                  //   ) : null
+                  // }
+                  // onChange={formik.handleChange}
+                  // onBlur={formik.handleBlur}
+                />
+              </div>
+              <div className="col">
+                <SelectField
+                  label="State"
+                  name="state"
+                  options={[]}
+                  // helperComponent={
+                  //   formik.errors.state && formik.touched.state ? (
+                  //     <div className="txt-red">{formik.errors.state}</div>
+                  //   ) : null
+                  // }
+                  // value={statesOption.find(
+                  //   (option) => option.value === formik.values.state
+                  // )}
+                  // handleChange={(selectedOption: IOption) => {
+                  //   formik.setFieldValue("state", selectedOption.value);
+                  //   setActiveState(
+                  //     states.find((state) => state._id === selectedOption.value)
+                  //   );
+                  // }}
+                  // onBlur={formik.handleBlur}
+                />
+              </div>
+            </div>
+            <div className="mb-3 row">
+              <div className="col">
+                <InputField
+                  label="Post code"
+                  placeholder="Enter post code"
+                  name="postalCode"
+                  // helperComponent={
+                  //   formik.errors.postalCode && formik.touched.postalCode ? (
+                  //     <div className="txt-red">{formik.errors.postalCode}</div>
+                  //   ) : null
+                  // }
+                  // onChange={formik.handleChange}
+                  // onBlur={formik.handleBlur}
+                />
+              </div>
+              <div className="col">
+                <SelectField
+                  label="Country"
+                  name="country"
+                  options={[]}
+                  // helperComponent={
+                  //   formik.errors.country && formik.touched.country ? (
+                  //     <div className="txt-red">{formik.errors.country}</div>
+                  //   ) : null
+                  // }
+                  // value={countriesOption.find(
+                  //   (option) => option.value === formik.values.country
+                  // )}
+                  // handleChange={(selectedOption: IOption) => {
+                  //   formik.setFieldValue("country", selectedOption.value);
+                  //   setActiveCountry(
+                  //     countries.find((country) => country._id === selectedOption.value)
+                  //   );
+                  // }}
+                  // onBlur={formik.handleBlur}
+                />
+              </div>
+            </div>
           </div>
         </div>
         <div className="col card ms-3">

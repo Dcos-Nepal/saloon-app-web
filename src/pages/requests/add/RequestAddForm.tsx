@@ -206,7 +206,7 @@ const RequestAddForm: FC<IProps> = ({ actions, clients }) => {
           type="button"
           onClick={async () => {
             await formik.handleSubmit();
-            navigate(-1);
+            // navigate(-1);
           }}
           className="btn btn-primary"
         >

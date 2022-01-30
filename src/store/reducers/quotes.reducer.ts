@@ -10,18 +10,33 @@ const initialState = {
 
 const quotesReducer = (state = initialState, action: any) => {
   switch (action.type) {
+    case actionType.ADD_QUOTE: {
+      state.isLoading = true;
+      return { ...state };
+    }
+
     case actionType.FETCH_QUOTES: {
       state.isLoading = true;
       return {...state};
     }
 
+    case actionType.ADD_QUOTE_SUCCESS: {
+      state.isLoading = false;
+      return {...state};
+    }
+
     case actionType.FETCH_QUOTES_SUCCESS: {
-      console.log(action.payload);
       state.isLoading = false;
       state.itemList = action.payload;
       return {...state};
     }
 
+    case actionType.ADD_QUOTE_ERROR: {
+      state.isLoading = false;
+      state.isFailed = true;
+      return {...state};
+    }
+    
     case actionType.FETCH_QUOTES_ERROR: {
       state.isLoading = false;
       state.isFailed = true;

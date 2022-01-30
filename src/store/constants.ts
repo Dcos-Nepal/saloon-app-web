@@ -63,6 +63,14 @@ export const FETCH_WORKERS_LOADING = "FETCH_WORKERS_LOADING";
 export const FETCH_WORKERS_ERROR = "FETCH_WORKERS_ERROR";
 
 /**
+ * Create Job Request action types
+ */
+ export const ADD_JOB_REQUEST = "ADD_JOB_REQUEST";
+ export const ADD_JOB_REQUEST_SUCCESS = "ADD_JOB_REQUEST_SUCCESS";
+ export const ADD_JOB_REQUEST_LOADING = "ADD_JOB_REQUEST_LOADING";
+ export const ADD_JOB_REQUEST_ERROR = "ADD_JOB_REQUEST_ERROR";
+
+/**
  * Load Job Requests Listing action types
  */
 export const FETCH_JOB_REQUESTS = "FETCH_JOB_REQUESTS";
@@ -71,20 +79,20 @@ export const FETCH_JOB_REQUESTS_LOADING = "FETCH_JOB_REQUESTS_LOADING";
 export const FETCH_JOB_REQUESTS_ERROR = "FETCH_JOB_REQUESTS_ERROR";
 
 /**
- * Create Job Request action types
- */
-export const ADD_JOB_REQUEST = "ADD_JOB_REQUEST";
-export const ADD_JOB_REQUEST_SUCCESS = "ADD_JOB_REQUEST_SUCCESS";
-export const ADD_JOB_REQUEST_LOADING = "ADD_JOB_REQUEST_LOADING";
-export const ADD_JOB_REQUEST_ERROR = "ADD_JOB_REQUEST_ERROR";
-
-/**
  * Load Job Line Items Listing action types
  */
 export const SEARCH_LINE_ITEMS = "SEARCH_LINE_ITEMS";
 export const SEARCH_LINE_ITEMS_SUCCESS = "SEARCH_LINE_ITEMS_SUCCESS";
 export const SEARCH_LINE_ITEMS_LOADING = "SEARCH_LINE_ITEMS_LOADING";
 export const SEARCH_LINE_ITEMS_ERROR = "SEARCH_LINE_ITEMS_ERROR";
+
+/**
+ * Create Quotes action types
+ */
+ export const ADD_QUOTE = "ADD_QUOTE";
+ export const ADD_QUOTE_SUCCESS = "ADD_QUOTE_SUCCESS";
+ export const ADD_QUOTE_LOADING = "ADD_QUOTE_LOADING";
+ export const ADD_QUOTE_ERROR = "ADD_QUOTE_ERROR";
 
 /**
  * Load Job Quotes Listing action types

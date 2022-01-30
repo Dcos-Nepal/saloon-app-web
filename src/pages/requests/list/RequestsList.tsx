@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { Column, useTable } from "react-table";
 import { Suspense, useEffect, useMemo, useState } from "react";
 import ReactPaginate from "react-paginate";
@@ -12,6 +12,7 @@ import SelectField from "common/components/form/Select";
 import { Loader } from "common/components/atoms/Loader";
 import { useNavigate } from "react-router-dom";
 import { endpoints } from "common/config";
+import debounce from "lodash/debounce";
 
 const AddRequestForm = React.lazy(() => import("../AddRequestForm"));
 
@@ -29,10 +30,11 @@ const RequestsList = (props: any) => {
   const [offset, setOffset] = useState(1);
   const [pageCount, setPageCount] = useState(0)
   const [requests, setRequests] = useState<IRequest[]>([]);
+  const [query, setQuery] = useState('');
 
   useEffect(() => {
-    props.actions.fetchJobRequests({page: offset, limit: postsPerPage});
-  }, [offset, postsPerPage, props.actions]);
+    props.actions.fetchJobRequests({ q: query, page: offset, limit: postsPerPage });
+  }, [offset, postsPerPage, props.actions, query]);
 
   useEffect(() => {
     if (props.itemList?.data?.rows) {
@@ -49,10 +51,18 @@ const RequestsList = (props: any) => {
     }
   }, [postsPerPage, props.itemList]);
 
+  const handleJobRequestSearch = (event: any) => {
+    const query = event.target.value;
+    setQuery(query);
+  };
+
   const handlePageClick = (event: any) => {
     const selectedPage = event.selected;
     setOffset(selectedPage + 1)
   };
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const handleSearch = useCallback(debounce(handleJobRequestSearch, 300), []);
 
   const columns: Column<IRequest>[] = useMemo(
     () => [
@@ -143,6 +153,7 @@ const RequestsList = (props: any) => {
               label="Search"
               placeholder="Search requests"
               className="search-input"
+              onChange={handleSearch}
             />
           </div>
           <div className="col row">

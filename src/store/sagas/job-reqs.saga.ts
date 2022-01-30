@@ -43,6 +43,12 @@ export function* addJobRequestSaga(): any {
   yield takeEvery(actionType.ADD_JOB_REQUEST, addJobRequest);
 }
 
+/**
+ * Adds Job Request
+ * 
+ * @param action
+ * @returns
+ */
 function* addJobRequest(action: any): any {
   try {
     const { data: newJobRequest } = yield call(

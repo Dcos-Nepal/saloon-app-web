@@ -38,5 +38,11 @@ export const endpoints = {
       detail: ":id",
       edit: ":id/edit",
     },
+    invoices: {
+      add: "add",
+      list: "invoices",
+      detail: ":id",
+      edit: ":id/edit",
+    },
   },
 };

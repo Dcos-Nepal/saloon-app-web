@@ -116,6 +116,21 @@ const DemoApp = (props: any) => {
 
   return (
     <>
+      <div className="row d-flex flex-row mb-3">
+        <div className="col ">
+          <h3 className="extra">Work Schedule</h3>
+        </div>
+        <div className="col d-flex flex-row align-items-center justify-content-end">
+          <button
+            onClick={() => {}}
+            type="button"
+            className="btn btn-secondary d-flex float-end"
+          >
+            Schedule a Job
+          </button>
+        </div>
+        <label className="txt-grey">Total of <strong>56</strong> Jobs/Visits Scheduled for today</label>
+      </div>
       <FullCalendar
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, rrulePlugin, luxonPlugin]}
         headerToolbar={{

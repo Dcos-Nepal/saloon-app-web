@@ -133,7 +133,7 @@ const SideNavbar: FC<IProps> = ({ active }) => {
           </li>
           <li>
             <span
-              onClick={() => navigate(endpoints.admin.referral.program)}
+              onClick={() => navigate(endpoints.admin.invoices.list)}
               className={
                 active === "Invoices"
                   ? "nav-link nav-link-active align-middle px-0"

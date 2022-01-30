@@ -1,8 +1,8 @@
 import { useNavigate } from "react-router-dom";
 
-import QuoteAddForm from "./QuoteAddForm";
+import ClientJobAddForm from "./ClientJobAddForm";
 
-const QuoteAdd = () => {
+const ClientAdd = () => {
   const navigate = useNavigate();
 
   return (
@@ -14,15 +14,15 @@ const QuoteAdd = () => {
           </span>
           <span className="col">Back to previous</span>
         </div>
-        <div className="d-flex flex-row mt-3">
-          <h3 className="extra">Create a Quote</h3>
+        <div className="d-flex flex-row">
+          <h3>Job for Client name</h3>
         </div>
       </div>
-      <div>
-        <QuoteAddForm />
+      <div className="m-1">
+        <ClientJobAddForm />
       </div>
     </>
   );
 };
 
-export default QuoteAdd;
+export default ClientAdd;

@@ -11,6 +11,7 @@ const Schedules = React.lazy(() => import("pages/schedules"));
 const Clients = React.lazy(() => import("pages/clients/index"));
 const Workers = React.lazy(() => import("pages/workers/index"));
 const Jobs = React.lazy(() => import("pages/jobs/index"));
+const Invoices = React.lazy(() => import("pages/jobs/index"));
 const ReferralProgram = React.lazy(() => import("pages/referral"));
 const Requests = React.lazy(() => import("pages/requests"));
 const Quotes = React.lazy(() => import("pages/quotes"));
@@ -84,6 +85,14 @@ const AdminDashboard: FC<IProps> = (): JSX.Element => {
           element={
             <Suspense fallback={<Loader isLoading={true} />}>
               <Requests />
+            </Suspense>
+          }
+        />
+        <Route
+          path={endpoints.admin.invoices.list + "/*"}
+          element={
+            <Suspense fallback={<Loader isLoading={true} />}>
+              <Invoices />
             </Suspense>
           }
         />

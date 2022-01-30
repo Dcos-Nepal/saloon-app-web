@@ -2,7 +2,7 @@ import { createStore, applyMiddleware, compose } from "redux";
 
 import rootReducer from "./reducers/index";
 import createSagaMiddleware from "redux-saga";
-import { fetchQuotesSaga } from "./sagas/quotes.saga";
+import { addQuoteSaga, fetchQuotesSaga } from "./sagas/quotes.saga";
 import { fetchJobRequestsSaga, addJobRequestSaga } from "./sagas/job-reqs.saga";
 import {
   addClientSaga,
@@ -47,3 +47,5 @@ sagaMiddleware.run(addClientSaga);
 sagaMiddleware.run(fetchClientsSaga);
 sagaMiddleware.run(fetchWorkersSaga);
 sagaMiddleware.run(fetchQuotesSaga);
+sagaMiddleware.run(addQuoteSaga);
+

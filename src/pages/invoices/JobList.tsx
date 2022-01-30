@@ -7,7 +7,6 @@ import SelectField from "common/components/form/Select";
 import Modal from "common/components/atoms/Modal";
 import JobAdd from "./JobAdd";
 import { endpoints } from "common/config";
-import { ClockIcon, HomeIcon } from "@primer/octicons-react";
 
 interface IClient {
   jobNumber: string;
@@ -18,14 +17,14 @@ interface IClient {
   status: string;
 }
 
-const JobsList = () => {
+const InvoicesList = () => {
   const navigate = useNavigate();
 
-  const [jobs, setJobs] = useState<IClient[]>([]);
+  const [invoices, setInvoices] = useState<IClient[]>([]);
   const [isAddJobOpen, setIsAddJobOpen] = useState(false);
 
   useEffect(() => {
-    setJobs([
+    setInvoices([
       {
         jobNumber: "#1",
         client: "MOCK Adam Johar",
@@ -120,14 +119,14 @@ const JobsList = () => {
             <ul className="dropdown-menu" aria-labelledby="dropdownMenuLink">
               <li
                 onClick={() =>
-                  navigate(endpoints.admin.jobs.detail)
+                  navigate(endpoints.admin.invoices.detail)
                 }
               >
                 <a className="dropdown-item" href="#">
                   View Detail
                 </a>
               </li>
-              <li onClick={() => navigate(endpoints.admin.jobs.edit)}>
+              <li onClick={() => navigate(endpoints.admin.invoices.edit)}>
                 <a className="dropdown-item" href="#">
                   Edit
                 </a>
@@ -146,13 +145,13 @@ const JobsList = () => {
   );
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
-    useTable({ columns, data: jobs });
+    useTable({ columns, data: invoices });
 
   return (
     <>
       <div className="row d-flex flex-row">
         <div className="col ">
-          <h3 className="extra">Jobs</h3>
+          <h3 className="extra">Job Invoices</h3>
         </div>
         <div className="col d-flex flex-row align-items-center justify-content-end">
           <button
@@ -160,25 +159,17 @@ const JobsList = () => {
             type="button"
             className="btn btn-secondary d-flex float-end"
           >
-            Add Job Quickly
-          </button>
-          <div>&nbsp;</div>
-          <button
-            onClick={() => navigate(endpoints.admin.jobs.add)}
-            type="button"
-            className="btn btn-primary d-flex float-end"
-          >
-            Create a Job
+            New Invoice
           </button>
         </div>
-        <label className="txt-grey">{jobs.length} Jobs</label>
+        <label className="txt-grey">{invoices.length} Invoices</label>
       </div>
       <div className="card">
         <div className="row pt-2 m-1 rounded-top bg-grey">
           <div className="col-4">
             <InputField
               label="Search"
-              placeholder="Search jobs"
+              placeholder="Search invoices"
               className="search-input"
             />
           </div>
@@ -207,7 +198,7 @@ const JobsList = () => {
             </thead>
             <thead>
               <tr className="rt-head">
-                <th colSpan={7} scope="col" className="th-overdue">Overdue Jobs</th>
+                <th colSpan={7} scope="col" className="th-overdue">Overdue Invoices</th>
               </tr>
             </thead>
             <tbody {...getTableBodyProps()} className="rt-tbody">
@@ -243,7 +234,7 @@ const JobsList = () => {
             </tbody>
             <thead className="c-th">
               <tr className="rt-head">
-                <th colSpan={7} scope="col" className="th-up-coming">Up Coming Jobs</th>
+                <th colSpan={7} scope="col" className="th-up-coming">Up Coming Invoices</th>
               </tr>
             </thead>
             <tbody {...getTableBodyProps()} className="rt-tbody">
@@ -272,4 +263,4 @@ const JobsList = () => {
   );
 };
 
-export default JobsList;
+export default InvoicesList;

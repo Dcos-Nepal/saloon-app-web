@@ -121,7 +121,6 @@ const RequestAddForm: FC<IProps> = ({ actions, clients }) => {
         <div className="col">
           <div className="card">
             <h6 className="txt-bold mb-5">Client Details</h6>
-
             <SelectField
               label="Client name"
               name="client"

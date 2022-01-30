@@ -566,3 +566,34 @@ textarea:focus {
 .icon-height-12 {
     height: 20px;
 }
+
+.week-list ul {
+    padding: 0.2rem 0;
+}
+.week-list ul li {
+    display: inline-block;
+}
+
+.week-list ul li .selected .item {
+    color: #F3F2EF;
+    background-color: #f47321;
+}
+
+.week-list ul li .item {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+    color: #4B5563;
+    background-color: #F9FAFB;
+    border-radius: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 6px;
+}
+
+.week-list ul li .item:hover {
+    color: #F3F2EF;
+    background-color: #4B5563;
+    cursor: pointer;
+}

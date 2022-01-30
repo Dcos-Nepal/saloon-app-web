@@ -55,6 +55,14 @@ export const FETCH_CLIENTS_LOADING = "FETCH_CLIENTS_LOADING";
 export const FETCH_CLIENTS_ERROR = "FETCH_CLIENTS_ERROR";
 
 /**
+ * Create Worker action types
+ */
+export const ADD_WORKER = "ADD_WORKER";
+export const ADD_WORKER_SUCCESS = "ADD_WORKER_SUCCESS";
+export const ADD_WORKER_LOADING = "ADD_WORKER_LOADING";
+export const ADD_WORKER_ERROR = "ADD_WORKER_ERROR";
+
+/**
  * Load Workers Listing action types
  */
 export const FETCH_WORKERS = "FETCH_WORKERS";

@@ -283,10 +283,10 @@ const QuoteAddForm = (props: any) => {
                             onChange={formik.handleChange}
                           />
                         </div>
-                        <div className="col pt-4 mt-1 ps-1 text-center text-bold">
-                          $ {formik.values.lineItems[index].quantity * formik.values.lineItems[index].unitPrice}
+                        <div className="col pt-4 mt-1 ps-1 text-center">
+                          <strong>{`$ ${formik.values.lineItems[index].quantity * formik.values.lineItems[index].unitPrice}`}</strong>
                         </div>
-                        <div className="col-1 pt-4 mt-1 ps-1 pointer">
+                        <div className="col-1 pt-4 mt-1 ps-1 pointer text-center">
                           <span className="mr-2" onClick={() => arrayHelpers.push({
                             name: '',
                             description: '',
@@ -318,22 +318,10 @@ const QuoteAddForm = (props: any) => {
             </div>
           </div>
         </div>
-        <code>
-          {/* {JSON.stringify(formik.values)} */}
-          {JSON.stringify(formik.errors)}
-          {/* {JSON.stringify(formik.isValid)} */}
-        </code>
 
         <div className="mb-3 mt-3">
           <button type="submit" className="btn btn-primary">
             Save Quote
-          </button>
-          <button
-            onClick={() => { }}
-            type="button"
-            className="btn btn-secondary ms-3"
-          >
-            Save and create another
           </button>
           <button onClick={() => navigate(-1)} type="button" className="btn ms-3">
             Cancel

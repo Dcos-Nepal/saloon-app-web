@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Column, useTable } from "react-table";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import Truncate from 'react-truncate';
 
 import * as quotesActions from "../../../store/actions/quotes.actions";
 
@@ -16,10 +17,10 @@ import EmptyState from "common/components/EmptyState";
 interface IQuote {
   id: string;
   title: string;
-  description:  string;
+  description: string;
   quoteFor: any;
   lineItems: any[];
-  status: {status: string, updatedAt: string};
+  status: { status: string, updatedAt: string };
   total: string;
   createdAt: string;
   updatedAt: string;
@@ -43,7 +44,7 @@ const QuotesList = (props: any) => {
         .map((row: IQuote) => ({
           id: row.id,
           title: row.title,
-          description:  row.description,
+          description: row.description,
           quoteFor: row.quoteFor,
           lineItems: row.lineItems,
           status: row.status,
@@ -117,7 +118,12 @@ const QuotesList = (props: any) => {
         accessor: (row: IQuote) => {
           return (<div>
             <div><strong>{row.title}</strong></div>
-            <div><i>{row.description}</i></div>
+            <div><i>
+              <Truncate lines={1} ellipsis={<span>...</span>}>
+                {row.description}
+              </Truncate>
+            </i>
+            </div>
           </div>)
         }
       },
@@ -283,3 +289,4 @@ const mapDispatchToProps = (dispatch: any) => ({
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(QuotesList);
+

@@ -14,11 +14,11 @@ const QuoteAdd = () => {
           </span>
           <span className="col">Back to previous</span>
         </div>
-        <div className="d-flex flex-row">
-          <h3>Quotes for Client name</h3>
+        <div className="d-flex flex-row mt-3">
+          <h3 className="extra">Create a Quote</h3>
         </div>
       </div>
-      <div className="m-1">
+      <div>
         <QuoteAddForm />
       </div>
     </>

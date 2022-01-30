@@ -7,6 +7,7 @@ import SelectField from "common/components/form/Select";
 import Modal from "common/components/atoms/Modal";
 import JobAdd from "./JobAdd";
 import { endpoints } from "common/config";
+import { ClockIcon, HomeIcon } from "@primer/octicons-react";
 
 interface IClient {
   jobNumber: string;
@@ -204,7 +205,47 @@ const JobsList = () => {
                 </tr>
               ))}
             </thead>
+            <thead>
+              <tr className="rt-head">
+                <th colSpan={7} scope="col" className="th-overdue">Overdue Jobs</th>
+              </tr>
+            </thead>
+            <tbody {...getTableBodyProps()} className="rt-tbody">
+              {rows.map((row) => {
+                prepareRow(row);
 
+                return (
+                  <tr {...row.getRowProps()} className="rt-tr-group">
+                    {row.cells.map((cell) => (
+                      <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
+                    ))}
+                  </tr>
+                );
+              })}
+            </tbody>
+            <thead className="c-th">
+              <tr className="rt-head">
+                <th colSpan={7} scope="col" className="th-in-progress">In Progress</th>
+              </tr>
+            </thead>
+            <tbody {...getTableBodyProps()} className="rt-tbody">
+              {rows.map((row) => {
+                prepareRow(row);
+
+                return (
+                  <tr {...row.getRowProps()} className="rt-tr-group">
+                    {row.cells.map((cell) => (
+                      <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
+                    ))}
+                  </tr>
+                );
+              })}
+            </tbody>
+            <thead className="c-th">
+              <tr className="rt-head">
+                <th colSpan={7} scope="col" className="th-up-coming">Up Coming Jobs</th>
+              </tr>
+            </thead>
             <tbody {...getTableBodyProps()} className="rt-tbody">
               {rows.map((row) => {
                 prepareRow(row);

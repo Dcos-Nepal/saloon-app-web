@@ -8,6 +8,8 @@ import {
   addClientSaga,
   addWorkerSaga,
   userSignInSaga,
+  fetchClientSaga,
+  updateClientSaga,
   fetchClientsSaga,
   fetchWorkersSaga,
   userRegisterSaga,
@@ -47,7 +49,8 @@ sagaMiddleware.run(addJobRequestSaga);
 sagaMiddleware.run(fetchJobRequestsSaga);
 sagaMiddleware.run(addClientSaga);
 sagaMiddleware.run(fetchClientsSaga);
+sagaMiddleware.run(updateClientSaga);
+sagaMiddleware.run(fetchClientSaga);
 sagaMiddleware.run(fetchWorkersSaga);
 sagaMiddleware.run(fetchQuotesSaga);
 sagaMiddleware.run(addQuoteSaga);
-

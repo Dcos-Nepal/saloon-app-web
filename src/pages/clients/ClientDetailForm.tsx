@@ -1,29 +1,34 @@
 import * as Yup from "yup";
-import { useFormik } from "formik";
+import { useFormik, getIn } from "formik";
 import { FC, useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 import { IOption } from "common/types/form";
 import PropertyDetail from "./PropertyDetail";
+import { IClient } from "common/types/client";
 import InputField from "common/components/form/Input";
 import SelectField from "common/components/form/Select";
 import * as clientsActions from "store/actions/clients.actions";
+import { StopIcon } from "@primer/octicons-react";
 
 interface IProps {
   actions: {
-    addClient: (data: any) => any;
+    addClient: (data: IClient) => void;
+    fetchClient: (id: string) => void;
+    updateClient: (data: IClient) => void;
   };
   id?: string;
   isClientsLoading: boolean;
+  currentClient: IClient;
 }
 
-const ClientDetailForm: FC<IProps> = ({ id, actions }) => {
+const ClientDetailForm: FC<IProps> = ({ id, actions, currentClient }) => {
   const navigate = useNavigate();
 
   const [phoneNumberCount, setPhoneNumberCount] = useState(1);
 
-  const [initialValues, setInitialValues] = useState({
+  const [initialValues, setInitialValues] = useState<IClient>({
     firstName: "",
     lastName: "",
     email: "",
@@ -48,32 +53,14 @@ const ClientDetailForm: FC<IProps> = ({ id, actions }) => {
   });
 
   useEffect(() => {
-    setInitialValues({
-      firstName: "",
-      lastName: "a",
-      email: "",
-      roles: ["CLIENT"],
-      phoneNumber: "",
-      password: "password",
-      address: {
-        street1: "",
-        street2: "",
-        city: "",
-        state: "",
-        postalCode: undefined,
-        country: "",
-      },
-      userDocuments: [
-        {
-          documentUrl: "",
-          type: "COMPANY-LOGO",
-        },
-      ],
-      userImage: "",
-    });
-  }, []);
+    if (id) actions.fetchClient(id);
+  }, [id, actions]);
 
-  const RequestSchema = Yup.object().shape({
+  useEffect(() => {
+    if (currentClient) setInitialValues(currentClient);
+  }, [currentClient]);
+
+  const ClientSchema = Yup.object().shape({
     firstName: Yup.string()
       .required(`First name is required`)
       .min(2, "Too Short!")
@@ -106,11 +93,35 @@ const ClientDetailForm: FC<IProps> = ({ id, actions }) => {
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: initialValues,
-    validationSchema: RequestSchema,
+    validationSchema: ClientSchema,
     onSubmit: async (data: any) => {
-      return await actions.addClient(data);
+      return id
+        ? await actions.updateClient(data)
+        : await actions.addClient(data);
     },
   });
+
+  /**
+   * Custom Error Message
+   *
+   * @param param Props Object
+   * @returns JSX
+   */
+  const ErrorMessage = ({ name }: any) => {
+    if (!name) return <></>;
+
+    const error = getIn(formik.errors, name);
+    const touch = getIn(formik.touched, name);
+
+    return (touch && error) || error ? (
+      <div className="row txt-red">
+        <div className="col-1" style={{ width: "20px" }}>
+          <StopIcon size={14} />
+        </div>
+        <div className="col">{error}</div>
+      </div>
+    ) : null;
+  };
 
   const statesOption = [{ label: "New South Wales", value: "New South Wales" }];
 
@@ -180,6 +191,10 @@ const ClientDetailForm: FC<IProps> = ({ id, actions }) => {
                 className="form-control hidden"
                 type="file"
                 id="companyLogo"
+                value={
+                  formik.values.userDocuments?.length &&
+                  formik.values.userDocuments[0].documentUrl
+                }
                 name="userDocuments[0].documentUrl"
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
@@ -230,6 +245,7 @@ const ClientDetailForm: FC<IProps> = ({ id, actions }) => {
                         </div>
                       ) : null
                     }
+                    value={formik.values.phoneNumber}
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
                   />
@@ -270,14 +286,8 @@ const ClientDetailForm: FC<IProps> = ({ id, actions }) => {
               label="Street 1"
               placeholder="Enter street 1"
               name="address.street1"
-              helperComponent={
-                formik.errors.address?.street1 &&
-                formik.touched.address?.street1 ? (
-                  <div className="txt-red">
-                    {formik.errors.address?.street1}
-                  </div>
-                ) : null
-              }
+              helperComponent={<ErrorMessage name="address.street1" />}
+              value={formik.values.address?.street1}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
             />
@@ -285,14 +295,8 @@ const ClientDetailForm: FC<IProps> = ({ id, actions }) => {
               label="Street 2"
               placeholder="Enter street 2"
               name="address.street2"
-              helperComponent={
-                formik.errors.address?.street2 &&
-                formik.touched.address?.street2 ? (
-                  <div className="txt-red">
-                    {formik.errors.address?.street2}
-                  </div>
-                ) : null
-              }
+              helperComponent={<ErrorMessage name="address.street2" />}
+              value={formik.values.address?.street2}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
             />
@@ -302,14 +306,8 @@ const ClientDetailForm: FC<IProps> = ({ id, actions }) => {
                   label="City"
                   placeholder="Enter city"
                   name="address.city"
-                  helperComponent={
-                    formik.errors.address?.city &&
-                    formik.touched.address?.city ? (
-                      <div className="txt-red">
-                        {formik.errors.address?.city}
-                      </div>
-                    ) : null
-                  }
+                  value={formik.values.address?.city}
+                  helperComponent={<ErrorMessage name="address.city" />}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                 />
@@ -319,14 +317,7 @@ const ClientDetailForm: FC<IProps> = ({ id, actions }) => {
                   label="State"
                   name="address.state"
                   options={statesOption}
-                  helperComponent={
-                    formik.errors.address?.state &&
-                    formik.touched.address?.state ? (
-                      <div className="txt-red">
-                        {formik.errors.address?.state}
-                      </div>
-                    ) : null
-                  }
+                  helperComponent={<ErrorMessage name="address.state" />}
                   value={statesOption.find(
                     (option) => option.value === formik.values.address?.state
                   )}
@@ -336,6 +327,7 @@ const ClientDetailForm: FC<IProps> = ({ id, actions }) => {
                   onBlur={formik.handleBlur}
                 />
               </div>
+              <div className="txt-red"></div>
             </div>
             <div className="mb-3 row">
               <div className="col">
@@ -343,14 +335,8 @@ const ClientDetailForm: FC<IProps> = ({ id, actions }) => {
                   label="Post code"
                   placeholder="Enter post code"
                   name="address.postalCode"
-                  helperComponent={
-                    formik.errors.address?.postalCode &&
-                    formik.touched.address?.postalCode ? (
-                      <div className="txt-red">
-                        {formik.errors.address?.postalCode}
-                      </div>
-                    ) : null
-                  }
+                  value={formik.values.address?.postalCode}
+                  helperComponent={<ErrorMessage name="address.postalCode" />}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                 />
@@ -360,14 +346,7 @@ const ClientDetailForm: FC<IProps> = ({ id, actions }) => {
                   label="Country"
                   name="address.country"
                   options={countriesOption}
-                  helperComponent={
-                    formik.errors.address?.country &&
-                    formik.touched.address?.country ? (
-                      <div className="txt-red">
-                        {formik.errors.address?.country}
-                      </div>
-                    ) : null
-                  }
+                  helperComponent={<ErrorMessage name="address.country" />}
                   value={countriesOption.find(
                     (option) => option.value === formik.values.address?.country
                   )}
@@ -423,13 +402,20 @@ const ClientDetailForm: FC<IProps> = ({ id, actions }) => {
 const mapStateToProps = (state: any) => {
   return {
     isClientsLoading: state.clients.isLoading,
+    currentClient: state.clients.currentUser,
   };
 };
 
 const mapDispatchToProps = (dispatch: any) => ({
   actions: {
-    addClient: (data: any) => {
+    addClient: (data: IClient) => {
       dispatch(clientsActions.addClient(data));
+    },
+    fetchClient: (id: string) => {
+      dispatch(clientsActions.fetchClient(id));
+    },
+    updateClient: (data: IClient) => {
+      dispatch(clientsActions.updateClient(data));
     },
   },
 });

@@ -13,9 +13,19 @@ export const addUserApi = async (payload: any) => {
   return await http.post(url, payload);
 };
 
+export const fetchUserApi = async (id: string) => {
+  const url = "/v1.0.0/users/" + id;
+  return await http.get(url);
+};
+
+export const updateUserApi = async (payload: any) => {
+  const url = "/v1.0.0/users/" + payload._id;
+  return await http.put(url, payload);
+};
+
 export const filterUsersApi = async (query: Record<string, any>) => {
-  const url = "/v1.0.0/users" + (query ? `?${generateQueryParams(query)}` : '');
+  const url = "/v1.0.0/users" + (query ? `?${generateQueryParams(query)}` : "");
   return await http.get(url, {
-    headers: { "Accept": "application/json" }
+    headers: { Accept: "application/json" },
   });
-}
+};

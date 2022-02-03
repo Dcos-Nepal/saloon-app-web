@@ -2,7 +2,12 @@ import { toast } from "react-toastify";
 import * as actionType from "../constants";
 import { getMessage } from "common/messages";
 import { call, put, takeEvery } from "redux-saga/effects";
-import { fetchUsersApi, addUserApi } from "services/users.service";
+import {
+  fetchUsersApi,
+  addUserApi,
+  fetchUserApi,
+  updateUserApi,
+} from "services/users.service";
 
 /**
  * Saga Definitions
@@ -57,5 +62,59 @@ function* addClient(action: any): any {
   } catch (err: any) {
     if (err.exception) toast.error(err.exception.message);
     yield put({ type: actionType.ADD_CLIENT_ERROR, payload: err });
+  }
+}
+
+export function* fetchClientSaga(): any {
+  yield takeEvery(actionType.FETCH_CLIENT, fetchClient);
+}
+
+function* fetchClient(action: any): any {
+  try {
+    const { data: newClient } = yield call(fetchUserApi, action.payload);
+    if (newClient?.data?.success) {
+      yield put({
+        type: actionType.FETCH_CLIENT_SUCCESS,
+        payload: newClient?.data?.data,
+      });
+
+      return toast.success(getMessage(newClient?.data?.message));
+    }
+    yield put({
+      type: actionType.FETCH_CLIENT_ERROR,
+      payload: newClient.data,
+    });
+
+    return toast.error(getMessage(newClient.data?.message));
+  } catch (err: any) {
+    if (err.exception) toast.error(err.exception.message);
+    yield put({ type: actionType.FETCH_CLIENT_ERROR, payload: err });
+  }
+}
+
+export function* updateClientSaga(): any {
+  yield takeEvery(actionType.UPDATE_CLIENT, updateClient);
+}
+
+function* updateClient(action: any): any {
+  try {
+    const { data: newClient } = yield call(updateUserApi, action.payload);
+    if (newClient?.data?.success) {
+      yield put({
+        type: actionType.UPDATE_CLIENT_SUCCESS,
+        payload: newClient?.data?.data,
+      });
+
+      return toast.success(getMessage(newClient?.data?.message));
+    }
+    yield put({
+      type: actionType.UPDATE_CLIENT_ERROR,
+      payload: newClient.data,
+    });
+
+    return toast.error(getMessage(newClient.data?.message));
+  } catch (err: any) {
+    if (err.exception) toast.error(err.exception.message);
+    yield put({ type: actionType.UPDATE_CLIENT_ERROR, payload: err });
   }
 }

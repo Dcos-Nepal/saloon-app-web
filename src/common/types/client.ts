@@ -2,7 +2,7 @@ export interface IClient {
   _id?: string;
   firstName: string;
   lastName: string;
-  fullName: string;
+  fullName?: string;
   email: string;
   phoneNumber: string;
   address?: {
@@ -13,4 +13,11 @@ export interface IClient {
     postalCode?: string;
     country?: string;
   };
+  userDocuments?: {
+    documentUrl: string;
+    type: string;
+  }[];
+  roles: string[];
+  password?: string;
+  userImage?: string;
 }

@@ -306,7 +306,7 @@ const ClientDetailForm: FC<IProps> = ({ id, actions, currentClient }) => {
                   label="City"
                   placeholder="Enter city"
                   name="address.city"
-                  value={formik.values.address?.city || ""}
+                  value={formik.values.address?.city}
                   helperComponent={<ErrorMessage name="address.city" />}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}

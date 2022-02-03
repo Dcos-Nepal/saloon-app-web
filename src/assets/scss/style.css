@@ -40,6 +40,23 @@ a { color: #666666;}
     font-size: 16px;
 }
 
+.txt-xxl {
+    font-size: 4rem;
+    font-weight: bold;
+    line-height: 6rem;
+}
+
+.txt-xl {
+    font-size: 3rem;
+    font-weight: bold;
+    line-height: 4rem;
+}
+
+.txt-l {
+    font-size: 1.5rem;
+    line-height: 2.5rem;
+}
+
 .rounded-radius {
     border-radius: 6px;
 }

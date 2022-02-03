@@ -257,7 +257,7 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient }) => {
                   </div>
                 </div>
               </div>
-              <div className="col card">
+              <div className="col card ms-3">
                 <div className="row">
                   <div className="col d-flex flex-row">
                     <h5 className="txt-bold">Billing history</h5>

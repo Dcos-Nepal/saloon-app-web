@@ -11,6 +11,8 @@ export const endpoints = {
     client: {
       list: "clients",
       add: "add",
+      detail: ":id",
+      edit: ":id/edit",
     },
     worker: {
       list: "workers",

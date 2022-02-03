@@ -34,8 +34,8 @@ const RequestAddForm: FC<IProps> = ({ actions, clients }) => {
   useEffect(() => {
     const clientsLabelValues = clients.map((client) => {
       return {
-        label: client.fullName,
-        value: client._id,
+        label: client.fullName || `${client.firstName} ${client.lastName}`,
+        value: client._id || "",
       };
     });
 

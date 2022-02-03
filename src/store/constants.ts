@@ -55,6 +55,22 @@ export const FETCH_CLIENTS_LOADING = "FETCH_CLIENTS_LOADING";
 export const FETCH_CLIENTS_ERROR = "FETCH_CLIENTS_ERROR";
 
 /**
+ * Update Client action types
+ */
+export const UPDATE_CLIENT = "UPDATE_CLIENT";
+export const UPDATE_CLIENT_SUCCESS = "UPDATE_CLIENT_SUCCESS";
+export const UPDATE_CLIENT_LOADING = "UPDATE_CLIENT_LOADING";
+export const UPDATE_CLIENT_ERROR = "UPDATE_CLIENT_ERROR";
+
+/**
+ * Fetch Client action types
+ */
+export const FETCH_CLIENT = "FETCH_CLIENT";
+export const FETCH_CLIENT_SUCCESS = "FETCH_CLIENT_SUCCESS";
+export const FETCH_CLIENT_LOADING = "FETCH_CLIENT_LOADING";
+export const FETCH_CLIENT_ERROR = "FETCH_CLIENT_ERROR";
+
+/**
  * Create Worker action types
  */
 export const ADD_WORKER = "ADD_WORKER";
@@ -73,10 +89,10 @@ export const FETCH_WORKERS_ERROR = "FETCH_WORKERS_ERROR";
 /**
  * Create Job Request action types
  */
- export const ADD_JOB_REQUEST = "ADD_JOB_REQUEST";
- export const ADD_JOB_REQUEST_SUCCESS = "ADD_JOB_REQUEST_SUCCESS";
- export const ADD_JOB_REQUEST_LOADING = "ADD_JOB_REQUEST_LOADING";
- export const ADD_JOB_REQUEST_ERROR = "ADD_JOB_REQUEST_ERROR";
+export const ADD_JOB_REQUEST = "ADD_JOB_REQUEST";
+export const ADD_JOB_REQUEST_SUCCESS = "ADD_JOB_REQUEST_SUCCESS";
+export const ADD_JOB_REQUEST_LOADING = "ADD_JOB_REQUEST_LOADING";
+export const ADD_JOB_REQUEST_ERROR = "ADD_JOB_REQUEST_ERROR";
 
 /**
  * Load Job Requests Listing action types
@@ -97,10 +113,10 @@ export const SEARCH_LINE_ITEMS_ERROR = "SEARCH_LINE_ITEMS_ERROR";
 /**
  * Create Quotes action types
  */
- export const ADD_QUOTE = "ADD_QUOTE";
- export const ADD_QUOTE_SUCCESS = "ADD_QUOTE_SUCCESS";
- export const ADD_QUOTE_LOADING = "ADD_QUOTE_LOADING";
- export const ADD_QUOTE_ERROR = "ADD_QUOTE_ERROR";
+export const ADD_QUOTE = "ADD_QUOTE";
+export const ADD_QUOTE_SUCCESS = "ADD_QUOTE_SUCCESS";
+export const ADD_QUOTE_LOADING = "ADD_QUOTE_LOADING";
+export const ADD_QUOTE_ERROR = "ADD_QUOTE_ERROR";
 
 /**
  * Load Job Quotes Listing action types

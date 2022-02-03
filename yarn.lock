@@ -6702,6 +6702,11 @@ picomatch@^2.0.4, picomatch@^2.2.1, picomatch@^2.2.2, picomatch@^2.2.3:
   resolved "https://registry.yarnpkg.com/picomatch/-/picomatch-2.3.1.tgz#3ba3833733646d9d3e4995946c1365a67fb07a42"
   integrity sha512-JU3teHTNjmE2VCGFzuY8EXzCDVwEqB2a8fsIvwaStHhAWJEeVd1o1QD80CU6+ZdEXXSLbSsuLwJjkCBWqRQUVA==
 
+pinterpolate@^0.2.3:
+  version "0.2.3"
+  resolved "https://registry.yarnpkg.com/pinterpolate/-/pinterpolate-0.2.3.tgz#d35408cf26670ae2a6dddebfbab06e824a20e382"
+  integrity sha512-ZlNZGJ9ujvZEO8MFwKYWhbaI9v/4kTNIG+4a2AQLdqD1/75/bfzZqUqjeWvjeMKk9D0IJY+XJVio2/N9MfhVtQ==
+
 pirates@^4.0.4:
   version "4.0.5"
   resolved "https://registry.yarnpkg.com/pirates/-/pirates-4.0.5.tgz#feec352ea5c3268fb23a37c702ab1699f35a5f3b"

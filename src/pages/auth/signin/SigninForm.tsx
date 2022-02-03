@@ -1,8 +1,8 @@
+import * as Yup from "yup";
+import { useFormik } from "formik";
 import { connect } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import * as authActions from "../../../store/actions/auth.actions";
-import { useFormik } from 'formik';
-import * as Yup from 'yup';
 
 import { endpoints } from "common/config";
 import InputField from "common/components/form/Input";
@@ -11,16 +11,20 @@ const SigninForm = (props: any) => {
   const navigate = useNavigate();
 
   const InitSignIn = {
-    email: '',
-    password: '',
-  }
+    email: "",
+    password: "",
+    deviceType: "WEB",
+    deviceToken: "MOCK",
+  };
 
   const SignInSchema = Yup.object().shape({
-    email: Yup.string().required('Please provide an email.').email('Invalid email provided'),
+    email: Yup.string()
+      .required("Please provide an email.")
+      .email("Invalid email provided"),
     password: Yup.string()
-      .min(6, 'Password must be at least 6 characters')
-      .max(24, 'Password can be maximum 24 characters')
-      .required('Password is required'),
+      .min(6, "Password must be at least 6 characters")
+      .max(24, "Password can be maximum 24 characters")
+      .required("Password is required"),
   });
 
   const formik = useFormik({
@@ -42,7 +46,11 @@ const SigninForm = (props: any) => {
             type={"email"}
             label="Email Address:"
             placeholder="Your valid email"
-            helperComponent={formik.errors.email && formik.touched.email ? (<div className="txt-red">{formik.errors.email}</div>) : null}
+            helperComponent={
+              formik.errors.email && formik.touched.email ? (
+                <div className="txt-red">{formik.errors.email}</div>
+              ) : null
+            }
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
           />
@@ -54,7 +62,11 @@ const SigninForm = (props: any) => {
           label="Password:"
           type="password"
           placeholder="Password"
-          helperComponent={formik.errors.password && formik.touched.password ? (<div className="txt-red">{formik.errors.password}</div>) : null}
+          helperComponent={
+            formik.errors.password && formik.touched.password ? (
+              <div className="txt-red">{formik.errors.password}</div>
+            ) : null
+          }
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
         />
@@ -71,21 +83,23 @@ const SigninForm = (props: any) => {
         </small>
       </div>
       <div className="d-flex justify-content-center mt-2">
-        <button type="submit" className="btn btn-primary btn-full">Login</button>
+        <button type="submit" className="btn btn-primary btn-full">
+          Login
+        </button>
       </div>
     </form>
   );
 };
 
 const mapStateToProps = (state: any) => {
-  return ({ isLoading: state.auth.isLoading })
+  return { isLoading: state.auth.isLoading };
 };
 
 const mapDispatchToProps = (dispatch: any) => ({
   actions: {
     signInUser: (payload: any) => {
       dispatch(authActions.signInUser(payload));
-    }
+    },
   },
 });
 

@@ -1,3 +1,4 @@
+import pinterpolate from "pinterpolate";
 import { useNavigate } from "react-router-dom";
 import { Column, useTable } from "react-table";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -9,7 +10,7 @@ import SelectField from "common/components/form/Select";
 import { connect } from "react-redux";
 import ReactPaginate from "react-paginate";
 import { Loader } from "common/components/atoms/Loader";
-import debounce from 'lodash/debounce';
+import debounce from "lodash/debounce";
 import EmptyState from "common/components/EmptyState";
 
 interface IClient {
@@ -25,29 +26,37 @@ const ClientsList = (props: any) => {
   const [offset, setOffset] = useState(0);
   const [pageCount, setPageCount] = useState(0);
   const [clients, setClients] = useState<IClient[]>([]);
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState("");
 
   useEffect(() => {
-    props.actions.fetchClients({ q: query, roles: 'CLIENT', page: offset, limit: itemsPerPage });
+    props.actions.fetchClients({
+      q: query,
+      roles: "CLIENT",
+      page: offset,
+      limit: itemsPerPage,
+    });
   }, [itemsPerPage, offset, props.actions, query]);
 
   useEffect(() => {
     if (props.clients?.data?.rows) {
-      setClients(props.clients.data?.rows
-        .map((row: any) => ({
+      setClients(
+        props.clients.data?.rows.map((row: any) => ({
           name: `${row.firstName} ${row.lastName}`,
-          address: row?.address ? `${row.address?.street1}, ${row.address?.street2}, ${row.address?.city}, ${row.address?.state}, ${row.address?.postalCode}, ${row.address?.country}` : "Address not added!",
+          address: row?.address
+            ? `${row.address?.street1}, ${row.address?.street2}, ${row.address?.city}, ${row.address?.state}, ${row.address?.postalCode}, ${row.address?.country}`
+            : "Address not added!",
           contact: row.phoneNumber,
-          status: 'some status'
+          status: "some status",
+          _id: row._id,
         }))
       );
-      setPageCount(Math.ceil(props.clients.data.totalCount / itemsPerPage))
+      setPageCount(Math.ceil(props.clients.data.totalCount / itemsPerPage));
     }
   }, [itemsPerPage, props.clients]);
 
   const handlePageClick = (event: any) => {
     const selectedPage = event.selected;
-    setOffset(selectedPage)
+    setOffset(selectedPage);
   };
 
   const handleClientSearch = (event: any) => {
@@ -77,12 +86,13 @@ const ClientsList = (props: any) => {
         accessor: (row: any) => (
           <div>
             <span
-              className={`status ${row.status === "Inactive"
-                ? "status-red"
-                : row.status === "Active"
+              className={`status ${
+                row.status === "Inactive"
+                  ? "status-red"
+                  : row.status === "Active"
                   ? "status-green"
                   : "status-blue"
-                }`}
+              }`}
             >
               {row.status}
             </span>
@@ -97,13 +107,43 @@ const ClientsList = (props: any) => {
         maxWidth: 40,
         accessor: (row: any) => (
           <div className="dropdown">
-            <a href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+            <a
+              href="#"
+              role="button"
+              id="dropdownMenuLink"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
               <box-icon name="dots-vertical-rounded"></box-icon>
             </a>
             <ul className="dropdown-menu" aria-labelledby="dropdownMenuLink">
-              <li><a className="dropdown-item" href="#">View Detail</a></li>
-              <li><a className="dropdown-item" href="#">Edit</a></li>
-              <li><a className="dropdown-item" href="#">Delete</a></li>
+              <li
+                onClick={() =>
+                  navigate(
+                    pinterpolate(endpoints.admin.client.detail, { id: row._id })
+                  )
+                }
+              >
+                <a className="dropdown-item" href="#">
+                  View Detail
+                </a>
+              </li>
+              <li
+                onClick={() =>
+                  navigate(
+                    pinterpolate(endpoints.admin.client.edit, { id: row._id })
+                  )
+                }
+              >
+                <a className="dropdown-item" href="#">
+                  Edit
+                </a>
+              </li>
+              <li>
+                <a className="dropdown-item" href="#">
+                  Delete
+                </a>
+              </li>
             </ul>
           </div>
         ),
@@ -132,7 +172,12 @@ const ClientsList = (props: any) => {
             New client
           </button>
         </div>
-        <label className="txt-grey">Total {query ? `${clients.length} Search results found!` : `${pageCount} clients`}</label>
+        <label className="txt-grey">
+          Total{" "}
+          {query
+            ? `${clients.length} Search results found!`
+            : `${pageCount} clients`}
+        </label>
       </div>
       <div className="card">
         <div className="row pt-2 m-1 rounded-top bg-grey">
@@ -147,13 +192,29 @@ const ClientsList = (props: any) => {
           </div>
           <div className="col row">
             <div className="col">
-              <SelectField label="Sort" options={[{ label: "Name", value: "name" }, { label: "Phone Number", value: "number" }]} placeholder="Sort by" />
+              <SelectField
+                label="Sort"
+                options={[
+                  { label: "Name", value: "name" },
+                  { label: "Phone Number", value: "number" },
+                ]}
+                placeholder="Sort by"
+              />
             </div>
             <div className="col">
-              <SelectField label="Filters" options={[{ label: "All results", value: "all" }, { label: "Phone Number", value: "number" }]} placeholder="All results" />
+              <SelectField
+                label="Filters"
+                options={[
+                  { label: "All results", value: "all" },
+                  { label: "Phone Number", value: "number" },
+                ]}
+                placeholder="All results"
+              />
             </div>
           </div>
-          {!clients.length ? <EmptyState /> : (
+          {!clients.length ? (
+            <EmptyState />
+          ) : (
             <table {...getTableProps()} className="table txt-dark-grey">
               <thead>
                 {headerGroups.map((headerGroup) => (
@@ -176,11 +237,11 @@ const ClientsList = (props: any) => {
 
                   return (
                     <tr {...row.getRowProps()} className={`rt-tr-group`}>
-                      <td><strong>#{index + 1 + (offset * itemsPerPage)}</strong></td>
+                      <td>
+                        <strong>#{index + 1 + offset * itemsPerPage}</strong>
+                      </td>
                       {row.cells.map((cell) => (
-                        <td {...cell.getCellProps()}>
-                          {cell.render("Cell")}
-                        </td>
+                        <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
                       ))}
                     </tr>
                   );
@@ -201,25 +262,25 @@ const ClientsList = (props: any) => {
               containerClassName={"pagination"}
               activeClassName={"active"}
             />
-          </div>) : null
-        }
+          </div>
+        ) : null}
       </div>
     </>
   );
 };
 
 const mapStateToProps = (state: any) => {
-  return ({
+  return {
     clients: state.clients.clients,
-    isLoading: state.clients.isLoading
-  })
+    isLoading: state.clients.isLoading,
+  };
 };
 
 const mapDispatchToProps = (dispatch: any) => ({
   actions: {
     fetchClients: (payload: any) => {
       dispatch(clientsActions.fetchClients(payload));
-    }
+    },
   },
 });
 

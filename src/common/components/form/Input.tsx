@@ -3,6 +3,7 @@ import { FC } from "react";
 const InputField: FC<any> = ({
   name,
   label,
+  value,
   className,
   placeholder,
   type = "text",
@@ -19,6 +20,7 @@ const InputField: FC<any> = ({
         type={type}
         id={name}
         name={name}
+        value={value}
         className={`form-control ${className}`}
         placeholder={placeholder}
         onChange={onChange}

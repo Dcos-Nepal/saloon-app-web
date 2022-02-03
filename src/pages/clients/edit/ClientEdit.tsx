@@ -1,7 +1,12 @@
-import { useNavigate } from "react-router-dom";
+import { FC } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+
 import ClientDetailForm from "../ClientDetailForm";
 
-const ClientAdd = () => {
+interface IProps {}
+
+const ClientEdit: FC<IProps> = () => {
+  const { id } = useParams();
   const navigate = useNavigate();
 
   return (
@@ -14,12 +19,12 @@ const ClientAdd = () => {
           <span className="col">Back to previous</span>
         </div>
         <div className="d-flex flex-row">
-          <h3>New Client</h3>
+          <h3>Update Client</h3>
         </div>
       </div>
-      <ClientDetailForm />
+      <ClientDetailForm id={id} />
     </>
   );
 };
 
-export default ClientAdd;
+export default ClientEdit;

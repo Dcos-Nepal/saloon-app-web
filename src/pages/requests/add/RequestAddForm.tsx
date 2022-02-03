@@ -35,7 +35,7 @@ const RequestAddForm: FC<IProps> = ({ actions, clients }) => {
     const clientsLabelValues = clients.map((client) => {
       return {
         label: client.fullName,
-        value: client._id,
+        value: client._id || "",
       };
     });
 

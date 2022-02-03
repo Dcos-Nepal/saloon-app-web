@@ -1,6 +1,6 @@
 import * as Yup from "yup";
 import { useFormik } from "formik";
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
@@ -14,16 +14,16 @@ interface IProps {
   actions: {
     addClient: (data: any) => any;
   };
-
+  id?: string;
   isClientsLoading: boolean;
 }
 
-const ClientDetailForm: FC<IProps> = ({ actions }) => {
+const ClientDetailForm: FC<IProps> = ({ id, actions }) => {
   const navigate = useNavigate();
 
   const [phoneNumberCount, setPhoneNumberCount] = useState(1);
 
-  const initialValues = {
+  const [initialValues, setInitialValues] = useState({
     firstName: "",
     lastName: "",
     email: "",
@@ -45,7 +45,33 @@ const ClientDetailForm: FC<IProps> = ({ actions }) => {
       },
     ],
     userImage: "",
-  };
+  });
+
+  useEffect(() => {
+    setInitialValues({
+      firstName: "",
+      lastName: "a",
+      email: "",
+      roles: ["CLIENT"],
+      phoneNumber: "",
+      password: "password",
+      address: {
+        street1: "",
+        street2: "",
+        city: "",
+        state: "",
+        postalCode: undefined,
+        country: "",
+      },
+      userDocuments: [
+        {
+          documentUrl: "",
+          type: "COMPANY-LOGO",
+        },
+      ],
+      userImage: "",
+    });
+  }, []);
 
   const RequestSchema = Yup.object().shape({
     firstName: Yup.string()
@@ -86,8 +112,14 @@ const ClientDetailForm: FC<IProps> = ({ actions }) => {
     },
   });
 
-  const statesOption = [{ label: "LA", value: "LA" }];
-  const countriesOption = [{ label: "Aus", value: "AUS" }];
+  const statesOption = [{ label: "New South Wales", value: "New South Wales" }];
+
+  const countriesOption = [
+    {
+      label: "AUS",
+      value: "AUS",
+    },
+  ];
 
   return (
     <form noValidate onSubmit={formik.handleSubmit}>
@@ -98,6 +130,7 @@ const ClientDetailForm: FC<IProps> = ({ actions }) => {
             <div className="col">
               <InputField
                 label="First name"
+                value={formik.values.firstName}
                 placeholder="Enter first name"
                 name="firstName"
                 helperComponent={
@@ -111,6 +144,7 @@ const ClientDetailForm: FC<IProps> = ({ actions }) => {
             </div>
             <div className="col">
               <InputField
+                value={formik.values.lastName}
                 label="Last name"
                 placeholder="Enter last name"
                 name="lastName"
@@ -126,6 +160,7 @@ const ClientDetailForm: FC<IProps> = ({ actions }) => {
           </div>
           <InputField
             label="Email address"
+            value={formik.values.email}
             placeholder="Enter email address"
             type="email"
             name="email"
@@ -365,16 +400,18 @@ const ClientDetailForm: FC<IProps> = ({ actions }) => {
         >
           Save client
         </button>
-        <button
-          type="button"
-          onClick={async () => {
-            await formik.handleSubmit();
-            // formik.resetForm();
-          }}
-          className="btn btn-secondary ms-3"
-        >
-          Save and create another
-        </button>
+        {id ? null : (
+          <button
+            type="button"
+            onClick={async () => {
+              await formik.handleSubmit();
+              // formik.resetForm();
+            }}
+            className="btn btn-secondary ms-3"
+          >
+            Save and create another
+          </button>
+        )}
         <button onClick={() => navigate(-1)} type="button" className="btn ms-3">
           Cancel
         </button>

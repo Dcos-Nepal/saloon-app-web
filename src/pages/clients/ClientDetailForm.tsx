@@ -287,7 +287,7 @@ const ClientDetailForm: FC<IProps> = ({ id, actions, currentClient }) => {
               placeholder="Enter street 1"
               name="address.street1"
               helperComponent={<ErrorMessage name="address.street1" />}
-              value={formik.values.address?.street1}
+              value={formik.values.address?.street1 || ""}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
             />
@@ -296,7 +296,7 @@ const ClientDetailForm: FC<IProps> = ({ id, actions, currentClient }) => {
               placeholder="Enter street 2"
               name="address.street2"
               helperComponent={<ErrorMessage name="address.street2" />}
-              value={formik.values.address?.street2}
+              value={formik.values.address?.street2 || ""}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
             />
@@ -306,7 +306,7 @@ const ClientDetailForm: FC<IProps> = ({ id, actions, currentClient }) => {
                   label="City"
                   placeholder="Enter city"
                   name="address.city"
-                  value={formik.values.address?.city}
+                  value={formik.values.address?.city || ""}
                   helperComponent={<ErrorMessage name="address.city" />}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
@@ -335,7 +335,7 @@ const ClientDetailForm: FC<IProps> = ({ id, actions, currentClient }) => {
                   label="Post code"
                   placeholder="Enter post code"
                   name="address.postalCode"
-                  value={formik.values.address?.postalCode}
+                  value={formik.values.address?.postalCode || ""}
                   helperComponent={<ErrorMessage name="address.postalCode" />}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}

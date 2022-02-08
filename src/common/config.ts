@@ -6,6 +6,9 @@ export const endpoints = {
     resetPassword: "/reset-password",
     changePassword: "/change-password/:pwdToken",
   },
+  booking: {
+    add: "/booking",
+  },
   admin: {
     home: "/dashboard",
     client: {

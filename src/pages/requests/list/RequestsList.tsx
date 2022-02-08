@@ -14,7 +14,7 @@ import { useNavigate } from "react-router-dom";
 import { endpoints } from "common/config";
 import debounce from "lodash/debounce";
 
-const AddRequestForm = React.lazy(() => import("../AddRequestForm"));
+const QuickAddRequestForm = React.lazy(() => import("../QuickRequestForm"));
 
 interface IRequest {
   name: string;
@@ -28,18 +28,22 @@ const RequestsList = (props: any) => {
   const navigate = useNavigate();
   const [postsPerPage] = useState(10);
   const [offset, setOffset] = useState(1);
-  const [pageCount, setPageCount] = useState(0)
+  const [pageCount, setPageCount] = useState(0);
   const [requests, setRequests] = useState<IRequest[]>([]);
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState("");
 
   useEffect(() => {
-    props.actions.fetchJobRequests({ q: query, page: offset, limit: postsPerPage });
+    props.actions.fetchJobRequests({
+      q: query,
+      page: offset,
+      limit: postsPerPage,
+    });
   }, [offset, postsPerPage, props.actions, query]);
 
   useEffect(() => {
     if (props.itemList?.data?.rows) {
-      setRequests(props.itemList.data?.rows
-        .map((row: any) => ({
+      setRequests(
+        props.itemList.data?.rows.map((row: any) => ({
           name: row.client,
           title: row.name,
           requestDate: new Date(row.createdAt).toDateString(),
@@ -58,7 +62,7 @@ const RequestsList = (props: any) => {
 
   const handlePageClick = (event: any) => {
     const selectedPage = event.selected;
-    setOffset(selectedPage + 1)
+    setOffset(selectedPage + 1);
   };
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -73,11 +77,19 @@ const RequestsList = (props: any) => {
       {
         Header: "CLIENT NAME",
         accessor: (row: any) => {
-          return (<div>
-            <div><b>{row.name.firstName} {row.name.firstName}</b></div>
-            <small>{row.name.email} / {row.name.phoneNumber}</small>
-          </div>);
-        }
+          return (
+            <div>
+              <div>
+                <b>
+                  {row.name.firstName} {row.name.firstName}
+                </b>
+              </div>
+              <small>
+                {row.name.email} / {row.name.phoneNumber}
+              </small>
+            </div>
+          );
+        },
       },
       {
         Header: "REQUEST DATE",
@@ -88,18 +100,17 @@ const RequestsList = (props: any) => {
         accessor: (row: any) => (
           <div>
             <span
-              className={`status ${row.status === "Inactive"
-                ? "status-red"
-                : row.status === "Active"
+              className={`status ${
+                row.status === "Inactive"
+                  ? "status-red"
+                  : row.status === "Active"
                   ? "status-green"
                   : "status-blue"
-                }`}
+              }`}
             >
               {row.status}
             </span>
-            <label className="txt-grey ms-2">
-              {row.updatedDate}
-            </label>
+            <label className="txt-grey ms-2">{row.updatedDate}</label>
           </div>
         ),
       },
@@ -108,13 +119,31 @@ const RequestsList = (props: any) => {
         maxWidth: 40,
         accessor: (row: any) => (
           <div className="dropdown">
-            <a href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+            <a
+              href="#"
+              role="button"
+              id="dropdownMenuLink"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
               <box-icon name="dots-vertical-rounded"></box-icon>
             </a>
             <ul className="dropdown-menu" aria-labelledby="dropdownMenuLink">
-              <li><a className="dropdown-item" href="#">View Detail</a></li>
-              <li><a className="dropdown-item" href="#">Edit</a></li>
-              <li><a className="dropdown-item" href="#">Delete</a></li>
+              <li>
+                <a className="dropdown-item" href="#">
+                  View Detail
+                </a>
+              </li>
+              <li>
+                <a className="dropdown-item" href="#">
+                  Edit
+                </a>
+              </li>
+              <li>
+                <a className="dropdown-item" href="#">
+                  Delete
+                </a>
+              </li>
             </ul>
           </div>
         ),
@@ -138,9 +167,19 @@ const RequestsList = (props: any) => {
               navigate(endpoints.admin.requests.add);
             }}
             type="button"
-            className="btn btn-primary d-flex float-end" data-bs-toggle="modal" data-bs-target="#job-request-form"
+            className="btn btn-primary d-flex float-end"
+            data-bs-toggle="modal"
+            data-bs-target="#job-request-form"
           >
             New request
+          </button>
+          <button
+            type="button"
+            className="btn btn-secondary d-flex float-end me-2"
+            data-bs-toggle="modal"
+            data-bs-target="#quick-job-request-form"
+          >
+            New quick request
           </button>
         </div>
         <label className="txt-grey">{requests.length} Job Requests</label>
@@ -167,10 +206,7 @@ const RequestsList = (props: any) => {
           <table {...getTableProps()} className="table txt-dark-grey">
             <thead>
               {headerGroups.map((headerGroup) => (
-                <tr
-                  {...headerGroup.getHeaderGroupProps()}
-                  className="rt-head"
-                >
+                <tr {...headerGroup.getHeaderGroupProps()} className="rt-head">
                   {headerGroup.headers.map((column) => (
                     <th {...column.getHeaderProps()} scope="col">
                       {column.render("Header")}
@@ -187,9 +223,7 @@ const RequestsList = (props: any) => {
                 return (
                   <tr {...row.getRowProps()} className="rt-tr-group">
                     {row.cells.map((cell) => (
-                      <td {...cell.getCellProps()}>
-                        {cell.render("Cell")}
-                      </td>
+                      <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
                     ))}
                   </tr>
                 );
@@ -206,30 +240,37 @@ const RequestsList = (props: any) => {
             pageCount={pageCount}
             onPageChange={handlePageClick}
             containerClassName={"pagination"}
-            activeClassName={"active"} />
+            activeClassName={"active"}
+          />
         </div>
       </div>
-      {/* <div className="modal fade" id="job-request-form" tabIndex={-1} aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div
+        className="modal fade"
+        id="quick-job-request-form"
+        tabIndex={-1}
+        aria-labelledby="exampleModalLabel"
+        aria-hidden="true"
+      >
         <Suspense fallback={<Loader isLoading={true} />}>
-          <AddRequestForm />
+          <QuickAddRequestForm />
         </Suspense>
-      </div> */}
+      </div>
     </>
   );
 };
 
 const mapStateToProps = (state: any) => {
-  return ({
+  return {
     itemList: state.jobRequests.itemList,
-    isLoading: state.jobRequests.isLoading
-  });
+    isLoading: state.jobRequests.isLoading,
+  };
 };
 
 const mapDispatchToProps = (dispatch: any) => ({
   actions: {
     fetchJobRequests: (payload: any) => {
       dispatch(jobReqActions.fetchJobRequests(payload));
-    }
+    },
   },
 });
 

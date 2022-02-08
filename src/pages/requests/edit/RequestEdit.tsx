@@ -1,8 +1,12 @@
-import { useNavigate } from "react-router-dom";
+import { FC } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
-import RequestAddForm from "../RequestForm";
+import RequestForm from "../RequestForm";
 
-const RequestAdd = () => {
+interface IProps {}
+
+const RequestEdit: FC<IProps> = () => {
+  const { id } = useParams();
   const navigate = useNavigate();
 
   return (
@@ -15,14 +19,12 @@ const RequestAdd = () => {
           <span className="col">Back to previous</span>
         </div>
         <div className="d-flex flex-row">
-          <h3>New Job Request</h3>
+          <h3>Update Request</h3>
         </div>
       </div>
-      <div className="m-1">
-        <RequestAddForm />
-      </div>
+      <RequestForm id={id} />
     </>
   );
 };
 
-export default RequestAdd;
+export default RequestEdit;

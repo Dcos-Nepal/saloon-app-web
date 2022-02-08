@@ -17,6 +17,7 @@ interface IProps {
     addJobRequest: (data: any) => any;
   };
   clients: IClient[];
+  id?: string;
 
   isClientsLoading: boolean;
 }

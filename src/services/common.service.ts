@@ -7,3 +7,10 @@ export const filterApi = async (resource: string, query: Record<string, any>) =>
     headers: { "Accept": "application/json" }
   });
 }
+
+export const fetchUserProperties = async (userId: string) => {
+  const url = `/v1.0.0/users/${userId}/properties`;
+  return await http.get(url, {
+    headers: { "Accept": "application/json" }
+  });
+}

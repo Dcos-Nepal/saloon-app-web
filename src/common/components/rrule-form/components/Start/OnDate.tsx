@@ -8,7 +8,7 @@ const StartOnDate = ({
   return (
     <>
       <div className='col-5'>
-      <input type="date" value={formattedDate} onChange={(event: any) => {
+      <input type="date" className="form-control" value={formattedDate} onChange={(event: any) => {
           const editedEvent = {
             target: {
               value: `${event.target.value} ${formattedTime}`,
@@ -21,7 +21,7 @@ const StartOnDate = ({
       />
       </div>
       <div className='col-5'>
-        <input type="time" value={formattedTime} onChange={(event: any) => {
+        <input type="time" className="form-control" value={formattedTime} onChange={(event: any) => {
             const editedEvent = {
               target: {
                 value: `${formattedDate}  ${event.target.value}`,

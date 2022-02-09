@@ -17,7 +17,8 @@ interface IClient {
   name: string;
   address: string;
   contact: string;
-  status: string;
+  status: boolean;
+  updatedAt: string;
 }
 
 const ClientsList = (props: any) => {
@@ -46,7 +47,8 @@ const ClientsList = (props: any) => {
             ? `${row.address?.street1}, ${row.address?.street2}, ${row.address?.city}, ${row.address?.state}, ${row.address?.postalCode}, ${row.address?.country}`
             : "Address not added!",
           contact: row.phoneNumber,
-          status: "some status",
+          status: row.auth.email,
+          updatedAt: row.updatedAt,
           _id: row._id,
         }))
       );
@@ -85,19 +87,11 @@ const ClientsList = (props: any) => {
         Header: "STATUS",
         accessor: (row: any) => (
           <div>
-            <span
-              className={`status ${
-                row.status === "Inactive"
-                  ? "status-red"
-                  : row.status === "Active"
-                  ? "status-green"
-                  : "status-blue"
-              }`}
-            >
-              {row.status}
+            <span className={`status ${row.status ? "status-green" : "status-red"}`}>
+              {row.status ? "Email Verified!" : "Pending Verification"}
             </span>
             <label className="txt-grey ms-2">
-              {new Date().toLocaleString()}
+              {new Date(row.updatedAt).toLocaleString()}
             </label>
           </div>
         ),

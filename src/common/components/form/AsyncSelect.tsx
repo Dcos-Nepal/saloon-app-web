@@ -3,7 +3,6 @@ import { FC, useState } from "react";
 
 import AsyncSelect from 'react-select/async';
 import { filterApi } from "services/common.service";
-import { generateQueryParams } from "utils";
 
 const SelectAsync: FC<any> = ({
   name,
@@ -14,6 +13,7 @@ const SelectAsync: FC<any> = ({
   resource,
   isDisabled,
   helperComponent,
+  closeOnSelect = true,
   isMulti = false,
 }) => {
   const [query, setQuery] = useState('');
@@ -32,13 +32,11 @@ const SelectAsync: FC<any> = ({
 
   return (
     <div className={`${name}`}>
-      <label htmlFor={name} className="form-label txt-dark-grey">
-        {label}
-      </label>
+      {label ? (<label htmlFor={name} className="form-label txt-dark-grey">{label}</label>) : null}
       <AsyncSelect
         id={name}
         name={name}
-        closeMenuOnSelect={false}
+        closeMenuOnSelect={closeOnSelect}
         inputValue={query}
         value={value}
         onChange={onChange}

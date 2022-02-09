@@ -38,7 +38,7 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient }) => {
     switch (tab) {
       case Tabs.ActiveWork:
         return (
-          <div className="row mt-4 border-bottom">
+          <div className="row mt-4">
             <div className="col p-2 ps-4">
               <div className="txt-grey">No active work</div>
               <div className="">
@@ -49,7 +49,7 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient }) => {
         );
       case Tabs.Invoices:
         return (
-          <div className="row mt-4 border-bottom">
+          <div className="row mt-4">
             <div className="col p-2 ps-4">
               <div className="txt-grey">No invoices</div>
               <div className="">
@@ -60,7 +60,7 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient }) => {
         );
       case Tabs.Jobs:
         return (
-          <div className="row mt-4 border-bottom">
+          <div className="row mt-4">
             <div className="col p-2 ps-4">
               <div className="txt-grey">No jobs</div>
               <div className="">
@@ -71,7 +71,7 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient }) => {
         );
       case Tabs.Quotes:
         return (
-          <div className="row mt-4 border-bottom">
+          <div className="row mt-4">
             <div className="col p-2 ps-4">
               <div className="txt-grey">No quotes</div>
               <div className="">
@@ -83,7 +83,7 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient }) => {
 
       case Tabs.Requests:
         return (
-          <div className="row mt-4 border-bottom">
+          <div className="row mt-4">
             <div className="col p-2 ps-4">
               <div className="txt-grey">No requests</div>
               <div className="">
@@ -133,7 +133,7 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient }) => {
                     </button>
                   </div>
                 </div>
-                <div className="row mt-4 border-bottom">
+                <div className="row mt-4">
                   <div className="col p-2 ps-4">
                     <div className="txt-grey">Property address</div>
                     <div className="">
@@ -146,7 +146,7 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient }) => {
                     </button>
                   </div>
                 </div>
-                <div className="row mt-4 border-bottom">
+                <div className="row mt-4">
                   <div className="col p-2 ps-4">
                     <div className="txt-grey"></div>
                     <div className="">Tax rate GST (10%) Default</div>
@@ -159,7 +159,7 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient }) => {
                     <h5 className="txt-bold">Contact info</h5>
                   </div>
                 </div>
-                <div className="row mt-4 border-bottom">
+                <div className="row mt-4">
                   <div className="col p-2 ps-4">
                     <div className="txt-grey">Primary contact</div>
                     <div className="">{currentClient.firstName}</div>
@@ -169,7 +169,7 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient }) => {
                     <div className="">{currentClient.phoneNumber}</div>
                   </div>
                 </div>
-                <div className="row mt-4 border-bottom">
+                <div className="row mt-4">
                   <div className="col p-2 ps-4">
                     <div className="txt-grey">Email</div>
                     <div className="">{currentClient.email}</div>
@@ -244,11 +244,11 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient }) => {
                   </div>
                   <div className="col">
                     <button className="btn btn-primary d-flex float-end">
-                      New
+                      New Schedule
                     </button>
                   </div>
                 </div>
-                <div className="row mt-2 border-bottom">
+                <div className="row mt-2">
                   <div className="col p-2 ps-4">
                     <div className="txt-grey">No scheduling items</div>
                     <div className="">
@@ -263,7 +263,7 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient }) => {
                     <h5 className="txt-bold">Billing history</h5>
                   </div>
                 </div>
-                <div className="row mt-2 border-bottom">
+                <div className="row mt-2">
                   <div className="col p-2 ps-4">
                     <div className="txt-grey">No billing history</div>
                     <div className="">This client has not been billed yet</div>

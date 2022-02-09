@@ -28,7 +28,7 @@ const VerifyEmail = (props: any) => {
               (<Success
                 msg="You have successfully verified your email."
                 okMsg="Go to login"
-                okHandler={() => navigate(endpoints.auth.signin)}
+                okHandler={() => navigate(endpoints.auth.signIn)}
               />) : <Loader isLoading={props.isLoading} />
             }
             {(!props.isSuccess && props.isFailed === true) ? 

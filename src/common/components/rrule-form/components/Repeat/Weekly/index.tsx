@@ -26,7 +26,7 @@ const RepeatWeekly = ({
   }
 
   return (
-    <div className='px-3'>
+    <div className='mt-2'>
       <div className='form-group row d-flex align-items-sm-center'>
         <div className='col-sm-2 offset-sm-2'>
           {translateLabel(translations, 'repeat.weekly.every')}
@@ -36,7 +36,7 @@ const RepeatWeekly = ({
             id={`${id}-interval`}
             name='repeat.weekly.interval'
             aria-label='Repeat weekly interval'
-            className=''
+            className='form-control'
             value={interval}
             onChange={numericalFieldHandler(handleChange)}
             style={{'width': '50px'}}
@@ -47,14 +47,14 @@ const RepeatWeekly = ({
         </div>
       </div>
 
-      <div className='form-group row mt-2' style={{'width': '370px'}}>
-        <div className='btn-group btn-group-toggle offset-sm-2'>
+      <div className='form-group row mt-2 pr-3'>
+        <div className='col-sm-9 btn-group btn-group-toggle offset-sm-2'>
           {daysArray.map(([dayName, isDayActive]) => (
             <label
               htmlFor={`${id}-${dayName}`}
               key={dayName}
               className={`btn btn-primary ${isDayActive ? 'active' : ''}`}
-              style={{'padding': '3px 0', 'fontSize': '14px'}}
+              style={{'padding': '6px 0', 'fontSize': '14px'}}
             >
               <input
                 type='checkbox'

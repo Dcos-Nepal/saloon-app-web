@@ -13,6 +13,7 @@ import { connect } from "react-redux";
 import { Loader } from "common/components/atoms/Loader";
 import debounce from "lodash/debounce";
 import EmptyState from "common/components/EmptyState";
+import { StopIcon } from "@primer/octicons-react";
 
 interface IQuote {
   id: string;
@@ -78,27 +79,29 @@ const QuotesList = (props: any) => {
    */
   const generateRatings = (quote: IQuote) => {
     return (<div>
-      ${quote.lineItems.reduce((sum, current) => sum += current.quantity * current.unitPrice, 0)}
-      <span className="ms-2">
-        <box-icon
-          name="star"
-          size="xs"
-          type="solid"
-          color="#F5E059"
-        ></box-icon>
-        <box-icon
-          name="star"
-          size="xs"
-          type="solid"
-          color="#F5E059"
-        ></box-icon>
-        <box-icon
-          name="star"
-          size="xs"
-          type="solid"
-          color="#F5E059"
-        ></box-icon>
-      </span>
+      <strong>${quote.lineItems.reduce((sum, current) => sum += current.quantity * current.unitPrice, 0)}</strong>
+      {/* <div>
+        <span className="row ms-2">
+          <box-icon
+            name="star"
+            size="xs"
+            type="solid"
+            color="#F5E059"
+          />
+          <box-icon
+            name="star"
+            size="xs"
+            type="solid"
+            color="#F5E059"
+          />
+          <box-icon
+            name="star"
+            size="xs"
+            type="solid"
+            color="#F5E059"
+          />
+        </span>
+      </div> */}
     </div>);
   }
 
@@ -108,21 +111,25 @@ const QuotesList = (props: any) => {
         Header: "CLIENT NAME",
         accessor: (row: IQuote) => {
           return (<div>
-            <div>{row.quoteFor.firstName} {row.quoteFor.lastName}</div>
-            <div>{row.quoteFor.phoneNumber} / {row.quoteFor.email}</div>
+            <div>{row.quoteFor?.firstName} {row.quoteFor?.lastName}</div>
+            <div>{row.quoteFor?.phoneNumber} / {row.quoteFor?.email}</div>
           </div>)
         }
       },
       {
-        Header: "TITLE",
+        Header: "QUOTE INFO",
         accessor: (row: IQuote) => {
-          return (<div>
+          return (<div className="Pointer" onClick={() => navigate(`/dashboard/quotes/${row.id}`)}>
             <div><strong>{row.title}</strong></div>
-            <div><i>
-              <Truncate lines={1} ellipsis={<span>...</span>}>
-                {row.description}
-              </Truncate>
-            </i>
+            <div>
+              <i>
+                <Truncate lines={1} ellipsis={<span>...</span>}>
+                  {row.description}
+                </Truncate>
+              </i>
+            </div>
+            <div>
+              <span className="badge rounded-pill bg-secondary">Total Line Items ({row.lineItems.length})</span>
             </div>
           </div>)
         }
@@ -130,16 +137,18 @@ const QuotesList = (props: any) => {
       {
         Header: "CREATED DATE",
         accessor: (row: IQuote) => {
-          return (<div>
+          return (<div style={{width: '150px'}}>
             <div><strong>{row.updatedAt}</strong></div>
             <div>{row.createdAt}</div>
-          </div>)
+          </div>);
         }
       },
       {
-        Header: "Line Items",
+        Header: "STATUS",
         accessor: (row: IQuote) => {
-          return (<div>Line Items ({row.lineItems.length})</div>)
+          return (<div style={{minWidth: '150px'}}>
+            <SelectField label="" options={[{label: row.status.status, value: row.status.status}]} value={{label: row.status.status, value: row.status.status}} placeholder="All" />
+          </div>);
         }
       },
       {

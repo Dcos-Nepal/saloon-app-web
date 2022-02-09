@@ -23,7 +23,7 @@ const RepeatYearlyOnThe = ({
   const isActive = mode === 'on the';
   return (
     <div
-      className={`form-group row mt-2 d-flex align-items-sm-center ${
+      className={`form-group  offset-sm-2 row mt-2 d-flex align-items-sm-center ${
         !isActive && 'opacity-50'
       }`}
     >
@@ -49,7 +49,7 @@ const RepeatYearlyOnThe = ({
           id={`${id}-which`}
           name='repeat.yearly.onThe.which'
           aria-label='Repeat yearly on the which'
-          className=''
+          className='form-control'
           value={onThe.which}
           disabled={!isActive}
           onChange={handleChange}
@@ -83,7 +83,7 @@ const RepeatYearlyOnThe = ({
           id={`${id}-day`}
           name='repeat.yearly.onThe.day'
           aria-label='Repeat yearly on the day'
-          className=''
+          className='form-control'
           value={onThe.day}
           disabled={!isActive}
           onChange={handleChange}
@@ -105,7 +105,7 @@ const RepeatYearlyOnThe = ({
           id={`${id}-month`}
           name='repeat.yearly.onThe.month'
           aria-label='Repeat yearly on the month'
-          className=''
+          className='form-control'
           value={onThe.month}
           disabled={!isActive}
           onChange={handleChange}

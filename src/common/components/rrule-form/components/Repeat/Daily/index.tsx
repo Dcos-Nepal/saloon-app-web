@@ -17,7 +17,7 @@ const RepeatDaily = ({
   handleChange,
   translations
 }: Props) => (
-  <div className='form-group row d-flex align-items-sm-center'>
+  <div className='form-group row mt-2 d-flex align-items-sm-center'>
     <div className='col-sm-2 offset-sm-2'>
       {translateLabel(translations, 'repeat.daily.every')}
     </div>
@@ -26,7 +26,7 @@ const RepeatDaily = ({
         id={`${id}-interval`}
         name='repeat.daily.interval'
         aria-label='Repeat daily interval'
-        className=''
+        className='form-control'
         value={interval}
         onChange={numericalFieldHandler(handleChange)}
         style={{'width': '50px'}}

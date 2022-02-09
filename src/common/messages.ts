@@ -3,7 +3,7 @@ const messages: Record<string, string> = ({
    * Messages relates to User Sign In (Log In)
    */
   'LOGIN.SUCCESS': "You are successfully signed in.",
-  'LOGIN.ERROR': "Error signing in. Invalid cderentials.",
+  'LOGIN.ERROR': "Error signing in. Invalid credentials.",
   'LOGIN.USER_NOT_FOUND': "Invalid email or password.",
   'LOGIN.EMAIL_NOT_VERIFIED': "User's email is not verified yet.",
 

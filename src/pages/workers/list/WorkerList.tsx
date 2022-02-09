@@ -16,7 +16,8 @@ interface IClient {
   address: string;
   phoneNumber: string;
   email: string;
-  status: string;
+  status: boolean;
+  updatedAt: string;
 }
 
 const WorkerList = (props: any) => {
@@ -39,7 +40,8 @@ const WorkerList = (props: any) => {
           address: row?.address ? `${row.address.street1}, ${row.address.street2}, ${row.address.city}, ${row.address.state}, ${row.address.postalCode}, ${row.address.country}` : "Address not added!",
           phoneNumber: row.phoneNumber,
           email: row.email,
-          status: 'some status'
+          status: row.auth.email,
+          updatedAt: row.updatedAt
         }))
       );
       setPageCount(Math.ceil(props.workers.data.totalCount / itemsPerPage));
@@ -85,18 +87,11 @@ const WorkerList = (props: any) => {
         Header: "STATUS",
         accessor: (row: any) => (
           <div>
-            <span
-              className={`status ${row.status === "Inactive"
-                ? "status-red"
-                : row.status === "Active"
-                  ? "status-green"
-                  : "status-blue"
-                }`}
-            >
-              {row.status}
+            <span className={`status ${row.status ? "status-green" : "status-red"}`}>
+              {row.status ? "Email Verified!" : "Pending Verification"}
             </span>
             <label className="txt-grey ms-2">
-              {new Date().toLocaleString()}
+              {new Date(row.updatedAt).toLocaleString()}
             </label>
           </div>
         ),

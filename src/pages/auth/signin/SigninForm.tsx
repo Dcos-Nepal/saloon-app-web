@@ -7,7 +7,7 @@ import * as authActions from "../../../store/actions/auth.actions";
 import { endpoints } from "common/config";
 import InputField from "common/components/form/Input";
 
-const SigninForm = (props: any) => {
+const SignInForm = (props: any) => {
   const navigate = useNavigate();
 
   const InitSignIn = {
@@ -31,6 +31,8 @@ const SigninForm = (props: any) => {
     enableReinitialize: true,
     initialValues: InitSignIn,
     onSubmit: async (userData: any) => {
+      // Set device token
+      userData.deviceToken = '12345';
       // Making a User Login Request
       props.actions.signInUser(userData);
     },
@@ -103,4 +105,4 @@ const mapDispatchToProps = (dispatch: any) => ({
   },
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(SigninForm);
+export default connect(mapStateToProps, mapDispatchToProps)(SignInForm);

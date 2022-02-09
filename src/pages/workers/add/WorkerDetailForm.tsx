@@ -486,9 +486,6 @@ const WorkerDetailForm: FC<IProps> = ({ actions }) => {
               ) : null}
             </div>
           </div>
-          <div className="row" style={{ overflow: 'auto'}}>
-            {JSON.stringify(formik.values)}
-          </div>
         </div>
       </div>
       <div className="mb-3 mt-3">

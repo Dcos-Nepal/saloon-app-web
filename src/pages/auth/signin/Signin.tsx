@@ -15,7 +15,7 @@ const Signin = (props: any) => {
     if(props.isSuccess && props.isFailed === false) {
       navigate(endpoints.admin.home);
     }
-  }, [props.isSuccess, props.isFailed])
+  }, [props.isSuccess, props.isFailed, navigate])
 
   return (
     <div className="container-fluid txt-grey">
@@ -51,7 +51,7 @@ const Signin = (props: any) => {
                   Don’t have an account?
                   <span
                     className="txt-orange pointer ms-2"
-                    onClick={() => navigate(endpoints.auth.signup)}
+                    onClick={() => navigate(endpoints.auth.signUp)}
                   >
                     Sign Up
                   </span>

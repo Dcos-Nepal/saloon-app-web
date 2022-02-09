@@ -5,6 +5,8 @@ import reportWebVitals from "./reportWebVitals";
 // UI Styles
 import "bootstrap/js/dist/dropdown";
 import "bootstrap/js/dist/modal";
+import "bootstrap/js/dist/tab";
+
 import "bootstrap/dist/css/bootstrap.min.css";
 import "assets/scss/style.css"
 import "./index.css";
@@ -14,10 +16,6 @@ import { store } from "store/store";
 import { Provider } from "react-redux";
 import { Loader } from "common/components/atoms/Loader";
 
-// Lazy loading the component
-const App = React.lazy(() => import("./App"));
-const ErrorBoundary = React.lazy(() => import("common/components/ErrorBoundary"));
-
 declare global {
   namespace JSX {
     interface IntrinsicElements {
@@ -25,6 +23,10 @@ declare global {
     }
   }
 }
+
+// Lazy loading the component
+const App = React.lazy(() => import("./App"));
+const ErrorBoundary = React.lazy(() => import("common/components/ErrorBoundary"));
 
 ReactDOM.render(
   <Suspense fallback={<Loader isLoading={true} />}>

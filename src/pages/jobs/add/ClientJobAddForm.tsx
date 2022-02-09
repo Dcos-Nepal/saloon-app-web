@@ -1,13 +1,141 @@
+import * as Yup from "yup";
 import { useMemo } from "react";
-import { Column, useTable } from "react-table";
+import { Column, Row, useTable } from "react-table";
+import * as quotesActions from "store/actions/quotes.actions";
+import { FieldArray, FormikProvider, useFormik, getIn } from "formik";
 
 import InputField from "common/components/form/Input";
+import { Loader } from "common/components/atoms/Loader";
+import { connect } from "react-redux";
+import { ClassAttributes, Fragment, HTMLAttributes, ReactChild, ReactFragment, ReactPortal, ThHTMLAttributes, TdHTMLAttributes, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import SelectAsync from "common/components/form/AsyncSelect";
+import { InfoIcon, PlusCircleIcon, StopIcon, XCircleIcon } from "@primer/octicons-react";
+import TextArea from "common/components/form/TextArea";
+import { fetchUserProperties } from "services/common.service";
+import ReactRRuleGenerator, { translations } from "common/components/rrule-form";
 
-const ClientJobAddForm = () => {
+const ClientJobAddForm = (props: any) => {
+  const navigate = useNavigate();
+  const [properties, setProperties] = useState([]);
+  const [clientDetails, setClientDetails] = useState(null);
+  const [rruleStr, setRruleStr] = useState('DTSTART:20220114T035500Z RRULE:FREQ=MONTHLY;INTERVAL=1;BYMONTHDAY=1;UNTIL=20220127T050300Z');
+  const [activeTab, setActiveTab] = useState('One Off');
+  const getTranslation = () => {
+    switch ('en') {
+      case 'en': return translations.english;
+      default: return translations.english;
+    };
+  };
+
+  const initialValues = {
+    name: '',
+    description: '',
+    note: '',
+    jobFor: '',
+    jobRequest: '',
+    assignees: [],
+    lineItems: [{
+      name: {
+        label: '',
+        value: ''
+      },
+      description: '',
+      quantity: 0,
+      unitPrice: 0,
+      total: 0
+    }]
+  };
+
+  const RequestSchema = Yup.object().shape({
+    name: Yup.string()
+      .required('Quote title is required')
+      .min(3, 'Quote title seems to be too short'),
+    description: Yup.string(),
+    note: Yup.string(),
+    jobFor: Yup.object().shape({
+      value: Yup.string().required('Client is required for this quote'),
+      label: Yup.string()
+    }),
+    jobRequest: Yup.string().notRequired(),
+    lineItems: Yup.array()
+      .of(
+        Yup.object().shape({
+          name: Yup.object().shape({
+            value: Yup.string(),
+            label: Yup.string().required('Please select a line item.')
+          }),
+          description: Yup.string(),
+          quantity: Yup.number(),
+          unitPrice: Yup.number(),
+          total: Yup.number().notRequired()
+        })
+      )
+  });
+
+  const formik = useFormik({
+    enableReinitialize: true,
+    initialValues: initialValues,
+    validationSchema: RequestSchema,
+    validateOnChange: true,
+    onSubmit: async (data: any) => { }
+  });
+
+  /**
+   * Handles Line Item selection
+   * @param key 
+   * @param selected 
+   */
+  const handleLineItemSelection = (key: string, { label, value, meta }: any) => {
+    formik.setFieldValue(`${key}.name`, { label, value });
+    formik.setFieldValue(`${key}.description`, meta?.description || 'Enter your notes here...');
+  }
+
+  /**
+   * Handles Client selection
+   */
+  const handleClientSelection = async ({ label, value, meta }: any) => {
+    formik.setFieldValue(`jobFor`, { label, value });
+    setClientDetails(meta);
+
+    const response = await fetchUserProperties(value);
+    setProperties(response.data?.data?.data?.rows || []);
+  }
+
+  /**
+   * Handles Assignees selection
+   */
+  const handleWorkerSelection = (selected: any[]) => {
+    formik.setFieldValue(`assignees`, selected);
+  }
+
+  /**
+   * Handles RRule
+   * @param newRRule 
+   */
+  const handleChange = (newRRule: any) => {
+    setRruleStr(newRRule);
+  };
+
+  /**
+   * Custom Error Message
+   * 
+   * @param param Props Object
+   * @returns JSX
+   */
+  const ErrorMessage = ({ name }: any) => {
+    if (!name) return (<></>);
+
+    const error = getIn(formik.errors, name);
+    const touch = getIn(formik.touched, name);
+
+    return ((touch && error) || error) ? (<>
+      <div className="col-1" style={{ width: '20px' }}><StopIcon size={14} /></div><div className="col">{error}</div>
+    </>) : null;
+  };
+
   const columns: Column<any>[] = useMemo(
-    () => [
-
-    ],
+    () => [],
     []
   );
 
@@ -15,149 +143,178 @@ const ClientJobAddForm = () => {
     useTable({ columns, data: [] });
 
   return (
-    <form>
-      <div className="row mt-3 mb-3">
-        <div className="col">
-          <div className="card">
-            <h6 className="txt-bold">Client Name</h6>
-            <InputField label="Title" placeholder="Enter title" />
-            <div className="mb-3">
-              <label
-                htmlFor="instructions"
-                className="form-label txt-dark-grey"
-              >
-                Instructions
-              </label>
-              <textarea
-                id="instructions"
-                name="instructions"
-                className={`form-control`}
-                placeholder={"Enter instructions"}
+    <form onSubmit={formik.handleSubmit} style={{ position: 'relative' }}>
+      <Loader isLoading={props.isLoading} />
+      <FormikProvider value={formik}>
+        <div className="row">
+          <div className="col pb-3">
+            <div className="card full-height">
+              <h6 className="txt-bold">Job Details</h6>
+              <div className="col">
+                <div className="row">
+                  <div className="col-12">
+                    <InputField
+                      label="Job Title"
+                      type="text"
+                      placeholder="Title"
+                      name={`name`}
+                      value={formik.values.name}
+                      onChange={formik.handleChange}
+                      helperComponent={
+                        formik.errors.name && formik.touched.name ? (
+                          <div className="txt-red">{formik.errors.name}</div>
+                        ) : null
+                      }
+                    />
+                  </div>
+                  <div className="col-12">
+                    <TextArea
+                      label={'Job Instructions'}
+                      name={`description`}
+                      rows={4}
+                      value={formik.values.description}
+                      onChange={formik.handleChange}
+                      className={`form-control`} placeholder={"Quote's description..."}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="col pb-3">
+            <div className="card full-height">
+              <h6 className="txt-bold">Client Details</h6>
+              <SelectAsync
+                name={`jobFor`}
+                label="Select Client"
+                value={formik.values.jobFor}
+                resource={{ name: 'users', labelProp: 'fullName', valueProp: '_id', params: { roles: 'CLIENT' } }}
+                onChange={handleClientSelection}
               />
+              <div className="row text-danger mt-1 mb-2">
+                <ErrorMessage name={`jobFor.value`} />
+              </div>
+              {clientDetails ? (
+                <div className="row bg-grey m-0">
+                  <div className="col p-2 ps-4">
+                    <div className="txt-orange">{(clientDetails as any)?.fullName}</div>
+                    <div className="txt-bold">{(clientDetails as any)?.email} / {(clientDetails as any)?.phoneNumber}</div>
+                    <div className="txt-grey">{(clientDetails as any)?.address?.street1}, {(clientDetails as any)?.address?.city}, {(clientDetails as any)?.address?.country}</div>
+                  </div>
+                </div>) : null}
+              <div className="txt-bold mt-3 txt-grey">Client's Properties</div>
+              {!properties.length ? <div className="txt-orange"><StopIcon size={16} /> There are no properties assigned to the client.</div> : null}
+              {properties.map((property: any) => (<div className="row mb-2 border-bottom">
+                <div className="col-1 p-2 pt-3 ps-4">
+                  <input name="property" type="checkbox" value={property._id} />
+                </div>
+                <div className="col p-2 ps-4">
+                  <div className="txt-grey">{property.name}</div>
+                  <div className="">{property?.street1}, {property?.postalCode}, {property?.city}, {property?.state}, {property?.country}</div>
+                </div>
+              </div>))}
             </div>
           </div>
         </div>
-        <div className="col">
-          <div className="card">
-            <h6 className="txt-bold">Job Detail</h6>
-            <div className="row border-bottom">
-              <div className="col p-2 ps-4">
-                <div className="txt-grey">Job number</div>
-                <div className="row">
-                  <div className="col">#13</div>
-                  <div className="col txt-orange pointer">Change</div>
+        <div className="card">
+          <div className="row m-2">
+            <div className="col">
+              <div className={`row pt-4 cursor-pointer ${activeTab === 'One Off' ? 'border-top-orange' : 'bg-light-grey border-top-grey'}`} onClick={() => setActiveTab('One Off')}>
+                <div className="col-1">
+                  <box-icon size="md" name="calendar-week"></box-icon>
+                </div>
+                <div className="col ms-2">
+                  <h5>ONE-OFF JOB</h5>
+                  <p>A one time job with one or more visits</p>
                 </div>
               </div>
-              <div className="col p-2 ps-4">
-                <div className="txt-grey">Job type</div>
-                <div className="">Recurring job</div>
-              </div>
             </div>
-            <div className="row border-bottom">
-              <div className="col p-2 ps-4">
-                <div className="txt-grey">Started on</div>
-                <div className="">Aug 23, 2021</div>
-              </div>
-              <div className="col p-2 ps-4">
-                <div className="txt-grey">Lasts for</div>
-                <div className="">6 years</div>
-              </div>
-            </div>
-            <div className="row border-bottom mb-3">
-              <div className="col p-2 ps-4">
-                <div className="txt-grey">Billing frequency</div>
-                <div className="">After every visit</div>
-              </div>
-              <div className="col p-2 ps-4">
-                <div className="txt-grey">Schedule</div>
-                <div className="">Every 2 weeks on Mondays</div>
+            <div className="col">
+              <div className={`row pt-4 cursor-pointer ${activeTab === 'Recurring' ? 'border-top-orange' : 'bg-light-grey border-top-grey'}`} onClick={() => setActiveTab('Recurring')}>
+                <div className="col-1">
+                  <box-icon size="md" name="calendar"></box-icon>
+                </div>
+                <div className="col ms-2">
+                  <h5>RECURRING JOB</h5>
+                  <p>A recurring  job with one or more visits</p>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </div>
-
-      <div className="card ">
-        <div className="row mt-3 mb-3">
-          <div className="col">
-            <div className="ms-2 pt-4 row border-top-orange">
-              <div className="col-1">
-                <box-icon size="md" name="calendar-week"></box-icon>
-              </div>
-              <div className="col ms-2">
-                <h5>ONE-OFF JOB</h5>
-                <p>A one time job with one or more visits</p>
-              </div>
-            </div>
-            <div className="card">
-              <h6 className="txt-bold">Schedule</h6>
-              <div className="mb-3">
-                <div className="row">
-                  <div className="col">
-                    <InputField label="Start date" type="date" />
-                  </div>
-                  <div className="col">
-                    <InputField label="End date" type="date" />
+          <div className="row">
+            {activeTab === 'One Off' ? (
+              <div className="col card m-4">
+                <div className="mb-3">
+                  <div className="row">
+                    <div className="col">
+                      <InputField label="Start date" type="date" />
+                    </div>
+                    <div className="col">
+                      <InputField label="End date" type="date" />
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div className="mb-3">
-                <div className="row">
-                  <div className="col">
-                    <InputField label="Start time" type="time" />
-                  </div>
-                  <div className="col">
-                    <InputField label="End time" type="time" />
+                <div className="mb-3">
+                  <div className="row">
+                    <div className="col">
+                      <InputField label="Start time" type="time" />
+                    </div>
+                    <div className="col">
+                      <InputField label="End time" type="time" />
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div className="mb-3">
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  value=""
-                  id="flexCheckDefault"
+                <div className="mb-3">
+                  <input
+                    className="form-check-input"
+                    type="checkbox"
+                    value=""
+                    id="flexCheckDefault"
+                  />
+                  <label
+                    className="ms-2 form-check-label"
+                    htmlFor="flexCheckDefault"
+                  >
+                    Schedule later
+                  </label>
+                </div>
+              </div>)
+              : null}
+            {activeTab === 'Recurring' ? (
+              <div className="col-6 my-3 mx-2">
+                <ReactRRuleGenerator
+                  onChange={handleChange as any}
+                  value={rruleStr as string}
+                  config={{
+                    hideStart: false,
+                  } as any}
+                  translations={getTranslation() as any}
                 />
-                <label
-                  className="ms-2 form-check-label"
-                  htmlFor="flexCheckDefault"
-                >
-                  Schedule later
-                </label>
-              </div>
-            </div>
-          </div>
-          <div className="col">
-            <div className="me-2 pt-4 row bg-light-grey">
-              <div className="col-1">
-                <box-icon size="md" name="calendar"></box-icon>
-              </div>
-              <div className="col ms-2">
-                <h5>RECURRING JOB</h5>
-                <p>A one time job with one or more visits</p>
-              </div>
-            </div>
-            <div className="card">
+                <div className="col-12 mt-3">
+                  <small>{rruleStr.split(';').join("; ")}</small>
+                </div>
+              </div>)
+              : null}
+            <div className="col card m-3">
               <div className="row mb-3">
                 <div className="col d-flex flex-row">
                   <h6 className="txt-bold mt-2">Team</h6>
                 </div>
-                <div className="col">
-                  <button
-                    onClick={() => {}}
-                    type="button"
-                    className="btn btn-secondary d-flex float-end"
-                  >
-                    Assign
-                  </button>
-                </div>
               </div>
-              <div className="row m-2 bg-light-grey">
-                <div className="col p-2 txt-black txt-bold">Dan Dinh</div>
-                <div className="col-1 m-2 pointer">
-                  <box-icon name="x-square" type="solid" color="#FF0048" />
+              <div className="row">
+                <SelectAsync
+                  name={`assignees`}
+                  label="Select Workers"
+                  value={formik.values.assignees}
+                  resource={{ name: 'users', labelProp: 'fullName', valueProp: '_id', params: { roles: 'WORKER' } }}
+                  onChange={handleWorkerSelection}
+                  isMulti={true}
+                  closeOnSelect={true}
+                />
+                <div className="row text-danger mt-1 mb-2">
+                  <ErrorMessage name={`assignees`} />
                 </div>
               </div>
 
@@ -174,145 +331,198 @@ const ClientJobAddForm = () => {
                 >
                   Email team about assignment
                 </label>
+                <div>
+                  <small><InfoIcon size={14} /> If you select Email, each team members will receive email notification.</small>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div className="card">
-        <h6 className="txt-bold">Line items</h6>
-        <div className="row border-bottom">
-          <div className="col-4 p-2 ps-4">
-            <div className="bg-light-grey txt-grey p-2 txt-bold">
-              PRODUCT / SERVICE
+        <div className="card">
+          <h6 className="txt-bold">Line items</h6>
+          <small className="text-warning"><InfoIcon size={14} /> These line items will appear in the job details and invoice.</small>
+          <div className="row">
+            <div className="col-5 p-2 ps-3">
+              <div className="bg-light-grey txt-grey p-2 txt-bold">
+                PRODUCT / SERVICE
+              </div>
             </div>
-            <InputField label="" placeholder="Name" />
-            <div className="mb-3">
-              <textarea
-                className={`form-control`}
-                placeholder={"Description"}
-              />
+            <div className="col p-2 ps-3">
+              <div className="bg-light-grey txt-grey p-2 txt-bold">QTY.</div>
             </div>
-          </div>
-          <div className="col p-2 ps-4">
-            <div className="bg-light-grey txt-grey p-2 txt-bold">QTY.</div>
-            <InputField type="number" label="" value={0} placeholder="0" />
+            <div className="col p-2 ps-3">
+              <div className="bg-light-grey txt-grey p-2 txt-bold">
+                UNIT PRICE
+              </div>
+            </div>
+            <div className="col p-2 ps-3">
+              <div className="bg-light-grey txt-grey p-2 txt-bold">TOTAL</div>
+            </div>
+            <div className="col-1 p-2 ps-3">
+              <div className=""></div>
+            </div>
           </div>
 
-          <div className="col p-2 ps-4">
-            <div className="bg-light-grey txt-grey p-2 txt-bold">
-              UNIT PRICE
+          <div className="row pb-3">
+            <FieldArray
+              name="lineItems"
+              render={(arrayHelpers) => (
+                <div>
+                  {formik.values.lineItems.map((friend: any, index: number) => (
+                    <Fragment key={`~${index}`}>
+                      <div className="row ps-1">
+                        <div className="col-5">
+                          <SelectAsync
+                            name={`lineItems[${index}].name`}
+                            placeholder="Search line items"
+                            // value={formik.values.lineItems[index].name}
+                            resource={{ name: 'line-items', labelProp: 'name', valueProp: '_id' }}
+                            onChange={(selected: any) => handleLineItemSelection(`lineItems[${index}]`, selected)}
+                          />
+                          <div className="row text-danger mt-1 mb-2">
+                            <ErrorMessage name={`lineItems[${index}].name.label`} />
+                          </div>
+                          <textarea
+                            name={`lineItems[${index}].description`}
+                            value={formik.values.lineItems[index].description}
+                            onChange={formik.handleChange}
+                            className={`form-control mb-2`} placeholder={"Line item's description..."}
+                          />
+                        </div>
+                        <div className="col">
+                          <InputField
+                            placeholder="Quantity"
+                            type="number"
+                            name={`lineItems[${index}].quantity`}
+                            value={formik.values.lineItems[index].quantity}
+                            onChange={formik.handleChange}
+                          />
+                        </div>
+                        <div className="col">
+                          <InputField
+                            type="number"
+                            placeholder="Unit Price"
+                            name={`lineItems[${index}].unitPrice`}
+                            value={formik.values.lineItems[index].unitPrice}
+                            onChange={formik.handleChange}
+                          />
+                        </div>
+                        <div className="col pt-2 mt-1 ps-1 text-center">
+                          <strong>{`$ ${formik.values.lineItems[index].quantity * formik.values.lineItems[index].unitPrice}`}</strong>
+                        </div>
+                        <div className="col-1 pt-2 mt-1 ps-1 pointer text-center">
+                          <span className="mr-2" onClick={() => arrayHelpers.push({
+                            name: '',
+                            description: '',
+                            quantity: 0,
+                            unitPrice: 0,
+                            total: 0
+                          })}>
+                            <PlusCircleIcon size={20} />
+                          </span>
+                          &nbsp;&nbsp;
+                          {(index !== 0) ? (<span onClick={() => arrayHelpers.remove(index)}>
+                            <XCircleIcon size={20} />
+                          </span>) : null}
+                        </div>
+                      </div>
+                    </Fragment>)
+                  )}
+                </div>
+              )}
+            />
+          </div>
+
+          <div className="row border-top">
+            <div className="col d-flex flex-row mt-3">
+              <h6 className="txt-bold mt-2">Job Total</h6>
             </div>
-            <div className="row">
-              <div className="col-1 mt-3 pt-2 pe-4">
-                <box-icon name="dollar"></box-icon>
-              </div>
-              <div className="col">
-                <InputField type="number" label="" value={0} placeholder="0" />
+            <div className="col txt-bold mt-3">
+              <div className="d-flex float-end">
+                <h5 className="txt-bold mt-2">$ {formik.values.lineItems.reduce((current, next) => (current += next.quantity * next.unitPrice), 0)}</h5>
               </div>
             </div>
           </div>
-          <div className="col p-2 ps-4">
-            <div className="bg-light-grey txt-grey p-2 txt-bold">TOTAL</div>
-            <div className="row">
-              <div className="col-1 mt-3 pt-2 pe-4">
-                <box-icon name="dollar"></box-icon>
-              </div>
-              <div className="col">
-                <InputField type="number" label="" value={0} placeholder="0" />
-              </div>
+        </div>
+
+        <div className="card">
+          <div className="row bg-grey m-2 p-3">
+            <div className="col d-flex flex-row">
+              <h6 className="txt-bold mt-2">Visits</h6>
+            </div>
+            <div className="col">
+              <button
+                onClick={() => { }}
+                type="button"
+                className="btn btn-primary d-flex float-end"
+              >
+                New visit
+              </button>
             </div>
           </div>
+
+          <table {...getTableProps()} className="table txt-dark-grey">
+            <thead>
+              {headerGroups.map((headerGroup: { getHeaderGroupProps: () => JSX.IntrinsicAttributes & ClassAttributes<HTMLTableRowElement> & HTMLAttributes<HTMLTableRowElement>; headers: any[]; }) => (
+                <tr {...headerGroup.getHeaderGroupProps()} className="rt-head">
+                  {headerGroup.headers.map((column: { getHeaderProps: () => JSX.IntrinsicAttributes & ClassAttributes<HTMLTableHeaderCellElement> & ThHTMLAttributes<HTMLTableHeaderCellElement>; render: (arg0: string) => boolean | ReactChild | ReactFragment | ReactPortal | null | undefined; }) => (
+                    <th {...column.getHeaderProps()} scope="col">
+                      {column.render("Header")}
+                    </th>
+                  ))}
+                </tr>
+              ))}
+            </thead>
+
+            <tbody {...getTableBodyProps()} className="rt-tbody">
+              {rows.map((row: Row<any>) => {
+                prepareRow(row);
+
+                return (
+                  <tr {...row.getRowProps()} className="rt-tr-group">
+                    {row.cells.map((cell: { getCellProps: () => JSX.IntrinsicAttributes & ClassAttributes<HTMLTableDataCellElement> & TdHTMLAttributes<HTMLTableDataCellElement>; render: (arg0: string) => boolean | ReactChild | ReactFragment | ReactPortal | null | undefined; }) => (
+                      <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
+                    ))}
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
 
         <div className="mb-3 mt-3">
+          <button onClick={() => { }} type="button" className="btn btn-primary">
+            Save Job
+          </button>
           <button
-            onClick={() => {}}
+            onClick={() => { }}
             type="button"
-            className="btn btn-secondary"
+            className="btn btn-secondary ms-3"
           >
-            Add line item
+            Save and create another
           </button>
-          <button onClick={() => []} type="button" className="btn">
-            Delete
+          <button onClick={() => navigate(-1)} type="button" className="btn ms-3">
+            Cancel
           </button>
         </div>
-
-        <div className="hr mb-3"></div>
-
-        <div className="row mb-3">
-          <div className="col d-flex flex-row">
-            <h6 className="txt-bold mt-2">Total</h6>
-          </div>
-          <div className="col txt-bold mt-2">
-            <div className="d-flex float-end">$ 0.00</div>
-          </div>
-        </div>
-      </div>
-
-      <div className="card">
-        <div className="row bg-grey m-2 p-3">
-          <div className="col d-flex flex-row">
-            <h6 className="txt-bold mt-2">Visits</h6>
-          </div>
-          <div className="col">
-            <button
-              onClick={() => {}}
-              type="button"
-              className="btn btn-primary d-flex float-end"
-            >
-              New visit
-            </button>
-          </div>
-        </div>
-
-        <table {...getTableProps()} className="table txt-dark-grey">
-          <thead>
-            {headerGroups.map((headerGroup) => (
-              <tr {...headerGroup.getHeaderGroupProps()} className="rt-head">
-                {headerGroup.headers.map((column) => (
-                  <th {...column.getHeaderProps()} scope="col">
-                    {column.render("Header")}
-                  </th>
-                ))}
-              </tr>
-            ))}
-          </thead>
-
-          <tbody {...getTableBodyProps()} className="rt-tbody">
-            {rows.map((row) => {
-              prepareRow(row);
-
-              return (
-                <tr {...row.getRowProps()} className="rt-tr-group">
-                  {row.cells.map((cell) => (
-                    <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
-                  ))}
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
-
-      <div className="mb-3 mt-3">
-        <button onClick={() => {}} type="button" className="btn btn-primary">
-          Save Job
-        </button>
-        <button
-          onClick={() => {}}
-          type="button"
-          className="btn btn-secondary ms-3"
-        >
-          Save and create another
-        </button>
-        <button onClick={() => []} type="button" className="btn ms-3">
-          Cancel
-        </button>
-      </div>
+      </FormikProvider>
     </form>
   );
 };
 
-export default ClientJobAddForm;
+const mapStateToProps = (state: any) => {
+  return {
+    isLoading: state.quotes.isLoading
+  };
+};
+
+const mapDispatchToProps = (dispatch: any) => ({
+  actions: {
+    addQuote: (payload: any) => {
+      dispatch(quotesActions.createQuotes(payload));
+    },
+  },
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(ClientJobAddForm);

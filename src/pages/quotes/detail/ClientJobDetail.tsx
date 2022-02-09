@@ -1,5 +1,4 @@
 import { useNavigate } from "react-router-dom";
-
 import ClientJobDetailData from "./ClientJobDetailData";
 
 const ClientAdd = () => {
@@ -15,9 +14,9 @@ const ClientAdd = () => {
           <span className="col">Back to previous</span>
         </div>
         <div className="d-flex flex-row">
-          <h3 className="txt-bold">Job for Bonnie Green</h3>
+          <h3 className="txt-bold">Job Quote for Bonnie Green</h3>
         </div>
-        <div className="txt-grey">Job #13</div>
+        <div className="txt-grey">Quote #13</div>
       </div>
       <div className="m-1">
         <ClientJobDetailData />

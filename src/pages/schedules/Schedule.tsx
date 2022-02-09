@@ -13,6 +13,7 @@ import { IEvent } from 'common/types/events';
 import Modal from 'common/components/atoms/Modal';
 import useMountedRef from 'common/hooks/is-mounted';
 import EventDetail from './EventDetail';
+import EditEvent from './EditEvent';
 
 const DemoApp = (props: any) => {
   const isMounted = useMountedRef();
@@ -171,7 +172,7 @@ const DemoApp = (props: any) => {
         onRequestClose={() => setShowEventDetail(null)}
       >
         {(!!showEventDetail) ? (
-          <EventDetail
+          <EditEvent
             event={showEventDetail}
             closeModal={() => setShowEventDetail(null)} />
         ) : <></>}

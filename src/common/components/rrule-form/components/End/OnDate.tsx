@@ -15,7 +15,7 @@ const EndOnDate = ({
   return (
     <>
       <div className='col-sm-5'>
-        <input type="date" value={formattedDate} onChange={(event: any) => {
+        <input type="date" className="form-control" value={formattedDate} onChange={(event: any) => {
           const editedEvent = {
             target: {
               value: `${event.target.value} ${formattedTime}`,
@@ -28,7 +28,7 @@ const EndOnDate = ({
         />
       </div>
       <div className='col-sm-3'>
-        <input type="time" value={formattedTime} onChange={(event: any) => {
+        <input type="time" className="form-control" value={formattedTime} onChange={(event: any) => {
           const editedEvent = {
             target: {
               value: `${formattedDate}  ${event.target.value}`,

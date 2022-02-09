@@ -11,9 +11,9 @@ const ResetPassword = (props: any) => {
   
   useEffect(() => {
     if(props.isSuccess && props.isFailed === false) {
-      navigate(endpoints.auth.signin);
+      navigate(endpoints.auth.signIn);
     }
-  }, [props.isSuccess, props.isFailed])
+  }, [props.isSuccess, props.isFailed, navigate])
 
   return (
     <div className="container-fluid txt-grey">

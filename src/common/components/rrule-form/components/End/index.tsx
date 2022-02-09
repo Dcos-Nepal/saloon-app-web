@@ -37,7 +37,7 @@ const End: React.FC<Props> = ({
         <select
           name='end.mode'
           id={id}
-          className=''
+          className='form-control'
           value={mode}
           onChange={handleChange}
         >

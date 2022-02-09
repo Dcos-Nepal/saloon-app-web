@@ -1,13 +1,10 @@
-import { useMemo } from "react";
-import { Column, useTable } from "react-table";
-
 import InputField from "common/components/form/Input";
 
-const ClientJobDetailData = () => {
-  const columns: Column<any>[] = useMemo(() => [], []);
+const ClientQuoteDetail = () => {
+  // const columns: Column<any>[] = useMemo(() => [], []);
 
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
-    useTable({ columns, data: [] });
+  // const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
+  //   useTable({ columns, data: [] });
 
   return (
     <div>
@@ -45,17 +42,17 @@ const ClientJobDetailData = () => {
         </div>
         <div className="col">
           <div className="card">
-            <h6 className="txt-bold">Job Detail</h6>
+            <h6 className="txt-bold">Quote Detail</h6>
             <div className="row border-bottom">
               <div className="col p-2 ps-4">
-                <div className="txt-grey">Job number</div>
+                <div className="txt-grey">Quote number</div>
                 <div className="row">
                   <div className="col">#13</div>
                   <div className="col txt-orange pointer">Change</div>
                 </div>
               </div>
               <div className="col p-2 ps-4">
-                <div className="txt-grey">Job type</div>
+                <div className="txt-grey">Quote type</div>
                 <div className="">Recurring job</div>
               </div>
             </div>
@@ -173,7 +170,7 @@ const ClientJobDetailData = () => {
           </div>
         </div>
 
-        <table {...getTableProps()} className="table txt-dark-grey">
+        {/* <table {...getTableProps()} className="table txt-dark-grey">
           <thead>
             {headerGroups.map((headerGroup) => (
               <tr {...headerGroup.getHeaderGroupProps()} className="rt-head">
@@ -199,10 +196,10 @@ const ClientJobDetailData = () => {
               );
             })}
           </tbody>
-        </table>
+        </table> */}
       </div>
     </div>
   );
 };
 
-export default ClientJobDetailData;
+export default ClientQuoteDetail;

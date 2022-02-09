@@ -29,8 +29,8 @@ const RepeatMonthly = ({
 
   return (
     <div>
-      <div className='form-group row d-flex align-items-sm-center'>
-        <div className='col-sm-2 offset-sm-1'>
+      <div className='form-group mt-2 row d-flex align-items-sm-center'>
+        <div className='col-sm-2  offset-sm-2'>
           {translateLabel(translations, 'repeat.monthly.every')}
         </div>
         <div className='col-sm-3'>
@@ -38,7 +38,7 @@ const RepeatMonthly = ({
             id={`${id}-interval`}
             name='repeat.monthly.interval'
             aria-label='Repeat monthly interval'
-            className=''
+            className='form-control'
             value={interval}
             onChange={numericalFieldHandler(handleChange)}
             style={{'width': '50px'}}

@@ -13,8 +13,8 @@ const WorkerAdd = () => {
           </span>
           <span className="col">Back to previous</span>
         </div>
-        <div className="d-flex flex-row">
-          <h3>Add New Worker</h3>
+        <div className="d-flex flex-row mt-2">
+          <h3 className="extra">Add New Worker</h3>
         </div>
       </div>
       <div className="row m-1">

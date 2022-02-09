@@ -11,18 +11,23 @@ import TextArea from "common/components/form/TextArea";
 import { connect } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { Loader } from "common/components/atoms/Loader";
+import { fetchUserProperties } from "services/common.service";
 
 const QuoteAddForm = (props: any) => {
   const navigate = useNavigate();
   const [clientDetails, setClientDetails] = useState(null);
+  const [properties, setProperties] = useState([]);
   const initialValues = {
-    name: '',
+    title: '',
     description: '',
     note: '',
     quoteFor: '',
     jobRequest: '',
     lineItems: [{
-      name: '',
+      name: {
+        label: '',
+        value: ''
+      },
       description: '',
       quantity: 0,
       unitPrice: 0,
@@ -31,11 +36,11 @@ const QuoteAddForm = (props: any) => {
   };
 
   const RequestSchema = Yup.object().shape({
-    name: Yup.string()
+    title: Yup.string()
       .required('Quote title is required')
       .min(3, 'Quote title seems to be too short'),
     description: Yup.string(),
-    note: Yup.string(),
+    note: Yup.string().notRequired(),
     quoteFor: Yup.object().shape({
       value: Yup.string().required('Client is required for this quote'),
       label: Yup.string()
@@ -66,11 +71,12 @@ const QuoteAddForm = (props: any) => {
       const quotePayload = {...data};
 
       // making propertied compliant to Request payload
-      quotePayload.title = data.name;
+      quotePayload.title = data.title;
       quotePayload.quoteFor = data.quoteFor.value;
       quotePayload.lineItems = data.lineItems.map((li: any) => {
         return {
-          name: li.name?.label,
+          ref: li.name.value,
+          name: li.name.label,
           description: li.description,
           quantity: li.quantity,
           unitPrice: li.unitPrice,
@@ -78,13 +84,12 @@ const QuoteAddForm = (props: any) => {
         }
       });
 
-      delete quotePayload.name;
-
       if (!quotePayload.jobRequest) {
         delete quotePayload.jobRequest;
       }
       
-      return await props.actions.addQuote(quotePayload);
+      // Dispatch action to create Job Quote
+      await props.actions.addQuote(quotePayload);
     },
   });
 
@@ -94,16 +99,19 @@ const QuoteAddForm = (props: any) => {
    * @param selected 
    */
   const handleLineItemSelection = (key: string, {label, value, meta}: any) => {
-    formik.setFieldValue(`${key}.name`, {label, value});
+    formik.setFieldValue(`${key}.name`, {label, value });
     formik.setFieldValue(`${key}.description`, meta?.description || 'Enter your notes here...');
   }
 
   /**
    * Handles Client selection
    */
-  const handleClientSelection = ({label, value, meta}: any) => {
+  const handleClientSelection = async ({label, value, meta}: any) => {
     formik.setFieldValue(`quoteFor`, {label, value});
-    setClientDetails(meta)
+    setClientDetails(meta);
+
+    const response = await fetchUserProperties(value);
+    setProperties(response.data?.data?.data?.rows || []);
   }
 
   /**
@@ -118,9 +126,9 @@ const QuoteAddForm = (props: any) => {
     const error = getIn(formik.errors, name);
     const touch = getIn(formik.touched, name);
 
-    return ((touch && error) || error) ? (<>
+    return ((touch && error) || error) ? (<div className="row text-danger mt-1 mb-2">
       <div className="col-1" style={{width: '20px'}}><StopIcon size={14} /></div><div className="col">{error}</div>
-    </>) : null;
+    </div>) : null;
   };
 
   return (
@@ -128,8 +136,8 @@ const QuoteAddForm = (props: any) => {
       <Loader isLoading={props.isLoading} />
       <FormikProvider value={formik}>
         <div className="row mb-3">
-          <div className="col">
-            <div className="card">
+          <div className="col pb-3">
+            <div className="card" style={{"height": "100%"}}>
               <h6 className="txt-bold">Quote Details</h6>
               <div className="col">
                 <div className="row">
@@ -138,12 +146,12 @@ const QuoteAddForm = (props: any) => {
                       label="Quote Title"
                       type="text"
                       placeholder="Title"
-                      name={`name`}
-                      value={formik.values.name}
+                      name={`title`}
+                      value={formik.values.title}
                       onChange={formik.handleChange}
                       helperComponent={
-                        formik.errors.name && formik.touched.name ? (
-                          <div className="txt-red">{formik.errors.name}</div>
+                        formik.errors.title && formik.touched.title ? (
+                          <div className="txt-red">{formik.errors.title}</div>
                         ) : null
                       }
                     />
@@ -158,35 +166,23 @@ const QuoteAddForm = (props: any) => {
                       className={`form-control`} placeholder={"Quote's description..."}
                     />
                   </div>
-                  <div className="col-12 mt-2">
-                    <TextArea
-                      label={'Quote Notes'}
-                      name={`note`}
-                      rows={3}
-                      value={formik.values.note}
-                      onChange={formik.handleChange}
-                      className={`form-control`} placeholder={"Quote's note..."}
-                    />
-                  </div>
                 </div>
               </div>
             </div>
           </div>
-          <div className="col">
-            <div className="card">
+          <div className="col pb-3">
+            <div className="card" style={{"height": "100%"}}>
               <h6 className="txt-bold">Client Details</h6>
               <SelectAsync
                 name={`quoteFor`}
                 label="Select Client"
                 value={formik.values.quoteFor}
-                resource={{ name: 'users', labelProp: 'firstName', valueProp: '_id', params: { roles: 'CLIENT' } }}
+                resource={{ name: 'users', labelProp: 'fullName', valueProp: '_id', params: { roles: 'CLIENT' } }}
                 onChange={handleClientSelection}
               />
-              <div className="row text-danger mt-1 mb-2">
-                <ErrorMessage name={`quoteFor.value`} />
-              </div>
+              <ErrorMessage name={`quoteFor.value`} />
               {clientDetails ? (
-                <div className="row bg-grey">
+                <div className="row bg-grey m-0">
                   <div className="col p-2 ps-4">
                     <div className="txt-orange">{(clientDetails as any)?.fullName}</div>
                     <div className="txt-bold">{(clientDetails as any)?.email} / {(clientDetails as any)?.phoneNumber}</div>
@@ -194,31 +190,23 @@ const QuoteAddForm = (props: any) => {
                   </div>
                 </div>) : null }
               <div className="txt-bold mt-3 txt-grey">Client's Properties</div>
-              <div className="row mb-2 border-bottom">
+              {!properties.length ? <div className="txt-orange"><StopIcon size={16} /> There are no properties assigned to the client.</div> : null}
+              {properties.map((property: any) => (<div key={property._id} className="row mb-2 border-bottom">
                 <div className="col-1 p-2 pt-3 ps-4">
-                  <input type="checkbox" value="123" />
+                  <input name="property" type="checkbox" value={property._id} />
                 </div>
                 <div className="col p-2 ps-4">
-                  <div className="txt-grey">Woodland Wonder Manson</div>
-                  <div className="">91 Woolnough Road, Tusmore, South Australia, 5065, Australia</div>
+                  <div className="txt-grey">{property.name}</div>
+                  <div className="">{property?.street1}, {property?.postalCode}, {property?.city}, {property?.state}, {property?.country}</div>
                 </div>
-              </div>
-              <div className="row mb-3">
-                <div className="col-1 p-2 pt-3 ps-4">
-                  <input type="checkbox" value="123" />
-                </div>
-                <div className="col p-2 ps-4">
-                  <div className="txt-grey">Woodland Wonder Manson</div>
-                  <div className="">91 Woolnough Road, Tusmore, South Australia, 5065, Australia</div>
-                </div>
-              </div>
+              </div>))}
             </div>
           </div>
         </div>
 
         <div className="card">
           <h6 className="txt-bold">Line items</h6>
-          <div className="row border-bottom">
+          <div className="row">
             <div className="col-5 p-2 ps-3">
               <div className="bg-light-grey txt-grey p-2 txt-bold">
                 PRODUCT / SERVICE
@@ -240,7 +228,7 @@ const QuoteAddForm = (props: any) => {
             </div>
           </div>
 
-          <div className="row border-bottom pb-3">
+          <div className="row pb-3">
             <FieldArray
               name="lineItems"
               render={(arrayHelpers) => (
@@ -251,18 +239,17 @@ const QuoteAddForm = (props: any) => {
                         <div className="col-5">
                           <SelectAsync
                             name={`lineItems[${index}].name`}
-                            value={formik.values.lineItems[index].name}
+                            placeholder="Search line items"
+                            // value={formik.values.lineItems[index].name}
                             resource={{ name: 'line-items', labelProp: 'name', valueProp: '_id' }}
                             onChange={(selected: any) => handleLineItemSelection(`lineItems[${index}]`, selected)}
                           />
-                          <div className="row text-danger mt-1 mb-2">
-                            <ErrorMessage name={`lineItems[${index}].name.label`} />
-                          </div>
+                          <ErrorMessage name={`lineItems[${index}].name.label`} />
                           <textarea
                             name={`lineItems[${index}].description`}
                             value={formik.values.lineItems[index].description}
                             onChange={formik.handleChange}
-                            className={`form-control`} placeholder={"Line item's description..."}
+                            className={`form-control mb-3`} placeholder={"Line item's description..."}
                           />
                         </div>
                         <div className="col">
@@ -283,12 +270,15 @@ const QuoteAddForm = (props: any) => {
                             onChange={formik.handleChange}
                           />
                         </div>
-                        <div className="col pt-4 mt-1 ps-1 text-center">
+                        <div className="col mt-3 ps-1 text-center">
                           <strong>{`$ ${formik.values.lineItems[index].quantity * formik.values.lineItems[index].unitPrice}`}</strong>
                         </div>
-                        <div className="col-1 pt-4 mt-1 ps-1 pointer text-center">
+                        <div className="col-1 mt-3 ps-1 pointer text-center">
                           <span className="mr-2" onClick={() => arrayHelpers.push({
-                            name: '',
+                            name: {
+                              label: '',
+                              value: ''
+                            },
                             description: '',
                             quantity: 0,
                             unitPrice: 0,
@@ -309,12 +299,14 @@ const QuoteAddForm = (props: any) => {
             />
           </div>
 
-          <div className="row mb-3">
-            <div className="col d-flex flex-row">
-              <h6 className="txt-bold mt-2">Total</h6>
+          <div className="row border-top">
+            <div className="col d-flex flex-row mt-3">
+              <h6 className="txt-bold mt-2">Quote Total</h6>
             </div>
-            <div className="col txt-bold mt-2">
-              <div className="d-flex float-end">$ 0.00</div>
+            <div className="col txt-bold mt-3">
+              <div className="d-flex float-end">
+                <h5 className="txt-bold mt-2">$ {formik.values.lineItems.reduce((current, next) => (current += next.quantity * next.unitPrice), 0)}</h5>
+              </div>
             </div>
           </div>
         </div>
@@ -323,7 +315,7 @@ const QuoteAddForm = (props: any) => {
           <button type="submit" className="btn btn-primary">
             Save Quote
           </button>
-          <button onClick={() => navigate(-1)} type="button" className="btn ms-3">
+          <button onClick={() => navigate(-1)} type="button" className="btn ms-3 btn-secondary">
             Cancel
           </button>
         </div>

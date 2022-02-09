@@ -1,7 +1,7 @@
 import { Route, Routes, BrowserRouter as Router } from "react-router-dom";
 
-import { Signup, VerifyEmail } from "pages/auth/signup";
-import Signin from "pages/auth/signin";
+import { SignUp, VerifyEmail } from "pages/auth/signup";
+import SignIn from "pages/auth/signin";
 import { endpoints } from "common/config";
 import ResetPassword from "pages/auth/resetPassword";
 import ChangePassword from "pages/auth/changePassword";
@@ -11,9 +11,9 @@ const AllRoutes = () => {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Signin />}/>
-        <Route path={endpoints.auth.signin} element={<Signin />} />
-        <Route path={endpoints.auth.signup} element={<Signup />} />
+        <Route path="/" element={<SignIn />}/>
+        <Route path={endpoints.auth.signIn} element={<SignIn />} />
+        <Route path={endpoints.auth.signUp} element={<SignUp />} />
         <Route path={endpoints.auth.changePassword} element={<ChangePassword />} />
         <Route path={endpoints.auth.resetPassword} element={<ResetPassword />} />
         <Route path={endpoints.auth.verifyEmail} element={<VerifyEmail />} />

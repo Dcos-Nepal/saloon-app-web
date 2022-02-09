@@ -332,6 +332,7 @@ const ClientDetailForm: FC<IProps> = ({ id, actions, currentClient }) => {
             <div className="mb-3 row">
               <div className="col">
                 <InputField
+                  type="text"
                   label="Post code"
                   placeholder="Enter post code"
                   name="address.postalCode"

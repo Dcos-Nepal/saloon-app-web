@@ -13,9 +13,7 @@ const InputField: FC<any> = ({
 }) => {
   return (
     <div className="mb-3">
-      <label htmlFor={name} className="form-label txt-dark-grey">
-        {label}
-      </label>
+      {label ? (<label htmlFor={name} className="form-label txt-dark-grey">{label}</label>) : null}
       <input
         type={type}
         id={name}

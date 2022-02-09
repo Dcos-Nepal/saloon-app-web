@@ -1,19 +1,19 @@
 import { connect } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
-import SignupForm from "./SignupForm";
+import SignUpForm from "./SignUpForm";
 import { endpoints } from "common/config";
 import Google from "assets/images/google.svg";
 import LogoFull from "assets/images/LogoFull.svg";
 import { useEffect } from "react";
 import { Loader } from "common/components/atoms/Loader";
 
-const Signup = (props: any) => {
+const SignUp = (props: any) => {
   const navigate = useNavigate();
 
   useEffect(() => {
     if (props.isSuccess && props.isFailed === false) {
-      navigate(endpoints.auth.signin);
+      navigate(endpoints.auth.signIn);
     }
   }, [props.isSuccess, props.isFailed, navigate])
 
@@ -31,7 +31,7 @@ const Signup = (props: any) => {
               <h4>Register Account</h4>
               <label>Fill your details or continue with google account</label>
             </div>
-            <SignupForm />
+            <SignUpForm />
             <div>
               <div className="row p-3">
                 <div className="col hr"></div>
@@ -49,7 +49,7 @@ const Signup = (props: any) => {
                   Already have an account?
                   <span
                     className="txt-orange pointer ms-2"
-                    onClick={() => navigate(endpoints.auth.signin)}
+                    onClick={() => navigate(endpoints.auth.signIn)}
                   >
                     Sign In
                   </span>
@@ -71,4 +71,4 @@ const mapStateToProps = (state: any) => {
   })
 };
 
-export default connect(mapStateToProps)(Signup);
+export default connect(mapStateToProps)(SignUp);

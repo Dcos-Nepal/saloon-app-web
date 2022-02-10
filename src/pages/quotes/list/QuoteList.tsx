@@ -13,7 +13,6 @@ import { connect } from "react-redux";
 import { Loader } from "common/components/atoms/Loader";
 import debounce from "lodash/debounce";
 import EmptyState from "common/components/EmptyState";
-import { StopIcon } from "@primer/octicons-react";
 
 interface IQuote {
   id: string;
@@ -26,6 +25,14 @@ interface IQuote {
   createdAt: string;
   updatedAt: string;
 }
+
+const quoteStatusOptions = [
+  {label: 'PENDING', value:'PENDING'},
+  {label: 'ACCEPTED', value:'ACCEPTED'},
+  {label: 'REJECTED', value:'REJECTED'},
+  {label: 'ARCHIVED', value:'ARCHIVED'},
+  {label: 'CHANGE_REQUESTED', value:'CHANGE_REQUESTED'}
+];
 
 const QuotesList = (props: any) => {
   const navigate = useNavigate();
@@ -70,6 +77,10 @@ const QuotesList = (props: any) => {
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const handleSearch = useCallback(debounce(handleQuotesSearch, 300), []);
+
+  const handleStatusChange = async (id: string, status: {label: string, value: string}, reason: string) => {
+    await props.actions.updateQuoteStatus({id, status: status.value});
+  }
 
   /**
    * Generate Quote
@@ -149,9 +160,10 @@ const QuotesList = (props: any) => {
           return (<div style={{minWidth: '150px'}}>
             <SelectField
               label=""
-              options={[{label: row.status.status, value: row.status.status}]}
+              options={quoteStatusOptions}
               value={{label: row.status.status, value: row.status.status}}
               placeholder="All"
+              handleChange={(selected: {label: string, value: string}) => handleStatusChange(row.id, selected, '')}
             />
           </div>);
         }
@@ -298,6 +310,9 @@ const mapDispatchToProps = (dispatch: any) => ({
   actions: {
     fetchQuotes: (payload: any) => {
       dispatch(quotesActions.fetchQuotes(payload));
+    },
+    updateQuoteStatus: (payload: any) => {
+      dispatch(quotesActions.updateQuoteStatus(payload));
     }
   },
 });

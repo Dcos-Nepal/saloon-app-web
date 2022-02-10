@@ -22,6 +22,7 @@ const QuoteAddForm = (props: any) => {
     description: '',
     note: '',
     quoteFor: '',
+    property: '',
     jobRequest: '',
     lineItems: [{
       name: {
@@ -45,6 +46,7 @@ const QuoteAddForm = (props: any) => {
       value: Yup.string().required('Client is required for this quote'),
       label: Yup.string()
     }),
+    property: Yup.string().notRequired(),
     jobRequest: Yup.string().notRequired(),
     lineItems: Yup.array()
       .of(
@@ -193,7 +195,7 @@ const QuoteAddForm = (props: any) => {
               {!properties.length ? <div className="txt-orange"><StopIcon size={16} /> There are no properties assigned to the client.</div> : null}
               {properties.map((property: any) => (<div key={property._id} className="row mb-2 border-bottom">
                 <div className="col-1 p-2 pt-3 ps-4">
-                  <input name="property" type="checkbox" value={property._id} />
+                  <input name="property" type="radio" value={property._id} onChange={formik.handleChange}/>
                 </div>
                 <div className="col p-2 ps-4">
                   <div className="txt-grey">{property.name}</div>
@@ -309,6 +311,10 @@ const QuoteAddForm = (props: any) => {
               </div>
             </div>
           </div>
+        </div>
+
+        <div>
+          {JSON.stringify(formik.values)}
         </div>
 
         <div className="mb-3 mt-3">

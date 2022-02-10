@@ -12,3 +12,9 @@ export const createQuotesApi = async (payload: any) => {
   const url = "/v1.0.0/quotes";
   return await http.post(url, payload);
 };
+
+
+export const updateQuoteApi = async (payload: any) => {
+  const url = `/v1.0.0/quotes/${payload.id}/update-status`;
+  return await http.put(url, {status: payload.status});
+};

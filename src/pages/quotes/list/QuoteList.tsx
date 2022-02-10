@@ -147,7 +147,12 @@ const QuotesList = (props: any) => {
         Header: "STATUS",
         accessor: (row: IQuote) => {
           return (<div style={{minWidth: '150px'}}>
-            <SelectField label="" options={[{label: row.status.status, value: row.status.status}]} value={{label: row.status.status, value: row.status.status}} placeholder="All" />
+            <SelectField
+              label=""
+              options={[{label: row.status.status, value: row.status.status}]}
+              value={{label: row.status.status, value: row.status.status}}
+              placeholder="All"
+            />
           </div>);
         }
       },
@@ -161,7 +166,7 @@ const QuotesList = (props: any) => {
         accessor: (row: IQuote) => (
           <div className="dropdown">
             <a
-              href="#"
+              href="void(0)"
               role="button"
               id="dropdownMenuLink"
               data-bs-toggle="dropdown"
@@ -171,17 +176,17 @@ const QuotesList = (props: any) => {
             </a>
             <ul className="dropdown-menu" aria-labelledby="dropdownMenuLink">
               <li onClick={() => navigate(endpoints.admin.quotes.detail)}>
-                <a className="dropdown-item" href="#">
+                <a className="dropdown-item" href="void(0)">
                   View Detail
                 </a>
               </li>
               <li onClick={() => navigate(endpoints.admin.quotes.edit)}>
-                <a className="dropdown-item" href="#">
+                <a className="dropdown-item" href="void(0)">
                   Edit
                 </a>
               </li>
               <li>
-                <a className="dropdown-item" href="#">
+                <a className="dropdown-item" href="void(0)">
                   Delete
                 </a>
               </li>

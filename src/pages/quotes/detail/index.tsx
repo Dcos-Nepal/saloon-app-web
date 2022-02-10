@@ -1,3 +1,3 @@
-import ClientJobDetail from "./ClientJobDetail";
+import JobQuoteDetail from "./JobQuoteDetail";
 
-export default ClientJobDetail;
+export default JobQuoteDetail;

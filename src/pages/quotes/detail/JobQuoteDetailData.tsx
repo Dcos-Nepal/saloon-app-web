@@ -1,6 +1,6 @@
 import InputField from "common/components/form/Input";
 
-const ClientQuoteDetail = () => {
+const JobQuoteDetailData = () => {
   // const columns: Column<any>[] = useMemo(() => [], []);
 
   // const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
@@ -202,4 +202,4 @@ const ClientQuoteDetail = () => {
   );
 };
 
-export default ClientQuoteDetail;
+export default JobQuoteDetailData;

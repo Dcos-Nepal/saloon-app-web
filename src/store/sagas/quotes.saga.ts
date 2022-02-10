@@ -2,7 +2,7 @@ import { toast } from 'react-toastify';
 import * as actionType from '../constants';
 import { getMessage } from 'common/messages';
 import { call, put, takeEvery } from 'redux-saga/effects';
-import { createQuotesApi, fetchQuotesApi } from 'services/quotes.service';
+import { createQuotesApi, fetchQuotesApi, updateQuoteApi } from 'services/quotes.service';
 
 /**
  * Saga Definitions
@@ -13,6 +13,10 @@ export function* fetchQuotesSaga(): any {
 
 export function* addQuoteSaga(): any {
     yield takeEvery(actionType.ADD_QUOTE, addQuote);
+}
+
+export function* updateQuoteSaga(): any {
+    yield takeEvery(actionType.UPDATE_QUOTE, updateQuote);
 }
 
 /**
@@ -46,7 +50,6 @@ function* addQuote(action: any): any {
             createQuotesApi,
             action.payload
         );
-        debugger;
         if (quoteRequest?.data?.success) {
             yield put({
                 type: actionType.ADD_QUOTE_SUCCESS,
@@ -64,5 +67,37 @@ function* addQuote(action: any): any {
     } catch (err: any) {
         if (err.exception) toast.error(err.exception.message);
         yield put({ type: actionType.ADD_QUOTE_ERROR, payload: err });
+    }
+}
+
+/**
+ * Updates Job Quote
+ * 
+ * @param action
+ * @returns
+ */
+ function* updateQuote(action: any): any {
+    try {
+        const { data: quoteRequest } = yield call(
+            updateQuoteApi,
+            action.payload
+        );
+        if (quoteRequest?.data?.success) {
+            yield put({
+                type: actionType.UPDATE_QUOTE_SUCCESS,
+                payload: quoteRequest?.data?.data,
+            });
+
+            return toast.success(getMessage(quoteRequest?.data?.message));
+        }
+        yield put({
+            type: actionType.UPDATE_QUOTE_ERROR,
+            payload: quoteRequest.data,
+        });
+
+        return toast.error(getMessage(quoteRequest.data?.message));
+    } catch (err: any) {
+        if (err.exception) toast.error(err.exception.message);
+        yield put({ type: actionType.UPDATE_QUOTE_ERROR, payload: err });
     }
 }

@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
-import ClientJobDetailData from "./ClientJobDetailData";
+import ClientJobDetailData from "./JobQuoteDetailData";
 
-const ClientAdd = () => {
+const JobQuoteDetail = () => {
   const navigate = useNavigate();
 
   return (
@@ -25,4 +25,4 @@ const ClientAdd = () => {
   );
 };
 
-export default ClientAdd;
+export default JobQuoteDetail;

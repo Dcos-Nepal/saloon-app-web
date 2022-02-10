@@ -1,7 +1,7 @@
 import * as actionType from "../constants";
 
 const initialState = {
-  itemList: null,
+  itemList: {data: {rows: [], totalCount: 0}},
   currentItem: null,
   isFailed: false,
   isSuccess: false,
@@ -15,6 +15,11 @@ const quotesReducer = (state = initialState, action: any) => {
       return { ...state };
     }
 
+    case actionType.UPDATE_QUOTE: {
+      state.isLoading = true;
+      return { ...state };
+    }
+
     case actionType.FETCH_QUOTES: {
       state.isLoading = true;
       return {...state};
@@ -22,6 +27,17 @@ const quotesReducer = (state = initialState, action: any) => {
 
     case actionType.ADD_QUOTE_SUCCESS: {
       state.isLoading = false;
+      return {...state};
+    }
+
+    case actionType.UPDATE_QUOTE_SUCCESS: {
+      state.isLoading = false;
+      state.itemList.data.rows = state.itemList?.data?.rows.filter((item: any) => {
+        if ((item as any)._id === action.payload._id) {
+          (item as any).status = action.payload.status;
+        }
+        return item;
+      });
       return {...state};
     }
 

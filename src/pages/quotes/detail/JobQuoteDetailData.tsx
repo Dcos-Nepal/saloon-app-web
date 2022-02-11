@@ -118,15 +118,15 @@ const JobQuoteDetailData: FC<IProps> = ({isLoading, actions, currentQuote}) => {
             </thead>
             <tbody>
               {currentQuote?.lineItems.map((item: any, index: number) => (
-                <tr key={item.Id + index}>
-                  <th scope="row">#000{index + 1}</th>
+                <tr key={index}>
+                  <th scope="row">#00{index + 1}</th>
                   <td>
-                    <h6>{item.name}</h6>
-                    <p><small>{item.description}</small></p>
+                    <div><strong>{item.name}</strong></div>
+                    <div><small>{item.description}</small></div>
                   </td>
-                  <td>{item.quantity}</td>
-                  <td>{item.unitPrice}</td>
-                  <td>$ {item.quantity*item.unitPrice}</td>
+                  <td><strong>{item.quantity}</strong></td>
+                  <td><strong>${item.unitPrice}</strong></td>
+                  <td><strong>${item.quantity*item.unitPrice}</strong></td>
                 </tr>
               ))}
             </tbody>

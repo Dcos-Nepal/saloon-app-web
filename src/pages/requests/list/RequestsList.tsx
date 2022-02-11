@@ -74,8 +74,8 @@ const RequestsList = (props: any) => {
         Header: "CLIENT NAME",
         accessor: (row: any) => {
           return (<div>
-            <div><b>{row.name.firstName} {row.name.firstName}</b></div>
-            <small>{row.name.email} / {row.name.phoneNumber}</small>
+            <div><b>{row.name?.firstName} {row.name?.firstName}</b></div>
+            <small>{row.name?.email} / {row.name?.phoneNumber}</small>
           </div>);
         }
       },

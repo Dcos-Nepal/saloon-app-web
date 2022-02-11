@@ -19,8 +19,9 @@ interface IQuote {
   title: string;
   description: string;
   quoteFor: any;
+  property: any;
   lineItems: any[];
-  status: { status: string, updatedAt: string };
+  status: { status: string, reason: string, updatedAt: string };
   total: string;
   createdAt: string;
   updatedAt: string;
@@ -184,21 +185,21 @@ const QuotesList = (props: any) => {
               data-bs-toggle="dropdown"
               aria-expanded="false"
             >
-              <box-icon name="dots-vertical-rounded"></box-icon>
+              <box-icon name="dots-vertical-rounded" />
             </a>
             <ul className="dropdown-menu" aria-labelledby="dropdownMenuLink">
-              <li onClick={() => navigate(endpoints.admin.quotes.detail)}>
-                <a className="dropdown-item" href="void(0)">
+              <li onClick={() => navigate(row.id)}>
+                <a className="dropdown-item">
                   View Detail
                 </a>
               </li>
-              <li onClick={() => navigate(endpoints.admin.quotes.edit)}>
-                <a className="dropdown-item" href="void(0)">
+              <li onClick={() => navigate(row.id + '/edit')}>
+                <a className="dropdown-item">
                   Edit
                 </a>
               </li>
               <li>
-                <a className="dropdown-item" href="void(0)">
+                <a className="dropdown-item">
                   Delete
                 </a>
               </li>
@@ -312,7 +313,7 @@ const mapDispatchToProps = (dispatch: any) => ({
       dispatch(quotesActions.fetchQuotes(payload));
     },
     updateQuoteStatus: (payload: any) => {
-      dispatch(quotesActions.updateQuoteStatus(payload));
+      dispatch(quotesActions.updateQuoteStatus(payload.id, payload.status));
     }
   },
 });

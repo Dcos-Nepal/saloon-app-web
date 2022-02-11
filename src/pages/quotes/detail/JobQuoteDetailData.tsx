@@ -1,19 +1,34 @@
-import InputField from "common/components/form/Input";
+import { StopIcon } from "@primer/octicons-react";
+import { Loader } from "common/components/atoms/Loader";
+import { FC, useEffect } from "react";
+import { connect } from "react-redux";
+import { useParams } from "react-router-dom";
+import * as quotesActions from "store/actions/quotes.actions";
 
-const JobQuoteDetailData = () => {
-  // const columns: Column<any>[] = useMemo(() => [], []);
+interface IProps {
+  actions: {
+    fetchQuote: (id: string) => void;
+  };
+  isLoading: boolean;
+  currentQuote: any;
+}
 
-  // const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
-  //   useTable({ columns, data: [] });
+const JobQuoteDetailData: FC<IProps> = ({isLoading, actions, currentQuote}) => {
+  const { id } = useParams();
+
+  useEffect(() => {
+    if (id) actions.fetchQuote(id);
+  }, [id, actions]);
 
   return (
     <div>
       <div className="row mt-3 mb-3">
+        <Loader isLoading={isLoading} />
         <div className="col">
           <div className="card">
             <div className="row">
               <div className="col">
-                <h5 className="txt-bold">Bonnie Green</h5>
+                <h5 className="txt-bold">{`${currentQuote?.quoteFor.firstName} ${currentQuote?.quoteFor.lastName}`}</h5>
                 <div>
                   <span className={`status status-green`}>
                     Requires invoicing
@@ -21,21 +36,29 @@ const JobQuoteDetailData = () => {
                 </div>
               </div>
               <div className="col">
-                <h4 className="txt-bold d-flex float-end mt-2">$80 cash</h4>
+                <h4 className="txt-bold d-flex float-end mt-2">${currentQuote?.lineItems.reduce((current: number, next: { quantity: number; unitPrice: number; }) => (current += next.quantity * next.unitPrice), 0)} cash</h4>
               </div>
             </div>
-            <div className="row mt-3 border-bottom">
-              <div className="col p-2 ps-4">
-                <div className="txt-grey">Property address</div>
-                <div className="">
-                  8 Creswell Court, Gilberton, South Australia 5081
+            {currentQuote?.property ? (
+              <div className="row mt-3 border-bottom">
+                <div className="col p-2 ps-4">
+                  <div className="txt-grey">Property address</div>
+                  <div className="txt-grey">Name: <strong>{currentQuote?.property.name}</strong></div>
+                    <div className="">{currentQuote?.property?.street1}, {currentQuote?.property?.postalCode}, {currentQuote?.property?.city}, {currentQuote?.property?.state}, {currentQuote?.property?.country}</div>
                 </div>
               </div>
-            </div>
-            <div className="row mb-4 border-bottom">
+            ) : (
+              <div className="row mt-3 border-bottom">
+                <div className="col p-2 ps-4">
+                  <div className="txt-grey">Property address</div>
+                  <div className="txt-orange"><StopIcon size={14} /> No property listed for this client.</div>
+                </div>
+              </div>
+            )}
+            <div className="row mb-4">
               <div className="col p-2 ps-4">
                 <div className="txt-grey">Contact details</div>
-                <div className="">0409 096 066</div>
+                <div className="">{currentQuote?.quoteFor.phoneNumber}/{currentQuote?.quoteFor.email}</div>
               </div>
             </div>
           </div>
@@ -48,7 +71,7 @@ const JobQuoteDetailData = () => {
                 <div className="txt-grey">Quote number</div>
                 <div className="row">
                   <div className="col">#13</div>
-                  <div className="col txt-orange pointer">Change</div>
+                  {/* <div className="col txt-orange pointer">Change</div> */}
                 </div>
               </div>
               <div className="col p-2 ps-4">
@@ -66,7 +89,7 @@ const JobQuoteDetailData = () => {
                 <div className="">6 years</div>
               </div>
             </div>
-            <div className="row border-bottom mb-3">
+            <div className="row mb-3">
               <div className="col p-2 ps-4">
                 <div className="txt-grey">Billing frequency</div>
                 <div className="">After every visit</div>
@@ -82,124 +105,62 @@ const JobQuoteDetailData = () => {
 
       <div className="card">
         <h6 className="txt-bold">Line items</h6>
-        <div className="row border-bottom">
-          <div className="col-4 p-2 ps-4">
-            <div className="bg-light-grey txt-grey p-2 txt-bold">
-              PRODUCT / SERVICE
-            </div>
-            <InputField label="" placeholder="Name" />
-            <div className="mb-3">
-              <textarea
-                className={`form-control`}
-                placeholder={"Description"}
-              />
-            </div>
-          </div>
-          <div className="col p-2 ps-4">
-            <div className="bg-light-grey txt-grey p-2 txt-bold">QTY.</div>
-            <InputField type="number" label="" value={0} placeholder="0" />
-          </div>
-
-          <div className="col p-2 ps-4">
-            <div className="bg-light-grey txt-grey p-2 txt-bold">
-              UNIT PRICE
-            </div>
-            <div className="row">
-              <div className="col-1 mt-3 pt-2 pe-4">
-                <box-icon name="dollar"></box-icon>
-              </div>
-              <div className="col">
-                <InputField type="number" label="" value={0} placeholder="0" />
-              </div>
-            </div>
-          </div>
-          <div className="col p-2 ps-4">
-            <div className="bg-light-grey txt-grey p-2 txt-bold">TOTAL</div>
-            <div className="row">
-              <div className="col-1 mt-3 pt-2 pe-4">
-                <box-icon name="dollar"></box-icon>
-              </div>
-              <div className="col">
-                <InputField type="number" label="" value={0} placeholder="0" />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="mb-3 mt-3">
-          <button onClick={() => {}} type="button" className="btn btn-primary">
-            Save
-          </button>
-          <button
-            onClick={() => {}}
-            type="button"
-            className="ms-3 btn btn-secondary"
-          >
-            Add line item
-          </button>
-          <button onClick={() => []} type="button" className="btn">
-            Delete
-          </button>
-        </div>
-
-        <div className="hr mb-3"></div>
-
-        <div className="row mb-3">
-          <div className="col d-flex flex-row">
-            <h6 className="txt-bold mt-2">Total</h6>
-          </div>
-          <div className="col txt-bold mt-2">
-            <div className="d-flex float-end">$ 0.00</div>
-          </div>
-        </div>
-      </div>
-
-      <div className="card">
-        <div className="row bg-grey m-2 p-3">
-          <div className="col d-flex flex-row">
-            <h6 className="txt-bold mt-2">Visits</h6>
-          </div>
-          <div className="col">
-            <button
-              onClick={() => {}}
-              type="button"
-              className="btn btn-primary d-flex float-end"
-            >
-              New visit
-            </button>
-          </div>
-        </div>
-
-        {/* <table {...getTableProps()} className="table txt-dark-grey">
-          <thead>
-            {headerGroups.map((headerGroup) => (
-              <tr {...headerGroup.getHeaderGroupProps()} className="rt-head">
-                {headerGroup.headers.map((column) => (
-                  <th {...column.getHeaderProps()} scope="col">
-                    {column.render("Header")}
-                  </th>
-                ))}
+        <div className="row border-bottom p-3">
+          <table className="table table-striped table-bordered">
+            <thead>
+              <tr>
+                <th scope="col">SN</th>
+                <th scope="col">PRODUCT / SERVICE</th>
+                <th scope="col">QTY</th>
+                <th scope="col">UNIT PRICE</th>
+                <th scope="col">TOTAL</th>
               </tr>
-            ))}
-          </thead>
-
-          <tbody {...getTableBodyProps()} className="rt-tbody">
-            {rows.map((row) => {
-              prepareRow(row);
-
-              return (
-                <tr {...row.getRowProps()} className="rt-tr-group">
-                  {row.cells.map((cell) => (
-                    <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
-                  ))}
+            </thead>
+            <tbody>
+              {currentQuote?.lineItems.map((item: any, index: number) => (
+                <tr key={item.Id + index}>
+                  <th scope="row">#000{index + 1}</th>
+                  <td>
+                    <h6>{item.name}</h6>
+                    <p><small>{item.description}</small></p>
+                  </td>
+                  <td>{item.quantity}</td>
+                  <td>{item.unitPrice}</td>
+                  <td>$ {item.quantity*item.unitPrice}</td>
                 </tr>
-              );
-            })}
-          </tbody>
-        </table> */}
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <div className="row border-top">
+          <div className="col d-flex flex-row mt-3">
+            <h6 className="txt-bold mt-2">Quote Total</h6>
+          </div>
+          <div className="col txt-bold mt-3">
+            <div className="d-flex float-end">
+              <h5 className="txt-bold mt-2">${currentQuote?.lineItems.reduce((current: number, next: { quantity: number; unitPrice: number; }) => (current += next.quantity * next.unitPrice), 0)}</h5>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
 };
 
-export default JobQuoteDetailData;
+const mapStateToProps = (state: any) => {
+  return {
+    isLoading: state.quotes.isLoading,
+    currentQuote: state.quotes.currentItem,
+  };
+};
+
+const mapDispatchToProps = (dispatch: any) => ({
+  actions: {
+    fetchQuote: (id: string) => {
+      dispatch(quotesActions.fetchQuote(id, {}));
+    }
+  },
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(JobQuoteDetailData);

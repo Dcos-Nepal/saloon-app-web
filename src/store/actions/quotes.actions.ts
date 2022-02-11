@@ -1,4 +1,4 @@
-import { ADD_QUOTE, FETCH_QUOTES, UPDATE_QUOTE } from "store/constants";
+import { ADD_QUOTE, FETCH_QUOTE, FETCH_QUOTES, UPDATE_QUOTE, UPDATE_QUOTE_STATUS } from "store/constants";
 
 export const fetchQuotes = (data: any) => {
   return {
@@ -12,8 +12,20 @@ export const createQuotes = (data: any) => {
   };
 };
 
-export const updateQuoteStatus = (data: any) => {
+export const fetchQuote = (id: string, params: any) => {
   return {
-    type: UPDATE_QUOTE, payload: data
+    type: FETCH_QUOTE, payload: {id, params}
+  };
+};
+
+export const updateQuote = (id: string, data: any) => {
+  return {
+    type: UPDATE_QUOTE, payload: {id, data}
+  };
+};
+
+export const updateQuoteStatus = (id: string, data: any) => {
+  return {
+    type: UPDATE_QUOTE_STATUS, payload: {id, data}
   };
 };

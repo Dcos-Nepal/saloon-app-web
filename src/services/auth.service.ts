@@ -21,12 +21,12 @@ export const signInUserApi = async (data: IUserLogin) => {
 
 export const forgotUserPasswordApi = async (data: IForgotPassword) => {
   return await http.post("/v1.0.0/auth/forgot-password", data, {
-    headers: { "Accept": "application/json;v=1.0.0" }
+    headers: { "Accept": "application/json" }
   });
 }
 
 export const resetUserPasswordApi = async (data: IResetPassword) => {
   return await http.post("/v1.0.0/auth/reset-password", data, {
-    headers: { "Accept": "application/json;v=1.0.0" }
+    headers: { "Accept": "application/json" }
   });
 }

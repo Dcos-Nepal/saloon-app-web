@@ -64,7 +64,7 @@ const Repeat: React.FC<Props> = ({
           <select
             name='repeat.frequency'
             id={`${id}-frequency`}
-            className=''
+            className='form-control'
             value={frequency}
             onChange={handleChange}
           >

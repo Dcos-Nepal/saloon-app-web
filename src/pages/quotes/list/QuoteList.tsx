@@ -19,12 +19,21 @@ interface IQuote {
   title: string;
   description: string;
   quoteFor: any;
+  property: any;
   lineItems: any[];
-  status: { status: string, updatedAt: string };
+  status: { status: string, reason: string, updatedAt: string };
   total: string;
   createdAt: string;
   updatedAt: string;
 }
+
+const quoteStatusOptions = [
+  {label: 'PENDING', value:'PENDING'},
+  {label: 'ACCEPTED', value:'ACCEPTED'},
+  {label: 'REJECTED', value:'REJECTED'},
+  {label: 'ARCHIVED', value:'ARCHIVED'},
+  {label: 'CHANGE_REQUESTED', value:'CHANGE_REQUESTED'}
+];
 
 const QuotesList = (props: any) => {
   const navigate = useNavigate();
@@ -70,6 +79,10 @@ const QuotesList = (props: any) => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const handleSearch = useCallback(debounce(handleQuotesSearch, 300), []);
 
+  const handleStatusChange = async (id: string, status: {label: string, value: string}, reason: string) => {
+    await props.actions.updateQuoteStatus({id, status: status.value});
+  }
+
   /**
    * Generate Quote
    * 
@@ -78,27 +91,29 @@ const QuotesList = (props: any) => {
    */
   const generateRatings = (quote: IQuote) => {
     return (<div>
-      ${quote.lineItems.reduce((sum, current) => sum += current.quantity * current.unitPrice, 0)}
-      <span className="ms-2">
-        <box-icon
-          name="star"
-          size="xs"
-          type="solid"
-          color="#F5E059"
-        ></box-icon>
-        <box-icon
-          name="star"
-          size="xs"
-          type="solid"
-          color="#F5E059"
-        ></box-icon>
-        <box-icon
-          name="star"
-          size="xs"
-          type="solid"
-          color="#F5E059"
-        ></box-icon>
-      </span>
+      <strong>${quote.lineItems.reduce((sum, current) => sum += current.quantity * current.unitPrice, 0)}</strong>
+      {/* <div>
+        <span className="row ms-2">
+          <box-icon
+            name="star"
+            size="xs"
+            type="solid"
+            color="#F5E059"
+          />
+          <box-icon
+            name="star"
+            size="xs"
+            type="solid"
+            color="#F5E059"
+          />
+          <box-icon
+            name="star"
+            size="xs"
+            type="solid"
+            color="#F5E059"
+          />
+        </span>
+      </div> */}
     </div>);
   }
 
@@ -108,21 +123,25 @@ const QuotesList = (props: any) => {
         Header: "CLIENT NAME",
         accessor: (row: IQuote) => {
           return (<div>
-            <div>{row.quoteFor.firstName} {row.quoteFor.lastName}</div>
-            <div>{row.quoteFor.phoneNumber} / {row.quoteFor.email}</div>
+            <div>{row.quoteFor?.firstName} {row.quoteFor?.lastName}</div>
+            <div>{row.quoteFor?.phoneNumber} / {row.quoteFor?.email}</div>
           </div>)
         }
       },
       {
-        Header: "TITLE",
+        Header: "QUOTE INFO",
         accessor: (row: IQuote) => {
-          return (<div>
+          return (<div className="Pointer" onClick={() => navigate(`/dashboard/quotes/${row.id}`)}>
             <div><strong>{row.title}</strong></div>
-            <div><i>
-              <Truncate lines={1} ellipsis={<span>...</span>}>
-                {row.description}
-              </Truncate>
-            </i>
+            <div>
+              <i>
+                <Truncate lines={1} ellipsis={<span>...</span>}>
+                  {row.description}
+                </Truncate>
+              </i>
+            </div>
+            <div>
+              <span className="badge rounded-pill bg-secondary">Total Line Items ({row.lineItems.length})</span>
             </div>
           </div>)
         }
@@ -130,16 +149,24 @@ const QuotesList = (props: any) => {
       {
         Header: "CREATED DATE",
         accessor: (row: IQuote) => {
-          return (<div>
+          return (<div style={{width: '150px'}}>
             <div><strong>{row.updatedAt}</strong></div>
             <div>{row.createdAt}</div>
-          </div>)
+          </div>);
         }
       },
       {
-        Header: "Line Items",
+        Header: "STATUS",
         accessor: (row: IQuote) => {
-          return (<div>Line Items ({row.lineItems.length})</div>)
+          return (<div style={{minWidth: '150px'}}>
+            <SelectField
+              label=""
+              options={quoteStatusOptions}
+              value={{label: row.status.status, value: row.status.status}}
+              placeholder="All"
+              handleChange={(selected: {label: string, value: string}) => handleStatusChange(row.id, selected, '')}
+            />
+          </div>);
         }
       },
       {
@@ -152,27 +179,27 @@ const QuotesList = (props: any) => {
         accessor: (row: IQuote) => (
           <div className="dropdown">
             <a
-              href="#"
+              href="void(0)"
               role="button"
               id="dropdownMenuLink"
               data-bs-toggle="dropdown"
               aria-expanded="false"
             >
-              <box-icon name="dots-vertical-rounded"></box-icon>
+              <box-icon name="dots-vertical-rounded" />
             </a>
             <ul className="dropdown-menu" aria-labelledby="dropdownMenuLink">
-              <li onClick={() => navigate(endpoints.admin.quotes.detail)}>
-                <a className="dropdown-item" href="#">
+              <li onClick={() => navigate(row.id)}>
+                <a className="dropdown-item">
                   View Detail
                 </a>
               </li>
-              <li onClick={() => navigate(endpoints.admin.quotes.edit)}>
-                <a className="dropdown-item" href="#">
+              <li onClick={() => navigate(row.id + '/edit')}>
+                <a className="dropdown-item">
                   Edit
                 </a>
               </li>
               <li>
-                <a className="dropdown-item" href="#">
+                <a className="dropdown-item">
                   Delete
                 </a>
               </li>
@@ -284,6 +311,9 @@ const mapDispatchToProps = (dispatch: any) => ({
   actions: {
     fetchQuotes: (payload: any) => {
       dispatch(quotesActions.fetchQuotes(payload));
+    },
+    updateQuoteStatus: (payload: any) => {
+      dispatch(quotesActions.updateQuoteStatus(payload.id, payload.status));
     }
   },
 });

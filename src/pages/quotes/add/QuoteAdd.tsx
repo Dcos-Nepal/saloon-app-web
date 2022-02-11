@@ -1,9 +1,10 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import QuoteAddForm from "./QuoteAddForm";
 
 const QuoteAdd = () => {
   const navigate = useNavigate();
+  const { id } = useParams();
 
   return (
     <>
@@ -15,11 +16,11 @@ const QuoteAdd = () => {
           <span className="col">Back to previous</span>
         </div>
         <div className="d-flex flex-row mt-3">
-          <h3 className="extra">Create a Quote</h3>
+          <h3 className="extra">{id ? 'Edit' : 'Create'} a Quote</h3>
         </div>
       </div>
       <div>
-        <QuoteAddForm />
+        <QuoteAddForm/>
       </div>
     </>
   );

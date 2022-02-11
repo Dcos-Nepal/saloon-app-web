@@ -28,7 +28,7 @@ const RepeatYearlyOn = ({
 
   return (
     <div
-      className={`form-group row d-flex align-items-sm-center ${
+      className={`form-group mt-2 offset-sm-2 row d-flex align-items-sm-center ${
         !isActive && 'opacity-50'
       }`}
     >
@@ -40,6 +40,7 @@ const RepeatYearlyOn = ({
             name='repeat.yearly.mode'
             aria-label='Repeat yearly on'
             value='on'
+            className=''
             checked={isActive}
             onChange={handleChange}
           />
@@ -55,7 +56,7 @@ const RepeatYearlyOn = ({
           id={`${id}-day`}
           name='repeat.yearly.on.day'
           aria-label='Repeat yearly on a day'
-          className=''
+          className='form-control'
           value={on.day}
           disabled={!isActive}
           onChange={numericalFieldHandler(handleChange)}
@@ -73,7 +74,7 @@ const RepeatYearlyOn = ({
           id={`${id}-month`}
           name='repeat.yearly.on.month'
           aria-label='Repeat yearly on month'
-          className=''
+          className='form-control'
           value={on.month}
           disabled={!isActive}
           onChange={handleChange}

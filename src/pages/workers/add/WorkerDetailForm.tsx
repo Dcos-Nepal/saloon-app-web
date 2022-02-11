@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { connect } from "react-redux";
@@ -9,6 +9,8 @@ import InputField from "common/components/form/Input";
 import SelectField from "common/components/form/Select";
 import * as workersActions from "store/actions/workers.actions";
 import { DAYS_OF_WEEK } from "common/constants";
+import { EllipsisIcon, UploadIcon, XCircleIcon } from "@primer/octicons-react";
+import { deletePublicFile, uploadPublicFile } from "services/files.service";
 
 interface IProps {
   actions: {
@@ -20,6 +22,27 @@ interface IProps {
 
 const WorkerDetailForm: FC<IProps> = ({ actions }) => {
   const navigate = useNavigate();
+  const [isUploading, setIsUploading] = useState({
+    idCard: false,
+    cleaningCert: false,
+    policeCheck: false
+  });
+  const [isDeleting, setIsDeleting] = useState({
+    idCard: false,
+    cleaningCert: false,
+    policeCheck: false
+  });
+  const [getDocument, setDocument] = useState<{
+    idCard: File | null,
+    cleaningCert: File | null,
+    policeCheck: File | null,
+  }>({
+    'idCard': null,
+    'cleaningCert': null,
+    'policeCheck': null
+  });
+  const statesOption = [{ label: "LA", value: "LA" }];
+  const countriesOption = [{ label: "Aus", value: "AUS" }];
 
   const initialValues = {
     firstName: "",
@@ -36,20 +59,23 @@ const WorkerDetailForm: FC<IProps> = ({ actions }) => {
       postalCode: undefined,
       country: "",
     },
-    userDocuments: [
-      {
-        documentUrl: "",
-        type: "ID-CARD",
+    documents: {
+      idCard: {
+        url: "",
+        key: "",
+        type: "ID_CARD",
       },
-      {
-        documentUrl: "",
-        type: "CLINICAL-CERTIFICATE",
+      cleaningCert: {
+        url: "",
+        key: "",
+        type: "CLEANING_CERTIFICATE",
       },
-      {
-        documentUrl: "",
-        type: "POLICE-CERTIFICATE",
+      policeCheck: {
+        url: "",
+        key: "",
+        type: "POLICE_CERTIFICATE",
       },
-    ],
+    },
     userImage: "",
   };
 
@@ -75,12 +101,23 @@ const WorkerDetailForm: FC<IProps> = ({ actions }) => {
       .label("Phone Number")
       .required(`Phone number is required`)
       .length(10),
-    userDocuments: Yup.array(
-      Yup.object().shape({
-        documentUrl: Yup.string(),
+    documents: Yup.object().shape({
+      idCard: Yup.object().shape({
+        key: Yup.string(),
+        url: Yup.string(),
+        type: Yup.string(),
+      }),
+      cleaningCert: Yup.object().shape({
+        key: Yup.string(),
+        url: Yup.string(),
+        type: Yup.string(),
+      }),
+      policeCheck: Yup.object().shape({
+        key: Yup.string(),
+        url: Yup.string(),
         type: Yup.string(),
       })
-    ),
+    })
   });
 
   const formik = useFormik({
@@ -92,12 +129,65 @@ const WorkerDetailForm: FC<IProps> = ({ actions }) => {
     },
   });
 
-  const statesOption = [{ label: "LA", value: "LA" }];
-  const countriesOption = [{ label: "Aus", value: "AUS" }];
+  /**
+   * Handle File Select
+   * @param event 
+   * @param key 
+   */
+  const handleFileSelect = async (event: any, key: string) => {
+    const file = event.target.files[0];
+    setDocument({...getDocument, [key]: file });
+  }
+
+  /**
+   * Handle File Upload
+   * @param docKey 
+   */
+  const handleFileUpload = async (docKey: string) => {
+    const formData = new FormData();
+    formData.append('file', (getDocument as any)[docKey], (getDocument as any)[docKey].name);
+    
+    setIsUploading({...isUploading, [docKey]: true});
+
+    try {
+      const uploadedFile = await uploadPublicFile(formData);
+
+      // Setting Formik form document properties
+      formik.setFieldValue(`documents[${docKey}].key`, uploadedFile.data.data.key);
+      formik.setFieldValue(`documents[${docKey}].url`, uploadedFile.data.data.url);
+
+      setIsUploading({...isUploading, [docKey]: false});
+    } catch (error) {
+      setIsUploading({...isUploading, [docKey]: false});
+    }
+  }
+
+  /**
+   * Handles file delete
+   * @param docKey
+   */
+  const handleFileDelete = async (docKey: string) => {
+    if ((formik.values.documents as any)[docKey].key) {
+      setIsDeleting({...isDeleting, [docKey]: true});
+      try {
+        await deletePublicFile((formik.values.documents as any)[docKey].key);
+
+        // Setting Formik form document properties
+        formik.setFieldValue(`documents[${docKey}].key`, '');
+        formik.setFieldValue(`documents[${docKey}].url`, '');
+
+        setIsDeleting({...isDeleting, [docKey]: false});
+      } catch (error) {
+        console.log('Error: ', error);
+        setIsDeleting({...isDeleting, [docKey]: false});
+      }
+    }
+    setDocument({...getDocument, [docKey]: null });
+  }
 
   return (
-    <form>
-      <div className="row mt-3">
+    <form noValidate onSubmit={formik.handleSubmit}>
+      <div className="row">
         <div className="col card">
           <h5>Worker Details</h5>
           <div className="row">
@@ -197,7 +287,6 @@ const WorkerDetailForm: FC<IProps> = ({ actions }) => {
 
           <div className="mb-3">
             <label className="txt-bold mt-2 mb-2">Address</label>
-
             <InputField
               label="Street 1"
               placeholder="Enter street 1"
@@ -315,50 +404,59 @@ const WorkerDetailForm: FC<IProps> = ({ actions }) => {
             </div>
           </div>
         </div>
-
         <div className="col card ms-3">
           <h5>Upload documents</h5>
           <div className="mb-3">
-            <label className="form-label txt-dark-grey">ID card</label>
+            <label className="form-label txt-dark-grey">ID Card/ Driving License:</label>
             <div>
               <input
                 className="form-control hidden"
                 type="file"
                 id="idCard"
-                name="userDocuments[0].documentUrl"
-                onChange={formik.handleChange}
+                name="documents['idCard].url"
+                onChange={(event) => handleFileSelect(event, 'idCard')}
                 onBlur={formik.handleBlur}
               />
-              <label htmlFor="idCard" className="txt-orange dashed-file">
+              {getDocument.idCard ? (<div className="row">
+                <div className="col-9">1. {getDocument.idCard.name}</div>
+                <div className="col-3">
+                  <button type="button" title="Upload" className="btn btn-warning btn-sm" onClick={() => {handleFileUpload('idCard')}}>{isUploading.idCard ? <EllipsisIcon size={16}/> : <UploadIcon size={16}/>}</button>&nbsp;
+                  <button type="button" title="Delete" className="btn btn-danger btn-sm" onClick={() => {handleFileDelete('idCard')}}>{isDeleting.idCard ? <EllipsisIcon size={16}/> : <XCircleIcon size={16}/>}</button>
+                </div>
+              </div>) : null} 
+              {!getDocument.idCard ? (<label htmlFor="idCard" className="txt-orange dashed-file">
                 Click to browse or drag and drop your file to upload ID card
-              </label>
-              {formik.errors.userDocuments && formik.touched.userDocuments ? (
-                <div className="txt-red">{formik.errors.userDocuments}</div>
+              </label>) : null}
+              {formik.errors.documents && formik.touched.documents ? (
+                <div className="txt-red">{formik.errors.documents}</div>
               ) : null}
             </div>
           </div>
           <div className="mb-3">
             <label className="form-label txt-dark-grey">
-              Clinic certificate
+              Cleaning certificate
             </label>
             <div>
               <input
                 className="form-control hidden"
                 type="file"
                 id="clinicCertificate"
-                name="userDocuments[1].documentUrl"
-                onChange={formik.handleChange}
+                name="documents['cleaningCert'].url"
+                onChange={(event) => handleFileSelect(event, 'cleaningCert')}
                 onBlur={formik.handleBlur}
               />
-              <label
-                htmlFor="clinicCertificate"
-                className="txt-orange dashed-file"
-              >
-                Click to browse or drag and drop your file to upload clinic
-                certificate
-              </label>
-              {formik.errors.userDocuments && formik.touched.userDocuments ? (
-                <div className="txt-red">{formik.errors.userDocuments}</div>
+              {getDocument.cleaningCert ? (<div className="row">
+                <div className="col-9">1. {getDocument.cleaningCert.name}</div>
+                <div className="col-3">
+                  <button type="button" title="Upload" className="btn btn-warning btn-sm" onClick={() => {handleFileUpload('cleaningCert')}}>{isUploading.cleaningCert ? <EllipsisIcon size={16}/> : <UploadIcon size={16}/>}</button>&nbsp;
+                  <button type="button" title="Delete" className="btn btn-danger btn-sm" onClick={() => {handleFileDelete('cleaningCert')}}>{isDeleting.cleaningCert ? <EllipsisIcon size={16}/> : <XCircleIcon size={16}/>}</button>
+                </div>
+              </div>) : null} 
+              {!getDocument.cleaningCert ? (<label htmlFor="clinicCertificate" className="txt-orange dashed-file">
+                Click to browse or drag and drop your file to upload clinic certificate
+              </label>) : null}
+              {formik.errors.documents && formik.touched.documents ? (
+                <div className="txt-red">{formik.errors.documents}</div>
               ) : null}
             </div>
           </div>
@@ -369,16 +467,22 @@ const WorkerDetailForm: FC<IProps> = ({ actions }) => {
                 className="form-control hidden"
                 type="file"
                 id="policyCheck"
-                name="userDocuments[2].documentUrl"
-                onChange={formik.handleChange}
+                name="documents['policeCheck'].url"
+                onChange={(event) => handleFileSelect(event, 'policeCheck')}
                 onBlur={formik.handleBlur}
               />
-              <label htmlFor="policyCheck" className="txt-orange dashed-file">
-                Click to browse or drag and drop your file to upload police
-                check
-              </label>
-              {formik.errors.userDocuments && formik.touched.userDocuments ? (
-                <div className="txt-red">{formik.errors.userDocuments}</div>
+              {getDocument.policeCheck ? (<div className="row">
+                <div className="col-9">1. {getDocument.policeCheck.name}</div>
+                <div className="col-3">
+                  <button type="button" title="Upload" className="btn btn-warning btn-sm" onClick={() => {handleFileUpload('policeCheck')}}>{isUploading.policeCheck ? <EllipsisIcon size={16}/> : <UploadIcon size={16}/>}</button>&nbsp;
+                  <button type="button" title="Delete" className="btn btn-danger btn-sm" onClick={() => {handleFileDelete('policeCheck')}}>{isDeleting.policeCheck ? <EllipsisIcon size={16}/> : <XCircleIcon size={16}/>}</button>
+                </div>
+              </div>) : null} 
+              {!getDocument.policeCheck ? (<label htmlFor="policyCheck" className="txt-orange dashed-file">
+                Click to browse or drag and drop your file to upload police check
+              </label>) : null}
+              {formik.errors.documents && formik.touched.documents ? (
+                <div className="txt-red">{formik.errors.documents}</div>
               ) : null}
             </div>
           </div>

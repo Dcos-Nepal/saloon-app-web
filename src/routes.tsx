@@ -6,15 +6,15 @@ import Dashboard from "pages/dashboard";
 import { endpoints } from "common/config";
 import ResetPassword from "pages/auth/resetPassword";
 import ChangePassword from "pages/auth/changePassword";
-import { Signup, VerifyEmail } from "pages/auth/signup";
+import { SignUp, VerifyEmail } from "pages/auth/signup";
 
 const AllRoutes = () => {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<Signin />} />
-        <Route path={endpoints.auth.signin} element={<Signin />} />
-        <Route path={endpoints.auth.signup} element={<Signup />} />
+        <Route path={endpoints.auth.signIn} element={<Signin />} />
+        <Route path={endpoints.auth.signUp} element={<SignUp />} />
         <Route
           path={endpoints.auth.changePassword}
           element={<ChangePassword />}

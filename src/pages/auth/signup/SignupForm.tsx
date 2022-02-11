@@ -5,8 +5,8 @@ import * as Yup from 'yup';
 
 import InputField from "common/components/form/Input";
 
-const SignupForm = (props: any) => {
-  const InitSignup = {
+const SignUpForm = (props: any) => {
+  const InitSignUp = {
     firstName: '',
     lastName: '',
     email: '',
@@ -15,7 +15,7 @@ const SignupForm = (props: any) => {
     userType: '',
   }
 
-  const SignupSchema = Yup.object().shape({
+  const SignUpSchema = Yup.object().shape({
     userType: Yup.string()
     .required('Please select a User Type'),
     firstName: Yup.string()
@@ -39,7 +39,7 @@ const SignupForm = (props: any) => {
 
   const formik = useFormik({
     enableReinitialize: true,
-    initialValues: InitSignup,
+    initialValues: InitSignUp,
     onSubmit: async (userData: any) => {
       // Setting User Type
       userData.roles = [userData.userType];
@@ -50,7 +50,7 @@ const SignupForm = (props: any) => {
       // Making a User Registration Request
       props.actions.registerUser(userData);
     },
-    validationSchema: SignupSchema,
+    validationSchema: SignUpSchema,
   });
 
   return (
@@ -146,4 +146,4 @@ const mapDispatchToProps = (dispatch: any) => ({
   },
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(SignupForm);
+export default connect(mapStateToProps, mapDispatchToProps)(SignUpForm);

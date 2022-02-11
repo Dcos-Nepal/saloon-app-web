@@ -1,7 +1,7 @@
 export const endpoints = {
   auth: {
-    signup: "/signup",
-    signin: "/signin",
+    signUp: "/signUp",
+    signIn: "/signIn",
     verifyEmail: "/verify-email/:token",
     resetPassword: "/reset-password",
     changePassword: "/change-password/:pwdToken",

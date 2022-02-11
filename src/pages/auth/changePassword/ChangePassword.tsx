@@ -13,7 +13,7 @@ const ChangePassword = (props: any) => {
 
   useEffect(() => {
     if(props.isSuccess && props.isFailed === false) {
-      setTimeout(() => navigate(endpoints.auth.signin), 3000);
+      setTimeout(() => navigate(endpoints.auth.signIn), 3000);
     }
   }, [props.isSuccess, props.isFailed, navigate])
 
@@ -28,7 +28,7 @@ const ChangePassword = (props: any) => {
             <div className="main-container card bg-white p-4">
               <Success
                 okMsg="Go to login"
-                okHandler={() => navigate(endpoints.auth.signin)}
+                okHandler={() => navigate(endpoints.auth.signIn)}
                 msg="You have successfully changed your password"
               />
             </div>) : (

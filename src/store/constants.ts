@@ -143,6 +143,33 @@ export const FETCH_QUOTES_LOADING = "FETCH_QUOTES_LOADING";
 export const FETCH_QUOTES_ERROR = "FETCH_QUOTES_ERROR";
 
 /**
+ * Fetch Job Quote action types
+ */
+ export const FETCH_QUOTE = "FETCH_QUOTE";
+ export const FETCH_QUOTE_SUCCESS = "FETCH_QUOTE_SUCCESS";
+ export const FETCH_QUOTE_LOADING = "FETCH_QUOTE_LOADING";
+ export const FETCH_QUOTE_ERROR = "FETCH_QUOTE_ERROR";
+  
+
+/**
+ * Update Job Quote action types
+ */
+export const UPDATE_QUOTE = "UPDATE_QUOTE";
+export const UPDATE_QUOTE_SUCCESS = "UPDATE_QUOTE_SUCCESS";
+export const UPDATE_QUOTE_LOADING = "UPDATE_QUOTE_LOADING";
+export const UPDATE_QUOTE_ERROR = "UPDATE_QUOTE_ERROR";
+
+
+/**
+ * Update Job Quote Status action types
+ */
+ export const UPDATE_QUOTE_STATUS = "UPDATE_QUOTE_STATUS";
+ export const UPDATE_QUOTE_STATUS_SUCCESS = "UPDATE_QUOTE_STATUS_SUCCESS";
+ export const UPDATE_QUOTE_STATUS_LOADING = "UPDATE_QUOTE_STATUS_LOADING";
+ export const UPDATE_QUOTE_STATUS_ERROR = "UPDATE_QUOTE_STATUS_ERROR";
+  
+ 
+/**
  * Load Job Listing action types
  */
 export const FETCH_JOBS = "FETCH_JOBS";

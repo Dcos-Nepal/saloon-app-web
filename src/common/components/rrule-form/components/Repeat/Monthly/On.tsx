@@ -55,26 +55,27 @@ const RepeatMonthlyOn = ({
         )}
       </div>
 
+      <div className='col-sm-2'>
+        {translateLabel(translations, 'repeat.monthly.on_day')}
+      </div>
+
       <div className='col-sm-5'>
         <select
           id={`${id}-day`}
           name='repeat.monthly.on.day'
           aria-label='Repeat monthly on a day'
-          className=''
+          className='form-control'
           value={on.day}
           disabled={!isActive}
           onChange={numericalFieldHandler(handleChange)}
         >
-          {/* {[...new Array(31)].map((_, i) => (
+          {[...new Array(31)].map((_, i) => (
             <option key={i} value={i + 1}>
               {i + 1}
             </option>
-          ))} */}
+          ))}
           {renderOptions()}
         </select>
-      </div>
-      <div className='col-sm-4'>
-        {translateLabel(translations, 'repeat.monthly.on_day')}
       </div>
     </div>
   );

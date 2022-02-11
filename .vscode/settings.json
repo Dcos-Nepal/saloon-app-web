@@ -6,9 +6,13 @@
     "formik",
     "fullcalendar",
     "luxon",
+    "octicons",
+    "pinterpolate",
     "popperjs",
     "reqs",
     "rrule",
+    "signin",
+    "signup",
     "timegrid",
     "toastify"
   ]

@@ -17,9 +17,9 @@ const SelectField: FC<any> = ({
 }) => {
   return (
     <div className={`mb-3 ${className}`}>
-      <label htmlFor={name} className="form-label txt-dark-grey">
+      {label ? (<label htmlFor={name} className="form-label txt-dark-grey">
         {label}
-      </label>
+      </label>) : null}
       <Select
         id={name}
         value={value}

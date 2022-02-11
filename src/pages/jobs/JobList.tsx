@@ -7,7 +7,6 @@ import SelectField from "common/components/form/Select";
 import Modal from "common/components/atoms/Modal";
 import JobAdd from "./JobAdd";
 import { endpoints } from "common/config";
-import { ClockIcon, HomeIcon } from "@primer/octicons-react";
 
 interface IClient {
   jobNumber: string;
@@ -120,20 +119,20 @@ const JobsList = () => {
             <ul className="dropdown-menu" aria-labelledby="dropdownMenuLink">
               <li
                 onClick={() =>
-                  navigate(endpoints.admin.jobs.detail)
+                  navigate('/dashboard/jobs/123456')
                 }
               >
-                <a className="dropdown-item" href="#">
+                <a className="dropdown-item" href="">
                   View Detail
                 </a>
               </li>
               <li onClick={() => navigate(endpoints.admin.jobs.edit)}>
-                <a className="dropdown-item" href="#">
+                <a className="dropdown-item" href="">
                   Edit
                 </a>
               </li>
               <li>
-                <a className="dropdown-item" href="#">
+                <a className="dropdown-item" href="">
                   Delete
                 </a>
               </li>

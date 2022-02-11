@@ -3,7 +3,12 @@ import { createStore, applyMiddleware, compose } from "redux";
 import rootReducer from "./reducers/index";
 import createSagaMiddleware from "redux-saga";
 import { addQuoteSaga, fetchQuotesSaga } from "./sagas/quotes.saga";
-import { fetchJobRequestsSaga, addJobRequestSaga } from "./sagas/job-reqs.saga";
+import {
+  addJobRequestSaga,
+  fetchJobRequestSaga,
+  fetchJobRequestsSaga,
+  updateJobRequestSaga,
+} from "./sagas/job-reqs.saga";
 import {
   addClientSaga,
   addWorkerSaga,
@@ -46,6 +51,8 @@ sagaMiddleware.run(verifyUserEmailSaga);
 sagaMiddleware.run(forgotPasswordSaga);
 sagaMiddleware.run(resetPasswordSaga);
 sagaMiddleware.run(addJobRequestSaga);
+sagaMiddleware.run(fetchJobRequestSaga);
+sagaMiddleware.run(updateJobRequestSaga);
 sagaMiddleware.run(fetchJobRequestsSaga);
 sagaMiddleware.run(addClientSaga);
 sagaMiddleware.run(fetchClientsSaga);

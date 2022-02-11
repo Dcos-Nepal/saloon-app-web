@@ -1,3 +1,3 @@
-import ClientDetail from "./ClientDetail";
+import RequestDetail from "./RequestDetail";
 
-export default ClientDetail;
+export default RequestDetail;

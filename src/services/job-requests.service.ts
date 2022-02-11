@@ -13,3 +13,13 @@ export const addJobRequestApi = async (payload: any) => {
   const url = "/v1.0.0/job-requests";
   return await http.post(url, payload);
 };
+
+export const fetchJobRequestApi = async (id: string) => {
+  const url = "/v1.0.0/job-requests/" + id;
+  return await http.get(url);
+};
+
+export const updateJobRequestApi = async (payload: any) => {
+  const url = "/v1.0.0/job-requests/" + payload._id;
+  return await http.put(url, payload);
+};

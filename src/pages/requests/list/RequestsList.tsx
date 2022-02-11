@@ -1,8 +1,9 @@
+import { connect } from "react-redux";
+import pinterpolate from "pinterpolate";
+import ReactPaginate from "react-paginate";
 import React, { useCallback } from "react";
 import { Column, useTable } from "react-table";
 import { Suspense, useEffect, useMemo, useState } from "react";
-import ReactPaginate from "react-paginate";
-import { connect } from "react-redux";
 
 import * as jobReqActions from "../../../store/actions/job-requests.actions";
 
@@ -48,6 +49,7 @@ const RequestsList = (props: any) => {
           title: row.name,
           requestDate: new Date(row.createdAt).toDateString(),
           status: row.status,
+          _id: row._id,
           updatedDate: new Date(row.updatedAt).toDateString(),
         }))
       );
@@ -129,21 +131,31 @@ const RequestsList = (props: any) => {
               <box-icon name="dots-vertical-rounded"></box-icon>
             </a>
             <ul className="dropdown-menu" aria-labelledby="dropdownMenuLink">
-              <li>
-                <a className="dropdown-item" href="#">
-                  View Detail
-                </a>
+              <li
+                onClick={() =>
+                  navigate(
+                    pinterpolate(endpoints.admin.requests.detail, {
+                      id: row._id,
+                    })
+                  )
+                }
+                className="p-2 pointer"
+              >
+                View Detail
               </li>
-              <li>
-                <a className="dropdown-item" href="#">
-                  Edit
-                </a>
+              <li
+                className="p-2 pointer"
+                onClick={() =>
+                  navigate(
+                    pinterpolate(endpoints.admin.requests.edit, {
+                      id: row._id,
+                    })
+                  )
+                }
+              >
+                Edit
               </li>
-              <li>
-                <a className="dropdown-item" href="#">
-                  Delete
-                </a>
-              </li>
+              <li className="p-2 pointer">Delete</li>
             </ul>
           </div>
         ),

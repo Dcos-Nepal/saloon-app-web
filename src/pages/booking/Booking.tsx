@@ -31,6 +31,21 @@ const cleaningFrequencyOptions = [
   },
 ];
 
+const paidByOptions = [
+  {
+    label: "Agency Managed",
+    value: "AGENCY_MANAGED",
+  },
+  {
+    label: "Plan Managed",
+    value: "PLAN_MANAGED",
+  },
+  {
+    label: "Self Managed",
+    value: "SELF_MANAGED",
+  },
+];
+
 const bestDescribingYouOptions = [
   {
     label: "I am an individual receiving and paying for the service",
@@ -50,6 +65,36 @@ const NDISServiceOptions = [
   {
     label: "No",
     value: false,
+  },
+];
+
+const selfBookingOptions = [
+  {
+    label: "Yes",
+    value: true,
+  },
+  {
+    label: "No",
+    value: false,
+  },
+];
+
+const serviceManagedByOptions = [
+  {
+    label: "Family Member",
+    value: "FAMILY_MEMBER",
+  },
+  {
+    label: "Occupational Therapist",
+    value: "OCCUPATIONAL_THERAPIST",
+  },
+  {
+    label: "Carer",
+    value: "CARER",
+  },
+  {
+    label: "Other",
+    value: "OTHER",
   },
 ];
 
@@ -260,6 +305,7 @@ const Booking = () => {
       },
     },
     isNDIS: undefined,
+    selfBooking: undefined,
     agedCareDisabilityCleaningService: "",
   });
 
@@ -310,6 +356,7 @@ const Booking = () => {
         country: Yup.string().required(`Country is required`),
       }),
       isNDIS: Yup.boolean(),
+      selfBooking: Yup.boolean(),
       agedCareDisabilityCleaningService: Yup.string(),
     }),
   });
@@ -492,6 +539,29 @@ const Booking = () => {
     );
   };
 
+  const PaidBy = () => {
+    return (
+      <>
+        <h4 className="txt-bold">Who will pay for the service?</h4>
+        <div className="row p-2">
+          {paidByOptions.map((paidByOption) => (
+            <div
+              className={`col text-center card hover-card m-2 txt-bold ${
+                formik.values.paidBy === paidByOption.value
+                  ? "bg-orange txt-white"
+                  : ""
+              }`}
+              onClick={() => formik.setFieldValue("paidBy", paidByOption.value)}
+            >
+              {paidByOption.label}
+            </div>
+          ))}
+          <ErrorMessage name="paidBy" />
+        </div>
+      </>
+    );
+  };
+
   const BestDescribeYou = () => {
     return (
       <>
@@ -540,6 +610,273 @@ const Booking = () => {
             </div>
           ))}
           <ErrorMessage name="isNDIS" />
+        </div>
+      </>
+    );
+  };
+
+  const ServicesApprovedFor = () => {
+    return (
+      <>
+        <h4 className="txt-bold mt-3">Service Managed By*</h4>
+        <div className="row p-2">
+          {serviceManagedByOptions.map((serviceManagedByOption) => (
+            <div
+              className={`col text-center card hover-card m-2 txt-bold ${
+                formik.values.serviceManagedBy === serviceManagedByOption.value
+                  ? "bg-orange txt-white"
+                  : ""
+              }`}
+              onClick={() =>
+                formik.setFieldValue(
+                  "serviceManagedBy",
+                  !serviceManagedByOption.value
+                )
+              }
+            >
+              {serviceManagedByOption.label}
+            </div>
+          ))}
+          <ErrorMessage name="serviceManagedBy" />
+
+          <div className="row p-2 me-5 pe-5">
+            <div className="row">
+              <div className="col">
+                <InputField
+                  label=""
+                  type="number"
+                  value={formik.values.numberOfServices}
+                  placeholder="Number of services"
+                  name="numberOfServices"
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                />
+                <ErrorMessage name="numberOfServices" />
+              </div>
+              <div className="col-1 mt-1">
+                <div className="mt-4">
+                  <label className="form-label txt-dark-grey">Or until</label>
+                </div>
+              </div>
+              <div className="col">
+                <InputField
+                  name="serviceUntil"
+                  label=""
+                  type="date"
+                  onChange={formik.handleChange}
+                  value={formik.values.serviceUntil || ""}
+                  placeholder="Select date"
+                />
+                <ErrorMessage name="serviceUntil" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </>
+    );
+  };
+
+  const SelfBooking = () => {
+    return (
+      <>
+        <h4 className="txt-bold mt-3">
+          Are you booking the service on behalf of someone else?
+        </h4>
+        <div className="row p-2">
+          {selfBookingOptions.map((selfBookingOption) => (
+            <div
+              className={`col text-center card hover-card m-2 txt-bold ${
+                formik.values.selfBooking !== undefined &&
+                formik.values.selfBooking !== selfBookingOption.value
+                  ? "bg-orange txt-white"
+                  : ""
+              }`}
+              onClick={() =>
+                formik.setFieldValue("selfBooking", !selfBookingOption.value)
+              }
+            >
+              {selfBookingOption.label}
+            </div>
+          ))}
+          <ErrorMessage name="selfBookingOption" />
+        </div>
+      </>
+    );
+  };
+
+  const ServiceManagedBy = () => {
+    return (
+      <>
+        <h4 className="txt-bold mt-3">Service Managed By*</h4>
+        <div className="row p-2">
+          {serviceManagedByOptions.map((serviceManagedByOption) => (
+            <div
+              className={`col text-center card hover-card m-2 txt-bold ${
+                formik.values.serviceManagedBy === serviceManagedByOption.value
+                  ? "bg-orange txt-white"
+                  : ""
+              }`}
+              onClick={() =>
+                formik.setFieldValue(
+                  "serviceManagedBy",
+                  !serviceManagedByOption.value
+                )
+              }
+            >
+              {serviceManagedByOption.label}
+            </div>
+          ))}
+          <ErrorMessage name="serviceManagedBy" />
+
+          <div className="row p-2 me-5 pe-5">
+            <div className="row">
+              <div className="col">
+                <InputField
+                  label=""
+                  value={formik.values.userData.firstName}
+                  placeholder="Enter first name"
+                  name="userData.firstName"
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                />
+                <ErrorMessage name="userData.firstName" />
+              </div>
+              <div className="col">
+                <InputField
+                  value={formik.values.userData.lastName}
+                  label=""
+                  placeholder="Enter last name"
+                  name="userData.lastName"
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                />
+                <ErrorMessage name="userData.lastName" />
+              </div>
+            </div>
+            <div className="row">
+              <div className="col">
+                <InputField
+                  label=""
+                  value={formik.values.userData.email}
+                  placeholder="Enter email address"
+                  type="email"
+                  name="userData.email"
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                />
+                <ErrorMessage name="userData.email" />
+              </div>
+              <div className="col">
+                <InputField
+                  value={formik.values.userData.phoneNumber}
+                  label=""
+                  placeholder="Enter phone number"
+                  name="userData.phoneNumber"
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                />
+                <ErrorMessage name="userData.phoneNumber" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </>
+    );
+  };
+
+  const ServicePaidBy = () => {
+    return (
+      <>
+        <h4 className="txt-bold mt-3">Service Paid By*</h4>
+        <p className="mt-4">Who will be paying for the service?</p>
+        <div className="row p-2 me-5 pe-5">
+          <div className="row">
+            <div className="col">
+              <InputField
+                label=""
+                value={formik.values.companyName}
+                placeholder="Company name"
+                name="companyName"
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+              />
+              <ErrorMessage name="companyName" />
+            </div>
+            <div className="col">
+              <InputField
+                label=""
+                value={formik.values.companyEmail}
+                placeholder="Company email"
+                type="email"
+                name="companyEmail"
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+              />
+              <ErrorMessage name="userData.lastName" />
+            </div>
+          </div>
+          <div className="row">
+            <div className="col">
+              <InputField
+                label=""
+                value={formik.values.companyEmail}
+                placeholder="Case manager name"
+                name="companyCaseManagerName"
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+              />
+              <ErrorMessage name="companyCaseManagerName" />
+            </div>
+            <div className="col">
+              <InputField
+                value={formik.values.caseManagerPhoneNumber}
+                label=""
+                placeholder="Case manager phone number"
+                name="caseManagerPhoneNumber"
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+              />
+              <ErrorMessage name="caseManagerPhoneNumber" />
+            </div>
+          </div>
+          <div className="row">
+            <div className="col">
+              <InputField
+                label=""
+                value={formik.values.caseManagerEmail}
+                placeholder="Case manager email address"
+                name="caseManagerEmail"
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+              />
+              <ErrorMessage name="caseManagerEmail" />
+            </div>
+            <div className="col">
+              <InputField
+                value={formik.values.calmNumber}
+                label=""
+                placeholder="Calm number"
+                name="calmNumber"
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+              />
+              <ErrorMessage name="calmNumber" />
+            </div>
+          </div>
+          <div className="row">
+            <div className="col">
+              <InputField
+                label=""
+                value={formik.values.companyEmail}
+                placeholder="Address"
+                name="companyAddress"
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+              />
+              <ErrorMessage name="companyAddress" />
+            </div>
+            <div className="col"></div>
+          </div>
         </div>
       </>
     );
@@ -719,6 +1056,25 @@ const Booking = () => {
     );
   };
 
+  const EndDate = () => {
+    return (
+      <>
+        <h4 className="txt-bold mt-3">What is the end date of the plan?</h4>
+        <div className="row p-2">
+          <InputField
+            name="endDate"
+            label=""
+            type="date"
+            onChange={formik.handleChange}
+            value={formik.values.endDate || ""}
+            placeholder="Special Requirements"
+          />
+          <ErrorMessage name="endDate" />
+        </div>
+      </>
+    );
+  };
+
   const SpecialRequirements = () => {
     return (
       <>
@@ -809,10 +1165,14 @@ const Booking = () => {
     );
   };
 
-  const UserData = () => {
+  const UserData = ({ isBusiness = false }) => {
     return (
       <>
-        <h4 className="txt-bold mt-3">Your Details*</h4>
+        <h4 className="txt-bold mt-3">
+          {isBusiness
+            ? "Name and address for the recipient of the service*"
+            : "Your Details*"}
+        </h4>
         <div className="row p-2 me-5 pe-5">
           <div className="row mt-3">
             <div className="col">
@@ -1003,16 +1363,24 @@ const Booking = () => {
               <StartDate />
 
               <div className="hr-orange mb-4 mt-2"></div>
-              <UserData />
+              <SelfBooking />
+
+              <div className="hr-orange mb-4 mt-2"></div>
+              <UserData
+                isBusiness={formik.values.bestDescribedAs !== "INDIVIDUAL"}
+              />
+
+              {formik.values.selfBooking ? <ServiceManagedBy /> : null}
+
+              <div className="hr-orange mb-4 mt-2"></div>
+              <ServicePaidBy />
 
               <div className="hr-orange mb-4 mt-2"></div>
               <HeardFrom />
               <SpecialRequirements />
 
               <div>
-                <button className="btn btn-primary mt-3">
-                  BOOK NOW
-                </button>
+                <button className="btn btn-primary mt-3">BOOK NOW</button>
               </div>
             </>
           ) : null}
@@ -1124,6 +1492,36 @@ const Booking = () => {
 
             <div className="hr-orange mb-4 mt-2"></div>
             <CleaningHour />
+
+            <div className="hr-orange mb-4 mt-2"></div>
+            <NumberOfDaysPerWeek />
+
+            <CleaningDays />
+
+            <StartDate />
+
+            <div className="hr-orange mb-4 mt-2"></div>
+            <SelfBooking />
+
+            <div className="hr-orange mb-4 mt-2"></div>
+            <ServicesApprovedFor />
+
+            <div className="hr-orange mb-4 mt-2"></div>
+            <UserData
+              isBusiness={formik.values.bestDescribedAs !== "INDIVIDUAL"}
+            />
+
+            <ServicePaidBy />
+
+            <div className="hr-orange mb-4 mt-2"></div>
+            <HeardFrom />
+
+            <div className="hr-orange mb-4 mt-2"></div>
+            <SpecialRequirements />
+
+            <div>
+              <button className="btn btn-primary mt-3">BOOK NOW</button>
+            </div>
           </>
         );
       case "Moving Out/Spring Clean":
@@ -1251,6 +1649,33 @@ const Booking = () => {
 
             <div className="hr-orange mb-4 mt-2"></div>
             <CleaningHour />
+
+            <div className="hr-orange mb-4 mt-2"></div>
+            <NumberOfDaysPerWeek />
+
+            <CleaningDays />
+
+            <StartDate />
+
+            <div className="hr-orange mb-4 mt-2"></div>
+            <SelfBooking />
+
+            <div className="hr-orange mb-4 mt-2"></div>
+            <EndDate />
+
+            <div className="hr-orange mb-4 mt-2"></div>
+            <UserData
+              isBusiness={formik.values.bestDescribedAs !== "INDIVIDUAL"}
+            />
+            <PaidBy />
+
+            <div className="hr-orange mb-4 mt-2"></div>
+            <HeardFrom />
+            <SpecialRequirements />
+
+            <div>
+              <button className="btn btn-primary mt-3">BOOK NOW</button>
+            </div>
           </>
         );
       case false:

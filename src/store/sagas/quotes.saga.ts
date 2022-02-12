@@ -91,12 +91,10 @@ function* fetchQuote(action: any): any {
             action.payload
         );
         if (quoteRequest?.data?.success) {
-            yield put({
+            return yield put({
                 type: actionType.FETCH_QUOTE_SUCCESS,
                 payload: quoteRequest?.data?.data,
             });
-
-            return toast.success(getMessage(quoteRequest?.data?.message));
         }
         yield put({
             type: actionType.FETCH_QUOTE_ERROR,
@@ -123,12 +121,10 @@ function* updateQuoteStatus(action: any): any {
             action.payload
         );
         if (quoteRequest?.data?.success) {
-            yield put({
+            return yield put({
                 type: actionType.UPDATE_QUOTE_STATUS_SUCCESS,
                 payload: quoteRequest?.data?.data,
             });
-
-            return toast.success(getMessage(quoteRequest?.data?.message));
         }
         yield put({
             type: actionType.UPDATE_QUOTE_STATUS_ERROR,

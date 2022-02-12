@@ -1,12 +1,12 @@
 import * as Yup from "yup";
 import * as quotesActions from "store/actions/quotes.actions";
 
-import { Fragment, useEffect, useState } from "react";
+import { FC, Fragment, useEffect, useState } from "react";
 import { FieldArray, FormikProvider, useFormik, getIn } from "formik";
 import { PlusCircleIcon, StopIcon, XCircleIcon } from "@primer/octicons-react";
 
 import { connect } from "react-redux";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate} from "react-router-dom";
 import { Loader } from "common/components/atoms/Loader";
 import { fetchUserProperties } from "services/common.service";
 
@@ -14,9 +14,19 @@ import InputField from "common/components/form/Input";
 import SelectAsync from "common/components/form/AsyncSelect";
 import TextArea from "common/components/form/TextArea";
 
-const QuoteAddForm = (props: any) => {
+interface IProps {
+  id: string;
+  actions: {
+    addQuote: (id: string) => void;
+    fetchQuote: (id: string) => void;
+    updateQuote: (id: string, data: any) => void;
+  };
+  isLoading: boolean;
+  currentItem: any;
+}
+
+const QuoteAddForm: FC<IProps> = ({id, isLoading, currentItem, actions}) => {
   const navigate = useNavigate();
-  const { id } = useParams();
 
   const [clientDetails, setClientDetails] = useState(null);
   const [properties, setProperties] = useState([]);
@@ -98,26 +108,26 @@ const QuoteAddForm = (props: any) => {
       }
       
       // Dispatch action to create Job Quote
-      await id ? props.actions.updateQuote(id, quotePayload) : props.actions.addQuote(quotePayload);
+      await id ? actions.updateQuote(id, quotePayload) : actions.addQuote(quotePayload);
     },
   });
 
   useEffect(() => {
-    if (id) return props.actions.fetchQuote(id);
-  }, [id, props.actions]);
+    if (id) return actions.fetchQuote(id);
+  }, [id, actions]);
 
   useEffect(() => {
-    if (props.currentItem && id) {
+    if (currentItem && id) {
       setInitialValues({
         ...initialValues,
-        title: props.currentItem?.title,
-        description: props.currentItem?.description,
-        property: props.currentItem?.property?._id,
+        title: currentItem?.title,
+        description: currentItem?.description,
+        property: currentItem?.property?._id,
         quoteFor: {
-          label: props.currentItem?.quoteFor?.firstName,
-          value: props.currentItem?.quoteFor?._id,
+          label: currentItem?.quoteFor?.firstName,
+          value: currentItem?.quoteFor?._id,
         },
-        lineItems: props.currentItem?.lineItems?.map((item: { name: any; ref: any; }) => {
+        lineItems: currentItem?.lineItems?.map((item: { name: any; ref: any; }) => {
           return {
             ...item,
             name: {
@@ -128,12 +138,12 @@ const QuoteAddForm = (props: any) => {
         })
       });
 
-      setClientDetails(props.currentItem?.quoteFor);
-      fetchUserProperties(props.currentItem?.quoteFor._id).then((response) => {
+      setClientDetails(currentItem?.quoteFor);
+      fetchUserProperties(currentItem?.quoteFor._id).then((response) => {
         setProperties(response.data?.data?.data?.rows || []);
       });
     }
-  }, [id, props.currentItem]);
+  }, [id, currentItem]);
 
   /**
    * Handles Line Item selection
@@ -175,7 +185,7 @@ const QuoteAddForm = (props: any) => {
 
   return (
     <form onSubmit={formik.handleSubmit} style={{position: 'relative'}}>
-      <Loader isLoading={props.isLoading} />
+      <Loader isLoading={isLoading} />
       <FormikProvider value={formik}>
         <div className="row mb-3">
           <div className="col pb-3">

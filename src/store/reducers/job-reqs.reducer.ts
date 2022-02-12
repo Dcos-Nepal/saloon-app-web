@@ -50,6 +50,48 @@ const jobRequestReducer = (state = initialState, action: any) => {
       return { ...state };
     }
 
+    case actionType.UPDATE_JOB_REQUEST: {
+      state.isLoading = true;
+      return { ...state };
+    }
+
+    case actionType.UPDATE_JOB_REQUEST_SUCCESS: {
+      state.currentItem = action.payload;
+      state.isLoading = false;
+      state.isFailed = false;
+      state.isSuccess = true;
+      return { ...state };
+    }
+
+    case actionType.UPDATE_JOB_REQUEST_ERROR: {
+      state.isSuccess = false;
+      state.isLoading = false;
+      state.isFailed = true;
+      state.currentItem = action.payload;
+      return { ...state };
+    }
+
+    case actionType.FETCH_JOB_REQUEST: {
+      state.isLoading = true;
+      return { ...state };
+    }
+
+    case actionType.FETCH_JOB_REQUEST_SUCCESS: {
+      state.currentItem = action.payload;
+      state.isLoading = false;
+      state.isFailed = false;
+      state.isSuccess = true;
+      return { ...state };
+    }
+
+    case actionType.FETCH_JOB_REQUEST_ERROR: {
+      state.isSuccess = false;
+      state.isLoading = false;
+      state.isFailed = true;
+      state.currentItem = action.payload;
+      return { ...state };
+    }
+
     default: {
       return { ...state };
     }

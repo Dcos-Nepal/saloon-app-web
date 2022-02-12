@@ -8,6 +8,7 @@ const SelectField: FC<any> = ({
   placeholder,
   options,
   handleChange,
+  handleBlur,
   value,
   className,
   isDisabled,
@@ -23,6 +24,7 @@ const SelectField: FC<any> = ({
         id={name}
         value={value}
         onChange={handleChange}
+        onBlur={handleBlur}
         name={name}
         menuPlacement="auto"
         options={options}

@@ -1,7 +1,7 @@
 import { connect } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
-import SignUpForm from "./SignUpForm";
+import SignUpForm from "./SignupForm";
 import { endpoints } from "common/config";
 import Google from "assets/images/google.svg";
 import LogoFull from "assets/images/LogoFull.svg";

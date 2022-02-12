@@ -1,10 +1,13 @@
+import { FC } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-import QuoteAddForm from "./QuoteAddForm";
+import RequestForm from "../RequestForm";
 
-const QuoteAdd = () => {
-  const navigate = useNavigate();
+interface IProps {}
+
+const RequestEdit: FC<IProps> = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
 
   return (
     <>
@@ -15,15 +18,13 @@ const QuoteAdd = () => {
           </span>
           <span className="col">Back to previous</span>
         </div>
-        <div className="d-flex flex-row mt-3">
-          <h3 className="extra">{id ? 'Edit' : 'Create'} a Quote</h3>
+        <div className="d-flex flex-row">
+          <h3>Update Request</h3>
         </div>
       </div>
-      <div>
-        <QuoteAddForm id={id || ''}/>
-      </div>
+      <RequestForm id={id} />
     </>
   );
 };
 
-export default QuoteAdd;
+export default RequestEdit;

@@ -20,7 +20,7 @@ let simulateErrors = false
 
 document.addEventListener('keypress', (ev) => {
   if (ev.key === 'e') {
-    alert('You pressed the key "e". Will begin to simulate errors.')
+    //alert('You pressed the key "e". Will begin to simulate errors.')
     simulateErrors = true
   }
 })

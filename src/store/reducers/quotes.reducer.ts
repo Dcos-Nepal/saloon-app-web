@@ -20,8 +20,24 @@ const quotesReducer = (state = initialState, action: any) => {
       return { ...state };
     }
 
+    case actionType.UPDATE_QUOTE_STATUS: {
+      state.isLoading = true;
+      return { ...state };
+    }
+
     case actionType.FETCH_QUOTES: {
       state.isLoading = true;
+      return {...state};
+    }
+
+    case actionType.FETCH_QUOTE: {
+      state.isLoading = true;
+      return {...state};
+    }
+
+    case actionType.FETCH_QUOTE_SUCCESS: {
+      state.isLoading = false;
+      state.currentItem = action.payload;
       return {...state};
     }
 
@@ -30,7 +46,19 @@ const quotesReducer = (state = initialState, action: any) => {
       return {...state};
     }
 
+
     case actionType.UPDATE_QUOTE_SUCCESS: {
+      state.isLoading = false;
+      state.itemList.data.rows = state.itemList?.data?.rows.filter((item: any) => {
+        if ((item as any)._id === action.payload._id) {
+          item = action.payload;
+        }
+        return item;
+      });
+      return {...state};
+    }
+
+    case actionType.UPDATE_QUOTE_STATUS_SUCCESS: {
       state.isLoading = false;
       state.itemList.data.rows = state.itemList?.data?.rows.filter((item: any) => {
         if ((item as any)._id === action.payload._id) {

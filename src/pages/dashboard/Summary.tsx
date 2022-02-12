@@ -1,6 +1,5 @@
-import ReactRRuleGenerator, { translations } from "common/components/rrule-form";
-import PushNotificationDemo from "pages/PushNotificationDemo";
 import { useState } from "react";
+import ReactRRuleGenerator, { translations } from "common/components/rrule-form";
 
 const Summary = () => {
   const [rruleStr, setRruleStr] = useState('DTSTART:20220114T035500Z RRULE:FREQ=MONTHLY;INTERVAL=1;BYMONTHDAY=1;UNTIL=20220127T050300Z');
@@ -59,42 +58,6 @@ const Summary = () => {
           </div>
           <div className="col dashboard-main-label">
             Complete <p className="txt-bold-big mt-2">$0.00</p>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div className="row">
-      <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-        Launch demo modal
-      </button>
-      <div className="container">
-        <PushNotificationDemo />
-      </div>
-
-      <div className="modal fade" id="exampleModal" tabIndex={-1} aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div className="modal-dialog">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h5 className="modal-title" id="exampleModalLabel">Recurring Rule Form</h5>
-              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div className="modal-body">
-              <ReactRRuleGenerator
-                onChange={handleChange as any}
-                value={rruleStr as string}
-                config={{
-                  hideStart: false,
-                } as any}
-                translations={getTranslation() as any}
-              />
-              <div className="col-12">
-                <small>{rruleStr.split(';').join("; ")}</small>
-              </div>
-            </div>
-            <div className="modal-footer">
-              <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-              <button type="button" className="btn btn-primary">Save changes</button>
-            </div>
           </div>
         </div>
       </div>

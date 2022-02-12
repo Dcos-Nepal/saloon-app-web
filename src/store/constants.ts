@@ -103,6 +103,22 @@ export const FETCH_JOB_REQUESTS_LOADING = "FETCH_JOB_REQUESTS_LOADING";
 export const FETCH_JOB_REQUESTS_ERROR = "FETCH_JOB_REQUESTS_ERROR";
 
 /**
+ * Update Job Request action types
+ */
+export const UPDATE_JOB_REQUEST = "UPDATE_JOB_REQUEST";
+export const UPDATE_JOB_REQUEST_SUCCESS = "UPDATE_JOB_REQUEST_SUCCESS";
+export const UPDATE_JOB_REQUEST_LOADING = "UPDATE_JOB_REQUEST_LOADING";
+export const UPDATE_JOB_REQUEST_ERROR = "UPDATE_JOB_REQUEST_ERROR";
+
+/**
+ * Fetch Job Request action types
+ */
+export const FETCH_JOB_REQUEST = "FETCH_JOB_REQUEST";
+export const FETCH_JOB_REQUEST_SUCCESS = "FETCH_JOB_REQUEST_SUCCESS";
+export const FETCH_JOB_REQUEST_LOADING = "FETCH_JOB_REQUEST_LOADING";
+export const FETCH_JOB_REQUEST_ERROR = "FETCH_JOB_REQUEST_ERROR";
+
+/**
  * Load Job Line Items Listing action types
  */
 export const SEARCH_LINE_ITEMS = "SEARCH_LINE_ITEMS";
@@ -127,12 +143,31 @@ export const FETCH_QUOTES_LOADING = "FETCH_QUOTES_LOADING";
 export const FETCH_QUOTES_ERROR = "FETCH_QUOTES_ERROR";
 
 /**
+ * Fetch Job Quote action types
+ */
+ export const FETCH_QUOTE = "FETCH_QUOTE";
+ export const FETCH_QUOTE_SUCCESS = "FETCH_QUOTE_SUCCESS";
+ export const FETCH_QUOTE_LOADING = "FETCH_QUOTE_LOADING";
+ export const FETCH_QUOTE_ERROR = "FETCH_QUOTE_ERROR";
+  
+
+/**
  * Update Job Quote action types
  */
 export const UPDATE_QUOTE = "UPDATE_QUOTE";
 export const UPDATE_QUOTE_SUCCESS = "UPDATE_QUOTE_SUCCESS";
 export const UPDATE_QUOTE_LOADING = "UPDATE_QUOTE_LOADING";
 export const UPDATE_QUOTE_ERROR = "UPDATE_QUOTE_ERROR";
+
+
+/**
+ * Update Job Quote Status action types
+ */
+ export const UPDATE_QUOTE_STATUS = "UPDATE_QUOTE_STATUS";
+ export const UPDATE_QUOTE_STATUS_SUCCESS = "UPDATE_QUOTE_STATUS_SUCCESS";
+ export const UPDATE_QUOTE_STATUS_LOADING = "UPDATE_QUOTE_STATUS_LOADING";
+ export const UPDATE_QUOTE_STATUS_ERROR = "UPDATE_QUOTE_STATUS_ERROR";
+  
  
 /**
  * Load Job Listing action types

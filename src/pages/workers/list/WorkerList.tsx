@@ -23,7 +23,7 @@ interface IClient {
 const WorkerList = (props: any) => {
   const navigate = useNavigate();
   const [itemsPerPage] = useState(10);
-  const [offset, setOffset] = useState(0);
+  const [offset, setOffset] = useState(1);
   const [pageCount, setPageCount] = useState(0)
   const [workers, setWorkers] = useState<IClient[]>([]);
   const [query, setQuery] = useState('');
@@ -179,7 +179,7 @@ const WorkerList = (props: any) => {
 
                 return (
                   <tr {...row.getRowProps()} className="rt-tr-group">
-                    <td><strong>#{index + 1 + (offset*itemsPerPage)}</strong></td>
+                    <td><strong>#{(index + 1) + (offset - 1) * itemsPerPage}</strong></td>
                     {row.cells.map((cell) => (
                       <td {...cell.getCellProps()}>
                         {cell.render("Cell")}

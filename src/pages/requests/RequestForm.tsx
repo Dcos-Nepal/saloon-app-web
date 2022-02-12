@@ -10,18 +10,31 @@ import InputField from "common/components/form/Input";
 import SelectField from "common/components/form/Select";
 import * as clientsActions from "store/actions/clients.actions";
 import * as jobRequestsActions from "store/actions/job-requests.actions";
+import { IRequest } from "common/types/request";
+import { Loader } from "common/components/atoms/Loader";
 
 interface IProps {
   actions: {
     fetchClients: (payload: any) => any;
-    addJobRequest: (data: any) => any;
+    addJobRequest: (data: IRequest) => any;
+    fetchJobRequest: (id: string) => void;
+    updateJobRequest: (data: IRequest) => void;
   };
   clients: IClient[];
+  id?: string;
+  isJobRequestsLoading: boolean;
+  currentJobRequest?: IRequest;
 
   isClientsLoading: boolean;
 }
 
-const RequestAddForm: FC<IProps> = ({ actions, clients }) => {
+const RequestAddForm: FC<IProps> = ({
+  id,
+  actions,
+  clients,
+  isJobRequestsLoading,
+  currentJobRequest,
+}) => {
   const navigate = useNavigate();
 
   const [clientsOption, setClientsOption] = useState<IOption[]>([]);
@@ -32,6 +45,10 @@ const RequestAddForm: FC<IProps> = ({ actions, clients }) => {
   }, [actions]);
 
   useEffect(() => {
+    if (id) actions.fetchJobRequest(id);
+  }, [id, actions]);
+
+  useEffect(() => {
     const clientsLabelValues = clients.map((client) => {
       return {
         label: client.fullName || `${client.firstName} ${client.lastName}`,
@@ -39,15 +56,25 @@ const RequestAddForm: FC<IProps> = ({ actions, clients }) => {
       };
     });
 
-    setClientsOption(clientsLabelValues);
-  }, [clients]);
+    if (currentJobRequest?.client?._id)
+      setActiveClient(
+        clients.find((client) => client._id === currentJobRequest?.client?._id)
+      );
 
-  const initialValues = {
-    name: "",
-    description: "",
-    type: "",
-    client: "",
-  };
+    setClientsOption(clientsLabelValues);
+  }, [clients, currentJobRequest?.client?._id]);
+
+  const initialValues = currentJobRequest
+    ? {
+        ...currentJobRequest,
+        client: currentJobRequest.client?._id,
+      }
+    : {
+        name: "",
+        description: "",
+        type: "",
+        client: "",
+      };
 
   const RequestSchema = Yup.object().shape({
     name: Yup.string().required(`Name is required`),
@@ -62,13 +89,18 @@ const RequestAddForm: FC<IProps> = ({ actions, clients }) => {
     initialValues: initialValues,
     validationSchema: RequestSchema,
     onSubmit: async (data: any) => {
+      // For updating the job request
+      if (id) return await actions.updateJobRequest(data);
+
+      // For Creating new hob request
       return await actions.addJobRequest(data);
     },
   });
 
   return (
     <form noValidate onSubmit={formik.handleSubmit}>
-      <div className="row mt-3 mb-3">
+      <Loader isLoading={isJobRequestsLoading} />
+      <div className="row mb-3">
         <div className="col">
           <div className="card">
             <h6 className="txt-bold">Job Details</h6>
@@ -81,6 +113,7 @@ const RequestAddForm: FC<IProps> = ({ actions, clients }) => {
                   <div className="txt-red">{formik.errors.name}</div>
                 ) : null
               }
+              value={formik.values.name}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
             />
@@ -88,6 +121,7 @@ const RequestAddForm: FC<IProps> = ({ actions, clients }) => {
               label="Job type"
               placeholder="Enter job type"
               name="type"
+              value={formik.values.type}
               helperComponent={
                 formik.errors.type && formik.touched.type ? (
                   <div className="txt-red">{formik.errors.type}</div>
@@ -109,6 +143,7 @@ const RequestAddForm: FC<IProps> = ({ actions, clients }) => {
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 rows={12}
+                value={formik.values.description}
                 className={`form-control`}
                 placeholder={"Enter job description"}
               />
@@ -211,16 +246,18 @@ const RequestAddForm: FC<IProps> = ({ actions, clients }) => {
         >
           Save Request
         </button>
-        <button
-          type="button"
-          onClick={async () => {
-            await formik.handleSubmit();
-            // formik.resetForm();
-          }}
-          className="btn btn-secondary ms-3"
-        >
-          Save and create another
-        </button>
+        {!id ? (
+          <button
+            type="button"
+            onClick={async () => {
+              await formik.handleSubmit();
+              // formik.resetForm();
+            }}
+            className="btn btn-secondary ms-3"
+          >
+            Save and create another
+          </button>
+        ) : null}
         <button onClick={() => navigate(-1)} type="button" className="btn ms-3">
           Cancel
         </button>
@@ -233,6 +270,8 @@ const mapStateToProps = (state: any) => {
   return {
     clients: state.clients.clients?.data?.rows || [],
     isClientsLoading: state.clients.isLoading,
+    currentJobRequest: state.jobRequests.currentItem,
+    isJobRequestsLoading: state.jobRequests.isLoading,
   };
 };
 
@@ -243,6 +282,12 @@ const mapDispatchToProps = (dispatch: any) => ({
     },
     addJobRequest: (data: any) => {
       dispatch(jobRequestsActions.addJobRequest(data));
+    },
+    fetchJobRequest: (id: string) => {
+      dispatch(jobRequestsActions.fetchJobRequest(id));
+    },
+    updateJobRequest: (data: any) => {
+      dispatch(jobRequestsActions.updateJobRequest(data));
     },
   },
 });

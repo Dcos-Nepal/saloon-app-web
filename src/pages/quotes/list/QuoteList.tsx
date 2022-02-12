@@ -13,14 +13,16 @@ import { connect } from "react-redux";
 import { Loader } from "common/components/atoms/Loader";
 import debounce from "lodash/debounce";
 import EmptyState from "common/components/EmptyState";
+import { isLeapYear } from "date-fns/esm";
 
 interface IQuote {
   id: string;
   title: string;
   description: string;
   quoteFor: any;
+  property: any;
   lineItems: any[];
-  status: { status: string, updatedAt: string };
+  status: { status: string, reason: string, updatedAt: string };
   total: string;
   createdAt: string;
   updatedAt: string;
@@ -38,7 +40,7 @@ const QuotesList = (props: any) => {
   const navigate = useNavigate();
   const [query, setQuery] = useState('');
   const [itemsPerPage] = useState(10);
-  const [offset, setOffset] = useState(0);
+  const [offset, setOffset] = useState(1);
   const [pageCount, setPageCount] = useState(0)
   const [quotes, setQuotes] = useState<IQuote[]>([]);
 
@@ -63,11 +65,12 @@ const QuotesList = (props: any) => {
       );
       setPageCount(Math.ceil(props.itemList.data.totalCount / itemsPerPage));
     }
-  }, [itemsPerPage, props.itemList]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.isLoading]);
 
   const handlePageClick = (event: any) => {
     const selectedPage = event.selected;
-    setOffset(selectedPage)
+    setOffset(selectedPage + 1)
   };
 
   const handleQuotesSearch = (event: any) => {
@@ -184,21 +187,21 @@ const QuotesList = (props: any) => {
               data-bs-toggle="dropdown"
               aria-expanded="false"
             >
-              <box-icon name="dots-vertical-rounded"></box-icon>
+              <box-icon name="dots-vertical-rounded" />
             </a>
             <ul className="dropdown-menu" aria-labelledby="dropdownMenuLink">
-              <li onClick={() => navigate(endpoints.admin.quotes.detail)}>
-                <a className="dropdown-item" href="void(0)">
+              <li onClick={() => navigate(row.id)}>
+                <a className="dropdown-item">
                   View Detail
                 </a>
               </li>
-              <li onClick={() => navigate(endpoints.admin.quotes.edit)}>
-                <a className="dropdown-item" href="void(0)">
+              <li onClick={() => navigate(row.id + '/edit')}>
+                <a className="dropdown-item">
                   Edit
                 </a>
               </li>
               <li>
-                <a className="dropdown-item" href="void(0)">
+                <a className="dropdown-item">
                   Delete
                 </a>
               </li>
@@ -272,7 +275,7 @@ const QuotesList = (props: any) => {
 
                   return (
                     <tr {...row.getRowProps()} className="rt-tr-group">
-                      <td><strong>#{index + 1 + (offset * itemsPerPage)}</strong></td>
+                      <td><strong>#{(index + 1) + (offset - 1) * itemsPerPage}</strong></td>
                       {row.cells.map((cell) => (
                         <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
                       ))}
@@ -312,7 +315,7 @@ const mapDispatchToProps = (dispatch: any) => ({
       dispatch(quotesActions.fetchQuotes(payload));
     },
     updateQuoteStatus: (payload: any) => {
-      dispatch(quotesActions.updateQuoteStatus(payload));
+      dispatch(quotesActions.updateQuoteStatus(payload.id, payload.status));
     }
   },
 });

@@ -24,7 +24,7 @@ interface IClient {
 const ClientsList = (props: any) => {
   const navigate = useNavigate();
   const [itemsPerPage] = useState(10);
-  const [offset, setOffset] = useState(0);
+  const [offset, setOffset] = useState(1);
   const [pageCount, setPageCount] = useState(0);
   const [clients, setClients] = useState<IClient[]>([]);
   const [query, setQuery] = useState("");
@@ -58,7 +58,7 @@ const ClientsList = (props: any) => {
 
   const handlePageClick = (event: any) => {
     const selectedPage = event.selected;
-    setOffset(selectedPage);
+    setOffset(selectedPage + 1);
   };
 
   const handleClientSearch = (event: any) => {
@@ -232,7 +232,7 @@ const ClientsList = (props: any) => {
                   return (
                     <tr {...row.getRowProps()} className={`rt-tr-group`}>
                       <td>
-                        <strong>#{index + 1 + offset * itemsPerPage}</strong>
+                        <strong>#{(index + 1) + (offset - 1) * itemsPerPage}</strong>
                       </td>
                       {row.cells.map((cell) => (
                         <td {...cell.getCellProps()}>{cell.render("Cell")}</td>

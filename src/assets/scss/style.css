@@ -11,6 +11,10 @@ a { color: #666666;}
     min-width: 22rem;
 }
 
+.txt-white {
+    color: #F3F2EF;
+}
+
 .txt-grey {
     color: #71717A;
 }
@@ -67,6 +71,10 @@ a { color: #666666;}
     background-color: #FFFFFF;
 }
 
+.border-orange-color {
+    border-color: #f47321;
+}
+
 .border-bottom {
     border-bottom: 1px solid #F3F4F6;
 }
@@ -111,6 +119,12 @@ a { color: #666666;}
     background-color: #F3F4F6;
 }
 
+.hr-orange {
+    width: 100%;
+    height: 1px;
+    background-color: #f47321;
+}
+
 .pointer {
     cursor: pointer;
 }
@@ -142,7 +156,7 @@ a { color: #666666;}
 .btn-secondary:visited .btn-secondary:hover {
     border: 1px solid #f47321 !important;
     background: #FFFFFF !important;
-    color: #f47321;
+    color: #f47321 !important;
 }
 
 .btn-card {
@@ -163,6 +177,10 @@ a { color: #666666;}
 
 .btn-full {
     width: 100%;
+}
+
+.btn-circle {
+    border-radius: 50%;
 }
 
 .dashed {
@@ -199,7 +217,13 @@ a { color: #666666;}
     padding: 1rem;
     background-color: #FFFFFF;
     box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.06), 0px 1px 3px rgba(0, 0, 0, 0.1);
-    border-radius: 0.5rem;
+    border-radius: 6px;
+}
+
+.hover-card:hover {
+    cursor: pointer;
+    transform: scale(1.025);
+    box-shadow: 2px 4px 4px rgba(0, 0, 0, 0.09), 0px 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .bg-grey {
@@ -228,6 +252,11 @@ a { color: #666666;}
 .bg-light-green {
     background: #DEF7EC;
     color: #03543F;
+}
+
+.bg-orange {
+    background-color: #f47321;
+    color:#F3F4F6;
 }
 
 .dashboard-h1 {
@@ -380,10 +409,6 @@ tr {
 
 .ReactModal__Overlay--after-open {
     z-index: 9999;
-}
-
-.card {
-    border-radius: 6px;
 }
 
 input[type]:focus,

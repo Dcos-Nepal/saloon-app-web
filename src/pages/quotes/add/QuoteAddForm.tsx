@@ -1,32 +1,49 @@
-
 import * as Yup from "yup";
 import * as quotesActions from "store/actions/quotes.actions";
 
-import { Fragment, useState } from "react";
-import InputField from "common/components/form/Input";
+import { FC, Fragment, useEffect, useState } from "react";
 import { FieldArray, FormikProvider, useFormik, getIn } from "formik";
-import SelectAsync from "common/components/form/AsyncSelect";
 import { PlusCircleIcon, StopIcon, XCircleIcon } from "@primer/octicons-react";
-import TextArea from "common/components/form/TextArea";
+
 import { connect } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate} from "react-router-dom";
 import { Loader } from "common/components/atoms/Loader";
 import { fetchUserProperties } from "services/common.service";
 
-const QuoteAddForm = (props: any) => {
+import InputField from "common/components/form/Input";
+import SelectAsync from "common/components/form/AsyncSelect";
+import TextArea from "common/components/form/TextArea";
+
+interface IProps {
+  id: string;
+  actions: {
+    addQuote: (id: string) => void;
+    fetchQuote: (id: string) => void;
+    updateQuote: (id: string, data: any) => void;
+  };
+  isLoading: boolean;
+  currentItem: any;
+}
+
+const QuoteAddForm: FC<IProps> = ({id, isLoading, currentItem, actions}) => {
   const navigate = useNavigate();
+
   const [clientDetails, setClientDetails] = useState(null);
   const [properties, setProperties] = useState([]);
-  const initialValues = {
+
+  const [initialValues, setInitialValues] = useState({
     title: '',
     description: '',
     note: '',
-    quoteFor: '',
+    quoteFor: {
+      label: 'Search for Clients...',
+      value: ''
+    },
     property: '',
     jobRequest: '',
     lineItems: [{
       name: {
-        label: '',
+        label: 'Search for Services',
         value: ''
       },
       description: '',
@@ -34,7 +51,7 @@ const QuoteAddForm = (props: any) => {
       unitPrice: 0,
       total: 0
     }]
-  };
+  });
 
   const RequestSchema = Yup.object().shape({
     title: Yup.string()
@@ -91,9 +108,42 @@ const QuoteAddForm = (props: any) => {
       }
       
       // Dispatch action to create Job Quote
-      await props.actions.addQuote(quotePayload);
+      await id ? actions.updateQuote(id, quotePayload) : actions.addQuote(quotePayload);
     },
   });
+
+  useEffect(() => {
+    if (id) return actions.fetchQuote(id);
+  }, [id, actions]);
+
+  useEffect(() => {
+    if (currentItem && id) {
+      setInitialValues({
+        ...initialValues,
+        title: currentItem?.title,
+        description: currentItem?.description,
+        property: currentItem?.property?._id,
+        quoteFor: {
+          label: currentItem?.quoteFor?.firstName,
+          value: currentItem?.quoteFor?._id,
+        },
+        lineItems: currentItem?.lineItems?.map((item: { name: any; ref: any; }) => {
+          return {
+            ...item,
+            name: {
+              label: item.name,
+              value: item.ref
+            }
+          }
+        })
+      });
+
+      setClientDetails(currentItem?.quoteFor);
+      fetchUserProperties(currentItem?.quoteFor._id).then((response) => {
+        setProperties(response.data?.data?.data?.rows || []);
+      });
+    }
+  }, [id, currentItem]);
 
   /**
    * Handles Line Item selection
@@ -135,7 +185,7 @@ const QuoteAddForm = (props: any) => {
 
   return (
     <form onSubmit={formik.handleSubmit} style={{position: 'relative'}}>
-      <Loader isLoading={props.isLoading} />
+      <Loader isLoading={isLoading} />
       <FormikProvider value={formik}>
         <div className="row mb-3">
           <div className="col pb-3">
@@ -193,15 +243,17 @@ const QuoteAddForm = (props: any) => {
                 </div>) : null }
               <div className="txt-bold mt-3 txt-grey">Client's Properties</div>
               {!properties.length ? <div className="txt-orange"><StopIcon size={16} /> There are no properties assigned to the client.</div> : null}
-              {properties.map((property: any) => (<div key={property._id} className="row mb-2 border-bottom">
+              {properties.map((property: any) => {
+                return (<div key={property._id} className="row mb-2 border-bottom">
                 <div className="col-1 p-2 pt-3 ps-4">
-                  <input name="property" type="radio" value={property._id} onChange={formik.handleChange}/>
+                  <input name="property" type="radio" value={property._id} onChange={formik.handleChange} checked={property._id === formik.values.property}/>
                 </div>
                 <div className="col p-2 ps-4">
                   <div className="txt-grey">{property.name}</div>
                   <div className="">{property?.street1}, {property?.postalCode}, {property?.city}, {property?.state}, {property?.country}</div>
                 </div>
-              </div>))}
+              </div>)
+            })}
             </div>
           </div>
         </div>
@@ -242,7 +294,7 @@ const QuoteAddForm = (props: any) => {
                           <SelectAsync
                             name={`lineItems[${index}].name`}
                             placeholder="Search line items"
-                            // value={formik.values.lineItems[index].name}
+                            value={formik.values.lineItems[index].name}
                             resource={{ name: 'line-items', labelProp: 'name', valueProp: '_id' }}
                             onChange={(selected: any) => handleLineItemSelection(`lineItems[${index}]`, selected)}
                           />
@@ -307,19 +359,15 @@ const QuoteAddForm = (props: any) => {
             </div>
             <div className="col txt-bold mt-3">
               <div className="d-flex float-end">
-                <h5 className="txt-bold mt-2">$ {formik.values.lineItems.reduce((current, next) => (current += next.quantity * next.unitPrice), 0)}</h5>
+                <h5 className="txt-bold mt-2">$ {formik.values?.lineItems?.length ? (formik.values?.lineItems.reduce((current, next) => (current += next.quantity * next.unitPrice), 0)) : 0}</h5>
               </div>
             </div>
           </div>
         </div>
 
-        <div>
-          {JSON.stringify(formik.values)}
-        </div>
-
         <div className="mb-3 mt-3">
           <button type="submit" className="btn btn-primary">
-            Save Quote
+            {id ? 'Update' : 'Save'} Quote
           </button>
           <button onClick={() => navigate(-1)} type="button" className="btn ms-3 btn-secondary">
             Cancel
@@ -332,7 +380,8 @@ const QuoteAddForm = (props: any) => {
 
 const mapStateToProps = (state: any) => {
   return {
-    isLoading: state.quotes.isLoading
+    isLoading: state.quotes.isLoading,
+    currentItem: state.quotes.currentItem
   };
 };
 
@@ -341,6 +390,12 @@ const mapDispatchToProps = (dispatch: any) => ({
     addQuote: (payload: any) => {
       dispatch(quotesActions.createQuotes(payload));
     },
+    updateQuote: (id: string, data: any) => {
+      dispatch(quotesActions.updateQuote(id, data));
+    },
+    fetchQuote: (id: string) => {
+      dispatch(quotesActions.fetchQuote(id, {}));
+    }
   },
 });
 

@@ -11,6 +11,7 @@ import SelectField from "common/components/form/Select";
 import * as clientsActions from "store/actions/clients.actions";
 import * as jobRequestsActions from "store/actions/job-requests.actions";
 import { IRequest } from "common/types/request";
+import { Loader } from "common/components/atoms/Loader";
 
 interface IProps {
   actions: {
@@ -88,15 +89,18 @@ const RequestAddForm: FC<IProps> = ({
     initialValues: initialValues,
     validationSchema: RequestSchema,
     onSubmit: async (data: any) => {
+      // For updating the job request
       if (id) return await actions.updateJobRequest(data);
 
+      // For Creating new hob request
       return await actions.addJobRequest(data);
     },
   });
 
   return (
     <form noValidate onSubmit={formik.handleSubmit}>
-      <div className="row mt-3 mb-3">
+      <Loader isLoading={isJobRequestsLoading} />
+      <div className="row mb-3">
         <div className="col">
           <div className="card">
             <h6 className="txt-bold">Job Details</h6>

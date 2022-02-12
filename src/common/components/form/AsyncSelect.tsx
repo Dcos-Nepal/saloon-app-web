@@ -18,10 +18,10 @@ const SelectAsync: FC<any> = ({
 }) => {
   const [query, setQuery] = useState('');
   const loadOptions = async (inputValue: string) => {
-    return await filterApi(resource.name, { q: inputValue, ...(resource?.params ? resource.params : ''), page: 0, limit: 10 }).then((response: AxiosResponse) => {
+    return await filterApi(resource.name, { q: inputValue, ...(resource?.params ? resource.params : ''), page: 1, limit: 20 }).then((response: AxiosResponse) => {
       const { data: { data } } = response;
       return (data?.data) ? data.data : data;
-      }).then((data: any) => {
+    }).then((data: any) => {
       return data.rows.map((d: never) => ({ 'label': d[resource.labelProp], 'value': d[resource.valueProp], 'meta': d }));
     });
   };

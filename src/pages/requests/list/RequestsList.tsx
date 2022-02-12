@@ -214,10 +214,7 @@ const RequestsList = (props: any) => {
           <table {...getTableProps()} className="table txt-dark-grey">
             <thead>
               {headerGroups.map((headerGroup) => (
-                <tr
-                  {...headerGroup.getHeaderGroupProps()}
-                  className="rt-head"
-                >
+                <tr {...headerGroup.getHeaderGroupProps()} className="rt-head">
                   <th>SN</th>
                   {headerGroup.headers.map((column) => (
                     <th {...column.getHeaderProps()} scope="col">

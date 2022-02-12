@@ -14,11 +14,11 @@ const RequestAdd = () => {
           </span>
           <span className="col">Back to previous</span>
         </div>
-        <div className="d-flex flex-row">
-          <h3>New Job Request</h3>
+        <div className="d-flex flex-row mt-2">
+          <h3 className="extra">New Job Request</h3>
         </div>
       </div>
-      <div className="m-1">
+      <div>
         <RequestAddForm />
       </div>
     </>

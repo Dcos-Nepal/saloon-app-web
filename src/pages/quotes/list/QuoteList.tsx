@@ -39,7 +39,7 @@ const QuotesList = (props: any) => {
   const navigate = useNavigate();
   const [query, setQuery] = useState('');
   const [itemsPerPage] = useState(10);
-  const [offset, setOffset] = useState(0);
+  const [offset, setOffset] = useState(1);
   const [pageCount, setPageCount] = useState(0)
   const [quotes, setQuotes] = useState<IQuote[]>([]);
 
@@ -68,7 +68,7 @@ const QuotesList = (props: any) => {
 
   const handlePageClick = (event: any) => {
     const selectedPage = event.selected;
-    setOffset(selectedPage)
+    setOffset(selectedPage + 1)
   };
 
   const handleQuotesSearch = (event: any) => {
@@ -273,7 +273,7 @@ const QuotesList = (props: any) => {
 
                   return (
                     <tr {...row.getRowProps()} className="rt-tr-group">
-                      <td><strong>#{index + 1 + (offset * itemsPerPage)}</strong></td>
+                      <td><strong>#{(index + 1) + (offset - 1) * itemsPerPage}</strong></td>
                       {row.cells.map((cell) => (
                         <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
                       ))}

@@ -22,9 +22,7 @@ export const fetchJobQuoteApi = async (payload: any) => {
   });
 };
 
-
 export const updateQuoteApi = async (payload: any) => {
-  debugger;
   const url = `/v1.0.0/quotes/${payload.id}`;
   return await http.put(url, payload.data,  {
     headers: { "Accept": "application/json" }

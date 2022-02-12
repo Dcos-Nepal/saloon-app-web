@@ -83,11 +83,11 @@ const RequestsList = (props: any) => {
             <div>
               <div>
                 <b>
-                  {row.name.firstName} {row.name.firstName}
+                  {row.name?.firstName} {row.name?.firstName}
                 </b>
               </div>
               <small>
-                {row.name.email} / {row.name.phoneNumber}
+                {row.name?.email} / {row.name?.phoneNumber}
               </small>
             </div>
           );

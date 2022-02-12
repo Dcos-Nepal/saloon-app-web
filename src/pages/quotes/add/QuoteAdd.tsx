@@ -20,7 +20,7 @@ const QuoteAdd = () => {
         </div>
       </div>
       <div>
-        <QuoteAddForm/>
+        <QuoteAddForm id={id || ''}/>
       </div>
     </>
   );

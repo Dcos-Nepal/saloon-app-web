@@ -13,6 +13,7 @@ import { connect } from "react-redux";
 import { Loader } from "common/components/atoms/Loader";
 import debounce from "lodash/debounce";
 import EmptyState from "common/components/EmptyState";
+import { isLeapYear } from "date-fns/esm";
 
 interface IQuote {
   id: string;
@@ -64,7 +65,8 @@ const QuotesList = (props: any) => {
       );
       setPageCount(Math.ceil(props.itemList.data.totalCount / itemsPerPage));
     }
-  }, [itemsPerPage, props.itemList]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.isLoading]);
 
   const handlePageClick = (event: any) => {
     const selectedPage = event.selected;

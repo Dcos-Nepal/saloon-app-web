@@ -27,19 +27,15 @@ interface IRequest {
 
 const RequestsList = (props: any) => {
   const navigate = useNavigate();
-  const [postsPerPage] = useState(10);
+  const [itemsPerPage] = useState(10);
   const [offset, setOffset] = useState(1);
   const [pageCount, setPageCount] = useState(0);
   const [requests, setRequests] = useState<IRequest[]>([]);
   const [query, setQuery] = useState("");
 
   useEffect(() => {
-    props.actions.fetchJobRequests({
-      q: query,
-      page: offset,
-      limit: postsPerPage,
-    });
-  }, [offset, postsPerPage, props.actions, query]);
+    props.actions.fetchJobRequests({ q: query, page: offset, limit: itemsPerPage });
+  }, [offset, itemsPerPage, props.actions, query]);
 
   useEffect(() => {
     if (props.itemList?.data?.rows) {
@@ -53,9 +49,9 @@ const RequestsList = (props: any) => {
           updatedDate: new Date(row.updatedAt).toDateString(),
         }))
       );
-      setPageCount(Math.ceil(props.itemList.data.totalCount / postsPerPage));
+      setPageCount(Math.ceil(props.itemList.data.totalCount / itemsPerPage));
     }
-  }, [postsPerPage, props.itemList]);
+  }, [itemsPerPage, props.itemList]);
 
   const handleJobRequestSearch = (event: any) => {
     const query = event.target.value;
@@ -218,7 +214,11 @@ const RequestsList = (props: any) => {
           <table {...getTableProps()} className="table txt-dark-grey">
             <thead>
               {headerGroups.map((headerGroup) => (
-                <tr {...headerGroup.getHeaderGroupProps()} className="rt-head">
+                <tr
+                  {...headerGroup.getHeaderGroupProps()}
+                  className="rt-head"
+                >
+                  <th>SN</th>
                   {headerGroup.headers.map((column) => (
                     <th {...column.getHeaderProps()} scope="col">
                       {column.render("Header")}
@@ -229,11 +229,12 @@ const RequestsList = (props: any) => {
             </thead>
 
             <tbody {...getTableBodyProps()} className="rt-tbody">
-              {rows.map((row) => {
+              {rows.map((row, index) => {
                 prepareRow(row);
 
                 return (
                   <tr {...row.getRowProps()} className="rt-tr-group">
+                    <td><strong>#{(index + 1) + (offset - 1) * itemsPerPage}</strong></td>
                     {row.cells.map((cell) => (
                       <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
                     ))}

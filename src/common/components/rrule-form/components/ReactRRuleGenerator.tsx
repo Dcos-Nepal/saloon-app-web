@@ -43,10 +43,7 @@ class ReactRRuleGenerator extends PureComponent<Props> {
   componentWillMount() {
     if (this.props.onChange === null) {
       // no onChange() was provided
-      throw new Error(
-        'No onChange() function has been passed to RRuleGenerator. \n' +
-          "Please provide one, it's needed to handle generated value."
-      );
+      throw new Error(`No onChange() function has been passed to RRuleGenerator. \nPlease provide one, it's needed to handle generated value.`);
     }
 
     if (this.props.value) {
@@ -69,7 +66,7 @@ class ReactRRuleGenerator extends PureComponent<Props> {
     const rrule = computeRRuleToString(newData);
 
     this.setState({ data: newData });
-    this.props.onChange(rrule);
+    this.props.onChange({ rrule, data: newData });
   };
 
   render() {
@@ -79,46 +76,31 @@ class ReactRRuleGenerator extends PureComponent<Props> {
     } = this.state;
 
     return (
-      <div className='recurring-form'>
+      <div className="recurring-form">
         {!options.hideError && !!error && (
-          <div className='alert alert-danger'>
+          <div className="alert alert-danger">
             {translateLabel(this.props.translations, 'invalid_rrule', {
               // value: error.value
             })}
           </div>
         )}
 
-        <div className='px-0 pt-3 border rounded'>
+        <div className="px-0 pt-3 border rounded">
           {!options.hideStart && (
             <div>
-              <Start
-                id={`${id}-start`}
-                start={start}
-                handleChange={this.handleChange}
-                translations={this.props.translations}
-              />
+              <Start id={`${id}-start`} start={start} handleChange={this.handleChange} translations={this.props.translations} />
               <hr />
             </div>
           )}
 
           <div>
-            <Repeat
-              id={`${id}-repeat`}
-              repeat={repeat}
-              handleChange={this.handleChange}
-              translations={this.props.translations}
-            />
+            <Repeat id={`${id}-repeat`} repeat={repeat} handleChange={this.handleChange} translations={this.props.translations} />
           </div>
 
           {!options.hideEnd && (
             <div>
               <hr />
-              <End
-                id={`${id}-end`}
-                end={end}
-                handleChange={this.handleChange}
-                translations={this.props.translations}
-              />
+              <End id={`${id}-end`} end={end} handleChange={this.handleChange} translations={this.props.translations} />
             </div>
           )}
         </div>

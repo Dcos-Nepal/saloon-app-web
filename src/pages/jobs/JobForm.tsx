@@ -1,20 +1,16 @@
-import { FC } from "react";
+import { FC } from 'react'
 
-import InputField from "common/components/form/Input";
-import SelectField from "common/components/form/Select";
+import InputField from 'common/components/form/Input'
+import SelectField from 'common/components/form/Select'
 
 interface IProps {
-  closeModal: () => void;
+  closeModal: () => void
 }
 
 const JobForm: FC<IProps> = ({ closeModal }) => {
   return (
     <form>
-      <InputField
-        label="Client name"
-        placeholder="Enter client name"
-        type="text"
-      />
+      <InputField label="Client name" placeholder="Enter client name" type="text" />
       <InputField label="Address" placeholder="Enter address" />
       <div className="row">
         <div className="col">
@@ -24,10 +20,7 @@ const JobForm: FC<IProps> = ({ closeModal }) => {
           <InputField label="Title" placeholder="Enter title" />
         </div>
       </div>
-      <SelectField
-        label="Team"
-        value={{ value: "ORANGE", label: "Orange Team" }}
-      />
+      <SelectField label="Team" value={{ value: 'ORANGE', label: 'Orange Team' }} />
       <div className="mb-3">
         <div className="row">
           <div className="col">
@@ -59,7 +52,7 @@ const JobForm: FC<IProps> = ({ closeModal }) => {
         </button>
       </div>
     </form>
-  );
-};
+  )
+}
 
-export default JobForm;
+export default JobForm

@@ -13,10 +13,7 @@ export interface IUser {
     postalCode?: string;
     country?: string;
   };
-  userDocuments?: {
-    documentUrl: string;
-    type: string;
-  }[];
+  documents?: any;
   roles: string[];
   password?: string;
   userImage?: string;

@@ -1,4 +1,4 @@
-import SignUp from "./Signup";
-import VerifyEmail from "./VerifyEmail";
+import SignUp from './Signup'
+import VerifyEmail from './VerifyEmail'
 
-export { SignUp, VerifyEmail };
+export { SignUp, VerifyEmail }

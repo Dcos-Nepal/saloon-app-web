@@ -1,16 +1,21 @@
-import { endpoints } from "common/config";
 import { Route, Routes } from "react-router-dom";
-import ClientAdd from "./add";
-import ClientsList from "./list";
+
+import WorkerAdd from "./add";
+import WorkerEdit from "./edit";
+import WorkersList from "./list";
+import WorkerDetail from "./detail";
+import { endpoints } from "common/config";
 
 const Workers = () => {
   return (
     <>
       <Routes>
-        <Route path="/" element={<ClientsList />} />
+        <Route path="/" element={<WorkersList />} />
+        <Route path={endpoints.admin.worker.add} element={<WorkerAdd />} />
+        <Route path={endpoints.admin.worker.edit} element={<WorkerEdit />} />
         <Route
-          path={endpoints.admin.client.add}
-          element={<ClientAdd />}
+          path={endpoints.admin.worker.detail}
+          element={<WorkerDetail />}
         />
       </Routes>
     </>

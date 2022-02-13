@@ -1,7 +1,12 @@
-import { useNavigate } from "react-router-dom";
-import WorkerDetailForm from "../WorkerDetailForm";
+import { FC } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
-const WorkerAdd = () => {
+import WorkerForm from "../WorkerDetailForm";
+
+interface IProps {}
+
+const WorkerEdit: FC<IProps> = () => {
+  const { id } = useParams();
   const navigate = useNavigate();
 
   return (
@@ -13,15 +18,13 @@ const WorkerAdd = () => {
           </span>
           <span className="col">Back to previous</span>
         </div>
-        <div className="d-flex flex-row mt-2">
-          <h3 className="extra">Add New Worker</h3>
+        <div className="d-flex flex-row">
+          <h3>Update Worker</h3>
         </div>
       </div>
-      <div className="row m-1">
-        <WorkerDetailForm />
-      </div>
+      <WorkerForm id={id} />
     </>
   );
 };
 
-export default WorkerAdd;
+export default WorkerEdit;

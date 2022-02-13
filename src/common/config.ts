@@ -18,8 +18,10 @@ export const endpoints = {
       edit: ":id/edit",
     },
     worker: {
-      list: "workers",
       add: "add",
+      detail: ":id",
+      list: "workers",
+      edit: ":id/edit",
     },
     referral: {
       program: "referral-program",

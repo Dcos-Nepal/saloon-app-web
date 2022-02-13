@@ -49,6 +49,48 @@ const workersReducer = (state = initialState, action: any) => {
       return { ...state };
     }
 
+    case actionType.UPDATE_WORKER: {
+      state.isLoading = true;
+      return { ...state };
+    }
+
+    case actionType.UPDATE_WORKER_SUCCESS: {
+      state.currentUser = action.payload;
+      state.isLoading = false;
+      state.isFailed = false;
+      state.isSuccess = true;
+      return { ...state };
+    }
+
+    case actionType.UPDATE_WORKER_ERROR: {
+      state.isSuccess = false;
+      state.isLoading = false;
+      state.isFailed = true;
+      state.currentUser = action.payload;
+      return { ...state };
+    }
+
+    case actionType.FETCH_WORKER: {
+      state.isLoading = true;
+      return { ...state };
+    }
+
+    case actionType.FETCH_WORKER_SUCCESS: {
+      state.currentUser = action.payload;
+      state.isLoading = false;
+      state.isFailed = false;
+      state.isSuccess = true;
+      return { ...state };
+    }
+
+    case actionType.FETCH_WORKER_ERROR: {
+      state.isSuccess = false;
+      state.isLoading = false;
+      state.isFailed = true;
+      state.currentUser = action.payload;
+      return { ...state };
+    }
+
     default: {
       return { ...state };
     }

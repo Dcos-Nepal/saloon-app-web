@@ -64,7 +64,7 @@ const RequestAddForm: FC<IProps> = ({
     setClientsOption(clientsLabelValues);
   }, [clients, currentJobRequest?.client?._id]);
 
-  const initialValues = currentJobRequest
+  const initialValues = id && currentJobRequest
     ? {
         ...currentJobRequest,
         client: currentJobRequest.client?._id,
@@ -90,10 +90,11 @@ const RequestAddForm: FC<IProps> = ({
     validationSchema: RequestSchema,
     onSubmit: async (data: any) => {
       // For updating the job request
-      if (id) return await actions.updateJobRequest(data);
+      if (id) await actions.updateJobRequest(data);
+      // For Creating new job request
+      else await actions.addJobRequest(data);
 
-      // For Creating new hob request
-      return await actions.addJobRequest(data);
+      navigate(-1);
     },
   });
 

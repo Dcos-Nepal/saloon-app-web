@@ -2,7 +2,7 @@ import { toast } from "react-toastify";
 import * as actionType from "../constants";
 import { getMessage } from "common/messages";
 import { call, put, takeEvery } from "redux-saga/effects";
-import { fetchUsersApi, addUserApi } from "services/users.service";
+import { fetchUsersApi, addUserApi, updateUserApi, fetchUserApi } from "services/users.service";
 
 /**
  * Saga Definitions
@@ -57,5 +57,59 @@ function* addWorker(action: any): any {
   } catch (err: any) {
     if (err.exception) toast.error(err.exception.message);
     yield put({ type: actionType.ADD_WORKER_ERROR, payload: err });
+  }
+}
+
+export function* fetchWorkerSaga(): any {
+  yield takeEvery(actionType.FETCH_WORKER, fetchWorker);
+}
+
+function* fetchWorker(action: any): any {
+  try {
+    const { data: newWorker } = yield call(fetchUserApi, action.payload);
+    if (newWorker?.data?.success) {
+      yield put({
+        type: actionType.FETCH_WORKER_SUCCESS,
+        payload: newWorker?.data?.data,
+      });
+
+      return toast.success(getMessage(newWorker?.data?.message));
+    }
+    yield put({
+      type: actionType.FETCH_WORKER_ERROR,
+      payload: newWorker.data,
+    });
+
+    return toast.error(getMessage(newWorker.data?.message));
+  } catch (err: any) {
+    if (err.exception) toast.error(err.exception.message);
+    yield put({ type: actionType.FETCH_WORKER_ERROR, payload: err });
+  }
+}
+
+export function* updateWorkerSaga(): any {
+  yield takeEvery(actionType.UPDATE_WORKER, updateWorker);
+}
+
+function* updateWorker(action: any): any {
+  try {
+    const { data: newWorker } = yield call(updateUserApi, action.payload);
+    if (newWorker?.data?.success) {
+      yield put({
+        type: actionType.UPDATE_WORKER_SUCCESS,
+        payload: newWorker?.data?.data,
+      });
+
+      return toast.success(getMessage(newWorker?.data?.message));
+    }
+    yield put({
+      type: actionType.UPDATE_WORKER_ERROR,
+      payload: newWorker.data,
+    });
+
+    return toast.error(getMessage(newWorker.data?.message));
+  } catch (err: any) {
+    if (err.exception) toast.error(err.exception.message);
+    yield put({ type: actionType.UPDATE_WORKER_ERROR, payload: err });
   }
 }

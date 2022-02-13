@@ -1,20 +1,9 @@
-import { createStore, applyMiddleware, compose } from "redux";
+import { createStore, applyMiddleware, compose } from 'redux';
 
-import rootReducer from "./reducers/index";
-import createSagaMiddleware from "redux-saga";
-import {
-  addJobRequestSaga,
-  fetchJobRequestSaga,
-  fetchJobRequestsSaga,
-  updateJobRequestSaga,
-} from "./sagas/job-reqs.saga";
-import {
-  addQuoteSaga,
-  fetchQuoteSaga,
-  fetchQuotesSaga,
-  updateQuoteSaga,
-  updateQuoteStatusSaga,
-} from "./sagas/quotes.saga";
+import rootReducer from './reducers/index';
+import createSagaMiddleware from 'redux-saga';
+import { addJobRequestSaga, fetchJobRequestSaga, fetchJobRequestsSaga, updateJobRequestSaga } from './sagas/job-reqs.saga';
+import { addQuoteSaga, fetchQuoteSaga, fetchQuotesSaga, updateQuoteSaga, updateQuoteStatusSaga } from './sagas/quotes.saga';
 import {
   addClientSaga,
   addWorkerSaga,
@@ -26,8 +15,9 @@ import {
   userRegisterSaga,
   resetPasswordSaga,
   forgotPasswordSaga,
-  verifyUserEmailSaga,
-} from "./sagas";
+  verifyUserEmailSaga
+} from './sagas';
+import { addJobSaga, fetchJobsSaga } from './sagas/jobs.saga';
 
 declare global {
   interface Window {
@@ -39,10 +29,9 @@ declare global {
 const sagaMiddleware = createSagaMiddleware();
 
 // Devtools and middleware definition
-const reduxDevTools =
-  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__();
+const reduxDevTools = window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__();
 const middleware =
-  window.__REDUX_DEVTOOLS_EXTENSION__ && process.env.NODE_ENV === "development"
+  window.__REDUX_DEVTOOLS_EXTENSION__ && process.env.NODE_ENV === 'development'
     ? compose(applyMiddleware(sagaMiddleware), reduxDevTools)
     : applyMiddleware(sagaMiddleware);
 
@@ -70,3 +59,5 @@ sagaMiddleware.run(addQuoteSaga);
 sagaMiddleware.run(fetchQuoteSaga);
 sagaMiddleware.run(updateQuoteSaga);
 sagaMiddleware.run(updateQuoteStatusSaga);
+sagaMiddleware.run(addJobSaga);
+sagaMiddleware.run(fetchJobsSaga);

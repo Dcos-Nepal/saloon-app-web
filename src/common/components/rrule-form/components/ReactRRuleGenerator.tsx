@@ -50,6 +50,7 @@ class ReactRRuleGenerator extends PureComponent<Props> {
       // if value is provided to RRuleGenerator, it's used to compute state of component's forms
       const data = computeRRuleFromString(this.state.data, this.props.value);
       this.setState({ data });
+      this.props.onChange({ rrule: this.props.value, data });
     }
   }
 

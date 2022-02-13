@@ -1,12 +1,16 @@
-import { useNavigate } from "react-router-dom";
-import { Column, useTable } from "react-table";
-import { useEffect, useMemo, useState } from "react";
+import { rrulestr } from 'rrule';
+import { connect } from 'react-redux';
+import _ from 'lodash';
+import { useNavigate } from 'react-router-dom';
+import { Column, useTable } from 'react-table';
+import { useEffect, useMemo, useState } from 'react';
 
-import InputField from "common/components/form/Input";
-import SelectField from "common/components/form/Select";
-import Modal from "common/components/atoms/Modal";
-import JobAdd from "./JobAdd";
-import { endpoints } from "common/config";
+import JobAdd from './JobAdd';
+import { endpoints } from 'common/config';
+import Modal from 'common/components/atoms/Modal';
+import InputField from 'common/components/form/Input';
+import SelectField from 'common/components/form/Select';
+import * as jobsActions from '../../store/actions/job.actions';
 
 interface IClient {
   jobNumber: string;
@@ -17,111 +21,75 @@ interface IClient {
   status: string;
 }
 
-const JobsList = () => {
-  const navigate = useNavigate();
+interface IProps {
+  actions: { fetchJobs: (query: any) => any };
+  isLoading: boolean;
+  jobs: any;
+}
 
-  const [jobs, setJobs] = useState<IClient[]>([]);
+const JobsList = (props: IProps) => {
+  const navigate = useNavigate();
+  const [itemsPerPage] = useState(10);
+  const [page, setPage] = useState(1);
+  const [pageCount, setPageCount] = useState(1);
+  const [search, setSearch] = useState('');
+  const [jobs, setJobs] = useState<any[]>([]);
   const [isAddJobOpen, setIsAddJobOpen] = useState(false);
 
   useEffect(() => {
-    setJobs([
-      {
-        jobNumber: "#1",
-        client: "MOCK Adam Johar",
-        address: "NY, US 12 TOMAKIN, New South Wales(NSW), 2537",
-        schedule: "Aug 19, 2021 Every 2 weeks on Mondays",
-        invoice: "Invoice info",
-        status: "Active",
-      },
-      {
-        jobNumber: "#2",
-        client: "MOCK Neal Johar",
-        address: "NY, US 13 TOMAKIN, New South Wales(NSW), 2537",
-        schedule: "Aug 19, 2021 Every 2 weeks on Mondays",
-        invoice: "Invoice info",
-        status: "Inactive",
-      },
-      {
-        jobNumber: "#12",
-        client: "MOCK S. Johar",
-        address: "LA, US 12 TOMAKIN, New South Wales(NSW), 2537",
-        schedule: "Aug 19, 2021 Every 2 weeks on Mondays",
-        invoice: "Invoice info",
-        status: "Active",
-      },
-      {
-        jobNumber: "#3",
-        client: "MOCK Adam Johar",
-        address: "NY, US 12 TOMAKIN, New South Wales(NSW), 2537",
-        schedule: "Aug 19, 2021 Every 2 weeks on Mondays",
-        invoice: "Invoice info",
-        status: "Active",
-      },
-      {
-        jobNumber: "#4",
-        client: "MOCK Adam Anuwa",
-        address: "WS, US 4 TOMAKIN, New South Wales(NSW), 2537",
-        schedule: "Aug 19, 2021 Every 2 weeks on Mondays",
-        invoice: "Invoice info",
-        status: "In progress",
-      },
-      {
-        jobNumber: "#5",
-        client: "MOCK Adam Johar",
-        address: "NY, US 12 TOMAKIN, New South Wales(NSW), 2537",
-        schedule: "Aug 19, 2021 Every 2 weeks on Mondays",
-        invoice: "Invoice info",
-        status: "Active",
-      },
-    ]);
-  }, []);
+    props.actions.fetchJobs({ q: search, page, limit: itemsPerPage });
+  }, [page, search, itemsPerPage, props.actions]);
 
-  const columns: Column<IClient>[] = useMemo(
+  useEffect(() => {
+    if (props.jobs?.data?.rows) {
+      setJobs(
+        props.jobs.data?.rows.map((job: any) => ({
+          ...job,
+          jobFor: job.jobFor.fullName,
+          total: job.lineItems.reduce((total: number, val: any) => total + val.quantity * val.unitPrice, 0),
+          schedule: _.startCase(rrulestr(job.primaryVisit.rruleSet).toText())
+        }))
+      );
+      setPageCount(Math.ceil(props.jobs.data.totalCount / itemsPerPage));
+    }
+  }, [props.jobs, itemsPerPage]);
+
+  const columns: Column<any>[] = useMemo(
     () => [
       {
-        Header: "#NO.",
-        accessor: "jobNumber",
+        Header: '#NO.',
+        accessor: 'jobNumber'
       },
       {
-        Header: "CLIENT",
-        accessor: "client",
+        Header: 'CLIENT',
+        accessor: 'jobFor'
       },
       {
-        Header: "TITLE/ADDRESS",
-        accessor: "address",
+        Header: 'TITLE/ADDRESS',
+        accessor: 'property.street1'
       },
       {
-        Header: "SCHEDULE",
-        accessor: "schedule",
+        Header: 'SCHEDULE',
+        accessor: 'schedule'
       },
       {
-        Header: "INVOICING",
-        accessor: "invoice",
+        Header: 'INVOICING',
+        accessor: 'invoice'
       },
       {
-        Header: "Total",
-        accessor: (row: any) => <div>$0.00</div>,
+        Header: 'Total',
+        accessor: 'total'
       },
       {
-        Header: " ",
+        Header: ' ',
         maxWidth: 40,
         accessor: (row: any) => (
           <div className="dropdown">
-            <a
-              href="#"
-              role="button"
-              id="dropdownMenuLink"
-              data-bs-toggle="dropdown"
-              aria-expanded="false"
-            >
+            <a href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
               <box-icon name="dots-vertical-rounded"></box-icon>
             </a>
             <ul className="dropdown-menu" aria-labelledby="dropdownMenuLink">
-              <li
-                onClick={() =>
-                  navigate('/dashboard/jobs/123456')
-                }
-              >
+              <li onClick={() => navigate('/dashboard/jobs/123456')}>
                 <a className="dropdown-item" href="">
                   View Detail
                 </a>
@@ -138,14 +106,13 @@ const JobsList = () => {
               </li>
             </ul>
           </div>
-        ),
-      },
+        )
+      }
     ],
     []
   );
 
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
-    useTable({ columns, data: jobs });
+  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({ columns, data: jobs });
 
   return (
     <>
@@ -154,19 +121,11 @@ const JobsList = () => {
           <h3 className="extra">Jobs</h3>
         </div>
         <div className="col d-flex flex-row align-items-center justify-content-end">
-          <button
-            onClick={() => setIsAddJobOpen(true)}
-            type="button"
-            className="btn btn-secondary d-flex float-end"
-          >
+          <button onClick={() => setIsAddJobOpen(true)} type="button" className="btn btn-secondary d-flex float-end">
             Add Job Quickly
           </button>
           <div>&nbsp;</div>
-          <button
-            onClick={() => navigate(endpoints.admin.jobs.add)}
-            type="button"
-            className="btn btn-primary d-flex float-end"
-          >
+          <button onClick={() => navigate(endpoints.admin.jobs.add)} type="button" className="btn btn-primary d-flex float-end">
             Create a Job
           </button>
         </div>
@@ -175,11 +134,7 @@ const JobsList = () => {
       <div className="card">
         <div className="row pt-2 m-1 rounded-top bg-grey">
           <div className="col-4">
-            <InputField
-              label="Search"
-              placeholder="Search jobs"
-              className="search-input"
-            />
+            <InputField label="Search" placeholder="Search jobs" className="search-input" />
           </div>
           <div className="col row">
             <div className="col">
@@ -198,7 +153,7 @@ const JobsList = () => {
                 <tr {...headerGroup.getHeaderGroupProps()} className="rt-head">
                   {headerGroup.headers.map((column) => (
                     <th {...column.getHeaderProps()} scope="col">
-                      {column.render("Header")}
+                      {column.render('Header')}
                     </th>
                   ))}
                 </tr>
@@ -206,7 +161,9 @@ const JobsList = () => {
             </thead>
             <thead>
               <tr className="rt-head">
-                <th colSpan={7} scope="col" className="th-overdue">Overdue Jobs</th>
+                <th colSpan={7} scope="col" className="th-overdue">
+                  Overdue Jobs
+                </th>
               </tr>
             </thead>
             <tbody {...getTableBodyProps()} className="rt-tbody">
@@ -216,7 +173,7 @@ const JobsList = () => {
                 return (
                   <tr {...row.getRowProps()} className="rt-tr-group">
                     {row.cells.map((cell) => (
-                      <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
+                      <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
                     ))}
                   </tr>
                 );
@@ -224,7 +181,9 @@ const JobsList = () => {
             </tbody>
             <thead className="c-th">
               <tr className="rt-head">
-                <th colSpan={7} scope="col" className="th-in-progress">In Progress</th>
+                <th colSpan={7} scope="col" className="th-in-progress">
+                  In Progress
+                </th>
               </tr>
             </thead>
             <tbody {...getTableBodyProps()} className="rt-tbody">
@@ -234,7 +193,7 @@ const JobsList = () => {
                 return (
                   <tr {...row.getRowProps()} className="rt-tr-group">
                     {row.cells.map((cell) => (
-                      <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
+                      <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
                     ))}
                   </tr>
                 );
@@ -242,7 +201,9 @@ const JobsList = () => {
             </tbody>
             <thead className="c-th">
               <tr className="rt-head">
-                <th colSpan={7} scope="col" className="th-up-coming">Up Coming Jobs</th>
+                <th colSpan={7} scope="col" className="th-up-coming">
+                  Up Coming Jobs
+                </th>
               </tr>
             </thead>
             <tbody {...getTableBodyProps()} className="rt-tbody">
@@ -252,7 +213,7 @@ const JobsList = () => {
                 return (
                   <tr {...row.getRowProps()} className="rt-tr-group">
                     {row.cells.map((cell) => (
-                      <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
+                      <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
                     ))}
                   </tr>
                 );
@@ -261,14 +222,26 @@ const JobsList = () => {
           </table>
         </div>
       </div>
-      <Modal
-        isOpen={isAddJobOpen}
-        onRequestClose={() => setIsAddJobOpen(false)}
-      >
+      <Modal isOpen={isAddJobOpen} onRequestClose={() => setIsAddJobOpen(false)}>
         <JobAdd closeModal={() => setIsAddJobOpen(false)} />
       </Modal>
     </>
   );
 };
 
-export default JobsList;
+const mapStateToProps = (state: { jobs: any; isLoading: boolean }) => {
+  return {
+    jobs: state.jobs.jobs,
+    isLoading: state.jobs.isLoading
+  };
+};
+
+const mapDispatchToProps = (dispatch: any) => ({
+  actions: {
+    fetchJobs: (payload: any) => {
+      dispatch(jobsActions.fetchJobs(payload));
+    }
+  }
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(JobsList);

@@ -1,27 +1,33 @@
-import RRule from 'rrule';
-import * as Yup from 'yup';
+import { connect } from 'react-redux';
+import RRule, { Frequency } from 'rrule';
+import { DateTime } from 'luxon';
 import { useEffect, useMemo } from 'react';
 import { Column, Row, useTable } from 'react-table';
-import * as quotesActions from 'store/actions/quotes.actions';
 import { FieldArray, FormikProvider, useFormik, getIn } from 'formik';
 
-import InputField from 'common/components/form/Input';
-import { Loader } from 'common/components/atoms/Loader';
-import { connect } from 'react-redux';
-import { ClassAttributes, Fragment, HTMLAttributes, ReactChild, ReactFragment, ReactPortal, ThHTMLAttributes, TdHTMLAttributes, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import SelectAsync from 'common/components/form/AsyncSelect';
-import { InfoIcon, PlusCircleIcon, StopIcon, XCircleIcon } from '@primer/octicons-react';
+import InputField from 'common/components/form/Input';
 import TextArea from 'common/components/form/TextArea';
+import * as jobActions from 'store/actions/job.actions';
+import { Loader } from 'common/components/atoms/Loader';
+import { CreateSchema } from './validations/create.schema';
+import SelectAsync from 'common/components/form/AsyncSelect';
 import { fetchUserProperties } from 'services/common.service';
 import ReactRRuleGenerator, { translations } from 'common/components/rrule-form';
+import { InfoIcon, PlusCircleIcon, StopIcon, XCircleIcon } from '@primer/octicons-react';
+import { ClassAttributes, Fragment, HTMLAttributes, ReactChild, ReactFragment, ReactPortal, ThHTMLAttributes, TdHTMLAttributes, useState } from 'react';
 
-const ClientJobAddForm = (props: any) => {
+interface IProps {
+  actions: { addJob: (data: any) => any };
+  isLoading: boolean;
+}
+
+const ClientJobAddForm = ({ actions, isLoading }: IProps) => {
   const navigate = useNavigate();
   const [properties, setProperties] = useState([]);
   const [clientDetails, setClientDetails] = useState(null);
   const [selectedTeam, setSelectedTeam] = useState<Array<any>>([]);
-  const [rruleStr, setRruleStr] = useState('DTSTART:20220114T035500Z RRULE:FREQ=MONTHLY;INTERVAL=1;BYMONTHDAY=1;UNTIL=20220127T050300Z');
+  const [rruleStr, setRruleStr] = useState(new RRule({ dtstart: new Date(), interval: 1, freq: Frequency.DAILY }).toString());
   const [activeTab, setActiveTab] = useState('ONE-OFF');
   const getTranslation = () => {
     switch ('en') {
@@ -36,47 +42,20 @@ const ClientJobAddForm = (props: any) => {
     title: '',
     instruction: '',
     jobFor: '',
-    type: activeTab,
+    property: '',
+    type: 'ONE-OFF',
     team: [],
-    lineItems: [
-      {
-        name: { label: '', value: '' },
-        description: '',
-        quantity: 0,
-        unitPrice: 0,
-        total: 0
-      }
-    ],
-    schedule: { rruleSet: '', startDate: '', startTime: '', endDate: '', endTime: '' }
+    lineItems: [{ name: { label: '', value: '' }, description: '', quantity: 0, unitPrice: 0, total: 0 }],
+    schedule: { rruleSet: '', startDate: '', startTime: '', endDate: '', endTime: '' },
+    oneOff: { rruleSet: '', startDate: '', startTime: '', endDate: '', endTime: '' }
   };
-
-  const RequestSchema = Yup.object().shape({
-    title: Yup.string().required('Job title is required').min(3, 'Job title seems to be too short'),
-    instruction: Yup.string(),
-    jobFor: Yup.string().required('Job for is required'),
-    jobRequest: Yup.string().notRequired(),
-    lineItems: Yup.array().of(
-      Yup.object().shape({
-        name: Yup.object().shape({
-          value: Yup.string(),
-          label: Yup.string().required('Please select a line item.')
-        }),
-        description: Yup.string(),
-        quantity: Yup.number(),
-        unitPrice: Yup.number(),
-        total: Yup.number().notRequired()
-      })
-    )
-  });
 
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: initialValues,
-    validationSchema: RequestSchema,
+    validationSchema: CreateSchema,
     validateOnChange: true,
-    onSubmit: async (data: any) => {
-      console.log(data);
-    }
+    onSubmit: async (job) => await actions.addJob(job)
   });
 
   /**
@@ -85,7 +64,8 @@ const ClientJobAddForm = (props: any) => {
    * @param selected
    */
   const handleLineItemSelection = (key: string, { label, value, meta }: any) => {
-    formik.setFieldValue(`${key}.name`, { label, value });
+    console.log(key);
+    formik.setFieldValue(`${key}.name`, label);
     formik.setFieldValue(`${key}.description`, meta?.description || 'Enter your notes here...');
   };
 
@@ -117,20 +97,35 @@ const ClientJobAddForm = (props: any) => {
    */
   const handleRecurringChange = (newRRule: any) => {
     setRruleStr(newRRule.rrule);
-    formik.setFieldValue('schedule.rruleSet', newRRule.rrule.toString());
+    const startDateTime = DateTime.fromFormat(newRRule.data.start.onDate.date, 'yyyy-MM-dd HH:mm');
+    const endDateTime = DateTime.fromFormat(newRRule.data.end.onDate.date, 'yyyy-MM-dd HH:mm');
+    formik.setFieldValue('schedule', {
+      startDate: startDateTime.toFormat('yyyy-MM-dd'),
+      startTime: startDateTime.toFormat('HH:mm'),
+      endDate: endDateTime.toFormat('yyyy-MM-dd'),
+      endTime: endDateTime.toFormat('HH:mm'),
+      rruleSet: newRRule.rrule.toString()
+    });
   };
 
-  useEffect(() => {
-    if (!formik.values.schedule.startDate) return;
+  const handleOneOffChange = () => {
+    if (!formik.values.oneOff.startDate) return;
     let rule: any = {
-      dtstart: new Date(`${formik.values.schedule.startDate} ${formik.values.schedule.startTime}`),
+      dtstart: new Date(`${formik.values.oneOff.startDate} ${formik.values.oneOff.startTime}`),
       interval: 1,
-      freq: 'Daily'
+      freq: Frequency.DAILY
     };
-    if (formik.values.schedule.endDate) rule.until = new Date(`${formik.values.schedule.endDate} ${formik.values.schedule.endTime}`);
+    if (formik.values.oneOff.endDate) rule.until = new Date(`${formik.values.oneOff.endDate} ${formik.values.oneOff.endTime}`);
     const rrule = new RRule(rule);
-    formik.setFieldValue('schedule.rruleSet', rrule.toString());
-  }, [formik.values.schedule]);
+    formik.setFieldValue('schedule', { ...formik.values.oneOff, rruleSet: rrule.toString() });
+  };
+
+  useEffect(handleOneOffChange, [formik.values.oneOff]);
+
+  useEffect(() => {
+    formik.setFieldValue('type', activeTab);
+    if (activeTab === 'ONE-OFF') handleOneOffChange();
+  }, [activeTab]);
 
   /**
    * Custom Error Message
@@ -160,7 +155,7 @@ const ClientJobAddForm = (props: any) => {
 
   return (
     <form onSubmit={formik.handleSubmit} style={{ position: 'relative' }}>
-      <Loader isLoading={props.isLoading} />
+      <Loader isLoading={isLoading} />
       <FormikProvider value={formik}>
         <div className="row">
           <div className="col pb-3">
@@ -200,13 +195,10 @@ const ClientJobAddForm = (props: any) => {
               <SelectAsync
                 name={`jobFor`}
                 label="Select Client"
-                value={formik.values.jobFor}
                 resource={{ name: 'users', labelProp: 'fullName', valueProp: '_id', params: { roles: 'CLIENT' } }}
                 onChange={handleClientSelection}
               />
-              <div className="row text-danger mt-1 mb-2">
-                <ErrorMessage name={`jobFor.value`} />
-              </div>
+              {formik.errors.jobFor && formik.touched.jobFor && <div className="txt-red">{formik.errors.jobFor}</div>}
               {clientDetails ? (
                 <div className="row bg-grey m-0">
                   <div className="col p-2 ps-4">
@@ -229,7 +221,7 @@ const ClientJobAddForm = (props: any) => {
               {properties.map((property: any) => (
                 <div className="row mb-2 border-bottom" key={property._id}>
                   <div className="col-1 p-2 pt-3 ps-4">
-                    <input name="property" type="checkbox" value={property._id} />
+                    <input name="property" type="radio" value={property._id} onChange={formik.handleChange} checked={property._id === formik.values.property} />
                   </div>
                   <div className="col p-2 ps-4">
                     <div className="txt-grey">{property.name}</div>
@@ -239,6 +231,7 @@ const ClientJobAddForm = (props: any) => {
                   </div>
                 </div>
               ))}
+              {formik.errors.property && formik.touched.property && <div className="txt-red">{formik.errors.property}</div>}
             </div>
           </div>
         </div>
@@ -260,8 +253,8 @@ const ClientJobAddForm = (props: any) => {
             </div>
             <div className="col">
               <div
-                className={`row pt-4 cursor-pointer ${activeTab === 'Recurring' ? 'border-top-orange' : 'bg-light-grey border-top-grey'}`}
-                onClick={() => setActiveTab('Recurring')}
+                className={`row pt-4 cursor-pointer ${activeTab === 'RECURRING' ? 'border-top-orange' : 'bg-light-grey border-top-grey'}`}
+                onClick={() => setActiveTab('RECURRING')}
               >
                 <div className="col-1">
                   <box-icon size="md" name="calendar"></box-icon>
@@ -282,16 +275,16 @@ const ClientJobAddForm = (props: any) => {
                       <InputField
                         label="Start date"
                         type="date"
-                        onChange={(e: any) => formik.setFieldValue('schedule.startDate', e.target.value)}
-                        value={formik.values.schedule.startDate}
+                        onChange={(e: any) => formik.setFieldValue('oneOff.startDate', e.target.value)}
+                        value={formik.values.oneOff.startDate}
                       />
                     </div>
                     <div className="col">
                       <InputField
                         label="End date"
                         type="date"
-                        onChange={(e: any) => formik.setFieldValue('schedule.endDate', e.target.value)}
-                        value={formik.values.schedule.endDate}
+                        onChange={(e: any) => formik.setFieldValue('oneOff.endDate', e.target.value)}
+                        value={formik.values.oneOff.endDate}
                       />
                     </div>
                   </div>
@@ -303,16 +296,16 @@ const ClientJobAddForm = (props: any) => {
                       <InputField
                         label="Start time"
                         type="time"
-                        onChange={(e: any) => formik.setFieldValue('schedule.startTime', e.target.value)}
-                        value={formik.values.schedule.startTime}
+                        onChange={(e: any) => formik.setFieldValue('oneOff.startTime', e.target.value)}
+                        value={formik.values.oneOff.startTime}
                       />
                     </div>
                     <div className="col">
                       <InputField
                         label="End time"
                         type="time"
-                        onChange={(e: any) => formik.setFieldValue('schedule.endTime', e.target.value)}
-                        value={formik.values.schedule.endTime}
+                        onChange={(e: any) => formik.setFieldValue('oneOff.endTime', e.target.value)}
+                        value={formik.values.oneOff.endTime}
                       />
                     </div>
                   </div>
@@ -326,11 +319,11 @@ const ClientJobAddForm = (props: any) => {
                 </div>
               </div>
             ) : null}
-            {activeTab === 'Recurring' ? (
+            {activeTab === 'RECURRING' ? (
               <div className="col-6 my-3 mx-2">
                 <ReactRRuleGenerator
                   onChange={handleRecurringChange as any}
-                  value={rruleStr}
+                  value={formik.values.schedule.rruleSet || rruleStr}
                   config={
                     {
                       hideStart: false
@@ -339,7 +332,7 @@ const ClientJobAddForm = (props: any) => {
                   translations={getTranslation() as any}
                 />
                 <div className="col-12 mt-3">
-                  <small>{rruleStr}</small>
+                  <small>{formik.values.schedule.rruleSet || rruleStr}</small>
                 </div>
               </div>
             ) : null}
@@ -574,8 +567,8 @@ const mapStateToProps = (state: any) => {
 
 const mapDispatchToProps = (dispatch: any) => ({
   actions: {
-    addQuote: (payload: any) => {
-      dispatch(quotesActions.createQuotes(payload));
+    addJob: (payload: any) => {
+      dispatch(jobActions.createJobs(payload));
     }
   }
 });

@@ -7,6 +7,8 @@ import { addQuoteSaga, fetchQuoteSaga, fetchQuotesSaga, updateQuoteSaga, updateQ
 import {
   addClientSaga,
   addWorkerSaga,
+  updateWorkerSaga,
+  fetchWorkerSaga,
   userSignInSaga,
   fetchClientSaga,
   updateClientSaga,
@@ -40,6 +42,8 @@ export const store = createStore(rootReducer, middleware);
 
 // Run defined Sagas here
 sagaMiddleware.run(addWorkerSaga);
+sagaMiddleware.run(updateWorkerSaga);
+sagaMiddleware.run(fetchWorkerSaga);
 sagaMiddleware.run(userRegisterSaga);
 sagaMiddleware.run(userSignInSaga);
 sagaMiddleware.run(verifyUserEmailSaga);

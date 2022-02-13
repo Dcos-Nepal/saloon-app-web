@@ -87,6 +87,22 @@ export const FETCH_WORKERS_LOADING = 'FETCH_WORKERS_LOADING';
 export const FETCH_WORKERS_ERROR = 'FETCH_WORKERS_ERROR';
 
 /**
+ * Update Worker action types
+ */
+export const UPDATE_WORKER = 'UPDATE_WORKER';
+export const UPDATE_WORKER_SUCCESS = 'UPDATE_WORKER_SUCCESS';
+export const UPDATE_WORKER_LOADING = 'UPDATE_WORKER_LOADING';
+export const UPDATE_WORKER_ERROR = 'UPDATE_WORKER_ERROR';
+
+/**
+ * Fetch Worker action types
+ */
+export const FETCH_WORKER = 'FETCH_WORKER';
+export const FETCH_WORKER_SUCCESS = 'FETCH_WORKER_SUCCESS';
+export const FETCH_WORKER_LOADING = 'FETCH_WORKER_LOADING';
+export const FETCH_WORKER_ERROR = 'FETCH_WORKER_ERROR';
+
+/**
  * Create Job Request action types
  */
 export const ADD_JOB_REQUEST = 'ADD_JOB_REQUEST';

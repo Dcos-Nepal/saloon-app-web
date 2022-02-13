@@ -135,12 +135,12 @@ const RequestsList = (props: any) => {
                     })
                   )
                 }
-                className="p-2 pointer"
+                className="p-2 pointer dropdown-item"
               >
                 View Detail
               </li>
               <li
-                className="p-2 pointer"
+                className="p-2 pointer dropdown-item"
                 onClick={() =>
                   navigate(
                     pinterpolate(endpoints.admin.requests.edit, {
@@ -151,7 +151,7 @@ const RequestsList = (props: any) => {
               >
                 Edit
               </li>
-              <li className="p-2 pointer">Delete</li>
+              <li className="p-2 pointer dropdown-item">Delete</li>
             </ul>
           </div>
         ),

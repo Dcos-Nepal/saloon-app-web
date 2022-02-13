@@ -1,15 +1,17 @@
+import { connect } from "react-redux";
+import debounce from "lodash/debounce";
+import pinterpolate from "pinterpolate";
+import ReactPaginate from "react-paginate";
 import { useNavigate } from "react-router-dom";
 import { Column, useTable } from "react-table";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import ReactPaginate from 'react-paginate';
+
 import * as workersActions from "../../../store/actions/workers.actions";
 
 import { endpoints } from "common/config";
 import InputField from "common/components/form/Input";
 import SelectField from "common/components/form/Select";
-import { connect } from "react-redux";
 import { Loader } from "common/components/atoms/Loader";
-import debounce from "lodash/debounce";
 
 interface IClient {
   name: string;
@@ -24,24 +26,32 @@ const WorkerList = (props: any) => {
   const navigate = useNavigate();
   const [itemsPerPage] = useState(10);
   const [offset, setOffset] = useState(1);
-  const [pageCount, setPageCount] = useState(0)
+  const [pageCount, setPageCount] = useState(0);
   const [workers, setWorkers] = useState<IClient[]>([]);
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState("");
 
   useEffect(() => {
-    props.actions.fetchWorkers({ q:query, roles: 'WORKER', page: offset, limit: itemsPerPage });
+    props.actions.fetchWorkers({
+      q: query,
+      roles: "WORKER",
+      page: offset,
+      limit: itemsPerPage,
+    });
   }, [offset, itemsPerPage, props.actions, query]);
 
   useEffect(() => {
     if (props.workers?.data?.rows) {
-      setWorkers(props.workers.data?.rows
-        .map((row: any) => ({
+      setWorkers(
+        props.workers.data?.rows.map((row: any) => ({
+          _id: row._id,
           name: `${row.firstName} ${row.lastName}`,
-          address: row?.address ? `${row.address.street1}, ${row.address.street2}, ${row.address.city}, ${row.address.state}, ${row.address.postalCode}, ${row.address.country}` : "Address not added!",
+          address: row?.address
+            ? `${row.address.street1}, ${row.address.street2}, ${row.address.city}, ${row.address.state}, ${row.address.postalCode}, ${row.address.country}`
+            : "Address not added!",
           phoneNumber: row.phoneNumber,
           email: row.email,
           status: row.auth.email,
-          updatedAt: row.updatedAt
+          updatedAt: row.updatedAt,
         }))
       );
       setPageCount(Math.ceil(props.workers.data.totalCount / itemsPerPage));
@@ -50,7 +60,7 @@ const WorkerList = (props: any) => {
 
   const handlePageClick = (event: any) => {
     const selectedPage = event.selected;
-    setOffset(selectedPage + 1)
+    setOffset(selectedPage + 1);
   };
 
   const handleWorkerSearch = (event: any) => {
@@ -60,34 +70,47 @@ const WorkerList = (props: any) => {
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedChangeHandler = useCallback(
-    debounce(handleWorkerSearch, 300)
-  , []);
+    debounce(handleWorkerSearch, 300),
+    []
+  );
 
   const columns: Column<IClient>[] = useMemo(
     () => [
       {
         Header: "WORKER NAME",
         accessor: (row: any) => {
-          return (<div>
-            <div><b>{row.name}</b></div>
-            <small>{row.address || 'Address not added.'}</small>
-          </div>);
-        }
+          return (
+            <div>
+              <div>
+                <b>{row.name}</b>
+              </div>
+              <small>{row.address || "Address not added."}</small>
+            </div>
+          );
+        },
       },
       {
         Header: "CONTACT",
         accessor: (row: any) => {
-          return (<div>
-            <div>Phone: <b>{row.phoneNumber}</b></div>
-            <small>Email: <b>{row.email}</b></small>
-          </div>);
-        }
+          return (
+            <div>
+              <div>
+                Phone: <b>{row.phoneNumber}</b>
+              </div>
+              <small>
+                Email: <b>{row.email}</b>
+              </small>
+            </div>
+          );
+        },
       },
       {
         Header: "STATUS",
         accessor: (row: any) => (
           <div>
-            <span className={`status ${row.status ? "status-green" : "status-red"}`}>
+            <span
+              className={`status ${row.status ? "status-green" : "status-red"}`}
+            >
               {row.status ? "Email Verified!" : "Pending Verification"}
             </span>
             <label className="txt-grey ms-2">
@@ -101,13 +124,41 @@ const WorkerList = (props: any) => {
         maxWidth: 40,
         accessor: (row: any) => (
           <div className="dropdown">
-            <a href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+            <a
+              href="#"
+              role="button"
+              id="dropdownMenuLink"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
               <box-icon name="dots-vertical-rounded"></box-icon>
             </a>
             <ul className="dropdown-menu" aria-labelledby="dropdownMenuLink">
-              <li><a className="dropdown-item" href="#">View Detail</a></li>
-              <li><a className="dropdown-item" href="#">Edit</a></li>
-              <li><a className="dropdown-item" href="#">Delete</a></li>
+              <li
+                onClick={() =>
+                  navigate(
+                    pinterpolate(endpoints.admin.worker.detail, {
+                      id: row._id,
+                    })
+                  )
+                }
+                className="p-2 pointer dropdown-item"
+              >
+                View Detail
+              </li>
+              <li
+                onClick={() =>
+                  navigate(
+                    pinterpolate(endpoints.admin.worker.edit, {
+                      id: row._id,
+                    })
+                  )
+                }
+                className="p-2 pointer dropdown-item"
+              >
+                Edit
+              </li>
+              <li className="p-2 pointer dropdown-item">Delete</li>
             </ul>
           </div>
         ),
@@ -136,7 +187,12 @@ const WorkerList = (props: any) => {
             New Worker
           </button>
         </div>
-        <label className="txt-grey">Total {query ? `${workers.length} Search results found!` : `${pageCount} workers`}</label>
+        <label className="txt-grey">
+          Total{" "}
+          {query
+            ? `${workers.length} Search results found!`
+            : `${pageCount} workers`}
+        </label>
       </div>
       <div className="card">
         <div className="row pt-2 m-1 rounded-top bg-grey">
@@ -151,19 +207,30 @@ const WorkerList = (props: any) => {
           </div>
           <div className="col row">
             <div className="col">
-              <SelectField label="Sort" options={[{label:"Name", value: "name"}, {label:"Phone Number", value: "number"}]} placeholder="Sort by" />
+              <SelectField
+                label="Sort"
+                options={[
+                  { label: "Name", value: "name" },
+                  { label: "Phone Number", value: "number" },
+                ]}
+                placeholder="Sort by"
+              />
             </div>
             <div className="col">
-              <SelectField label="Filters" options={[{label:"All results", value: "all"}, {label:"Phone Number", value: "number"}]} placeholder="All results" />
+              <SelectField
+                label="Filters"
+                options={[
+                  { label: "All results", value: "all" },
+                  { label: "Phone Number", value: "number" },
+                ]}
+                placeholder="All results"
+              />
             </div>
           </div>
           <table {...getTableProps()} className="table txt-dark-grey">
             <thead>
               {headerGroups.map((headerGroup) => (
-                <tr
-                  {...headerGroup.getHeaderGroupProps()}
-                  className="rt-head"
-                >
+                <tr {...headerGroup.getHeaderGroupProps()} className="rt-head">
                   <th>SN</th>
                   {headerGroup.headers.map((column) => (
                     <th {...column.getHeaderProps()} scope="col">
@@ -179,11 +246,13 @@ const WorkerList = (props: any) => {
 
                 return (
                   <tr {...row.getRowProps()} className="rt-tr-group">
-                    <td><strong>#{(index + 1) + (offset - 1) * itemsPerPage}</strong></td>
+                    <td>
+                      <strong>
+                        #{index + 1 + (offset - 1) * itemsPerPage}
+                      </strong>
+                    </td>
                     {row.cells.map((cell) => (
-                      <td {...cell.getCellProps()}>
-                        {cell.render("Cell")}
-                      </td>
+                      <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
                     ))}
                   </tr>
                 );
@@ -200,26 +269,26 @@ const WorkerList = (props: any) => {
             pageCount={pageCount}
             onPageChange={handlePageClick}
             containerClassName={"pagination"}
-            activeClassName={"active"} />
+            activeClassName={"active"}
+          />
         </div>
       </div>
     </>
   );
 };
 
-
 const mapStateToProps = (state: any) => {
-  return ({
+  return {
     workers: state.workers.workers,
-    isLoading: state.workers.isLoading
-  })
+    isLoading: state.workers.isLoading,
+  };
 };
 
 const mapDispatchToProps = (dispatch: any) => ({
   actions: {
     fetchWorkers: (payload: any) => {
       dispatch(workersActions.fetchWorkers(payload));
-    }
+    },
   },
 });
 

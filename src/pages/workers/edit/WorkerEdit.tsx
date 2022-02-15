@@ -18,11 +18,13 @@ const WorkerEdit: FC<IProps> = () => {
           </span>
           <span className="col">Back to previous</span>
         </div>
-        <div className="d-flex flex-row">
-          <h3>Update Worker</h3>
+        <div className="d-flex flex-row mt-2">
+          <h3 className="extra">Update Worker Details</h3>
         </div>
       </div>
-      <WorkerForm id={id} />
+      <div className="row m-1">
+        <WorkerForm id={id} />
+      </div>
     </>
   );
 };

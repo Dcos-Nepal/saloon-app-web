@@ -9,7 +9,7 @@ export const fetchUsersApi = async (query: Record<string, any>) => {
 };
 
 export const addUserApi = async (payload: any) => {
-  const url = "/v1.0.0/auth/register";
+  const url = "/v1.0.0/users";
   return await http.post(url, payload);
 };
 

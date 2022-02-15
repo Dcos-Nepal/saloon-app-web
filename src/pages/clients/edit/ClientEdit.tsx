@@ -18,8 +18,8 @@ const ClientEdit: FC<IProps> = () => {
           </span>
           <span className="col">Back to previous</span>
         </div>
-        <div className="d-flex flex-row">
-          <h3>Update Client</h3>
+        <div className="d-flex flex-row mt-2">
+          <h3 className="extra">Update Client</h3>
         </div>
       </div>
       <ClientDetailForm id={id} />

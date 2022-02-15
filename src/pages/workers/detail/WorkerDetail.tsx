@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import { Loader } from "common/components/atoms/Loader";
 import * as workersActions from "store/actions/workers.actions";
+import { StopIcon } from "@primer/octicons-react";
 
 interface IProps {
   actions: {
@@ -35,9 +36,8 @@ const WorkerDetail: FC<IProps> = ({ actions, currentWorker }) => {
           <div>
             <div className="d-flex flex-row riw">
               <div className="col">
-                <h3 className="txt-bold">
-                  {currentWorker.fullName ||
-                    `${currentWorker.firstName} ${currentWorker.lastName}`}
+                <h3 className="txt-bold extra mt-2">
+                  {currentWorker.fullName || `${currentWorker.firstName} ${currentWorker.lastName}`}
                 </h3>
               </div>
               <div className="col">
@@ -50,17 +50,27 @@ const WorkerDetail: FC<IProps> = ({ actions, currentWorker }) => {
                 </button>
               </div>
             </div>
-            <div className="row">
+            <div className="row m-1">
               <div className="col card me-3">
                 <div className="row">
                   <div className="col d-flex flex-row">
-                    <h5 className="txt-bold">Worker info</h5>
+                    <h5 className="txt-bold">Worker info ({currentWorker?.userCode})</h5>
                   </div>
                 </div>
                 <div className="row mt-3">
                   <div className="col p-1 ps-4">
+                    <div className="txt-grey">Worker Code</div>
+                    <div className=""><strong>{currentWorker?.userCode || '-'}</strong></div>
+                  </div>
+                  <div className="col p-1 ps-4">
                     <div className="txt-grey">Full name</div>
                     <div className="">{`${currentWorker.firstName} ${currentWorker.lastName}`}</div>
+                  </div>
+                </div>
+                <div className="row mt-3">
+                  <div className="col p-1 ps-4">
+                    <div className="txt-grey">Email</div>
+                    <div className="">{currentWorker.email}</div>
                   </div>
                   <div className="col p-1 ps-4">
                     <div className="txt-grey">Phone</div>
@@ -69,38 +79,15 @@ const WorkerDetail: FC<IProps> = ({ actions, currentWorker }) => {
                 </div>
                 <div className="row mt-3">
                   <div className="col p-1 ps-4">
-                    <div className="txt-grey">Email</div>
-                    <div className="">{currentWorker.email}</div>
+                    <div className="txt-grey">Working Hours</div>
+                    <div className="">{currentWorker?.userData?.workingHours || '-'}</div>
+                  </div>
+                  <div className="col p-1 ps-4">
+                    <div className="txt-grey">Working Days</div>
+                    <div className="">{currentWorker?.userData?.workingDays.toString() || '-'}</div>
                   </div>
                 </div>
-
                 <div className="row mt-5">
-                  <div className="col d-flex flex-row">
-                    <h5 className="txt-bold">Worker Documents</h5>
-                  </div>
-                </div>
-                {currentWorker.documents &&
-                Object.keys(currentWorker.documents).length ? (
-                  Object.keys(currentWorker.documents).map((key) => (
-                    <div className="row mt-3">
-                      <div className="col p-1 ps-4">
-                        <div className="txt-grey">{key}</div>
-                        <a href={currentWorker.documents[key]?.url}>
-                          {currentWorker.documents[key]?.key}
-                        </a>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="row border-bottom mb-3">
-                    <div className="col p-2 ps-4">
-                      <div className="txt-grey">No documents</div>
-                    </div>
-                  </div>
-                )}
-              </div>
-              <div className="col card">
-                <div className="row">
                   <div className="col d-flex flex-row">
                     <h5 className="txt-bold">Address</h5>
                   </div>
@@ -146,6 +133,33 @@ const WorkerDetail: FC<IProps> = ({ actions, currentWorker }) => {
                   <div className="row border-bottom mb-3">
                     <div className="col p-2 ps-4">
                       <div className="txt-grey">No address data</div>
+                    </div>
+                  </div>
+                )}
+              </div>
+              <div className="col card">
+                <div className="row">
+                  <div className="col d-flex flex-row">
+                    <h5 className="txt-bold">Worker Documents</h5>
+                  </div>
+                  <div className="txt-info"><StopIcon size={16} /> Click on the each document to download/view the document.</div>
+                </div>
+                {currentWorker.userData.documents &&
+                Object.keys(currentWorker?.userData?.documents).length ? (
+                  Object.keys(currentWorker?.userData?.documents).map((key) => (
+                    <div className="row mt-3">
+                      <div className="col p-1 ps-4">
+                        <div className="txt-grey">{currentWorker.userData.documents[key]?.type.split('_').join(' ')}:</div>
+                        {currentWorker.userData.documents[key]?.key ? (<a className="mt-2 txt-orange text-decoration-none" href={currentWorker.userData.documents[key]?.url}>
+                          {currentWorker.userData.documents[key]?.key}
+                        </a>) : <div className="txt-grey pt-2"><StopIcon size={16} /> Not document added yet!.</div>}
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="row border-bottom mb-3">
+                    <div className="col p-2 ps-4">
+                      <div className="txt-grey">No documents</div>
                     </div>
                   </div>
                 )}

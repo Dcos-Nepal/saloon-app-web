@@ -65,7 +65,7 @@ const JobQuoteDetailData: FC<IProps> = ({isLoading, actions, currentQuote}) => {
         </div>
         <div className="col">
           <div className="card">
-            <h6 className="txt-bold">Quote Detail</h6>
+            <h6 className="txt-bold">Quote Details</h6>
             <div className="row border-bottom">
               <div className="col p-2 ps-4">
                 <div className="txt-grey">Quote number</div>
@@ -75,28 +75,20 @@ const JobQuoteDetailData: FC<IProps> = ({isLoading, actions, currentQuote}) => {
                 </div>
               </div>
               <div className="col p-2 ps-4">
-                <div className="txt-grey">Quote type</div>
-                <div className="">Recurring job</div>
+                <div className="txt-grey">Created on</div>
+                <div className="">{(new Date(currentQuote?.createdAt)).toLocaleString()}</div>
               </div>
             </div>
-            <div className="row border-bottom">
-              <div className="col p-2 ps-4">
-                <div className="txt-grey">Started on</div>
-                <div className="">Aug 23, 2021</div>
-              </div>
-              <div className="col p-2 ps-4">
-                <div className="txt-grey">Lasts for</div>
-                <div className="">6 years</div>
-              </div>
-            </div>
-            <div className="row mb-3">
-              <div className="col p-2 ps-4">
-                <div className="txt-grey">Billing frequency</div>
-                <div className="">After every visit</div>
-              </div>
-              <div className="col p-2 ps-4">
-                <div className="txt-grey">Schedule</div>
-                <div className="">Every 2 weeks on Mondays</div>
+            <div className="mt-2 mb-3" >
+              <h6 className="p-2">Quote Status Revisions</h6>
+              <div className="mt-3" style={{maxHeight: '150px', overflowY: 'scroll'}}>
+                {currentQuote?.statusRevision.map((revision: any) => (<dl key={revision.updatedAt} className="row ms-2">
+                  <dt className="col-sm-3">{(new Date(revision.updatedAt)).toLocaleString()}</dt>
+                  <dd className="col-sm-9">
+                    <span className="status status-green">{revision.status}</span>&nbsp;
+                    <span className="txt-grey">{(new Date(revision.updatedAt)).toLocaleString()}</span>
+                  </dd>
+                </dl>))}
               </div>
             </div>
           </div>

@@ -115,8 +115,8 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient }) => {
         </div>
         {currentClient ? (
           <div>
-            <div className="d-flex flex-row">
-              <h3 className="txt-bold">
+            <div className="d-flex flex-row mt-2">
+              <h3 className="txt-bold extra">
                 {currentClient.fullName ||
                   `${currentClient.firstName} ${currentClient.lastName}`}
               </h3>

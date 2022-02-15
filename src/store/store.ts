@@ -7,16 +7,20 @@ import { addQuoteSaga, fetchQuoteSaga, fetchQuotesSaga, updateQuoteSaga, updateQ
 import {
   addClientSaga,
   addWorkerSaga,
-  updateWorkerSaga,
-  fetchWorkerSaga,
   userSignInSaga,
+  addPropertySaga,
+  fetchWorkerSaga,
   fetchClientSaga,
+  updateWorkerSaga,
   updateClientSaga,
   fetchClientsSaga,
   fetchWorkersSaga,
   userRegisterSaga,
   resetPasswordSaga,
+  fetchPropertySaga,
   forgotPasswordSaga,
+  updatePropertySaga,
+  fetchPropertiesSaga,
   verifyUserEmailSaga
 } from './sagas';
 import { addJobSaga, fetchJobsSaga } from './sagas/jobs.saga';
@@ -53,6 +57,10 @@ sagaMiddleware.run(addJobRequestSaga);
 sagaMiddleware.run(fetchJobRequestSaga);
 sagaMiddleware.run(updateJobRequestSaga);
 sagaMiddleware.run(fetchJobRequestsSaga);
+sagaMiddleware.run(addPropertySaga);
+sagaMiddleware.run(fetchPropertySaga);
+sagaMiddleware.run(updatePropertySaga);
+sagaMiddleware.run(fetchPropertiesSaga);
 sagaMiddleware.run(addClientSaga);
 sagaMiddleware.run(fetchClientsSaga);
 sagaMiddleware.run(updateClientSaga);

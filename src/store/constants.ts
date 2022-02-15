@@ -103,6 +103,38 @@ export const FETCH_WORKER_LOADING = 'FETCH_WORKER_LOADING';
 export const FETCH_WORKER_ERROR = 'FETCH_WORKER_ERROR';
 
 /**
+ * Create Property action types
+ */
+export const ADD_PROPERTY = 'ADD_PROPERTY';
+export const ADD_PROPERTY_SUCCESS = 'ADD_PROPERTY_SUCCESS';
+export const ADD_PROPERTY_LOADING = 'ADD_PROPERTY_LOADING';
+export const ADD_PROPERTY_ERROR = 'ADD_PROPERTY_ERROR';
+
+/**
+ * Load Properties Listing action types
+ */
+export const FETCH_PROPERTIES = 'FETCH_PROPERTIES';
+export const FETCH_PROPERTIES_SUCCESS = 'FETCH_PROPERTIES_SUCCESS';
+export const FETCH_PROPERTIES_LOADING = 'FETCH_PROPERTIES_LOADING';
+export const FETCH_PROPERTIES_ERROR = 'FETCH_PROPERTIES_ERROR';
+
+/**
+ * Update Property action types
+ */
+export const UPDATE_PROPERTY = 'UPDATE_PROPERTY';
+export const UPDATE_PROPERTY_SUCCESS = 'UPDATE_PROPERTY_SUCCESS';
+export const UPDATE_PROPERTY_LOADING = 'UPDATE_PROPERTY_LOADING';
+export const UPDATE_PROPERTY_ERROR = 'UPDATE_PROPERTY_ERROR';
+
+/**
+ * Fetch Property action types
+ */
+export const FETCH_PROPERTY = 'FETCH_PROPERTY';
+export const FETCH_PROPERTY_SUCCESS = 'FETCH_PROPERTY_SUCCESS';
+export const FETCH_PROPERTY_LOADING = 'FETCH_PROPERTY_LOADING';
+export const FETCH_PROPERTY_ERROR = 'FETCH_PROPERTY_ERROR';
+
+/**
  * Create Job Request action types
  */
 export const ADD_JOB_REQUEST = 'ADD_JOB_REQUEST';

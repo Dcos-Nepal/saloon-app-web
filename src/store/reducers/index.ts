@@ -3,6 +3,7 @@ import authReducer from './auth.reducer';
 import clientsReducer from './clients.reducer';
 import { eventsById, weekendsVisible } from './events.reducer';
 import jobRequestReducer from './job-reqs.reducer';
+import propertiesReducer from './properties.reducer';
 import jobsReducer from './jobs.reducer';
 import quotesReducer from './quotes.reducer';
 import workersReducer from './workers.reducer';
@@ -12,6 +13,7 @@ export default combineReducers({
   clients: clientsReducer,
   jobs: jobsReducer,
   workers: workersReducer,
+  properties: propertiesReducer,
   jobRequests: jobRequestReducer,
   quotes: quotesReducer,
   weekendsVisible,

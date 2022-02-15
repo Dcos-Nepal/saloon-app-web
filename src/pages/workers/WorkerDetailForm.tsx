@@ -1,21 +1,16 @@
-import { FC, useEffect, useState } from "react";
-import * as Yup from "yup";
-import { getIn, useFormik } from "formik";
-import { connect } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import * as Yup from 'yup';
+import { connect } from 'react-redux';
+import { getIn, useFormik } from 'formik';
+import { useNavigate } from 'react-router-dom';
+import { FC, useEffect, useState } from 'react';
 
-import { IOption } from "common/types/form";
-import InputField from "common/components/form/Input";
-import SelectField from "common/components/form/Select";
-import * as workersActions from "store/actions/workers.actions";
-import { DAYS_OF_WEEK } from "common/constants";
-import {
-  EllipsisIcon,
-  StopIcon,
-  UploadIcon,
-  XCircleIcon,
-} from "@primer/octicons-react";
-import { deletePublicFile, uploadPublicFile } from "services/files.service";
+import { IOption } from 'common/types/form';
+import { DAYS_OF_WEEK } from 'common/constants';
+import InputField from 'common/components/form/Input';
+import SelectField from 'common/components/form/Select';
+import * as workersActions from 'store/actions/workers.actions';
+import { EllipsisIcon, StopIcon, UploadIcon, XCircleIcon } from '@primer/octicons-react';
+import { deletePublicFile, uploadPublicFile } from 'services/files.service';
 
 interface IProps {
   actions: {
@@ -28,23 +23,18 @@ interface IProps {
   isWorkersLoading: boolean;
 }
 
-const WorkerDetailForm: FC<IProps> = ({
-  id,
-  actions,
-  currentWorker,
-  isWorkersLoading,
-}) => {
+const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker, isWorkersLoading }) => {
   const navigate = useNavigate();
 
   const [isUploading, setIsUploading] = useState({
     idCard: false,
     cleaningCert: false,
-    policeCheck: false,
+    policeCheck: false
   });
   const [isDeleting, setIsDeleting] = useState({
     idCard: false,
     cleaningCert: false,
-    policeCheck: false,
+    policeCheck: false
   });
 
   const [getDocument, setDocument] = useState<{
@@ -54,10 +44,10 @@ const WorkerDetailForm: FC<IProps> = ({
   }>({
     idCard: null,
     cleaningCert: null,
-    policeCheck: null,
+    policeCheck: null
   });
-  const statesOption = [{ label: "LA", value: "LA" }];
-  const countriesOption = [{ label: "Aus", value: "AUS" }];
+  const statesOption = [{ label: 'LA', value: 'LA' }];
+  const countriesOption = [{ label: 'Aus', value: 'AUS' }];
 
   useEffect(() => {
     if (id) actions.fetchWorker(id);
@@ -67,79 +57,74 @@ const WorkerDetailForm: FC<IProps> = ({
     id && currentWorker
       ? currentWorker
       : {
-          firstName: "",
-          lastName: "",
-          email: "",
-          roles: ["WORKER"],
-          phoneNumber: "",
-          password: "password",
+          firstName: '',
+          lastName: '',
+          email: '',
+          roles: ['WORKER'],
+          phoneNumber: '',
+          password: 'password',
           address: {
-            street1: "",
-            street2: "",
-            city: "",
-            state: "",
+            street1: '',
+            street2: '',
+            city: '',
+            state: '',
             postalCode: undefined,
-            country: "",
+            country: ''
           },
           documents: {
             idCard: {
-              url: "",
-              key: "",
-              type: "ID_CARD",
+              url: '',
+              key: '',
+              type: 'ID_CARD'
             },
             cleaningCert: {
-              url: "",
-              key: "",
-              type: "CLEANING_CERTIFICATE",
+              url: '',
+              key: '',
+              type: 'CLEANING_CERTIFICATE'
             },
             policeCheck: {
-              url: "",
-              key: "",
-              type: "POLICE_CERTIFICATE",
-            },
+              url: '',
+              key: '',
+              type: 'POLICE_CERTIFICATE'
+            }
           },
-          userImage: "",
+          userImage: '',
+          workingHours: '',
+          workingDays: []
         };
 
   const WorkerSchema = Yup.object().shape({
-    firstName: Yup.string()
-      .required(`First name is required`)
-      .min(2, "Too Short!")
-      .max(20, "Too Long!"),
-    lastName: Yup.string()
-      .required(`Last name is required`)
-      .min(2, "Too Short!")
-      .max(20, "Too Long!"),
+    firstName: Yup.string().required(`First name is required`).min(2, 'Too Short!').max(20, 'Too Long!'),
+    lastName: Yup.string().required(`Last name is required`).min(2, 'Too Short!').max(20, 'Too Long!'),
     address: Yup.object().shape({
       street1: Yup.string().required(`Street 1 is required`),
       street2: Yup.string().required(`Street 2 is required`),
       city: Yup.string().required(`City is required`),
       state: Yup.string().required(`State is required`),
       postalCode: Yup.number().required(`Postal Code is required`),
-      country: Yup.string().required(`Country is required`),
+      country: Yup.string().required(`Country is required`)
     }),
-    email: Yup.string().required(`Email is required`).email("Invalid email"),
-    phoneNumber: Yup.string()
-      .label("Phone Number")
-      .required(`Phone number is required`)
-      .length(10),
+    email: Yup.string().required(`Email is required`).email('Invalid email'),
+    phoneNumber: Yup.string().label('Phone Number').required(`Phone number is required`).length(10),
     documents: Yup.object().shape({
       idCard: Yup.object().shape({
         key: Yup.string(),
         url: Yup.string(),
-        type: Yup.string(),
+        type: Yup.string()
       }),
       cleaningCert: Yup.object().shape({
         key: Yup.string(),
         url: Yup.string(),
-        type: Yup.string(),
+        type: Yup.string()
       }),
       policeCheck: Yup.object().shape({
         key: Yup.string(),
         url: Yup.string(),
-        type: Yup.string(),
-      }),
+        type: Yup.string()
+      })
     }),
+    workingHours: Yup.string().required(`Working hours is required`).max(20, 'Too Long!'),
+    workingDays: Yup.array(Yup.string()).min(1, `Working days is required`)
   });
 
   const formik = useFormik({
@@ -153,7 +138,7 @@ const WorkerDetailForm: FC<IProps> = ({
       else await actions.addWorker(data);
 
       navigate(-1);
-    },
+    }
   });
 
   /**
@@ -172,11 +157,7 @@ const WorkerDetailForm: FC<IProps> = ({
    */
   const handleFileUpload = async (docKey: string) => {
     const formData = new FormData();
-    formData.append(
-      "file",
-      (getDocument as any)[docKey],
-      (getDocument as any)[docKey].name
-    );
+    formData.append('file', (getDocument as any)[docKey], (getDocument as any)[docKey].name);
 
     setIsUploading({ ...isUploading, [docKey]: true });
 
@@ -184,14 +165,8 @@ const WorkerDetailForm: FC<IProps> = ({
       const uploadedFile = await uploadPublicFile(formData);
 
       // Setting Formik form document properties
-      formik.setFieldValue(
-        `documents[${docKey}].key`,
-        uploadedFile.data.data.key
-      );
-      formik.setFieldValue(
-        `documents[${docKey}].url`,
-        uploadedFile.data.data.url
-      );
+      formik.setFieldValue(`documents[${docKey}].key`, uploadedFile.data.data.key);
+      formik.setFieldValue(`documents[${docKey}].url`, uploadedFile.data.data.url);
 
       setIsUploading({ ...isUploading, [docKey]: false });
     } catch (error) {
@@ -210,12 +185,12 @@ const WorkerDetailForm: FC<IProps> = ({
         await deletePublicFile((formik.values.documents as any)[docKey].key);
 
         // Setting Formik form document properties
-        formik.setFieldValue(`documents[${docKey}].key`, "");
-        formik.setFieldValue(`documents[${docKey}].url`, "");
+        formik.setFieldValue(`documents[${docKey}].key`, '');
+        formik.setFieldValue(`documents[${docKey}].url`, '');
 
         setIsDeleting({ ...isDeleting, [docKey]: false });
       } catch (error) {
-        console.log("Error: ", error);
+        console.log('Error: ', error);
         setIsDeleting({ ...isDeleting, [docKey]: false });
       }
     }
@@ -235,12 +210,23 @@ const WorkerDetailForm: FC<IProps> = ({
 
     return (touch && error) || error ? (
       <div className="row txt-red">
-        <div className="col-1" style={{ width: "20px" }}>
+        <div className="col-1" style={{ width: '20px' }}>
           <StopIcon size={14} />
         </div>
         <div className="col">{error}</div>
       </div>
     ) : null;
+  };
+
+  const onWorkingDaysChange = (day: string) => {
+    if (formik.values.workingDays?.length && formik.values.workingDays.find((selectedDay: string) => selectedDay === day)) {
+      formik.setFieldValue(
+        'workingDays',
+        formik.values.workingDays.filter((selectedDay: string) => selectedDay !== day)
+      );
+    } else {
+      formik.setFieldValue('workingDays', formik.values.workingDays ? [...formik.values.workingDays, day] : [day]);
+    }
   };
 
   return (
@@ -297,37 +283,27 @@ const WorkerDetailForm: FC<IProps> = ({
                 label="Working hours"
                 placeholder="Enter working hours"
                 name="workingHours"
-                // helperComponent={
-                //   formik.errors.workingHours && formik.touched.workingHours ? (
-                //     <div className="txt-red">{formik.errors.workingHours}</div>
-                //   ) : null
-                // }
-                // onChange={formik.handleChange}
-                // onBlur={formik.handleBlur}
+                helperComponent={<ErrorMessage name={'workingHours'} />}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
               />
             </div>
             <div className="col week-list">
-              <label className="form-label txt-dark-grey">
-                Available working days and time
-              </label>
+              <label className="form-label txt-dark-grey">Available working days and time</label>
               <ul>
                 {DAYS_OF_WEEK.map((day) => (
                   <li
                     key={day}
-                    // className={`${
-                    //   formik.values.weekDay &&
-                    //   getDayFromDate(formik.values.weekDay) === day
-                    //     ? "selected"
-                    //     : null
-                    // }`}
-                    // onClick={() => onWeekDayChange(day)}
+                    className={`${
+                      formik.values.workingDays?.length && formik.values.workingDays.find((selectedDay: string) => selectedDay === day) ? 'selected' : null
+                    }`}
+                    onClick={() => onWorkingDaysChange(day)}
                   >
-                    <span className="item">
-                      {day[0].toString().toUpperCase()}
-                    </span>
+                    <span className="item">{day[0].toString().toUpperCase()}</span>
                   </li>
                 ))}
               </ul>
+              <ErrorMessage name="workingDays" />
             </div>
           </div>
 
@@ -369,11 +345,9 @@ const WorkerDetailForm: FC<IProps> = ({
                   name="address.state"
                   options={statesOption}
                   helperComponent={<ErrorMessage name="address.state" />}
-                  value={statesOption.find(
-                    (option) => option.value === formik.values.address?.state
-                  )}
+                  value={statesOption.find((option) => option.value === formik.values.address?.state)}
                   handleChange={(selectedOption: IOption) => {
-                    formik.setFieldValue("address.state", selectedOption.value);
+                    formik.setFieldValue('address.state', selectedOption.value);
                   }}
                   onBlur={formik.handleBlur}
                 />
@@ -397,14 +371,9 @@ const WorkerDetailForm: FC<IProps> = ({
                   name="address.country"
                   options={countriesOption}
                   helperComponent={<ErrorMessage name="address.country" />}
-                  value={countriesOption.find(
-                    (option) => option.value === formik.values.address?.country
-                  )}
+                  value={countriesOption.find((option) => option.value === formik.values.address?.country)}
                   handleChange={(selectedOption: IOption) => {
-                    formik.setFieldValue(
-                      "address.country",
-                      selectedOption.value
-                    );
+                    formik.setFieldValue('address.country', selectedOption.value);
                   }}
                   onBlur={formik.handleBlur}
                 />
@@ -415,16 +384,14 @@ const WorkerDetailForm: FC<IProps> = ({
         <div className="col card ms-3">
           <h5>Upload documents</h5>
           <div className="mb-3">
-            <label className="form-label txt-dark-grey">
-              ID Card/ Driving License:
-            </label>
+            <label className="form-label txt-dark-grey">ID Card/ Driving License:</label>
             <div>
               <input
                 className="form-control hidden"
                 type="file"
                 id="idCard"
                 name="documents['idCard'].url"
-                onChange={(event) => handleFileSelect(event, "idCard")}
+                onChange={(event) => handleFileSelect(event, 'idCard')}
                 onBlur={formik.handleBlur}
                 // value={
                 //   formik.values.documents &&
@@ -440,14 +407,10 @@ const WorkerDetailForm: FC<IProps> = ({
                       title="Upload"
                       className="btn btn-warning btn-sm"
                       onClick={() => {
-                        handleFileUpload("idCard");
+                        handleFileUpload('idCard');
                       }}
                     >
-                      {isUploading.idCard ? (
-                        <EllipsisIcon size={16} />
-                      ) : (
-                        <UploadIcon size={16} />
-                      )}
+                      {isUploading.idCard ? <EllipsisIcon size={16} /> : <UploadIcon size={16} />}
                     </button>
                     &nbsp;
                     <button
@@ -455,14 +418,10 @@ const WorkerDetailForm: FC<IProps> = ({
                       title="Delete"
                       className="btn btn-danger btn-sm"
                       onClick={() => {
-                        handleFileDelete("idCard");
+                        handleFileDelete('idCard');
                       }}
                     >
-                      {isDeleting.idCard ? (
-                        <EllipsisIcon size={16} />
-                      ) : (
-                        <XCircleIcon size={16} />
-                      )}
+                      {isDeleting.idCard ? <EllipsisIcon size={16} /> : <XCircleIcon size={16} />}
                     </button>
                   </div>
                 </div>
@@ -472,43 +431,33 @@ const WorkerDetailForm: FC<IProps> = ({
                   Click to browse or drag and drop your file to upload ID card
                 </label>
               ) : null}
-              {formik.errors.documents && formik.touched.documents ? (
-                <div className="txt-red">{formik.errors.documents}</div>
-              ) : null}
+              {formik.errors.documents && formik.touched.documents ? <div className="txt-red">{formik.errors.documents}</div> : null}
             </div>
           </div>
           <div className="mb-3">
-            <label className="form-label txt-dark-grey">
-              Cleaning certificate
-            </label>
+            <label className="form-label txt-dark-grey">Cleaning certificate</label>
             <div>
               <input
                 className="form-control hidden"
                 type="file"
                 id="clinicCertificate"
                 name="documents['cleaningCert'].url"
-                onChange={(event) => handleFileSelect(event, "cleaningCert")}
+                onChange={(event) => handleFileSelect(event, 'cleaningCert')}
                 onBlur={formik.handleBlur}
               />
               {getDocument.cleaningCert ? (
                 <div className="row">
-                  <div className="col-9">
-                    1. {getDocument.cleaningCert.name}
-                  </div>
+                  <div className="col-9">1. {getDocument.cleaningCert.name}</div>
                   <div className="col-3">
                     <button
                       type="button"
                       title="Upload"
                       className="btn btn-warning btn-sm"
                       onClick={() => {
-                        handleFileUpload("cleaningCert");
+                        handleFileUpload('cleaningCert');
                       }}
                     >
-                      {isUploading.cleaningCert ? (
-                        <EllipsisIcon size={16} />
-                      ) : (
-                        <UploadIcon size={16} />
-                      )}
+                      {isUploading.cleaningCert ? <EllipsisIcon size={16} /> : <UploadIcon size={16} />}
                     </button>
                     &nbsp;
                     <button
@@ -516,30 +465,20 @@ const WorkerDetailForm: FC<IProps> = ({
                       title="Delete"
                       className="btn btn-danger btn-sm"
                       onClick={() => {
-                        handleFileDelete("cleaningCert");
+                        handleFileDelete('cleaningCert');
                       }}
                     >
-                      {isDeleting.cleaningCert ? (
-                        <EllipsisIcon size={16} />
-                      ) : (
-                        <XCircleIcon size={16} />
-                      )}
+                      {isDeleting.cleaningCert ? <EllipsisIcon size={16} /> : <XCircleIcon size={16} />}
                     </button>
                   </div>
                 </div>
               ) : null}
               {!getDocument.cleaningCert ? (
-                <label
-                  htmlFor="clinicCertificate"
-                  className="txt-orange dashed-file"
-                >
-                  Click to browse or drag and drop your file to upload clinic
-                  certificate
+                <label htmlFor="clinicCertificate" className="txt-orange dashed-file">
+                  Click to browse or drag and drop your file to upload clinic certificate
                 </label>
               ) : null}
-              {formik.errors.documents && formik.touched.documents ? (
-                <div className="txt-red">{formik.errors.documents}</div>
-              ) : null}
+              {formik.errors.documents && formik.touched.documents ? <div className="txt-red">{formik.errors.documents}</div> : null}
             </div>
           </div>
           <div className="mb-3">
@@ -550,7 +489,7 @@ const WorkerDetailForm: FC<IProps> = ({
                 type="file"
                 id="policyCheck"
                 name="documents['policeCheck'].url"
-                onChange={(event) => handleFileSelect(event, "policeCheck")}
+                onChange={(event) => handleFileSelect(event, 'policeCheck')}
                 onBlur={formik.handleBlur}
               />
               {getDocument.policeCheck ? (
@@ -562,14 +501,10 @@ const WorkerDetailForm: FC<IProps> = ({
                       title="Upload"
                       className="btn btn-warning btn-sm"
                       onClick={() => {
-                        handleFileUpload("policeCheck");
+                        handleFileUpload('policeCheck');
                       }}
                     >
-                      {isUploading.policeCheck ? (
-                        <EllipsisIcon size={16} />
-                      ) : (
-                        <UploadIcon size={16} />
-                      )}
+                      {isUploading.policeCheck ? <EllipsisIcon size={16} /> : <UploadIcon size={16} />}
                     </button>
                     &nbsp;
                     <button
@@ -577,27 +512,20 @@ const WorkerDetailForm: FC<IProps> = ({
                       title="Delete"
                       className="btn btn-danger btn-sm"
                       onClick={() => {
-                        handleFileDelete("policeCheck");
+                        handleFileDelete('policeCheck');
                       }}
                     >
-                      {isDeleting.policeCheck ? (
-                        <EllipsisIcon size={16} />
-                      ) : (
-                        <XCircleIcon size={16} />
-                      )}
+                      {isDeleting.policeCheck ? <EllipsisIcon size={16} /> : <XCircleIcon size={16} />}
                     </button>
                   </div>
                 </div>
               ) : null}
               {!getDocument.policeCheck ? (
                 <label htmlFor="policyCheck" className="txt-orange dashed-file">
-                  Click to browse or drag and drop your file to upload police
-                  check
+                  Click to browse or drag and drop your file to upload police check
                 </label>
               ) : null}
-              {formik.errors.documents && formik.touched.documents ? (
-                <div className="txt-red">{formik.errors.documents}</div>
-              ) : null}
+              {formik.errors.documents && formik.touched.documents ? <div className="txt-red">{formik.errors.documents}</div> : null}
             </div>
           </div>
         </div>
@@ -636,7 +564,7 @@ const WorkerDetailForm: FC<IProps> = ({
 const mapStateToProps = (state: any) => {
   return {
     isWorkersLoading: state.workers.isLoading,
-    currentWorker: state.workers.currentUser,
+    currentWorker: state.workers.currentUser
   };
 };
 
@@ -650,8 +578,8 @@ const mapDispatchToProps = (dispatch: any) => ({
     },
     updateWorker: (data: any) => {
       dispatch(workersActions.updateWorker(data));
-    },
-  },
+    }
+  }
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(WorkerDetailForm);

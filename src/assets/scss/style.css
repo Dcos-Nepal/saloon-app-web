@@ -620,7 +620,7 @@ textarea:focus {
     display: inline-block;
 }
 
-.week-list ul li .selected .item {
+.week-list ul li.selected .item {
     color: #F3F2EF;
     background-color: #f47321;
 }

@@ -223,6 +223,14 @@ export const FETCH_JOBS_LOADING = 'FETCH_JOBS_LOADING';
 export const FETCH_JOBS_ERROR = 'FETCH_JOBS_ERROR';
 
 /**
+ * Load Job action types
+ */
+export const FETCH_JOB = 'FETCH_JOB';
+export const FETCH_JOB_SUCCESS = 'FETCH_JOB_SUCCESS';
+export const FETCH_JOB_LOADING = 'FETCH_JOB_LOADING';
+export const FETCH_JOB_ERROR = 'FETCH_JOB_ERROR';
+
+/**
  * Load Job Schedule action types
  */
 export const FETCH_JOB_SCHEDULE = 'FETCH_JOB_SCHEDULE';

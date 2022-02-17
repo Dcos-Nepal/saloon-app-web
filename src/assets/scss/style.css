@@ -226,6 +226,10 @@ a { color: #666666;}
     box-shadow: 2px 4px 4px rgba(0, 0, 0, 0.09), 0px 1px 3px rgba(0, 0, 0, 0.1);
 }
 
+.hover-grey:hover {
+    background-color: #F9F9F9;
+}
+
 .bg-grey {
     background: #F3F4F6;
     color: #4B5563;

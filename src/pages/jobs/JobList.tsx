@@ -58,11 +58,11 @@ const JobsList = (props: IProps) => {
         accessor: 'property.street1'
       },
       {
-        Header: 'SCHEDULE',
+        Header: 'JOB SCHEDULE',
         accessor: 'schedule'
       },
       {
-        Header: 'INVOICING',
+        Header: 'REQUIRE INVOICING?',
         accessor: (row: any) => (
           <div>
             {row.remindInvoicing ? 'Yes' : 'No'}
@@ -134,7 +134,7 @@ const JobsList = (props: IProps) => {
             Create a Job
           </button>
         </div>
-        <label className="txt-grey">{jobs.length} Jobs</label>
+        <label className="txt-grey">Total {props?.jobs?.data?.totalCount || 0} Jobs</label>
       </div>
       <div className="card">
         <div className="row pt-2 m-1 rounded-top bg-grey">

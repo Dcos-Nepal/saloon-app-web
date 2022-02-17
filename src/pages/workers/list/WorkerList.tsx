@@ -190,8 +190,8 @@ const WorkerList = (props: any) => {
         <label className="txt-grey">
           Total{" "}
           {query
-            ? `${workers.length} Search results found!`
-            : `${pageCount} workers`}
+            ? `${workers.length} search results found!`
+            : `${props?.workers?.data?.totalCount || 0} workers`}
         </label>
       </div>
       <div className="card">

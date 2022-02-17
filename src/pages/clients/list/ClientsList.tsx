@@ -187,8 +187,8 @@ const ClientsList = (props: any) => {
         <label className="txt-grey">
           Total{" "}
           {query
-            ? `${clients.length} Search results found!`
-            : `${pageCount} clients`}
+            ? `${clients.length} search results found!`
+            : `${props?.clients?.data?.totalCount || 0} clients`}
         </label>
       </div>
       <div className="card">

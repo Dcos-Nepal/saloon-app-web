@@ -15,6 +15,7 @@ import EmptyState from "common/components/EmptyState";
 
 interface IClient {
   name: string;
+  email: string;
   address: string;
   contact: string;
   status: boolean;
@@ -43,11 +44,12 @@ const ClientsList = (props: any) => {
       setClients(
         props.clients.data?.rows.map((row: any) => ({
           name: `${row.firstName} ${row.lastName}`,
+          email: row.email,
           address: row?.address
             ? `${row.address?.street1}, ${row.address?.street2}, ${row.address?.city}, ${row.address?.state}, ${row.address?.postalCode}, ${row.address?.country}`
             : "Address not added!",
           contact: row.phoneNumber,
-          status: row.auth.email,
+          status: row.auth?.email?.valid,
           updatedAt: row.updatedAt,
           _id: row._id,
         }))
@@ -73,25 +75,45 @@ const ClientsList = (props: any) => {
     () => [
       {
         Header: "CLIENT NAME",
-        accessor: "name",
+        accessor: (row: any) => {
+          return (
+            <div>
+              <div>
+                <b>{row.name}</b>
+              </div>
+              <small>{row.address || "Address not added."}</small>
+            </div>
+          );
+        },
       },
-      {
-        Header: "ADDRESS",
-        accessor: "address",
-      },
+      // {
+      //   Header: "ADDRESS",
+      //   accessor: "address",
+      // },
       {
         Header: "CONTACT",
-        accessor: "contact",
+        accessor: (row: any) => {
+          return (
+            <div>
+              <div>
+                Phone: <b>{row.contact}</b>
+              </div>
+              <small>
+                Email: <b>{row.email}</b>
+              </small>
+            </div>
+          );
+        },
       },
       {
         Header: "STATUS",
         accessor: (row: any) => (
           <div>
-            <span className={`status ${row.status ? "status-green" : "status-red"}`}>
+            <div className={`status ${row.status ? "status-green" : "status-red"}`}>
               {row.status ? "Email Verified!" : "Pending Verification"}
-            </span>
+            </div>
             <label className="txt-grey ms-2">
-              {new Date(row.updatedAt).toLocaleString()}
+              {row.updatedAt ? new Date(row.updatedAt).toLocaleString() : null}
             </label>
           </div>
         ),

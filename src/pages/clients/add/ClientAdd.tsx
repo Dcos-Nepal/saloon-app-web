@@ -13,8 +13,8 @@ const ClientAdd = () => {
           </span>
           <span className="col">Back to previous</span>
         </div>
-        <div className="d-flex flex-row">
-          <h3>New Client</h3>
+        <div className="d-flex flex-row mt-2">
+          <h3 className="extra">New Client</h3>
         </div>
       </div>
       <ClientDetailForm />

@@ -13,11 +13,12 @@ export interface IClient {
     postalCode?: string;
     country?: string;
   };
-  userDocuments?: {
-    documentUrl: string;
-    type: string;
-  }[];
+  userData: {
+    type: string,
+    company?: string,
+    referredBy?: string
+  },
   roles: string[];
   password?: string;
-  userImage?: string;
+  avatar?: string;
 }

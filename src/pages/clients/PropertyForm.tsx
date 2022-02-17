@@ -1,7 +1,6 @@
 import { FC } from 'react';
 import * as Yup from 'yup';
 import { getIn, useFormik } from 'formik';
-import { useNavigate } from 'react-router-dom';
 import { StopIcon } from '@primer/octicons-react';
 
 import InputField from 'common/components/form/Input';
@@ -9,31 +8,29 @@ import SelectField from 'common/components/form/Select';
 import { IOption } from 'common/types/form';
 
 interface IProps {
-  closeModal: () => void;
   currentProperty?: any;
+  cleanForm: () => void;
   saveProperty: (data: any) => any;
   updateProperty: (data: any) => any;
 }
 
-const PropertyForm: FC<IProps> = ({ closeModal, currentProperty, saveProperty, updateProperty }) => {
-  const navigate = useNavigate();
-
+const PropertyForm: FC<IProps> = ({ cleanForm, currentProperty, saveProperty, updateProperty }) => {
   const initialValues = currentProperty
     ? currentProperty
     : {
-        name: '',
-        street1: '',
-        street2: '',
-        city: '',
-        state: '',
-        postalCode: undefined,
-        country: ''
-      };
+      name: '',
+      street1: '',
+      street2: '',
+      city: '',
+      state: '',
+      postalCode: '',
+      country: ''
+    };
 
   const PropertySchema = Yup.object().shape({
     name: Yup.string().required(`Name is required`).min(2, 'Too Short!').max(20, 'Too Long!'),
     street1: Yup.string().required(`Street 1 is required`),
-    street2: Yup.string().required(`Street 2 is required`),
+    street2: Yup.string().notRequired(),
     city: Yup.string().required(`City is required`),
     state: Yup.string().required(`State is required`),
     postalCode: Yup.string().required(`Postal Code is required`),
@@ -49,8 +46,6 @@ const PropertyForm: FC<IProps> = ({ closeModal, currentProperty, saveProperty, u
       if (currentProperty) await updateProperty(data);
       // For creating property
       else await saveProperty(data);
-
-      closeModal();
     }
   });
 
@@ -75,8 +70,22 @@ const PropertyForm: FC<IProps> = ({ closeModal, currentProperty, saveProperty, u
     ) : null;
   };
 
-  const statesOption = [{ label: 'LA', value: 'LA' }];
-  const countriesOption = [{ label: 'Aus', value: 'AUS' }];
+  const statesOption = [
+    { label: 'New South Wales', value: 'New South Wales' },
+    { label: 'New South', value: 'New South' },
+    { label: 'New Wales', value: 'New Wales' }
+  ];
+
+  const countriesOption = [
+    {
+      label: 'AUS',
+      value: 'AUS'
+    },
+    {
+      label: 'USA',
+      value: 'USA'
+    }
+  ];
 
   return (
     <form noValidate onSubmit={formik.handleSubmit}>
@@ -93,7 +102,7 @@ const PropertyForm: FC<IProps> = ({ closeModal, currentProperty, saveProperty, u
           />
         </div>
 
-        <div className="mb-3">
+        <div className="mb-2">
           <InputField
             label="Street 1"
             placeholder="Enter street 1"
@@ -112,7 +121,7 @@ const PropertyForm: FC<IProps> = ({ closeModal, currentProperty, saveProperty, u
             onBlur={formik.handleBlur}
             value={formik.values.street2}
           />
-          <div className="mb-3 row">
+          <div className="mb-2 row">
             <div className="col">
               <InputField
                 label="City"
@@ -128,9 +137,13 @@ const PropertyForm: FC<IProps> = ({ closeModal, currentProperty, saveProperty, u
               <SelectField
                 label="State"
                 name="state"
-                options={statesOption}
+                options={[
+                  { label: 'New South Wales', value: 'New South Wales' },
+                  { label: 'New South', value: 'New South' },
+                  { label: 'New Wales', value: 'New Wales' }
+                ]}
                 helperComponent={<ErrorMessage name="state" />}
-                value={statesOption.find((option) => option.value === formik.values.state) || { label: '', value: '' }}
+                value={statesOption.find((option) => option.value === formik.values.state) || null}
                 handleChange={(selectedOption: IOption) => {
                   formik.setFieldValue('state', selectedOption.value);
                 }}
@@ -138,7 +151,7 @@ const PropertyForm: FC<IProps> = ({ closeModal, currentProperty, saveProperty, u
               />
             </div>
           </div>
-          <div className="mb-3 row">
+          <div className="row">
             <div className="col">
               <InputField
                 label="Post code"
@@ -156,7 +169,7 @@ const PropertyForm: FC<IProps> = ({ closeModal, currentProperty, saveProperty, u
                 name="country"
                 options={countriesOption}
                 helperComponent={<ErrorMessage name="country" />}
-                value={countriesOption.find((option) => option.value === formik.values.country)}
+                value={countriesOption.find((option) => option.value === formik.values.country) || null}
                 handleChange={(selectedOption: IOption) => {
                   formik.setFieldValue('country', selectedOption.value);
                 }}
@@ -166,13 +179,17 @@ const PropertyForm: FC<IProps> = ({ closeModal, currentProperty, saveProperty, u
           </div>
         </div>
       </div>
-
-      <div className="mb-3">
+      <div>
         <button type="submit" className="btn btn-primary">
-          Save
+          {currentProperty ? 'Update Property' : 'Save Property'}
         </button>
-        <button onClick={closeModal} type="button" className="btn">
+        &nbsp;&nbsp;
+        <button onClick={cleanForm} type="button" className="btn btn-danger">
           Cancel
+        </button>
+        &nbsp;&nbsp;
+        <button onClick={() => formik.resetForm()} type="button" className="btn btn-warning">
+          Reset Form
         </button>
       </div>
     </form>

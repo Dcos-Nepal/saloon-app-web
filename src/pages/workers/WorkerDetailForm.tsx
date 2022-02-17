@@ -92,6 +92,7 @@ const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker, isWorkersLoa
                 type: "POLICE_CERTIFICATE",
               },
             },
+            services: []
           },
           avatar: ""
         };
@@ -132,7 +133,8 @@ const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker, isWorkersLoa
         })
       }),
       workingHours: Yup.string().required(`Working hours is required`).max(20, 'Too Long!'),
-      workingDays: Yup.array(Yup.string()).min(1, `Working days is required`)
+      workingDays: Yup.array(Yup.string()).min(1, `Working days is required`),
+      services: Yup.array(Yup.string())
     })
   });
 

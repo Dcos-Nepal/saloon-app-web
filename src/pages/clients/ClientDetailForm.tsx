@@ -35,14 +35,27 @@ interface IProps {
   properties: any[];
 }
 
+const statesOption = [
+  { label: 'New South Wales', value: 'New South Wales' },
+  { label: 'New South', value: 'New South' },
+  { label: 'New Wales', value: 'New Wales' }
+];
+
+const countriesOption = [
+  {
+    label: 'AUS',
+    value: 'AUS'
+  },
+  {
+    label: 'USA',
+    value: 'USA'
+  }
+];
+
 const ClientDetailForm: FC<IProps> = ({ id, actions, currentClient, properties, currentProperty, isPropertiesLoading }) => {
   const navigate = useNavigate();
 
-  const [addProperty, setAddProperty] = useState(false);
   const [editPropertyFor, setEditPropertyFor] = useState<any>(null);
-
-  const [phoneNumberCount, setPhoneNumberCount] = useState(1);
-
   const [initialValues, setInitialValues] = useState<IClient>({
     firstName: '',
     lastName: '',
@@ -58,13 +71,11 @@ const ClientDetailForm: FC<IProps> = ({ id, actions, currentClient, properties, 
       postalCode: undefined,
       country: ''
     },
-    userDocuments: [
-      {
-        documentUrl: '',
-        type: 'COMPANY-LOGO'
-      }
-    ],
-    userImage: ''
+    userData: {
+      type: 'CLIENT',
+      company: ''
+    },
+    avatar: ''
   });
 
   useEffect(() => {
@@ -72,12 +83,17 @@ const ClientDetailForm: FC<IProps> = ({ id, actions, currentClient, properties, 
   }, [id, actions]);
 
   useEffect(() => {
-    if (currentClient) setInitialValues(currentClient);
-  }, [currentClient]);
+    if (currentClient && id) {
+      if (!currentClient.userData) {
+        currentClient.userData = {type: 'CLIENT'}
+      }
+      setInitialValues(currentClient);
+    }
+  }, [currentClient, id]);
 
   useEffect(() => {
-    if (currentClient?._id) actions.fetchProperties({ user: currentClient._id });
-  }, [currentClient?._id, actions]);
+    if (currentClient?._id && id) actions.fetchProperties({ user: currentClient._id });
+  }, [id, currentClient?._id, actions]);
 
   const ClientSchema = Yup.object().shape({
     firstName: Yup.string().required(`First name is required`).min(2, 'Too Short!').max(20, 'Too Long!'),
@@ -92,12 +108,11 @@ const ClientDetailForm: FC<IProps> = ({ id, actions, currentClient, properties, 
       postalCode: Yup.number().required(`Postal Code is required`),
       country: Yup.string().required(`Country is required`)
     }),
-    userDocuments: Yup.array(
-      Yup.object().shape({
-        documentUrl: Yup.string(),
-        type: Yup.string()
-      })
-    )
+    userData: Yup.object().shape({
+      type: Yup.string(),
+      preferredTime: Yup.array(Yup.string()).notRequired(),
+      companyName: Yup.string()
+    })
   });
 
   const formik = useFormik({
@@ -110,10 +125,15 @@ const ClientDetailForm: FC<IProps> = ({ id, actions, currentClient, properties, 
       // Add new client
       else await actions.addClient(data);
 
+      // Navigate to the previous screen
       navigate(-1);
     }
   });
 
+  /**
+   * Save Property
+   * @param data 
+   */
   const savePropertyHandler = async (data: any) => {
     if (currentClient?._id) {
       await actions.addProperty({ ...data, user: currentClient._id });
@@ -122,6 +142,10 @@ const ClientDetailForm: FC<IProps> = ({ id, actions, currentClient, properties, 
     }
   };
 
+  /**
+   * Update Property
+   * @param data 
+   */
   const updatePropertyHandler = async (data: any) => {
     if (currentClient?._id) {
       await actions.updateProperty({ ...data, user: currentClient._id });
@@ -152,89 +176,66 @@ const ClientDetailForm: FC<IProps> = ({ id, actions, currentClient, properties, 
     ) : null;
   };
 
-  const statesOption = [{ label: 'New South Wales', value: 'New South Wales' }];
-
-  const countriesOption = [
-    {
-      label: 'AUS',
-      value: 'AUS'
-    }
-  ];
-
   return (
-    <>
-      <form noValidate onSubmit={formik.handleSubmit}>
-        <div className="row m-1">
-          <div className="col card">
-            <h5>Client Details</h5>
-            <div className="row mt-3">
-              <div className="col">
-                <InputField
-                  label="First name"
-                  value={formik.values.firstName}
-                  placeholder="Enter first name"
-                  name="firstName"
-                  helperComponent={formik.errors.firstName && formik.touched.firstName ? <div className="txt-red">{formik.errors.firstName}</div> : null}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                />
+    <div className='row'>
+      <div className="col">
+        <form noValidate onSubmit={formik.handleSubmit}>
+          <div className={`${(currentClient && currentClient._id) ? '' : 'row'} m-1`}>
+            <div className="col card">
+              <h5>Client Details</h5>
+              <div className="row mt-3">
+                <div className="col">
+                  <InputField
+                    label="First name"
+                    value={formik.values.firstName}
+                    placeholder="Enter first name"
+                    name="firstName"
+                    helperComponent={formik.errors.firstName && formik.touched.firstName ? <div className="txt-red">{formik.errors.firstName}</div> : null}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                  />
+                </div>
+                <div className="col">
+                  <InputField
+                    value={formik.values.lastName}
+                    label="Last name"
+                    placeholder="Enter last name"
+                    name="lastName"
+                    helperComponent={formik.errors.lastName && formik.touched.lastName ? <div className="txt-red">{formik.errors.lastName}</div> : null}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                  />
+                </div>
               </div>
-              <div className="col">
-                <InputField
-                  value={formik.values.lastName}
-                  label="Last name"
-                  placeholder="Enter last name"
-                  name="lastName"
-                  helperComponent={formik.errors.lastName && formik.touched.lastName ? <div className="txt-red">{formik.errors.lastName}</div> : null}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                />
-              </div>
-            </div>
-            <InputField
-              label="Email address"
-              value={formik.values.email}
-              placeholder="Enter email address"
-              type="email"
-              name="email"
-              helperComponent={formik.errors.email && formik.touched.email ? <div className="txt-red">{formik.errors.email}</div> : null}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-            />
-            <InputField label="Company name" placeholder="Enter company name" />
-            <div className="mb-3">
-              <label className="form-label txt-dark-grey">Company logo</label>
-              <div>
-                <input
-                  className="form-control hidden"
-                  type="file"
-                  id="companyLogo"
-                  name="userDocuments[0].documentUrl"
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                />
-                <label htmlFor="companyLogo" className="txt-orange dashed-file">
-                  Click to browse or drag and drop your file to upload company logo
+              <InputField
+                label="Email address"
+                value={formik.values.email}
+                placeholder="Enter email address"
+                type="email"
+                name="email"
+                helperComponent={formik.errors.email && formik.touched.email ? <div className="txt-red">{formik.errors.email}</div> : null}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+              />
+              <InputField
+                label="Company Name"
+                name="userData.company"
+                value={formik.values?.userData?.company || ''}
+                placeholder="Enter company name"
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+              />
+              <div className="mb-3">
+                <input className="form-check-input" type="checkbox" value="" id="flexCheckDefault" />
+                <label className="ms-2 form-check-label" htmlFor="flexCheckDefault">
+                  Use company name as the primary name
                 </label>
-                {formik.errors.userDocuments && formik.touched.userDocuments ? <div className="txt-red">{formik.errors.userDocuments}</div> : null}
               </div>
             </div>
-            <div className="mb-3">
-              <input className="form-check-input" type="checkbox" value="" id="flexCheckDefault" />
-              <label className="ms-2 form-check-label" htmlFor="flexCheckDefault">
-                Use company name as the primary name
-              </label>
-            </div>
-            <div className="mb-3">
-              <label className="txt-bold mb-2">Contact details</label>
-              {Array.from(Array(phoneNumberCount), (_, index) => (
+            <div className={`${(currentClient && currentClient._id) ? '' : 'ms-2'} col card`}>
+              <div className="mb-3">
+                <label className="txt-bold mb-2">Contact details</label>
                 <div className="row">
-                  <div className="col-1 pt-2 mt-4 ps-3 pointer">
-                    <box-icon name="star" color="#F5E059" />
-                  </div>
-                  <div className="col-3">
-                    <SelectField label="Type" value={{ value: 'Main', label: 'Main' }} />
-                  </div>
                   <div className="col">
                     <InputField
                       label="Phone number"
@@ -248,190 +249,140 @@ const ClientDetailForm: FC<IProps> = ({ id, actions, currentClient, properties, 
                       onBlur={formik.handleBlur}
                     />
                   </div>
-                  {index ? (
-                    <div className="col-1 pt-4 mt-2 ps-1 pointer">
-                      <span
-                        onClick={() => {
-                          setPhoneNumberCount(phoneNumberCount > 1 ? phoneNumberCount - 1 : phoneNumberCount);
-                        }}
-                      >
-                        <box-icon name="x-square" type="solid" color="#FF0048" />
-                      </span>
+                </div>
+
+                <div className="mb-3">
+                  <label className="txt-bold mt-2 mb-2">Address</label>
+                  <InputField
+                    label="Street 1"
+                    placeholder="Enter street 1"
+                    name="address.street1"
+                    helperComponent={<ErrorMessage name="address.street1" />}
+                    value={formik.values.address?.street1 || ''}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                  />
+                  <InputField
+                    label="Street 2"
+                    placeholder="Enter street 2"
+                    name="address.street2"
+                    helperComponent={<ErrorMessage name="address.street2" />}
+                    value={formik.values.address?.street2 || ''}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                  />
+                  <div className="mb-3 row">
+                    <div className="col">
+                      <InputField
+                        label="City"
+                        placeholder="Enter city"
+                        name="address.city"
+                        value={formik.values.address?.city}
+                        helperComponent={<ErrorMessage name="address.city" />}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                      />
                     </div>
-                  ) : null}
-                </div>
-              ))}
-            </div>
-            <div
-              onClick={() => {
-                setPhoneNumberCount(phoneNumberCount < 5 ? phoneNumberCount + 1 : phoneNumberCount);
-              }}
-              className="dashed bold txt-orange pointer mb-3"
-            >
-              + Add Phone number
-            </div>
-
-            <div className="mb-3">
-              <label className="txt-bold mt-2 mb-2">Address</label>
-
-              <InputField
-                label="Street 1"
-                placeholder="Enter street 1"
-                name="address.street1"
-                helperComponent={<ErrorMessage name="address.street1" />}
-                value={formik.values.address?.street1 || ''}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-              />
-              <InputField
-                label="Street 2"
-                placeholder="Enter street 2"
-                name="address.street2"
-                helperComponent={<ErrorMessage name="address.street2" />}
-                value={formik.values.address?.street2 || ''}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-              />
-              <div className="mb-3 row">
-                <div className="col">
-                  <InputField
-                    label="City"
-                    placeholder="Enter city"
-                    name="address.city"
-                    value={formik.values.address?.city}
-                    helperComponent={<ErrorMessage name="address.city" />}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                  />
-                </div>
-                <div className="col">
-                  <SelectField
-                    label="State"
-                    name="address.state"
-                    options={statesOption}
-                    helperComponent={<ErrorMessage name="address.state" />}
-                    value={statesOption.find((option) => option.value === formik.values.address?.state)}
-                    handleChange={(selectedOption: IOption) => {
-                      formik.setFieldValue('address.state', selectedOption.value);
-                    }}
-                    onBlur={formik.handleBlur}
-                  />
-                </div>
-                <div className="txt-red"></div>
-              </div>
-              <div className="mb-3 row">
-                <div className="col">
-                  <InputField
-                    type="text"
-                    label="Post code"
-                    placeholder="Enter post code"
-                    name="address.postalCode"
-                    value={formik.values.address?.postalCode || ''}
-                    helperComponent={<ErrorMessage name="address.postalCode" />}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                  />
-                </div>
-                <div className="col">
-                  <SelectField
-                    label="Country"
-                    name="address.country"
-                    options={countriesOption}
-                    helperComponent={<ErrorMessage name="address.country" />}
-                    value={countriesOption.find((option) => option.value === formik.values.address?.country)}
-                    handleChange={(selectedOption: IOption) => {
-                      formik.setFieldValue('address.country', selectedOption.value);
-                    }}
-                    onBlur={formik.handleBlur}
-                  />
+                    <div className="col">
+                      <SelectField
+                        label="State"
+                        name="address.state"
+                        options={statesOption}
+                        helperComponent={<ErrorMessage name="address.state" />}
+                        value={statesOption.find((option) => option.value === formik.values.address?.state) || null}
+                        handleChange={(selectedOption: IOption) => {
+                          formik.setFieldValue('address.state', selectedOption.value);
+                        }}
+                        onBlur={formik.handleBlur}
+                      />
+                    </div>
+                    <div className="txt-red"></div>
+                  </div>
+                  <div className="mb-3 row">
+                    <div className="col">
+                      <InputField
+                        type="text"
+                        label="Post code"
+                        placeholder="Enter post code"
+                        name="address.postalCode"
+                        value={formik.values.address?.postalCode || ''}
+                        helperComponent={<ErrorMessage name="address.postalCode" />}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                      />
+                    </div>
+                    <div className="col">
+                      <SelectField
+                        label="Country"
+                        name="address.country"
+                        options={countriesOption}
+                        helperComponent={<ErrorMessage name="address.country" />}
+                        value={countriesOption.find((option) => option.value === formik.values.address?.country)}
+                        handleChange={(selectedOption: IOption) => {
+                          formik.setFieldValue('address.country', selectedOption.value);
+                        }}
+                        onBlur={formik.handleBlur}
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-          <div className="col card ms-3">
-            <h5>Property Details</h5>
-            {properties.length ? properties.map((property) => <PropertyDetail setEditPropertyFor={setEditPropertyFor} property={property} />) : null}
-
-            <div
-              onClick={() => {
-                if (currentClient && currentClient._id) setAddProperty(true);
-                else toast.error('First add client to add property');
-              }}
-              className="dashed bold txt-orange pointer mt-2"
-            >
-              + {properties.length ? 'Additional' : 'Add'} property details
-            </div>
-          </div>
-        </div>
-
-        <div className="mb-3 mt-2">
-          <button
-            type="button"
-            onClick={async () => {
-              await formik.handleSubmit();
-              // navigate(-1);
-            }}
-            className="btn btn-primary"
-          >
-            Save client
-          </button>
-          {id ? null : (
+          <div className="mb-3 mt-2 m-1">
             <button
               type="button"
               onClick={async () => {
                 await formik.handleSubmit();
-                // formik.resetForm();
               }}
-              className="btn btn-secondary ms-3"
+              className="btn btn-primary"
             >
-              Save and create another
+              Save client
             </button>
-          )}
-          <button onClick={() => navigate(-1)} type="button" className="btn ms-3">
-            Cancel
-          </button>
+            {id ? null : (
+              <button
+                type="button"
+                onClick={async () => {
+                  await formik.handleSubmit();
+                }}
+                className="btn btn-secondary ms-3"
+              >
+                Save and create another
+              </button>
+            )}
+            <button onClick={() => navigate(-1)} type="button" className="btn ms-3">
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+      {(currentClient && currentClient._id) ? (
+        <div className="col pt-3">
+          <div className='row'>
+            <div className="col-12">
+              {properties.length ? (<h5>Listed Properties</h5>) : null}
+              {properties.length ? properties.map((property) => <PropertyDetail setEditPropertyFor={setEditPropertyFor} property={property} />) : null}
+            </div>
+            <div className="col-12">
+              {(currentClient && currentClient._id) ? (
+                <>
+                  <hr/>
+                  <h5>Property Form</h5>
+                  <Suspense fallback={<Loader isLoading={true} />}>
+                    <PropertyForm
+                      currentProperty={editPropertyFor}
+                      saveProperty={savePropertyHandler}
+                      updateProperty={updatePropertyHandler}
+                      cleanForm={() => setEditPropertyFor(null)}
+                    />
+                  </Suspense>
+                </>
+                ) : null}
+            </div>
+          </div>
         </div>
-      </form>
-      <Modal isOpen={addProperty} onRequestClose={() => setAddProperty(false)}>
-        <>
-          <div className="modal-header row border-bottom">
-            <h5 className="col">Property details</h5>
-            <div className="col">
-              <span onClick={() => setAddProperty(false)} className="pointer d-flex float-end">
-                <box-icon name="x" />
-              </span>
-            </div>
-          </div>
-          <div className="p-3">
-            <Suspense fallback={<Loader isLoading={true} />}>
-              <PropertyForm saveProperty={savePropertyHandler} updateProperty={updatePropertyHandler} closeModal={() => setAddProperty(false)} />
-            </Suspense>
-          </div>
-        </>
-      </Modal>
-      <Modal isOpen={editPropertyFor} onRequestClose={() => setEditPropertyFor(null)}>
-        <>
-          <div className="modal-header row border-bottom">
-            <h5 className="col">Property details</h5>
-            <div className="col">
-              <span onClick={() => setEditPropertyFor(null)} className="pointer d-flex float-end">
-                <box-icon name="x" />
-              </span>
-            </div>
-          </div>
-          <div className="p-3">
-            <Suspense fallback={<Loader isLoading={true} />}>
-              <PropertyForm
-                currentProperty={editPropertyFor}
-                saveProperty={savePropertyHandler}
-                updateProperty={updatePropertyHandler}
-                closeModal={() => setEditPropertyFor(null)}
-              />
-            </Suspense>
-          </div>
-        </>
-      </Modal>
-    </>
+      ) : null}
+    </div>
   );
 };
 

@@ -1,21 +1,28 @@
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { connect } from "react-redux";
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { connect } from 'react-redux';
 
-import SigninForm from "./SigninForm";
-import Google from "assets/images/google.svg";
-import LogoFull from "assets/images/LogoFull.svg";
-import { endpoints } from "common/config";
-import { Loader } from "common/components/atoms/Loader";
+import SigninForm from './SigninForm';
+import Google from 'assets/images/google.svg';
+import LogoFull from 'assets/images/LogoFull.svg';
+import { endpoints } from 'common/config';
+import { Loader } from 'common/components/atoms/Loader';
+import { getData } from 'utils/storage';
 
 const Signin = (props: any) => {
   const navigate = useNavigate();
 
+  const currentUser = getData('user');
+
+  if (currentUser?._id) {
+    window.location.href = endpoints.admin.home;
+  }
+
   useEffect(() => {
-    if(props.isSuccess && props.isFailed === false) {
+    if (props.isSuccess && props.isFailed === false) {
       navigate(endpoints.admin.home);
     }
-  }, [props.isSuccess, props.isFailed, navigate])
+  }, [props.isSuccess, props.isFailed, navigate]);
 
   return (
     <div className="container-fluid txt-grey">
@@ -49,10 +56,7 @@ const Signin = (props: any) => {
               <div className="d-flex justify-content-center mt-3">
                 <div>
                   Don’t have an account?
-                  <span
-                    className="txt-orange pointer ms-2"
-                    onClick={() => navigate(endpoints.auth.signUp)}
-                  >
+                  <span className="txt-orange pointer ms-2" onClick={() => navigate(endpoints.auth.signUp)}>
                     Sign Up
                   </span>
                 </div>
@@ -66,11 +70,11 @@ const Signin = (props: any) => {
 };
 
 const mapStateToProps = (state: any) => {
-  return ({ 
+  return {
     isLoading: state.auth.signIn.isLoading,
     isSuccess: state.auth.signIn.isSuccess,
-    isFailed: state.auth.signIn.isFailed,
-  });
+    isFailed: state.auth.signIn.isFailed
+  };
 };
 
 export default connect(mapStateToProps)(Signin);

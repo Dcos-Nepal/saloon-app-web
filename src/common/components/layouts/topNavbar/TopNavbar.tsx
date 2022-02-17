@@ -1,8 +1,9 @@
-import "boxicons";
-import { FC } from "react";
+import 'boxicons';
+import { FC } from 'react';
 
-import logo from "assets/images/Logo.svg";
-import avatar from "assets/images/Avatar.svg";
+import logo from 'assets/images/Logo.svg';
+import { clearData } from 'utils/storage';
+import avatar from 'assets/images/Avatar.svg';
 
 interface IProps {
   loggedIn?: boolean;
@@ -20,11 +21,7 @@ const TopNavbar: FC<IProps> = ({ loggedIn = true }) => {
           <>
             <form className="ms-4 form-inline navbar-nav me-auto">
               <div className="input-group">
-                <input
-                  type="text"
-                  className="form-control search-input bg-light-grey"
-                  placeholder="Search"
-                />
+                <input type="text" className="form-control search-input bg-light-grey" placeholder="Search" />
               </div>
             </form>
             <ul className="d-flex navbar-nav">
@@ -37,9 +34,27 @@ const TopNavbar: FC<IProps> = ({ loggedIn = true }) => {
                     <img src={avatar} height="34px" alt="Orange" />
                   </a>
                   <ul className="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                    <li><a className="dropdown-item" href="#">View Profile</a></li>
-                    <li><a className="dropdown-item" href="#">Settings</a></li>
-                    <li><a className="dropdown-item" href="#">Logout</a></li>
+                    <li>
+                      <a className="dropdown-item" href="#">
+                        View Profile
+                      </a>
+                    </li>
+                    <li>
+                      <a className="dropdown-item" href="#">
+                        Settings
+                      </a>
+                    </li>
+                    <li
+                      onClick={async () => {
+                        await clearData();
+
+                        window.location.href = '/';
+                      }}
+                    >
+                      <a className="dropdown-item" href="#">
+                        Logout
+                      </a>
+                    </li>
                   </ul>
                 </div>
               </li>

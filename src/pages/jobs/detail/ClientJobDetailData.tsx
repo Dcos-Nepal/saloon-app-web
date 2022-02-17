@@ -180,54 +180,51 @@ const ClientJobDetailData = ({ id, actions, job }: any) => {
           </div>
         </div>
       </div>
-
       <div className="card">
-        <div className="row bg-grey m-2 p-3">
-          <div className="col d-flex flex-row">
+        <div className="row bg-grey m-2">
+          <div className="col d-flex flex-row pt-3 pb-3">
             <h6 className="txt-bold mt-2">Visits</h6>
           </div>
-          <div className="col">
+          <div className="col pt-3 pb-3">
             <button onClick={() => {}} type="button" className="btn btn-primary d-flex float-end">
               New visit
             </button>
           </div>
-        </div>
-
-        <table className="table txt-dark-grey">
-          <thead>
-            <tr className="rt-head">
-              <th scope="col"></th>
-              <th scope="col"></th>
-              <th scope="col"></th>
-              <th scope="col"></th>
-            </tr>
-          </thead>
-          {Object.keys(visits).map((visitKey: string) => (
-            <>
-              <thead>
-                <tr className="rt-head">
-                  <th colSpan={7} scope="col" className="th-overdue">
-                    {visitKey}
-                  </th>
-                </tr>
-              </thead>
-
-              <tbody className="rt-tbody">
-                {visits[visitKey].map((v: any) => (
-                  <tr className="rt-tr-group">
-                    <td>
-                      <input type="checkbox" />
-                    </td>
-                    <td>{v.startDate}</td>
-                    <td>{v.instruction}</td>
-                    <td>{v.team}</td>
-                    <td>asd</td>
+          <table className="table txt-dark-grey">
+            <thead>
+              <tr className="rt-head">
+                <th scope="col"><input type="checkbox" /></th>
+                <th scope="col">Visit Date</th>
+                <th scope="col">Instruction</th>
+                <th scope="col">Team</th>
+              </tr>
+            </thead>
+            {Object.keys(visits).map((visitKey: string) => (
+              <>
+                <thead>
+                  <tr className="rt-head">
+                    <th colSpan={7} scope="col" className="th-overdue">
+                      {visitKey}
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </>
-          ))}
-        </table>
+                </thead>
+
+                <tbody className="rt-tbody">
+                  {visits[visitKey].map((v: any) => (
+                    <tr className="rt-tr-group">
+                      <td>
+                        <input type="checkbox" />
+                      </td>
+                      <td>{v.startDate}</td>
+                      <td>{v.instruction}</td>
+                      <td>{v.team}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </>
+            ))}
+          </table>
+        </div>
       </div>
     </div>
   );

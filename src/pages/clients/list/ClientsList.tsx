@@ -86,10 +86,6 @@ const ClientsList = (props: any) => {
           );
         },
       },
-      // {
-      //   Header: "ADDRESS",
-      //   accessor: "address",
-      // },
       {
         Header: "CONTACT",
         accessor: (row: any) => {

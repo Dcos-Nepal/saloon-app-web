@@ -11,6 +11,7 @@
     "popperjs",
     "reqs",
     "rrule",
+    "rrulestr",
     "signin",
     "signup",
     "timegrid",

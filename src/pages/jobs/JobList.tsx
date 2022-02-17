@@ -12,6 +12,7 @@ import Modal from 'common/components/atoms/Modal';
 import InputField from 'common/components/form/Input';
 import SelectField from 'common/components/form/Select';
 import * as jobsActions from '../../store/actions/job.actions';
+import ReactPaginate from 'react-paginate';
 
 interface IProps {
   actions: { fetchJobs: (query: any) => any };
@@ -23,9 +24,9 @@ const JobsList = (props: IProps) => {
   const navigate = useNavigate();
   const [itemsPerPage] = useState(10);
   const [page, setPage] = useState(1);
-  const [pageCount, setPageCount] = useState(1);
   const [search, setSearch] = useState('');
   const [jobs, setJobs] = useState<any[]>([]);
+  const [pageCount, setPageCount] = useState(1);
   const [isAddJobOpen, setIsAddJobOpen] = useState(false);
 
   useEffect(() => {
@@ -49,10 +50,6 @@ const JobsList = (props: IProps) => {
   const columns: Column<any>[] = useMemo(
     () => [
       {
-        Header: '#NO.',
-        accessor: 'jobNumber'
-      },
-      {
         Header: 'CLIENT',
         accessor: 'jobFor'
       },
@@ -66,7 +63,11 @@ const JobsList = (props: IProps) => {
       },
       {
         Header: 'INVOICING',
-        accessor: 'invoice'
+        accessor: (row: any) => (
+          <div>
+            {row.remindInvoicing ? 'Yes' : 'No'}
+          </div>
+        )
       },
       {
         Header: 'Total',
@@ -98,6 +99,24 @@ const JobsList = (props: IProps) => {
     [navigate]
   );
 
+  /**
+   * 
+   * @param event 
+   */
+  const handleJobsSearch = (event: any) => {
+    const query = event.target.value;
+    setSearch(query);
+  };
+
+  /**
+   * 
+   * @param event 
+   */
+  const handlePageClick = (event: any) => {
+    const selectedPage = event.selected;
+    setPage(selectedPage + 1);
+  };
+
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({ columns, data: jobs });
 
   return (
@@ -120,7 +139,7 @@ const JobsList = (props: IProps) => {
       <div className="card">
         <div className="row pt-2 m-1 rounded-top bg-grey">
           <div className="col-4">
-            <InputField label="Search" placeholder="Search jobs" className="search-input" />
+            <InputField label="Search" placeholder="Search jobs" className="search-input" onClick={handleJobsSearch}/>
           </div>
           <div className="col row">
             <div className="col">
@@ -137,7 +156,8 @@ const JobsList = (props: IProps) => {
             <thead>
               {headerGroups.map((headerGroup) => (
                 <tr {...headerGroup.getHeaderGroupProps()} className="rt-head">
-                  {headerGroup.headers.map((column) => (
+                 <th>#NO.</th>
+                 {headerGroup.headers.map((column) => (
                     <th {...column.getHeaderProps()} scope="col">
                       {column.render('Header')}
                     </th>
@@ -145,59 +165,15 @@ const JobsList = (props: IProps) => {
                 </tr>
               ))}
             </thead>
-            <thead>
-              <tr className="rt-head">
-                <th colSpan={7} scope="col" className="th-overdue">
-                  Overdue Jobs
-                </th>
-              </tr>
-            </thead>
             <tbody {...getTableBodyProps()} className="rt-tbody">
-              {rows.map((row) => {
+              {rows.map((row, index) => {
                 prepareRow(row);
 
                 return (
                   <tr {...row.getRowProps()} className="rt-tr-group">
-                    {row.cells.map((cell) => (
-                      <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
-                    ))}
-                  </tr>
-                );
-              })}
-            </tbody>
-            <thead className="c-th">
-              <tr className="rt-head">
-                <th colSpan={7} scope="col" className="th-in-progress">
-                  In Progress
-                </th>
-              </tr>
-            </thead>
-            <tbody {...getTableBodyProps()} className="rt-tbody">
-              {rows.map((row) => {
-                prepareRow(row);
-
-                return (
-                  <tr {...row.getRowProps()} className="rt-tr-group">
-                    {row.cells.map((cell) => (
-                      <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
-                    ))}
-                  </tr>
-                );
-              })}
-            </tbody>
-            <thead className="c-th">
-              <tr className="rt-head">
-                <th colSpan={7} scope="col" className="th-up-coming">
-                  Up Coming Jobs
-                </th>
-              </tr>
-            </thead>
-            <tbody {...getTableBodyProps()} className="rt-tbody">
-              {rows.map((row) => {
-                prepareRow(row);
-
-                return (
-                  <tr {...row.getRowProps()} className="rt-tr-group">
+                    <td>
+                      <strong>#{(index + 1) + (page - 1) * itemsPerPage}</strong>
+                    </td>
                     {row.cells.map((cell) => (
                       <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
                     ))}
@@ -207,6 +183,20 @@ const JobsList = (props: IProps) => {
             </tbody>
           </table>
         </div>
+        {jobs.length ? (
+          <div className="row pt-2 m-1 rounded-top">
+            <ReactPaginate
+              previousLabel={"Previous"}
+              nextLabel={"Next"}
+              breakLabel={"..."}
+              breakClassName={"break-me"}
+              pageCount={pageCount}
+              onPageChange={handlePageClick}
+              containerClassName={"pagination"}
+              activeClassName={"active"}
+            />
+          </div>
+        ) : null}
       </div>
       <Modal isOpen={isAddJobOpen} onRequestClose={() => setIsAddJobOpen(false)}>
         <JobAdd closeModal={() => setIsAddJobOpen(false)} />

@@ -16,7 +16,7 @@ const ClientAdd = () => {
           <span className="col">Back to previous</span>
         </div>
         <div className="d-flex flex-row">
-          <h3 className="txt-bold">Job for Bonnie Green</h3>
+          <h3 className="txt-bold extra">Job Detail View</h3>
         </div>
         <div className="txt-grey">Job #13</div>
       </div>

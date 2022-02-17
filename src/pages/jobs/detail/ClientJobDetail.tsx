@@ -1,8 +1,9 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from 'react-router-dom';
 
-import ClientJobDetailData from "./ClientJobDetailData";
+import ClientJobDetailData from './ClientJobDetailData';
 
 const ClientAdd = () => {
+  const { id } = useParams();
   const navigate = useNavigate();
 
   return (
@@ -20,7 +21,7 @@ const ClientAdd = () => {
         <div className="txt-grey">Job #13</div>
       </div>
       <div className="m-1">
-        <ClientJobDetailData />
+        <ClientJobDetailData id={id} />
       </div>
     </>
   );

@@ -1,6 +1,7 @@
+import _ from 'lodash';
 import { rrulestr } from 'rrule';
 import { connect } from 'react-redux';
-import _ from 'lodash';
+import pinterpolate from 'pinterpolate';
 import { useNavigate } from 'react-router-dom';
 import { Column, useTable } from 'react-table';
 import { useEffect, useMemo, useState } from 'react';
@@ -11,15 +12,6 @@ import Modal from 'common/components/atoms/Modal';
 import InputField from 'common/components/form/Input';
 import SelectField from 'common/components/form/Select';
 import * as jobsActions from '../../store/actions/job.actions';
-
-interface IClient {
-  jobNumber: string;
-  client: string;
-  address: string;
-  schedule: string;
-  invoice: string;
-  status: string;
-}
 
 interface IProps {
   actions: { fetchJobs: (query: any) => any };
@@ -85,31 +77,25 @@ const JobsList = (props: IProps) => {
         maxWidth: 40,
         accessor: (row: any) => (
           <div className="dropdown">
-            <a href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+            <span role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
               <box-icon name="dots-vertical-rounded"></box-icon>
-            </a>
+            </span>
             <ul className="dropdown-menu" aria-labelledby="dropdownMenuLink">
-              <li onClick={() => navigate('/dashboard/jobs/123456')}>
-                <a className="dropdown-item" href="">
-                  View Detail
-                </a>
+              <li onClick={() => navigate(pinterpolate(endpoints.admin.worker.detail, { id: row._id }))}>
+                <span className="dropdown-item pointer">View Detail</span>
               </li>
               <li onClick={() => navigate(endpoints.admin.jobs.edit)}>
-                <a className="dropdown-item" href="">
-                  Edit
-                </a>
+                <span className="dropdown-item pointer">Edit</span>
               </li>
               <li>
-                <a className="dropdown-item" href="">
-                  Delete
-                </a>
+                <span className="dropdown-item pointer">Delete</span>
               </li>
             </ul>
           </div>
         )
       }
     ],
-    []
+    [navigate]
   );
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({ columns, data: jobs });

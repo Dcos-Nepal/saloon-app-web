@@ -23,7 +23,7 @@ import {
   fetchPropertiesSaga,
   verifyUserEmailSaga
 } from './sagas';
-import { addJobSaga, fetchJobsSaga } from './sagas/jobs.saga';
+import { addJobSaga, fetchJobsSaga, fetchJobSaga } from './sagas/jobs.saga';
 
 declare global {
   interface Window {
@@ -73,3 +73,4 @@ sagaMiddleware.run(updateQuoteSaga);
 sagaMiddleware.run(updateQuoteStatusSaga);
 sagaMiddleware.run(addJobSaga);
 sagaMiddleware.run(fetchJobsSaga);
+sagaMiddleware.run(fetchJobSaga);

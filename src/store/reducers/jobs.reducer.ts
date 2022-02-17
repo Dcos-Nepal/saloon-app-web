@@ -2,6 +2,7 @@ import * as actionType from '../constants';
 
 const initialState = {
   jobs: null,
+  job: null,
   currentUser: null,
   isFailed: false,
   isSuccess: false,
@@ -25,6 +26,17 @@ const jobsReducer = (state = initialState, action: any) => {
       state.isLoading = false;
       state.isFailed = true;
       state.jobs = action.payload;
+      return { ...state };
+    }
+
+    case actionType.FETCH_JOB: {
+      state.isLoading = true;
+      return { ...state };
+    }
+
+    case actionType.FETCH_JOB_SUCCESS: {
+      state.isLoading = false;
+      state.job = action.payload;
       return { ...state };
     }
 

@@ -2,13 +2,22 @@ import { toast } from 'react-toastify';
 import * as actionType from '../constants';
 import { getMessage } from 'common/messages';
 import { call, put, takeEvery } from 'redux-saga/effects';
-import { fetchJobsApi, addJobApi } from 'services/jobs.service';
+import { fetchJobsApi, fetchJobApi, addJobApi } from 'services/jobs.service';
 
 /**
  * Saga Definitions
  */
 export function* fetchJobsSaga(): any {
   yield takeEvery(actionType.FETCH_JOBS, fetchJobs);
+}
+
+export function* fetchJobSaga(): any {
+  console.log('Fetch');
+  yield takeEvery(actionType.FETCH_JOB, fetchJob);
+}
+
+export function* addJobSaga(): any {
+  yield takeEvery(actionType.ADD_JOB, addJob);
 }
 
 /**
@@ -33,8 +42,31 @@ function* fetchJobs(action: any): any {
   }
 }
 
-export function* addJobSaga(): any {
-  yield takeEvery(actionType.ADD_JOB, addJob);
+/**
+ * Fetch Job
+ *
+ * @param action
+ * @returns
+ */
+function* fetchJob(action: any): any {
+  try {
+    const { data: job } = yield call(fetchJobApi, action.payload.id);
+    if (job?.data?.success) {
+      return yield put({
+        type: actionType.FETCH_JOB_SUCCESS,
+        payload: job?.data?.data
+      });
+    }
+    yield put({
+      type: actionType.FETCH_JOB_ERROR,
+      payload: job.data
+    });
+
+    return toast.error(getMessage(job.data?.message));
+  } catch (err: any) {
+    if (err.exception) toast.error(err.exception.message);
+    yield put({ type: actionType.FETCH_JOB_ERROR, payload: err });
+  }
 }
 
 function* addJob(action: any): any {

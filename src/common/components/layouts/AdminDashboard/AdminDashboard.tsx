@@ -11,7 +11,7 @@ const Schedules = React.lazy(() => import("pages/schedules"));
 const Clients = React.lazy(() => import("pages/clients/index"));
 const Workers = React.lazy(() => import("pages/workers/index"));
 const Jobs = React.lazy(() => import("pages/jobs/index"));
-const Invoices = React.lazy(() => import("pages/jobs/index"));
+const Invoices = React.lazy(() => import("pages/invoices/index"));
 const ReferralProgram = React.lazy(() => import("pages/referral"));
 const Requests = React.lazy(() => import("pages/requests"));
 const Quotes = React.lazy(() => import("pages/quotes"));

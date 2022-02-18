@@ -1,9 +1,10 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
-import ClientJobDetailData from "./ClientJobDetailData";
+import InvoiceAddForm from "./InvoiceAddForm";
 
 const ClientAdd = () => {
   const navigate = useNavigate();
+  const {id} = useParams();
 
   return (
     <>
@@ -15,12 +16,11 @@ const ClientAdd = () => {
           <span className="col">Back to previous</span>
         </div>
         <div className="d-flex flex-row">
-          <h3 className="txt-bold">Job for Bonnie Green</h3>
+          <h3>Job for Client name</h3>
         </div>
-        <div className="txt-grey">Job #13</div>
       </div>
       <div className="m-1">
-        <ClientJobDetailData />
+        <InvoiceAddForm id={id || ''}/>
       </div>
     </>
   );

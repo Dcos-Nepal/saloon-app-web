@@ -1,20 +1,20 @@
 import { Route, Routes } from "react-router-dom";
 
-import JobsList from "./JobList";
-import ClientJobAdd from "./add";
-import ClientJobDetail from "./detail";
+import InvoiceList from "./InvoiceList";
+import InvoiceAdd from "./add";
+import InvoiceDetail from "./detail";
 import { endpoints } from "common/config";
 
 const Jobs = () => {
   return (
     <>
       <Routes>
-        <Route path="/" element={<JobsList />} />
-        <Route path={endpoints.admin.invoices.add} element={<ClientJobAdd />} />
-        <Route path={endpoints.admin.invoices.edit} element={<ClientJobAdd />} />
+        <Route path="/" element={<InvoiceList />} />
+        <Route path={endpoints.admin.invoices.add} element={<InvoiceAdd />} />
+        <Route path={endpoints.admin.invoices.edit} element={<InvoiceAdd />} />
         <Route
           path={endpoints.admin.invoices.detail}
-          element={<ClientJobDetail />}
+          element={<InvoiceDetail />}
         />
       </Routes>
     </>

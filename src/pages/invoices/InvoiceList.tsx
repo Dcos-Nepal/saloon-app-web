@@ -3,7 +3,7 @@ import { Column, useTable } from "react-table";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Truncate from 'react-truncate';
 
-import * as quotesActions from "../../../store/actions/quotes.actions";
+import * as invoicesActions from "../../../src/store/actions/invoices.actions";
 
 import InputField from "common/components/form/Input";
 import SelectField from "common/components/form/Select";
@@ -14,50 +14,46 @@ import { Loader } from "common/components/atoms/Loader";
 import debounce from "lodash/debounce";
 import EmptyState from "common/components/EmptyState";
 
-interface IQuote {
+interface IInvoice {
   id: string;
-  title: string;
-  description: string;
-  quoteFor: any;
-  property: any;
+  subject: string;
+  clientMessage: string;
+  dueOnReceipt: boolean;
+  isPaid: boolean;
+  isIssued: boolean;
+  invoiceFor: any;
+  refJob?: any;
+  refVisit?: any;
+  refProperty?: any;
   lineItems: any[];
-  status: { status: string, reason: string, updatedAt: string };
   total: string;
   createdAt: string;
   updatedAt: string;
 }
 
-const quoteStatusOptions = [
+const invoiceStatusOptions = [
   {label: 'PENDING', value:'PENDING'},
-  {label: 'ACCEPTED', value:'ACCEPTED'},
-  {label: 'REJECTED', value:'REJECTED'},
-  {label: 'ARCHIVED', value:'ARCHIVED'},
-  {label: 'CHANGE_REQUESTED', value:'CHANGE_REQUESTED'}
+  {label: 'PAID', value:'ACCEPTED'},
+  {label: 'ALL', value:'ALL'},
 ];
 
-const QuotesList = (props: any) => {
+const InvoicesList = (props: any) => {
   const navigate = useNavigate();
   const [query, setQuery] = useState('');
   const [itemsPerPage] = useState(10);
   const [offset, setOffset] = useState(1);
   const [pageCount, setPageCount] = useState(0)
-  const [quotes, setQuotes] = useState<IQuote[]>([]);
+  const [invoices, setInvoices] = useState<IInvoice[]>([]);
 
   useEffect(() => {
-    props.actions.fetchQuotes({ q: query, offset: offset, limit: itemsPerPage });
+    props.actions.fetchInvoices({ q: query, offset: offset, limit: itemsPerPage });
   }, [offset, itemsPerPage, props.actions, query]);
 
   useEffect(() => {
     if (props.itemList?.data?.rows) {
-      setQuotes(props.itemList.data?.rows
-        .map((row: IQuote) => ({
-          id: row.id,
-          title: row.title,
-          description: row.description,
-          quoteFor: row.quoteFor,
-          lineItems: row.lineItems,
-          status: row.status,
-          total: '$123456',
+      setInvoices(props.itemList.data?.rows
+        .map((row: IInvoice) => ({
+          ...row,
           createdAt: new Date(row.createdAt).toDateString(),
           updatedAt: new Date(row.updatedAt).toDateString()
         }))
@@ -72,72 +68,50 @@ const QuotesList = (props: any) => {
     setOffset(selectedPage + 1)
   };
 
-  const handleQuotesSearch = (event: any) => {
+  const handleInvoicesSearch = (event: any) => {
     const query = event.target.value;
     setQuery(query);
   };
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const handleSearch = useCallback(debounce(handleQuotesSearch, 300), []);
+  const handleSearch = useCallback(debounce(handleInvoicesSearch, 300), []);
 
   const handleStatusChange = async (id: string, status: {label: string, value: string}, reason: string) => {
-    await props.actions.updateQuoteStatus({id, status: status.value});
+    await props.actions.updateInvoiceStatus({id, status: status.value});
   }
 
   /**
-   * Generate Quote
+   * Generate Invoice
    * 
-   * @param quote 
+   * @param invoice 
    * @returns JSX
    */
-  const generateRatings = (quote: IQuote) => {
+  const generateRatings = (invoice: IInvoice) => {
     return (<div>
-      <strong>${quote.lineItems.reduce((sum, current) => sum += current.quantity * current.unitPrice, 0)}</strong>
-      {/* <div>
-        <span className="row ms-2">
-          <box-icon
-            name="star"
-            size="xs"
-            type="solid"
-            color="#F5E059"
-          />
-          <box-icon
-            name="star"
-            size="xs"
-            type="solid"
-            color="#F5E059"
-          />
-          <box-icon
-            name="star"
-            size="xs"
-            type="solid"
-            color="#F5E059"
-          />
-        </span>
-      </div> */}
+      <strong>${invoice.lineItems.reduce((sum, current) => sum += current.quantity * current.unitPrice, 0)}</strong>
     </div>);
   }
 
-  const columns: Column<IQuote>[] = useMemo(
+  const columns: Column<IInvoice>[] = useMemo(
     () => [
       {
         Header: "CLIENT NAME",
-        accessor: (row: IQuote) => {
+        accessor: (row: IInvoice) => {
           return (<div>
-            <div>{row.quoteFor?.firstName} {row.quoteFor?.lastName}</div>
-            <div>{row.quoteFor?.phoneNumber} / {row.quoteFor?.email}</div>
+            <div>{row.invoiceFor?.firstName} {row.invoiceFor?.lastName}</div>
+            <div>{row.invoiceFor?.phoneNumber} / {row.invoiceFor?.email}</div>
           </div>)
         }
       },
       {
         Header: "QUOTE INFO",
-        accessor: (row: IQuote) => {
-          return (<div className="Pointer" onClick={() => navigate(`/dashboard/quotes/${row.id}`)}>
-            <div><strong>{row.title}</strong></div>
+        accessor: (row: IInvoice) => {
+          return (<div className="Pointer" onClick={() => navigate(`/dashboard/invoices/${row.id}`)}>
+            <div><strong>{row.subject}</strong></div>
             <div>
               <i>
                 <Truncate lines={1} ellipsis={<span>...</span>}>
-                  {row.description}
+                  {row.clientMessage}
                 </Truncate>
               </i>
             </div>
@@ -148,8 +122,8 @@ const QuotesList = (props: any) => {
         }
       },
       {
-        Header: "CREATED DATE",
-        accessor: (row: IQuote) => {
+        Header: "DUE DATE",
+        accessor: (row: IInvoice) => {
           return (<div style={{width: '150px'}}>
             <div><strong>{row.updatedAt}</strong></div>
             <div>{row.createdAt}</div>
@@ -158,13 +132,13 @@ const QuotesList = (props: any) => {
       },
       {
         Header: "STATUS",
-        accessor: (row: IQuote) => {
+        accessor: (row: IInvoice) => {
           return (<div style={{minWidth: '150px'}}>
             <SelectField
               label=""
-              options={quoteStatusOptions}
-              value={{label: row.status.status, value: row.status.status}}
+              options={invoiceStatusOptions}
               placeholder="All"
+              value={row.isPaid ? { label: 'PAID', value: 'PAID' } : row.isIssued ? { label: 'PENDING', value: 'PENDING' } : { label: 'ALL', value: 'ALL' }}
               handleChange={(selected: {label: string, value: string}) => handleStatusChange(row.id, selected, '')}
             />
           </div>);
@@ -172,12 +146,12 @@ const QuotesList = (props: any) => {
       },
       {
         Header: "TOTAL",
-        accessor: (row: IQuote) => generateRatings(row),
+        accessor: (row: IInvoice) => generateRatings(row),
       },
       {
         Header: " ",
         maxWidth: 40,
-        accessor: (row: IQuote) => (
+        accessor: (row: IInvoice) => (
           <div className="dropdown">
             <a
               href="void(0)"
@@ -213,24 +187,24 @@ const QuotesList = (props: any) => {
   );
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
-    useTable({ columns, data: quotes });
+    useTable({ columns, data: invoices });
 
   return (
     <>
       <div className="row">
         <div className="col d-flex flex-row">
-          <h3 className="extra">Quotes</h3>
+          <h3 className="extra">Invoices</h3>
         </div>
         <div className="col">
           <button
-            onClick={() => navigate(endpoints.admin.quotes.add)}
+            onClick={() => navigate(endpoints.admin.invoices.add)}
             type="button"
             className="btn btn-primary d-flex float-end"
           >
-            New quotes
+            New invoices
           </button>
         </div>
-        <label className="txt-grey">{quotes.length} quotes</label>
+        <label className="txt-grey">{invoices.length} invoices</label>
       </div>
       <div className="card">
         <div className="row pt-2 m-1 rounded-top bg-grey">
@@ -238,7 +212,7 @@ const QuotesList = (props: any) => {
           <div className="col-4">
             <InputField
               label="Search"
-              placeholder="Search quotes"
+              placeholder="Search invoices"
               className="search-input"
               onChange={handleSearch}
             />
@@ -254,7 +228,7 @@ const QuotesList = (props: any) => {
               <SelectField label="Type" placeholder="All" />
             </div>
           </div>
-          {!quotes.length ? <EmptyState /> : (
+          {!invoices.length ? <EmptyState /> : (
             <table {...getTableProps()} className="table txt-dark-grey">
               <thead>
                 {headerGroups.map((headerGroup) => (
@@ -303,21 +277,21 @@ const QuotesList = (props: any) => {
 
 const mapStateToProps = (state: any) => {
   return ({
-    itemList: state.quotes.itemList,
-    isLoading: state.quotes.isLoading
+    itemList: state.invoices.itemList,
+    isLoading: state.invoices.isLoading
   });
 };
 
 const mapDispatchToProps = (dispatch: any) => ({
   actions: {
-    fetchQuotes: (payload: any) => {
-      dispatch(quotesActions.fetchQuotes(payload));
+    fetchInvoices: (payload: any) => {
+      dispatch(invoicesActions.fetchInvoices(payload));
     },
-    updateQuoteStatus: (payload: any) => {
-      dispatch(quotesActions.updateQuoteStatus(payload.id, payload.status));
+    updateInvoiceStatus: (payload: any) => {
+      dispatch(invoicesActions.updateInvoice(payload.id, payload));
     }
   },
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(QuotesList);
+export default connect(mapStateToProps, mapDispatchToProps)(InvoicesList);
 

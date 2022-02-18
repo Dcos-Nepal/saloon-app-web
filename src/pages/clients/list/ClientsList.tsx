@@ -109,7 +109,7 @@ const ClientsList = (props: any) => {
               {row.status ? "Email Verified!" : "Pending Verification"}
             </div>
             <label className="txt-grey ms-2">
-              {row.updatedAt ? new Date(row.updatedAt).toLocaleString() : null}
+              {row.updatedAt ? new Date(row.updatedAt).toLocaleString() : new Date(row.createdAt).toLocaleString()}
             </label>
           </div>
         ),

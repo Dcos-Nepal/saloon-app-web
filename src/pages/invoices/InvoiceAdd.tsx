@@ -1,5 +1,5 @@
 import { FC } from "react";
-import JobForm from "./JobForm";
+import JobForm from "./InvoiceForm";
 
 interface IProps {
   closeModal: () => void;

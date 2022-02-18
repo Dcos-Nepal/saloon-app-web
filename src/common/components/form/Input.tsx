@@ -9,6 +9,7 @@ const InputField: FC<any> = ({
   type = "text",
   onChange,
   onBlur,
+  disabled = false,
   helperComponent,
 }) => {
   return (
@@ -23,6 +24,7 @@ const InputField: FC<any> = ({
         placeholder={placeholder}
         onChange={onChange}
         onBlur={onBlur}
+        disabled={disabled}
       />
       <div className="form-text">
         {helperComponent}

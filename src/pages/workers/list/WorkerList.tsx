@@ -108,14 +108,12 @@ const WorkerList = (props: any) => {
         Header: "STATUS",
         accessor: (row: any) => (
           <div>
-            <span
-              className={`status ${row.status ? "status-green" : "status-red"}`}
-            >
-              {row.status ? "Email Verified!" : "Pending Verification"}
-            </span>
-            <label className="txt-grey ms-2">
-              {new Date(row.updatedAt).toLocaleString()}
-            </label>
+            <div className={`status ${row.status ? "status-green" : "status-red"}`}>
+              {row.status ? "Verified" : " Verification Pending"}
+            </div>
+            <div className="txt-grey ms-2">
+              {row.updatedAt ? new Date(row.updatedAt).toLocaleString() : new Date(row.createdAt).toLocaleString()}
+            </div>
           </div>
         ),
       },

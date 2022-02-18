@@ -24,6 +24,7 @@ import {
   verifyUserEmailSaga
 } from './sagas';
 import { addJobSaga, fetchJobsSaga, fetchJobSaga } from './sagas/jobs.saga';
+import { addInvoiceSaga, fetchInvoiceSaga, fetchInvoicesSaga, updateInvoiceSaga } from './sagas/invoices.saga';
 
 declare global {
   interface Window {
@@ -74,3 +75,7 @@ sagaMiddleware.run(updateQuoteStatusSaga);
 sagaMiddleware.run(addJobSaga);
 sagaMiddleware.run(fetchJobsSaga);
 sagaMiddleware.run(fetchJobSaga);
+sagaMiddleware.run(fetchInvoicesSaga);
+sagaMiddleware.run(addInvoiceSaga);
+sagaMiddleware.run(fetchInvoiceSaga);
+sagaMiddleware.run(updateInvoiceSaga);

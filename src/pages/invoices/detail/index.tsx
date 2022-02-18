@@ -1,3 +1,3 @@
-import ClientJobDetail from "./ClientJobDetail";
+import ClientJobDetail from "./InvoiceDetail";
 
 export default ClientJobDetail;

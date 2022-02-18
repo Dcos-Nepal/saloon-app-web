@@ -14,3 +14,10 @@ export const fetchUserProperties = async (userId: string) => {
     headers: { "Accept": "application/json" }
   });
 }
+
+export const fetchJobVisits = async (jobId: string) => {
+  const url = `/v1.0.0/visits?job=${jobId}`;
+  return await http.get(url, {
+    headers: { "Accept": "application/json" }
+  });
+}

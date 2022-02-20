@@ -44,7 +44,7 @@ function* fetchInvoices(action: any): any {
 
 /**
  * Adds Job Invoice
- * 
+ *
  * @param action
  * @returns
  */
@@ -76,7 +76,7 @@ function* addInvoice(action: any): any {
 
 /**
  * Fetch Job Invoice
- * 
+ *
  * @param action
  * @returns
  */
@@ -86,10 +86,10 @@ function* fetchInvoice(action: any): any {
             fetchInvoiceApi,
             action.payload
         );
-        if (invoiceRequest?.data?.success) {
+        if (invoiceRequest?.success) {
             return yield put({
                 type: actionType.FETCH_INVOICE_SUCCESS,
-                payload: invoiceRequest?.data?.data,
+                payload: invoiceRequest.data,
             });
         }
         yield put({
@@ -106,7 +106,7 @@ function* fetchInvoice(action: any): any {
 
 /**
  * Updates Job Invoice
- * 
+ *
  * @param action
  * @returns
  */

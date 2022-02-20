@@ -2,7 +2,7 @@ import { toast } from 'react-toastify';
 import * as actionType from '../constants';
 import { getMessage } from 'common/messages';
 import { call, put, takeEvery } from 'redux-saga/effects';
-import { fetchJobsApi, fetchJobApi, addJobApi } from 'services/jobs.service';
+import { fetchJobsApi, fetchJobApi, addJobApi, updateJobApi } from 'services/jobs.service';
 
 /**
  * Saga Definitions
@@ -89,5 +89,32 @@ function* addJob(action: any): any {
   } catch (err: any) {
     if (err.exception) toast.error(err.exception.message);
     yield put({ type: actionType.ADD_JOB_ERROR, payload: err });
+  }
+}
+
+export function* updateJobSaga(): any {
+  yield takeEvery(actionType.UPDATE_JOB, updateJob);
+}
+
+function* updateJob(action: any): any {
+  try {
+    const { data: newJob } = yield call(updateJobApi, action.payload);
+    if (newJob?.data?.success) {
+      yield put({
+        type: actionType.UPDATE_JOB_SUCCESS,
+        payload: newJob?.data?.data
+      });
+
+      return toast.success(getMessage(newJob?.data?.message));
+    }
+    yield put({
+      type: actionType.UPDATE_JOB_ERROR,
+      payload: newJob.data
+    });
+
+    return toast.error(getMessage(newJob.data?.message));
+  } catch (err: any) {
+    if (err.exception) toast.error(err.exception.message);
+    yield put({ type: actionType.UPDATE_JOB_ERROR, payload: err });
   }
 }

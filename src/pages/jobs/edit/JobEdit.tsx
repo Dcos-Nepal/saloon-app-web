@@ -1,10 +1,13 @@
-import { useNavigate, useParams } from "react-router-dom";
+import { FC } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 
-import InvoiceAddForm from "./InvoiceAddForm";
+import JobForm from '../add/ClientJobAddForm';
 
-const ClientAdd = () => {
+interface IProps {}
+
+const JobEdit: FC<IProps> = () => {
+  const { id } = useParams();
   const navigate = useNavigate();
-  const {id} = useParams();
 
   return (
     <>
@@ -16,14 +19,12 @@ const ClientAdd = () => {
           <span className="col">Back to previous</span>
         </div>
         <div className="d-flex flex-row">
-          <h3>Add Invoice</h3>
+          <h3>Update Job</h3>
         </div>
       </div>
-      <div className="m-1">
-        <InvoiceAddForm id={id || ''}/>
-      </div>
+      <JobForm id={id} />
     </>
   );
 };
 
-export default ClientAdd;
+export default JobEdit;

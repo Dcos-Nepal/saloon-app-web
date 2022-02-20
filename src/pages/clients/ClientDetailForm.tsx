@@ -85,7 +85,7 @@ const ClientDetailForm: FC<IProps> = ({ id, actions, currentClient, properties, 
   useEffect(() => {
     if (currentClient && id) {
       if (!currentClient.userData) {
-        currentClient.userData = {type: 'CLIENT'}
+        currentClient.userData = { type: 'CLIENT' };
       }
       setInitialValues(currentClient);
     }
@@ -132,7 +132,7 @@ const ClientDetailForm: FC<IProps> = ({ id, actions, currentClient, properties, 
 
   /**
    * Save Property
-   * @param data 
+   * @param data
    */
   const savePropertyHandler = async (data: any) => {
     if (currentClient?._id) {
@@ -144,7 +144,7 @@ const ClientDetailForm: FC<IProps> = ({ id, actions, currentClient, properties, 
 
   /**
    * Update Property
-   * @param data 
+   * @param data
    */
   const updatePropertyHandler = async (data: any) => {
     if (currentClient?._id) {
@@ -177,10 +177,10 @@ const ClientDetailForm: FC<IProps> = ({ id, actions, currentClient, properties, 
   };
 
   return (
-    <div className='row'>
+    <div className="row">
       <div className="col">
         <form noValidate onSubmit={formik.handleSubmit}>
-          <div className={`${(currentClient && currentClient._id) ? '' : 'row'} m-1`}>
+          <div className={`${currentClient && currentClient._id && id ? '' : 'row'} m-1`}>
             <div className="col card">
               <h5>Client Details</h5>
               <div className="row mt-3">
@@ -232,7 +232,7 @@ const ClientDetailForm: FC<IProps> = ({ id, actions, currentClient, properties, 
                 </label>
               </div>
             </div>
-            <div className={`${(currentClient && currentClient._id) ? '' : 'ms-2'} col card`}>
+            <div className={`${currentClient && currentClient._id && id ? '' : 'ms-2'} col card`}>
               <div className="mb-3">
                 <label className="txt-bold mb-2">Contact details</label>
                 <div className="row">
@@ -356,17 +356,17 @@ const ClientDetailForm: FC<IProps> = ({ id, actions, currentClient, properties, 
           </div>
         </form>
       </div>
-      {(currentClient && currentClient._id) ? (
+      {currentClient && currentClient._id && id ? (
         <div className="col pt-3">
-          <div className='row'>
+          <div className="row">
             <div className="col-12">
-              {properties.length ? (<h5>Listed Properties</h5>) : null}
+              {properties.length ? <h5>Listed Properties</h5> : null}
               {properties.length ? properties.map((property) => <PropertyDetail setEditPropertyFor={setEditPropertyFor} property={property} />) : null}
             </div>
             <div className="col-12">
-              {(currentClient && currentClient._id) ? (
+              {currentClient && currentClient._id ? (
                 <>
-                  <hr/>
+                  <hr />
                   <h5>Property Form</h5>
                   <Suspense fallback={<Loader isLoading={true} />}>
                     <PropertyForm
@@ -377,7 +377,7 @@ const ClientDetailForm: FC<IProps> = ({ id, actions, currentClient, properties, 
                     />
                   </Suspense>
                 </>
-                ) : null}
+              ) : null}
             </div>
           </div>
         </div>

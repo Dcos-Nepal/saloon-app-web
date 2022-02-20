@@ -1,208 +1,204 @@
-import { useMemo } from "react";
-import { Column, useTable } from "react-table";
+import { StopIcon } from '@primer/octicons-react';
+import { Loader } from 'common/components/atoms/Loader';
+import { FC, useEffect } from 'react';
+import { connect } from 'react-redux';
+import { useParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { sendInvoiceApi } from 'services/invoice.service';
+import * as invoicesActions from 'store/actions/invoices.actions';
 
-import InputField from "common/components/form/Input";
+interface IProps {
+  actions: {
+    fetchInvoice: (id: string) => void;
+  };
+  isLoading: boolean;
+  currentInvoice: any;
+}
 
-const ClientJobDetailData = () => {
-  const columns: Column<any>[] = useMemo(() => [], []);
+const InvoiceDetailData: FC<IProps> = ({ isLoading, actions, currentInvoice }) => {
+  const { id } = useParams();
 
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
-    useTable({ columns, data: [] });
+  useEffect(() => {
+    if (id) actions.fetchInvoice(id);
+  }, [id, actions]);
+
+  const sendInvoiceHandler = async () => {
+    if (id) {
+      try {
+        const { data } = await sendInvoiceApi(id);
+        debugger;
+        if (data) {
+          toast.info('Invoice sent successfully');
+        }
+      } catch (ex) {
+        toast.error('Failed to send invoice');
+      }
+    }
+  };
 
   return (
-    <div>
-      <div className="row mt-3 mb-3">
-        <div className="col">
-          <div className="card">
-            <div className="row">
-              <div className="col">
-                <h5 className="txt-bold">Bonnie Green</h5>
-                <div>
-                  <span className={`status status-green`}>
-                    Requires invoicing
-                  </span>
-                </div>
-              </div>
-              <div className="col">
-                <h4 className="txt-bold d-flex float-end mt-2">$80 cash</h4>
-              </div>
-            </div>
-            <div className="row mt-3 border-bottom">
-              <div className="col p-2 ps-4">
-                <div className="txt-grey">Property address</div>
-                <div className="">
-                  8 Creswell Court, Gilberton, South Australia 5081
-                </div>
-              </div>
-            </div>
-            <div className="row mb-4 border-bottom">
-              <div className="col p-2 ps-4">
-                <div className="txt-grey">Contact details</div>
-                <div className="">0409 096 066</div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="col">
-          <div className="card">
-            <h6 className="txt-bold">Job Detail</h6>
-            <div className="row border-bottom">
-              <div className="col p-2 ps-4">
-                <div className="txt-grey">Job number</div>
-                <div className="row">
-                  <div className="col">#13</div>
-                  <div className="col txt-orange pointer">Change</div>
-                </div>
-              </div>
-              <div className="col p-2 ps-4">
-                <div className="txt-grey">Job type</div>
-                <div className="">Recurring job</div>
-              </div>
-            </div>
-            <div className="row border-bottom">
-              <div className="col p-2 ps-4">
-                <div className="txt-grey">Started on</div>
-                <div className="">Aug 23, 2021</div>
-              </div>
-              <div className="col p-2 ps-4">
-                <div className="txt-grey">Lasts for</div>
-                <div className="">6 years</div>
-              </div>
-            </div>
-            <div className="row border-bottom mb-3">
-              <div className="col p-2 ps-4">
-                <div className="txt-grey">Billing frequency</div>
-                <div className="">After every visit</div>
-              </div>
-              <div className="col p-2 ps-4">
-                <div className="txt-grey">Schedule</div>
-                <div className="">Every 2 weeks on Mondays</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
+    <>
       <div className="card">
-        <h6 className="txt-bold">Line items</h6>
-        <div className="row border-bottom">
-          <div className="col-4 p-2 ps-4">
-            <div className="bg-light-grey txt-grey p-2 txt-bold">
-              PRODUCT / SERVICE
-            </div>
-            <InputField label="" placeholder="Name" />
-            <div className="mb-3">
-              <textarea
-                className={`form-control`}
-                placeholder={"Description"}
-              />
-            </div>
-          </div>
-          <div className="col p-2 ps-4">
-            <div className="bg-light-grey txt-grey p-2 txt-bold">QTY.</div>
-            <InputField type="number" label="" value={0} placeholder="0" />
-          </div>
-
-          <div className="col p-2 ps-4">
-            <div className="bg-light-grey txt-grey p-2 txt-bold">
-              UNIT PRICE
-            </div>
-            <div className="row">
-              <div className="col-1 mt-3 pt-2 pe-4">
-                <box-icon name="dollar"></box-icon>
-              </div>
-              <div className="col">
-                <InputField type="number" label="" value={0} placeholder="0" />
-              </div>
-            </div>
-          </div>
-          <div className="col p-2 ps-4">
-            <div className="bg-light-grey txt-grey p-2 txt-bold">TOTAL</div>
-            <div className="row">
-              <div className="col-1 mt-3 pt-2 pe-4">
-                <box-icon name="dollar"></box-icon>
-              </div>
-              <div className="col">
-                <InputField type="number" label="" value={0} placeholder="0" />
-              </div>
-            </div>
-          </div>
+        <div className="border-bottom p-3">
+          <h2 className="txt-grey txt-bold">{currentInvoice?.subject?.toUpperCase()}</h2>
         </div>
-
-        <div className="mb-3 mt-3">
-          <button onClick={() => {}} type="button" className="btn btn-primary">
-            Save
-          </button>
-          <button
-            onClick={() => {}}
-            type="button"
-            className="ms-3 btn btn-secondary"
-          >
-            Add line item
-          </button>
-          <button onClick={() => []} type="button" className="btn">
-            Delete
-          </button>
-        </div>
-
-        <div className="hr mb-3"></div>
-
-        <div className="row mb-3">
-          <div className="col d-flex flex-row">
-            <h6 className="txt-bold mt-2">Total</h6>
-          </div>
-          <div className="col txt-bold mt-2">
-            <div className="d-flex float-end">$ 0.00</div>
-          </div>
-        </div>
-      </div>
-
-      <div className="card">
-        <div className="row bg-grey m-2 p-3">
-          <div className="col d-flex flex-row">
-            <h6 className="txt-bold mt-2">Visits</h6>
+        <div className="row mt-3 mb-3">
+          <div className="col">
+            <div className="p-3">
+              <div className="row">
+                <label className="txt-grey mb-3">TO</label>
+                <div className="col">
+                  <h5 className="txt-bold">{`${currentInvoice?.invoiceFor?.firstName} ${currentInvoice?.invoiceFor?.lastName}`}</h5>
+                  <div>
+                    {currentInvoice?.invoiceFor?.address?.street1}, {currentInvoice?.invoiceFor?.address?.street2}, {currentInvoice?.invoiceFor?.address?.city}
+                  </div>
+                  <div className="mb-1">
+                    {currentInvoice?.invoiceFor?.address?.state}, {currentInvoice?.invoiceFor?.address?.country},{' '}
+                    {currentInvoice?.invoiceFor?.address?.postalCode}
+                  </div>
+                  <div className="mb-1">Email: {currentInvoice?.invoiceFor?.email || '-'}</div>
+                  <div className="mb-1">Phone: {currentInvoice?.invoiceFor?.phoneNumber || '-'}</div>
+                </div>
+              </div>
+            </div>
           </div>
           <div className="col">
-            <button
-              onClick={() => {}}
-              type="button"
-              className="btn btn-primary d-flex float-end"
-            >
-              New visit
-            </button>
+            <div className="p-3">
+              <label className="txt-grey mb-3">FROM</label>
+              <h5 className="txt-bold">Orange Cleaning</h5>
+              <div>43 Hamley Cres, Mansfield Park</div>
+              <div className="mb-1">SA 5012</div>
+              <div className="mb-1">Email: info@orangecleaning.com.au</div>
+              <div className="mb-1">Phone: 1300 612 667</div>
+            </div>
+          </div>
+          <div className="col-6">
+            <div className="p-3">
+              <h6 className="txt-bold">Invoice Details</h6>
+              <div className="row border-bottom">
+                <div className="col-12 p-2 ps-4">
+                  <div className="txt-grey">Invoice number</div>
+                  <div className="row">
+                    <h3 className="col txt-orange">#{currentInvoice?.id}</h3>
+                  </div>
+                </div>
+                <div className="col p-2 ps-4">
+                  <div className="txt-grey">Created Date</div>
+                  <div className="">{new Date(currentInvoice?.createdAt).toLocaleString()}</div>
+                </div>
+                <div className="col p-2 ps-4">
+                  <div className="d-flex float-end">
+                    <div className="me-1">
+                      <div className="txt-grey">Status</div>
+                      <div className="">
+                        {currentInvoice?.isPaid ? <span className="status status-green">Paid</span> : <span className="status status-blue">Pending</span>}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="row p-2 border-bottom">
+                <h6 className="">Message to client</h6>
+                <div className="ps-3">{currentInvoice?.clientMessage}</div>
+              </div>
+              {/* <div className="mt-2 mb-3">
+              <h6 className="p-2">Invoice Status Revisions</h6>
+              <div className="mt-3" style={{ maxHeight: '150px', overflowY: 'scroll' }}>
+                {currentInvoice?.statusRevision?.map((revision: any) => (
+                  <dl key={revision.updatedAt} className="row ms-2">
+                    <dt className="col-sm-3">{new Date(revision.updatedAt).toLocaleString()}</dt>
+                    <dd className="col-sm-9">
+                      <span className="status status-green">{revision.status}</span>&nbsp;
+                      <span className="txt-grey">{new Date(revision.updatedAt).toLocaleString()}</span>
+                    </dd>
+                  </dl>
+                ))}
+              </div>
+            </div> */}
+            </div>
           </div>
         </div>
 
-        <table {...getTableProps()} className="table txt-dark-grey">
-          <thead>
-            {headerGroups.map((headerGroup) => (
-              <tr {...headerGroup.getHeaderGroupProps()} className="rt-head">
-                {headerGroup.headers.map((column) => (
-                  <th {...column.getHeaderProps()} scope="col">
-                    {column.render("Header")}
-                  </th>
-                ))}
-              </tr>
-            ))}
-          </thead>
-
-          <tbody {...getTableBodyProps()} className="rt-tbody">
-            {rows.map((row) => {
-              prepareRow(row);
-
-              return (
-                <tr {...row.getRowProps()} className="rt-tr-group">
-                  {row.cells.map((cell) => (
-                    <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
-                  ))}
+        <div className="p-3">
+          <h6 className="txt-bold">Payment Details</h6>
+          <div className="row border-bottom p-3">
+            <table className="table table-striped table-bordered">
+              <thead>
+                <tr>
+                  <th scope="col">SN</th>
+                  <th scope="col">PRODUCT / SERVICE</th>
+                  <th scope="col">QTY</th>
+                  <th scope="col">UNIT PRICE</th>
+                  <th scope="col">TOTAL</th>
                 </tr>
-              );
-            })}
-          </tbody>
-        </table>
+              </thead>
+              <tbody>
+                {currentInvoice?.lineItems.map((item: any, index: number) => (
+                  <tr key={index}>
+                    <th scope="row">{index + 1}</th>
+                    <td>
+                      <div>
+                        <strong>{item.name}</strong>
+                      </div>
+                      <div>
+                        <small>{item.description}</small>
+                      </div>
+                    </td>
+                    <td>
+                      <strong>{item.quantity}</strong>
+                    </td>
+                    <td>
+                      <strong>${item.unitPrice}</strong>
+                    </td>
+                    <td>
+                      <strong>${item.quantity * item.unitPrice}</strong>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="row border-top">
+            <div className="col d-flex flex-row mt-3">
+              <h6 className="txt-bold mt-2">Invoice Total</h6>
+            </div>
+            <div className="col txt-bold mt-3">
+              <div className="d-flex float-end">
+                <h3 className="txt-bold mt-2 txt-orange">
+                  $
+                  {currentInvoice?.lineItems.reduce(
+                    (current: number, next: { quantity: number; unitPrice: number }) => (current += next.quantity * next.unitPrice),
+                    0
+                  )}
+                </h3>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
+      <div className="m-3 d-flex float-end">
+        <button type="button" onClick={sendInvoiceHandler} className="btn btn-primary">
+          Send to client
+        </button>
+      </div>
+    </>
   );
 };
 
-export default ClientJobDetailData;
+const mapStateToProps = (state: any) => {
+  return {
+    isLoading: state.invoices.isLoading,
+    currentInvoice: state.invoices.currentItem
+  };
+};
+
+const mapDispatchToProps = (dispatch: any) => ({
+  actions: {
+    fetchInvoice: (id: string) => {
+      dispatch(invoicesActions.fetchInvoice(id, {}));
+    }
+  }
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(InvoiceDetailData);

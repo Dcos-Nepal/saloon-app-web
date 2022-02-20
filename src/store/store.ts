@@ -23,7 +23,7 @@ import {
   fetchPropertiesSaga,
   verifyUserEmailSaga
 } from './sagas';
-import { addJobSaga, fetchJobsSaga, fetchJobSaga } from './sagas/jobs.saga';
+import { updateJobSaga, addJobSaga, fetchJobsSaga, fetchJobSaga } from './sagas/jobs.saga';
 import { addInvoiceSaga, fetchInvoiceSaga, fetchInvoicesSaga, updateInvoiceSaga } from './sagas/invoices.saga';
 
 declare global {
@@ -74,6 +74,7 @@ sagaMiddleware.run(updateQuoteSaga);
 sagaMiddleware.run(updateQuoteStatusSaga);
 sagaMiddleware.run(addJobSaga);
 sagaMiddleware.run(fetchJobsSaga);
+sagaMiddleware.run(updateJobSaga);
 sagaMiddleware.run(fetchJobSaga);
 sagaMiddleware.run(fetchInvoicesSaga);
 sagaMiddleware.run(addInvoiceSaga);

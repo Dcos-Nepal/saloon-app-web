@@ -1,9 +1,10 @@
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes } from 'react-router-dom';
 
-import JobsList from "./JobList";
-import ClientJobAdd from "./add";
-import ClientJobDetail from "./detail";
-import { endpoints } from "common/config";
+import JobEdit from './edit';
+import JobsList from './JobList';
+import ClientJobAdd from './add';
+import ClientJobDetail from './detail';
+import { endpoints } from 'common/config';
 
 const Jobs = () => {
   return (
@@ -11,11 +12,8 @@ const Jobs = () => {
       <Routes>
         <Route path="/" element={<JobsList />} />
         <Route path={endpoints.admin.jobs.add} element={<ClientJobAdd />} />
-        <Route path={endpoints.admin.jobs.edit} element={<ClientJobAdd />} />
-        <Route
-          path={endpoints.admin.jobs.detail}
-          element={<ClientJobDetail />}
-        />
+        <Route path={endpoints.admin.jobs.edit} element={<JobEdit />} />
+        <Route path={endpoints.admin.jobs.detail} element={<ClientJobDetail />} />
       </Routes>
     </>
   );

@@ -247,6 +247,14 @@ export const ADD_JOB_LOADING = 'ADD_JOB_LOADING';
 export const ADD_JOB_ERROR = 'ADD_JOB_ERROR';
 
 /**
+ * Update Job action types
+ */
+ export const UPDATE_JOB = 'UPDATE_JOB';
+ export const UPDATE_JOB_SUCCESS = 'UPDATE_JOB_SUCCESS';
+ export const UPDATE_JOB_LOADING = 'UPDATE_JOB_LOADING';
+ export const UPDATE_JOB_ERROR = 'UPDATE_JOB_ERROR';
+
+/**
  * Create Invoices action types
  */
  export const ADD_INVOICE = 'ADD_INVOICE';
@@ -261,7 +269,7 @@ export const ADD_JOB_ERROR = 'ADD_JOB_ERROR';
   export const UPDATE_INVOICE_SUCCESS = 'UPDATE_INVOICE_SUCCESS';
   export const UPDATE_INVOICE_LOADING = 'UPDATE_INVOICE_LOADING';
   export const UPDATE_INVOICE_ERROR = 'UPDATE_INVOICE_ERROR';
- 
+
  /**
   * Load Job Invoices Listing action types
   */
@@ -269,7 +277,7 @@ export const ADD_JOB_ERROR = 'ADD_JOB_ERROR';
  export const FETCH_INVOICES_SUCCESS = 'FETCH_INVOICES_SUCCESS';
  export const FETCH_INVOICES_LOADING = 'FETCH_INVOICES_LOADING';
  export const FETCH_INVOICES_ERROR = 'FETCH_INVOICES_ERROR';
- 
+
  /**
   * Fetch Job Invoice action types
   */

@@ -1,4 +1,4 @@
-import { ADD_JOB, FETCH_JOBS, FETCH_JOB } from 'store/constants';
+import { ADD_JOB, FETCH_JOBS, FETCH_JOB, UPDATE_JOB } from 'store/constants';
 
 export const fetchJobs = (data: any) => {
   return {
@@ -17,6 +17,13 @@ export const fetchJob = (id: string, params: any) => {
 export const createJobs = (data: any) => {
   return {
     type: ADD_JOB,
+    payload: data
+  };
+};
+
+export const updateJob = (data: any) => {
+  return {
+    type: UPDATE_JOB,
     payload: data
   };
 };

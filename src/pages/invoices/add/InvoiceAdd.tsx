@@ -16,7 +16,7 @@ const ClientAdd = () => {
           <span className="col">Back to previous</span>
         </div>
         <div className="d-flex flex-row">
-          <h3>Job for Client name</h3>
+          <h3>Add Invoice</h3>
         </div>
       </div>
       <div className="m-1">

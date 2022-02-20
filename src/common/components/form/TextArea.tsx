@@ -7,6 +7,7 @@ const TextArea: FC<any> = ({
   placeholder,
   onChange,
   onBlur,
+  value,
   rows = 3,
   helperComponent,
 }) => {
@@ -18,6 +19,7 @@ const TextArea: FC<any> = ({
       <textarea
         id={name}
         name={name}
+        value={value}
         rows={rows}
         className={`form-control ${className}`}
         placeholder={placeholder}

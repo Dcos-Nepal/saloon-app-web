@@ -1,19 +1,19 @@
-import * as Yup from "yup";
-import * as invoicesActions from "store/actions/invoices.actions";
+import * as Yup from 'yup';
+import * as invoicesActions from 'store/actions/invoices.actions';
 
-import { FC, Fragment, useEffect, useState } from "react";
-import { FieldArray, FormikProvider, useFormik, getIn } from "formik";
-import { PlusCircleIcon, StopIcon, XCircleIcon } from "@primer/octicons-react";
+import { FC, Fragment, useEffect, useState } from 'react';
+import { FieldArray, FormikProvider, useFormik, getIn } from 'formik';
+import { PlusCircleIcon, StopIcon, XCircleIcon } from '@primer/octicons-react';
 
-import { connect } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import { Loader } from "common/components/atoms/Loader";
-import { fetchJobVisits, fetchUserProperties } from "services/common.service";
+import { connect } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { Loader } from 'common/components/atoms/Loader';
+import { fetchJobVisits, fetchUserProperties } from 'services/common.service';
 
-import InputField from "common/components/form/Input";
-import SelectAsync from "common/components/form/AsyncSelect";
-import TextArea from "common/components/form/TextArea";
-import SelectField from "common/components/form/Select";
+import InputField from 'common/components/form/Input';
+import SelectAsync from 'common/components/form/AsyncSelect';
+import TextArea from 'common/components/form/TextArea';
+import SelectField from 'common/components/form/Select';
 
 interface IProps {
   id: string;
@@ -32,6 +32,7 @@ const InvoiceAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => 
   const [clientDetails, setClientDetails] = useState<any>(null);
   const [properties, setProperties] = useState([]);
   const [visits, setVisits] = useState([]);
+  const [jobVisits, setJobVisits] = useState<any[]>([]);
 
   const [initialValues, setInitialValues] = useState({
     subject: '',
@@ -50,22 +51,23 @@ const InvoiceAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => 
       value: ''
     },
     property: '',
-    lineItems: [{
-      name: {
-        label: 'Search for Services',
-        value: ''
-      },
-      clientMessage: '',
-      quantity: 0,
-      unitPrice: 0,
-      total: 0
-    }]
+    isPaid: false,
+    lineItems: [
+      {
+        name: {
+          label: 'Search for Services',
+          value: ''
+        },
+        clientMessage: '',
+        quantity: 0,
+        unitPrice: 0,
+        total: 0
+      }
+    ]
   });
 
   const RequestSchema = Yup.object().shape({
-    subject: Yup.string()
-      .required('Invoice subject is required')
-      .min(3, 'Invoice subject seems to be too short'),
+    subject: Yup.string().required('Invoice subject is required').min(3, 'Invoice subject seems to be too short'),
     clientMessage: Yup.string(),
     note: Yup.string().notRequired(),
     invoiceFor: Yup.object().shape({
@@ -74,19 +76,18 @@ const InvoiceAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => 
     }),
     property: Yup.string().notRequired(),
     jobRequest: Yup.string().notRequired(),
-    lineItems: Yup.array()
-      .of(
-        Yup.object().shape({
-          name: Yup.object().shape({
-            value: Yup.string(),
-            label: Yup.string().required('Please select a line item.')
-          }),
-          clientMessage: Yup.string(),
-          quantity: Yup.number(),
-          unitPrice: Yup.number(),
-          total: Yup.number().notRequired()
-        })
-      )
+    lineItems: Yup.array().of(
+      Yup.object().shape({
+        name: Yup.object().shape({
+          value: Yup.string(),
+          label: Yup.string().required('Please select a line item.')
+        }),
+        clientMessage: Yup.string(),
+        quantity: Yup.number(),
+        unitPrice: Yup.number(),
+        total: Yup.number().notRequired()
+      })
+    )
   });
 
   const formik = useFormik({
@@ -109,16 +110,27 @@ const InvoiceAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => 
           quantity: li.quantity,
           unitPrice: li.unitPrice,
           total: li.quantity * li.unitPrice
-        }
+        };
       });
 
       if (!invoicePayload.jobRequest) {
         delete invoicePayload.jobRequest;
       }
 
+      if (invoicePayload.refJob?.value) {
+        invoicePayload.refJob = invoicePayload.refJob.value;
+      }
+      if (invoicePayload.refVisit?.value) {
+        invoicePayload.refVisit = invoicePayload.refVisit.value;
+      }
+      invoicePayload.total = invoicePayload?.lineItems?.reduce(
+        (current: number, next: { quantity: number; unitPrice: number }) => (current += next.quantity * next.unitPrice),
+        0
+      );
+
       // Dispatch action to create Job Invoice
-      await id ? actions.updateInvoice(id, invoicePayload) : actions.addInvoice(invoicePayload);
-    },
+      id ? await actions.updateInvoice(id, invoicePayload) : await actions.addInvoice(invoicePayload);
+    }
   });
 
   useEffect(() => {
@@ -134,16 +146,16 @@ const InvoiceAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => 
         property: currentItem?.property?._id,
         invoiceFor: {
           label: currentItem?.invoiceFor?.firstName,
-          value: currentItem?.invoiceFor?._id,
+          value: currentItem?.invoiceFor?._id
         },
-        lineItems: currentItem?.lineItems?.map((item: { name: any; ref: any; }) => {
+        lineItems: currentItem?.lineItems?.map((item: { name: any; ref: any }) => {
           return {
             ...item,
             name: {
               label: item.name,
               value: item.ref
             }
-          }
+          };
         })
       });
 
@@ -156,13 +168,13 @@ const InvoiceAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => 
 
   /**
    * Handles Line Item selection
-   * @param key 
-   * @param selected 
+   * @param key
+   * @param selected
    */
   const handleLineItemSelection = (key: string, { label, value, meta }: any) => {
     formik.setFieldValue(`${key}.name`, { label, value });
     formik.setFieldValue(`${key}.clientMessage`, meta?.clientMessage || 'Enter your notes here...');
-  }
+  };
 
   /**
    * Handles Client selection
@@ -177,7 +189,7 @@ const InvoiceAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => 
     // Clear ref fields
     formik.setFieldValue(`refJob`, null);
     formik.setFieldValue(`refVisit`, null);
-  }
+  };
 
   /**
    * Handles Job selection
@@ -186,31 +198,57 @@ const InvoiceAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => 
     formik.setFieldValue(`refJob`, { label, value });
 
     const response = await fetchJobVisits(value);
-    setVisits(response.data?.data?.data?.rows.map((visit: any) => ({ label: visit.title, value: visit.id})) || []);
-  }
+    setJobVisits(response.data?.data?.data?.rows || []);
+    setVisits(response.data?.data?.data?.rows.map((visit: any) => ({ label: visit.title, value: visit.id })) || []);
+  };
 
   /**
    * Handles Job selection
    */
   const handleVisitSelection = async ({ label, value }: any) => {
     formik.setFieldValue(`refVisit`, { label, value });
-  }
+
+    handleLineItemsByVisits(value);
+  };
+
+  const handleLineItemsByVisits = (visitId: string) => {
+    const jobVisit = jobVisits.find((visit: any) => visit._id === visitId);
+    if (jobVisit?.lineItems) {
+      formik.setFieldValue(
+        'lineItems',
+        jobVisit.lineItems?.map((item: { name: any; ref: any }) => {
+          return {
+            ...item,
+            name: {
+              label: item.name,
+              value: item.ref
+            }
+          };
+        })
+      );
+    }
+  };
 
   /**
    * Custom Error Message
-   * 
+   *
    * @param param Props Object
    * @returns JSX
    */
   const ErrorMessage = ({ name }: any) => {
-    if (!name) return (<></>);
+    if (!name) return <></>;
 
     const error = getIn(formik.errors, name);
     const touch = getIn(formik.touched, name);
 
-    return ((touch && error) || error) ? (<div className="row text-danger mt-1 mb-2">
-      <div className="col-1" style={{ width: '20px' }}><StopIcon size={14} /></div><div className="col">{error}</div>
-    </div>) : null;
+    return (touch && error) || error ? (
+      <div className="row text-danger mt-1 mb-2">
+        <div className="col-1" style={{ width: '20px' }}>
+          <StopIcon size={14} />
+        </div>
+        <div className="col">{error}</div>
+      </div>
+    ) : null;
   };
 
   return (
@@ -219,7 +257,7 @@ const InvoiceAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => 
       <FormikProvider value={formik}>
         <div className="row mb-3">
           <div className="col pb-3">
-            <div className="card" style={{ "height": "100%" }}>
+            <div className="card" style={{ height: '100%' }}>
               <h6 className="txt-bold">Invoice Details</h6>
               <div className="col">
                 <div className="row">
@@ -231,11 +269,7 @@ const InvoiceAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => 
                       name={`subject`}
                       value={formik.values.subject}
                       onChange={formik.handleChange}
-                      helperComponent={
-                        formik.errors.subject && formik.touched.subject ? (
-                          <div className="txt-red">{formik.errors.subject}</div>
-                        ) : null
-                      }
+                      helperComponent={formik.errors.subject && formik.touched.subject ? <div className="txt-red">{formik.errors.subject}</div> : null}
                     />
                   </div>
                   <div className="col-12">
@@ -245,7 +279,8 @@ const InvoiceAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => 
                       rows={4}
                       value={formik.values.clientMessage}
                       onChange={formik.handleChange}
-                      className={`form-control`} placeholder={"Invoice's clientMessage..."}
+                      className={`form-control`}
+                      placeholder={"Invoice's clientMessage..."}
                     />
                   </div>
                 </div>
@@ -253,7 +288,7 @@ const InvoiceAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => 
             </div>
           </div>
           <div className="col pb-3">
-            <div className="card" style={{ "height": "100%" }}>
+            <div className="card" style={{ height: '100%' }}>
               <h6 className="txt-bold">Client Details</h6>
               <SelectAsync
                 name={`invoiceFor`}
@@ -267,29 +302,48 @@ const InvoiceAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => 
                 <div className="row bg-grey m-0">
                   <div className="col p-2 ps-4">
                     <div className="txt-orange">{(clientDetails as any)?.fullName}</div>
-                    <div className="txt-bold">{(clientDetails as any)?.email} / {(clientDetails as any)?.phoneNumber}</div>
-                    <div className="txt-grey">{(clientDetails as any)?.address?.street1}, {(clientDetails as any)?.address?.city}, {(clientDetails as any)?.address?.country}</div>
+                    <div className="txt-bold">
+                      {(clientDetails as any)?.email} / {(clientDetails as any)?.phoneNumber}
+                    </div>
+                    <div className="txt-grey">
+                      {(clientDetails as any)?.address?.street1}, {(clientDetails as any)?.address?.city}, {(clientDetails as any)?.address?.country}
+                    </div>
                   </div>
-                </div>) : null}
+                </div>
+              ) : null}
               <div className="txt-bold mt-3 txt-grey">Client's Properties</div>
-              {!properties.length ? <div className="txt-orange"><StopIcon size={16} /> There are no properties assigned to the client.</div> : null}
+              {!properties.length ? (
+                <div className="txt-orange">
+                  <StopIcon size={16} /> There are no properties assigned to the client.
+                </div>
+              ) : null}
               {properties.map((property: any) => {
-                return (<div key={property._id} className="row mb-2 border-bottom">
-                  <div className="col-1 p-2 pt-3 ps-4">
-                    <input name="property" type="radio" value={property._id} onChange={formik.handleChange} checked={property._id === formik.values.property} />
+                return (
+                  <div key={property._id} className="row mb-2 border-bottom">
+                    <div className="col-1 p-2 pt-3 ps-4">
+                      <input
+                        name="property"
+                        type="radio"
+                        value={property._id}
+                        onChange={formik.handleChange}
+                        checked={property._id === formik.values.property}
+                      />
+                    </div>
+                    <div className="col p-2 ps-4">
+                      <div className="txt-grey">{property.name}</div>
+                      <div className="">
+                        {property?.street1}, {property?.postalCode}, {property?.city}, {property?.state}, {property?.country}
+                      </div>
+                    </div>
                   </div>
-                  <div className="col p-2 ps-4">
-                    <div className="txt-grey">{property.name}</div>
-                    <div className="">{property?.street1}, {property?.postalCode}, {property?.city}, {property?.state}, {property?.country}</div>
-                  </div>
-                </div>)
+                );
               })}
             </div>
           </div>
         </div>
 
         <div className="col">
-          <div className="card" style={{ "height": "100%" }}>
+          <div className="card" style={{ height: '100%' }}>
             <h6 className="txt-bold">Job/Visit Details</h6>
             <div className="row pb-3">
               <div className="col ps-3">
@@ -297,23 +351,17 @@ const InvoiceAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => 
                   name={`refJob`}
                   label="Search Jobs"
                   value={formik.values.refJob}
-                  resource={{ name: 'jobs', labelProp: 'title', valueProp: '_id', params: { jobFor: clientDetails?.id || ''} }}
+                  resource={{ name: 'jobs', labelProp: 'title', valueProp: '_id', params: { jobFor: clientDetails?.id || '' } }}
                   onChange={handleJobSelection}
                 />
                 <ErrorMessage name={`refJob.value`} />
               </div>
 
               <div className="col ps-3">
-                <SelectField
-                  name={`refVisit`}
-                  label="Select Job's Visit"
-                  options={visits}
-                  value={formik.values.refVisit}
-                  onChange={handleVisitSelection}
-                />
+                <SelectField name={`refVisit`} label="Select Job's Visit" options={visits} value={formik.values.refVisit} handleChange={handleVisitSelection} />
                 <ErrorMessage name={`refVisit.value`} />
               </div>
-            </div> 
+            </div>
           </div>
         </div>
 
@@ -321,17 +369,13 @@ const InvoiceAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => 
           <h6 className="txt-bold">Line items</h6>
           <div className="row">
             <div className="col-5 p-2 ps-3">
-              <div className="bg-light-grey txt-grey p-2 txt-bold">
-                PRODUCT / SERVICE
-              </div>
+              <div className="bg-light-grey txt-grey p-2 txt-bold">PRODUCT / SERVICE</div>
             </div>
             <div className="col p-2 ps-3">
               <div className="bg-light-grey txt-grey p-2 txt-bold">QTY.</div>
             </div>
             <div className="col p-2 ps-3">
-              <div className="bg-light-grey txt-grey p-2 txt-bold">
-                UNIT PRICE
-              </div>
+              <div className="bg-light-grey txt-grey p-2 txt-bold">UNIT PRICE</div>
             </div>
             <div className="col p-2 ps-3">
               <div className="bg-light-grey txt-grey p-2 txt-bold">TOTAL</div>
@@ -364,7 +408,8 @@ const InvoiceAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => 
                             value={formik.values.lineItems[index].clientMessage}
                             disabled={true}
                             onChange={formik.handleChange}
-                            className={`form-control mb-3`} placeholder={"Line item's clientMessage..."}
+                            className={`form-control mb-3`}
+                            placeholder={"Line item's clientMessage..."}
                           />
                         </div>
                         <div className="col">
@@ -391,26 +436,33 @@ const InvoiceAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => 
                           <strong>{`$ ${formik.values.lineItems[index].quantity * formik.values.lineItems[index].unitPrice}`}</strong>
                         </div>
                         <div className="col-1 mt-3 ps-1 pointer text-center">
-                          <span className="mr-2" onClick={() => arrayHelpers.push({
-                            name: {
-                              label: '',
-                              value: ''
-                            },
-                            clientMessage: '',
-                            quantity: 0,
-                            unitPrice: 0,
-                            total: 0
-                          })}>
+                          <span
+                            className="mr-2"
+                            onClick={() =>
+                              arrayHelpers.push({
+                                name: {
+                                  label: '',
+                                  value: ''
+                                },
+                                clientMessage: '',
+                                quantity: 0,
+                                unitPrice: 0,
+                                total: 0
+                              })
+                            }
+                          >
                             <PlusCircleIcon size={20} />
                           </span>
                           &nbsp;&nbsp;
-                          {(index !== 0) ? (<span onClick={() => arrayHelpers.remove(index)}>
-                            <XCircleIcon size={20} />
-                          </span>) : null}
+                          {index !== 0 ? (
+                            <span onClick={() => arrayHelpers.remove(index)}>
+                              <XCircleIcon size={20} />
+                            </span>
+                          ) : null}
                         </div>
                       </div>
-                    </Fragment>)
-                  )}
+                    </Fragment>
+                  ))}
                 </div>
               )}
             />
@@ -422,7 +474,9 @@ const InvoiceAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => 
             </div>
             <div className="col txt-bold mt-3">
               <div className="d-flex float-end">
-                <h5 className="txt-bold mt-2">$ {formik.values?.lineItems?.length ? (formik.values?.lineItems.reduce((current, next) => (current += next.quantity * next.unitPrice), 0)) : 0}</h5>
+                <h5 className="txt-bold mt-2">
+                  $ {formik.values?.lineItems?.length ? formik.values?.lineItems.reduce((current, next) => (current += next.quantity * next.unitPrice), 0) : 0}
+                </h5>
               </div>
             </div>
           </div>
@@ -459,7 +513,7 @@ const mapDispatchToProps = (dispatch: any) => ({
     fetchInvoice: (id: string) => {
       dispatch(invoicesActions.fetchInvoice(id, {}));
     }
-  },
+  }
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(InvoiceAddForm);

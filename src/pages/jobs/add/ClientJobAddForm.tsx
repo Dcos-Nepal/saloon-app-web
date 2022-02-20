@@ -18,11 +18,17 @@ import { InfoIcon, PlusCircleIcon, StopIcon, XCircleIcon } from '@primer/octicon
 import { ClassAttributes, Fragment, HTMLAttributes, ReactChild, ReactFragment, ReactPortal, ThHTMLAttributes, TdHTMLAttributes, useState } from 'react';
 
 interface IProps {
-  actions: { addJob: (data: any) => any };
+  actions: {
+    addJob: (data: any) => any;
+    fetchJob: (id: string) => void;
+    updateJob: (data: any) => void;
+  };
+  currentJob?: any;
   isLoading: boolean;
+  id?: string;
 }
 
-const ClientJobAddForm = ({ actions, isLoading }: IProps) => {
+const ClientJobAddForm = ({ actions, isLoading, id, currentJob }: IProps) => {
   const navigate = useNavigate();
   const [properties, setProperties] = useState([]);
   const [clientDetails, setClientDetails] = useState(null);
@@ -38,24 +44,57 @@ const ClientJobAddForm = ({ actions, isLoading }: IProps) => {
     }
   };
 
-  const initialValues = {
-    title: '',
-    instruction: '',
-    jobFor: '',
-    property: '',
-    type: 'ONE-OFF',
-    team: [],
-    lineItems: [{ name: { label: '', value: '' }, description: '', quantity: 0, unitPrice: 0, total: 0 }],
-    schedule: { rruleSet: '', startDate: '', startTime: '', endDate: '', endTime: '' },
-    oneOff: { rruleSet: '', startDate: '', startTime: '', endDate: '', endTime: '' }
-  };
+  useEffect(() => {
+    if (id) {
+      actions.fetchJob(id);
+    }
+  }, [id, actions]);
+
+  useEffect(() => {
+    const fetchAndSetData = async (id: string) => {
+      const response = await fetchUserProperties(id);
+      setProperties(response.data?.data?.data?.rows || []);
+    };
+
+    if (currentJob?.jobFor?.id) {
+      fetchAndSetData(currentJob?.jobFor?.id);
+    }
+  }, [currentJob, actions]);
+
+  const initialValues =
+    id && currentJob
+      ? {
+          ...currentJob,
+          jobFor: currentJob?.jobFor?.id || '',
+          property: currentJob?.property?.id || '',
+          team: currentJob?.team?.map((team: any) => team._id)
+        }
+      : {
+          title: '',
+          instruction: '',
+          jobFor: '',
+          property: '',
+          type: 'ONE-OFF',
+          team: [],
+          lineItems: [{ name: { label: '', value: '' }, description: '', quantity: 0, unitPrice: 0, total: 0 }],
+          schedule: { rruleSet: '', startDate: '', startTime: '', endDate: '', endTime: '' },
+          oneOff: { rruleSet: '', startDate: '', startTime: '', endDate: '', endTime: '' }
+        };
 
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: initialValues,
     validationSchema: CreateSchema,
     validateOnChange: true,
-    onSubmit: async (job) => await actions.addJob(job)
+    onSubmit: async (job) => {
+      // Update job
+      if (id && currentJob) {
+        await actions.updateJob(job);
+      } else {
+        // Add job
+        await actions.addJob(job);
+      }
+    }
   });
 
   /**
@@ -109,13 +148,13 @@ const ClientJobAddForm = ({ actions, isLoading }: IProps) => {
   };
 
   const handleOneOffChange = () => {
-    if (!formik.values.oneOff.startDate) return;
+    if (!formik.values.oneOff || !formik.values.oneOff?.startDate) return;
     let rule: any = {
-      dtstart: new Date(`${formik.values.oneOff.startDate} ${formik.values.oneOff.startTime}`),
+      dtstart: new Date(`${formik.values.oneOff?.startDate} ${formik.values.oneOff?.startTime}`),
       interval: 1,
       freq: Frequency.DAILY
     };
-    if (formik.values.oneOff.endDate) rule.until = new Date(`${formik.values.oneOff.endDate} ${formik.values.oneOff.endTime}`);
+    if (formik.values.oneOff?.endDate) rule.until = new Date(`${formik.values.oneOff?.endDate} ${formik.values.oneOff?.endTime}`);
     const rrule = new RRule(rule);
     formik.setFieldValue('schedule', { ...formik.values.oneOff, rruleSet: rrule.toString() });
   };
@@ -197,6 +236,7 @@ const ClientJobAddForm = ({ actions, isLoading }: IProps) => {
                 label="Select Client"
                 resource={{ name: 'users', labelProp: 'fullName', valueProp: '_id', params: { roles: 'CLIENT' } }}
                 onChange={handleClientSelection}
+                placeholder={(clientDetails as any)?.fullName || currentJob?.jobFor?.fullName}
               />
               {formik.errors.jobFor && formik.touched.jobFor && <div className="txt-red">{formik.errors.jobFor}</div>}
               {clientDetails ? (
@@ -276,7 +316,7 @@ const ClientJobAddForm = ({ actions, isLoading }: IProps) => {
                         label="Start date"
                         type="date"
                         onChange={(e: any) => formik.setFieldValue('oneOff.startDate', e.target.value)}
-                        value={formik.values.oneOff.startDate}
+                        value={formik.values.oneOff?.startDate}
                       />
                     </div>
                     <div className="col">
@@ -284,7 +324,7 @@ const ClientJobAddForm = ({ actions, isLoading }: IProps) => {
                         label="End date"
                         type="date"
                         onChange={(e: any) => formik.setFieldValue('oneOff.endDate', e.target.value)}
-                        value={formik.values.oneOff.endDate}
+                        value={formik.values.oneOff?.endDate}
                       />
                     </div>
                   </div>
@@ -297,7 +337,7 @@ const ClientJobAddForm = ({ actions, isLoading }: IProps) => {
                         label="Start time"
                         type="time"
                         onChange={(e: any) => formik.setFieldValue('oneOff.startTime', e.target.value)}
-                        value={formik.values.oneOff.startTime}
+                        value={formik.values.oneOff?.startTime}
                       />
                     </div>
                     <div className="col">
@@ -305,7 +345,7 @@ const ClientJobAddForm = ({ actions, isLoading }: IProps) => {
                         label="End time"
                         type="time"
                         onChange={(e: any) => formik.setFieldValue('oneOff.endTime', e.target.value)}
-                        value={formik.values.oneOff.endTime}
+                        value={formik.values.oneOff?.endTime}
                       />
                     </div>
                   </div>
@@ -407,7 +447,7 @@ const ClientJobAddForm = ({ actions, isLoading }: IProps) => {
                           <SelectAsync
                             name={`lineItems[${index}].name`}
                             placeholder="Search line items"
-                            // value={formik.values.lineItems[index].name}
+                            // value={{ label: formik.values.lineItems[index].name, value: formik.values.lineItems[index].value }}
                             resource={{ name: 'line-items', labelProp: 'name', valueProp: '_id' }}
                             onChange={(selected: any) => handleLineItemSelection(`lineItems[${index}]`, selected)}
                           />
@@ -479,7 +519,9 @@ const ClientJobAddForm = ({ actions, isLoading }: IProps) => {
             </div>
             <div className="col txt-bold mt-3">
               <div className="d-flex float-end">
-                <h5 className="txt-bold mt-2">$ {formik.values.lineItems.reduce((current, next) => (current += next.quantity * next.unitPrice), 0)}</h5>
+                <h5 className="txt-bold mt-2">
+                  $ {formik.values.lineItems.reduce((current: any, next: any) => (current += next.quantity * next.unitPrice), 0)}
+                </h5>
               </div>
             </div>
           </div>
@@ -561,12 +603,19 @@ const ClientJobAddForm = ({ actions, isLoading }: IProps) => {
 
 const mapStateToProps = (state: any) => {
   return {
-    isLoading: state.quotes.isLoading
+    isLoading: state.jobs.isLoading,
+    currentJob: state.jobs.job
   };
 };
 
 const mapDispatchToProps = (dispatch: any) => ({
   actions: {
+    fetchJob: (id: string) => {
+      dispatch(jobActions.fetchJob(id, {}));
+    },
+    updateJob: (data: any) => {
+      dispatch(jobActions.updateJob(data));
+    },
     addJob: (payload: any) => {
       dispatch(jobActions.createJobs(payload));
     }

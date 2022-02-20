@@ -24,3 +24,11 @@ export const filterJobsApi = async (query: Record<string, any>) => {
     headers: { Accept: 'application/json' }
   });
 };
+
+export const updateJobApi = async (payload: any) => {
+  const url = `/v1.0.0/jobs/${payload.id}`;
+
+  return await http.put(url, payload, {
+    headers: { Accept: 'application/json' }
+  });
+};

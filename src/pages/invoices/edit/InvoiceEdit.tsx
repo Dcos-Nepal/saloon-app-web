@@ -1,8 +1,12 @@
-import { useNavigate } from 'react-router-dom';
+import { FC } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 
-import InvoiceDetailData from './InvoiceDetailData';
+import InvoiceDetailForm from '../add/InvoiceAddForm';
 
-const ClientAdd = () => {
+interface IProps {}
+
+const InvoiceEdit: FC<IProps> = () => {
+  const { id } = useParams();
   const navigate = useNavigate();
 
   return (
@@ -15,14 +19,12 @@ const ClientAdd = () => {
           <span className="col">Back to previous</span>
         </div>
         <div className="d-flex flex-row mt-2">
-          <h3 className="txt-bold extra">Invoice Details</h3>
+          <h3 className="extra">Edit Invoice's Details</h3>
         </div>
       </div>
-      <div className="m-1">
-        <InvoiceDetailData />
-      </div>
+      <InvoiceDetailForm id={id || ''} />
     </>
   );
 };
 
-export default ClientAdd;
+export default InvoiceEdit;

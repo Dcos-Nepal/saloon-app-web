@@ -20,15 +20,11 @@ import { ClassAttributes, Fragment, HTMLAttributes, ReactChild, ReactFragment, R
 interface IProps {
   actions: {
     addJob: (data: any) => any;
-    fetchJob: (id: string) => void;
-    updateJob: (data: any) => void;
   };
-  currentJob?: any;
   isLoading: boolean;
-  id?: string;
 }
 
-const ClientJobAddForm = ({ actions, isLoading, id, currentJob }: IProps) => {
+const ClientJobAddForm = ({ actions, isLoading }: IProps) => {
   const navigate = useNavigate();
   const [properties, setProperties] = useState([]);
   const [clientDetails, setClientDetails] = useState(null);
@@ -44,42 +40,17 @@ const ClientJobAddForm = ({ actions, isLoading, id, currentJob }: IProps) => {
     }
   };
 
-  useEffect(() => {
-    if (id) {
-      actions.fetchJob(id);
-    }
-  }, [id, actions]);
-
-  useEffect(() => {
-    const fetchAndSetData = async (id: string) => {
-      const response = await fetchUserProperties(id);
-      setProperties(response.data?.data?.data?.rows || []);
-    };
-
-    if (currentJob?.jobFor?.id) {
-      fetchAndSetData(currentJob?.jobFor?.id);
-    }
-  }, [currentJob, actions]);
-
-  const initialValues =
-    id && currentJob
-      ? {
-          ...currentJob,
-          jobFor: currentJob?.jobFor?.id || '',
-          property: currentJob?.property?.id || '',
-          team: currentJob?.team?.map((team: any) => team._id)
-        }
-      : {
-          title: '',
-          instruction: '',
-          jobFor: '',
-          property: '',
-          type: 'ONE-OFF',
-          team: [],
-          lineItems: [{ name: { label: '', value: '' }, description: '', quantity: 0, unitPrice: 0, total: 0 }],
-          schedule: { rruleSet: '', startDate: '', startTime: '', endDate: '', endTime: '' },
-          oneOff: { rruleSet: '', startDate: '', startTime: '', endDate: '', endTime: '' }
-        };
+  const initialValues = {
+    title: '',
+    instruction: '',
+    jobFor: '',
+    property: '',
+    type: 'ONE-OFF',
+    team: [],
+    lineItems: [{ name: { label: '', value: '' }, description: '', quantity: 0, unitPrice: 0, total: 0 }],
+    schedule: { rruleSet: '', startDate: '', startTime: '', endDate: '', endTime: '' },
+    oneOff: { rruleSet: '', startDate: '', startTime: '', endDate: '', endTime: '' }
+  };
 
   const formik = useFormik({
     enableReinitialize: true,
@@ -87,13 +58,7 @@ const ClientJobAddForm = ({ actions, isLoading, id, currentJob }: IProps) => {
     validationSchema: CreateSchema,
     validateOnChange: true,
     onSubmit: async (job) => {
-      // Update job
-      if (id && currentJob) {
-        await actions.updateJob(job);
-      } else {
-        // Add job
-        await actions.addJob(job);
-      }
+      await actions.addJob(job);
     }
   });
 
@@ -236,7 +201,6 @@ const ClientJobAddForm = ({ actions, isLoading, id, currentJob }: IProps) => {
                 label="Select Client"
                 resource={{ name: 'users', labelProp: 'fullName', valueProp: '_id', params: { roles: 'CLIENT' } }}
                 onChange={handleClientSelection}
-                placeholder={(clientDetails as any)?.fullName || currentJob?.jobFor?.fullName}
               />
               {formik.errors.jobFor && formik.touched.jobFor && <div className="txt-red">{formik.errors.jobFor}</div>}
               {clientDetails ? (
@@ -603,19 +567,12 @@ const ClientJobAddForm = ({ actions, isLoading, id, currentJob }: IProps) => {
 
 const mapStateToProps = (state: any) => {
   return {
-    isLoading: state.jobs.isLoading,
-    currentJob: state.jobs.job
+    isLoading: state.jobs.isLoading
   };
 };
 
 const mapDispatchToProps = (dispatch: any) => ({
   actions: {
-    fetchJob: (id: string) => {
-      dispatch(jobActions.fetchJob(id, {}));
-    },
-    updateJob: (data: any) => {
-      dispatch(jobActions.updateJob(data));
-    },
     addJob: (payload: any) => {
       dispatch(jobActions.createJobs(payload));
     }

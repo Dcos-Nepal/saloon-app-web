@@ -231,6 +231,14 @@ export const FETCH_JOB_LOADING = 'FETCH_JOB_LOADING';
 export const FETCH_JOB_ERROR = 'FETCH_JOB_ERROR';
 
 /**
+ * Update Invoice action types
+ */
+export const UPDATE_JOB = 'UPDATE_JOB';
+export const UPDATE_JOB_SUCCESS = 'UPDATE_JOB_SUCCESS';
+export const UPDATE_JOB_LOADING = 'UPDATE_JOB_LOADING';
+export const UPDATE_JOB_ERROR = 'UPDATE_JOB_ERROR';
+
+/**
  * Load Job Schedule action types
  */
 export const FETCH_JOB_SCHEDULE = 'FETCH_JOB_SCHEDULE';

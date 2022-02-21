@@ -3,7 +3,6 @@ import * as actionType from '../constants';
 const initialState = {
   jobs: null,
   job: null,
-  currentUser: null,
   isFailed: false,
   isSuccess: false,
   isLoading: false
@@ -46,7 +45,7 @@ const jobsReducer = (state = initialState, action: any) => {
     }
 
     case actionType.ADD_JOB_SUCCESS: {
-      state.currentUser = action.payload;
+      state.job = action.payload;
       state.isLoading = false;
       state.isFailed = false;
       state.isSuccess = true;
@@ -57,7 +56,7 @@ const jobsReducer = (state = initialState, action: any) => {
       state.isSuccess = false;
       state.isLoading = false;
       state.isFailed = true;
-      state.currentUser = action.payload;
+      state.job = action.payload;
       return { ...state };
     }
 
@@ -67,7 +66,6 @@ const jobsReducer = (state = initialState, action: any) => {
     }
 
     case actionType.UPDATE_JOB_SUCCESS: {
-      state.currentUser = action.payload;
       state.isLoading = false;
       state.isFailed = false;
       state.isSuccess = true;
@@ -78,7 +76,6 @@ const jobsReducer = (state = initialState, action: any) => {
       state.isSuccess = false;
       state.isLoading = false;
       state.isFailed = true;
-      state.currentUser = action.payload;
       return { ...state };
     }
 

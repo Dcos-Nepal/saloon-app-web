@@ -20,6 +20,10 @@ export function* addJobSaga(): any {
   yield takeEvery(actionType.ADD_JOB, addJob);
 }
 
+export function* updateJobSaga(): any {
+  yield takeEvery(actionType.UPDATE_JOB, updateJob);
+}
+
 /**
  * Generator functions for Saga
  */
@@ -92,27 +96,23 @@ function* addJob(action: any): any {
   }
 }
 
-export function* updateJobSaga(): any {
-  yield takeEvery(actionType.UPDATE_JOB, updateJob);
-}
-
 function* updateJob(action: any): any {
   try {
-    const { data: newJob } = yield call(updateJobApi, action.payload);
-    if (newJob?.data?.success) {
+    const { data: updatedJob } = yield call(updateJobApi, action.payload.id, action.payload.data);
+    if (updatedJob?.data?.success) {
       yield put({
         type: actionType.UPDATE_JOB_SUCCESS,
-        payload: newJob?.data?.data
+        payload: updatedJob?.data?.data
       });
 
-      return toast.success(getMessage(newJob?.data?.message));
+      return toast.success(getMessage(updatedJob?.data?.message));
     }
     yield put({
       type: actionType.UPDATE_JOB_ERROR,
-      payload: newJob.data
+      payload: updatedJob.data
     });
 
-    return toast.error(getMessage(newJob.data?.message));
+    return toast.error(getMessage(updatedJob.data?.message));
   } catch (err: any) {
     if (err.exception) toast.error(err.exception.message);
     yield put({ type: actionType.UPDATE_JOB_ERROR, payload: err });

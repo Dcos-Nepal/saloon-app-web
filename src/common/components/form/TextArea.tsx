@@ -1,16 +1,6 @@
-import { FC } from "react";
+import { FC } from 'react';
 
-const TextArea: FC<any> = ({
-  name,
-  label,
-  className,
-  placeholder,
-  onChange,
-  onBlur,
-  value,
-  rows = 3,
-  helperComponent,
-}) => {
+const TextArea: FC<any> = ({ name, value, label, className, placeholder, onChange, onBlur, rows = 3, helperComponent }) => {
   return (
     <div className="mb-3">
       <label htmlFor={name} className="form-label txt-dark-grey">
@@ -26,9 +16,7 @@ const TextArea: FC<any> = ({
         onChange={onChange}
         onBlur={onBlur}
       />
-      <div className="form-text">
-        {helperComponent}
-      </div>
+      <div className="form-text">{helperComponent}</div>
     </div>
   );
 };

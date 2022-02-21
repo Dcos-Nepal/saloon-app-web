@@ -68,7 +68,6 @@ const ClientJobAddForm = ({ actions, isLoading }: IProps) => {
    * @param selected
    */
   const handleLineItemSelection = (key: string, { label, value, meta }: any) => {
-    console.log(key);
     formik.setFieldValue(`${key}.name`, label);
     formik.setFieldValue(`${key}.description`, meta?.description || 'Enter your notes here...');
   };

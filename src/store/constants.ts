@@ -231,6 +231,14 @@ export const FETCH_JOB_LOADING = 'FETCH_JOB_LOADING';
 export const FETCH_JOB_ERROR = 'FETCH_JOB_ERROR';
 
 /**
+ * Update Invoice action types
+ */
+export const UPDATE_JOB = 'UPDATE_JOB';
+export const UPDATE_JOB_SUCCESS = 'UPDATE_JOB_SUCCESS';
+export const UPDATE_JOB_LOADING = 'UPDATE_JOB_LOADING';
+export const UPDATE_JOB_ERROR = 'UPDATE_JOB_ERROR';
+
+/**
  * Load Job Schedule action types
  */
 export const FETCH_JOB_SCHEDULE = 'FETCH_JOB_SCHEDULE';
@@ -249,31 +257,31 @@ export const ADD_JOB_ERROR = 'ADD_JOB_ERROR';
 /**
  * Create Invoices action types
  */
- export const ADD_INVOICE = 'ADD_INVOICE';
- export const ADD_INVOICE_SUCCESS = 'ADD_INVOICE_SUCCESS';
- export const ADD_INVOICE_LOADING = 'ADD_INVOICE_LOADING';
- export const ADD_INVOICE_ERROR = 'ADD_INVOICE_ERROR';
+export const ADD_INVOICE = 'ADD_INVOICE';
+export const ADD_INVOICE_SUCCESS = 'ADD_INVOICE_SUCCESS';
+export const ADD_INVOICE_LOADING = 'ADD_INVOICE_LOADING';
+export const ADD_INVOICE_ERROR = 'ADD_INVOICE_ERROR';
 
- /**
+/**
  * Update Invoice action types
  */
-  export const UPDATE_INVOICE = 'UPDATE_INVOICE';
-  export const UPDATE_INVOICE_SUCCESS = 'UPDATE_INVOICE_SUCCESS';
-  export const UPDATE_INVOICE_LOADING = 'UPDATE_INVOICE_LOADING';
-  export const UPDATE_INVOICE_ERROR = 'UPDATE_INVOICE_ERROR';
- 
- /**
-  * Load Job Invoices Listing action types
-  */
- export const FETCH_INVOICES = 'FETCH_INVOICES';
- export const FETCH_INVOICES_SUCCESS = 'FETCH_INVOICES_SUCCESS';
- export const FETCH_INVOICES_LOADING = 'FETCH_INVOICES_LOADING';
- export const FETCH_INVOICES_ERROR = 'FETCH_INVOICES_ERROR';
- 
- /**
-  * Fetch Job Invoice action types
-  */
- export const FETCH_INVOICE = 'FETCH_INVOICE';
- export const FETCH_INVOICE_SUCCESS = 'FETCH_INVOICE_SUCCESS';
- export const FETCH_INVOICE_LOADING = 'FETCH_INVOICE_LOADING';
- export const FETCH_INVOICE_ERROR = 'FETCH_INVOICE_ERROR';
+export const UPDATE_INVOICE = 'UPDATE_INVOICE';
+export const UPDATE_INVOICE_SUCCESS = 'UPDATE_INVOICE_SUCCESS';
+export const UPDATE_INVOICE_LOADING = 'UPDATE_INVOICE_LOADING';
+export const UPDATE_INVOICE_ERROR = 'UPDATE_INVOICE_ERROR';
+
+/**
+ * Load Job Invoices Listing action types
+ */
+export const FETCH_INVOICES = 'FETCH_INVOICES';
+export const FETCH_INVOICES_SUCCESS = 'FETCH_INVOICES_SUCCESS';
+export const FETCH_INVOICES_LOADING = 'FETCH_INVOICES_LOADING';
+export const FETCH_INVOICES_ERROR = 'FETCH_INVOICES_ERROR';
+
+/**
+ * Fetch Job Invoice action types
+ */
+export const FETCH_INVOICE = 'FETCH_INVOICE';
+export const FETCH_INVOICE_SUCCESS = 'FETCH_INVOICE_SUCCESS';
+export const FETCH_INVOICE_LOADING = 'FETCH_INVOICE_LOADING';
+export const FETCH_INVOICE_ERROR = 'FETCH_INVOICE_ERROR';

@@ -2,7 +2,7 @@ import { toast } from 'react-toastify';
 import * as actionType from '../constants';
 import { getMessage } from 'common/messages';
 import { call, put, takeEvery } from 'redux-saga/effects';
-import { fetchJobsApi, fetchJobApi, addJobApi } from 'services/jobs.service';
+import { fetchJobsApi, fetchJobApi, addJobApi, updateJobApi } from 'services/jobs.service';
 
 /**
  * Saga Definitions
@@ -18,6 +18,10 @@ export function* fetchJobSaga(): any {
 
 export function* addJobSaga(): any {
   yield takeEvery(actionType.ADD_JOB, addJob);
+}
+
+export function* updateJobSaga(): any {
+  yield takeEvery(actionType.UPDATE_JOB, updateJob);
 }
 
 /**
@@ -89,5 +93,28 @@ function* addJob(action: any): any {
   } catch (err: any) {
     if (err.exception) toast.error(err.exception.message);
     yield put({ type: actionType.ADD_JOB_ERROR, payload: err });
+  }
+}
+
+function* updateJob(action: any): any {
+  try {
+    const { data: updatedJob } = yield call(updateJobApi, action.payload.id, action.payload.data);
+    if (updatedJob?.data?.success) {
+      yield put({
+        type: actionType.UPDATE_JOB_SUCCESS,
+        payload: updatedJob?.data?.data
+      });
+
+      return toast.success(getMessage(updatedJob?.data?.message));
+    }
+    yield put({
+      type: actionType.UPDATE_JOB_ERROR,
+      payload: updatedJob.data
+    });
+
+    return toast.error(getMessage(updatedJob.data?.message));
+  } catch (err: any) {
+    if (err.exception) toast.error(err.exception.message);
+    yield put({ type: actionType.UPDATE_JOB_ERROR, payload: err });
   }
 }

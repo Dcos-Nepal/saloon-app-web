@@ -63,11 +63,7 @@ const JobsList = (props: IProps) => {
       },
       {
         Header: 'REQUIRE INVOICING?',
-        accessor: (row: any) => (
-          <div>
-            {row.remindInvoicing ? 'Yes' : 'No'}
-          </div>
-        )
+        accessor: (row: any) => <div>{row.remindInvoicing ? 'Yes' : 'No'}</div>
       },
       {
         Header: 'Total',
@@ -85,7 +81,7 @@ const JobsList = (props: IProps) => {
               <li onClick={() => navigate(pinterpolate(endpoints.admin.worker.detail, { id: row._id }))}>
                 <span className="dropdown-item pointer">View Detail</span>
               </li>
-              <li onClick={() => navigate(endpoints.admin.jobs.edit)}>
+              <li onClick={() => navigate(pinterpolate(endpoints.admin.jobs.edit, { id: row._id }))}>
                 <span className="dropdown-item pointer">Edit</span>
               </li>
               <li>
@@ -100,8 +96,8 @@ const JobsList = (props: IProps) => {
   );
 
   /**
-   * 
-   * @param event 
+   *
+   * @param event
    */
   const handleJobsSearch = (event: any) => {
     const query = event.target.value;
@@ -109,8 +105,8 @@ const JobsList = (props: IProps) => {
   };
 
   /**
-   * 
-   * @param event 
+   *
+   * @param event
    */
   const handlePageClick = (event: any) => {
     const selectedPage = event.selected;
@@ -139,7 +135,7 @@ const JobsList = (props: IProps) => {
       <div className="card">
         <div className="row pt-2 m-1 rounded-top bg-grey">
           <div className="col-4">
-            <InputField label="Search" placeholder="Search jobs" className="search-input" onClick={handleJobsSearch}/>
+            <InputField label="Search" placeholder="Search jobs" className="search-input" onClick={handleJobsSearch} />
           </div>
           <div className="col row">
             <div className="col">
@@ -156,8 +152,8 @@ const JobsList = (props: IProps) => {
             <thead>
               {headerGroups.map((headerGroup) => (
                 <tr {...headerGroup.getHeaderGroupProps()} className="rt-head">
-                 <th>#NO.</th>
-                 {headerGroup.headers.map((column) => (
+                  <th>#NO.</th>
+                  {headerGroup.headers.map((column) => (
                     <th {...column.getHeaderProps()} scope="col">
                       {column.render('Header')}
                     </th>
@@ -172,7 +168,7 @@ const JobsList = (props: IProps) => {
                 return (
                   <tr {...row.getRowProps()} className="rt-tr-group">
                     <td>
-                      <strong>#{(index + 1) + (page - 1) * itemsPerPage}</strong>
+                      <strong>#{index + 1 + (page - 1) * itemsPerPage}</strong>
                     </td>
                     {row.cells.map((cell) => (
                       <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
@@ -186,14 +182,14 @@ const JobsList = (props: IProps) => {
         {jobs.length ? (
           <div className="row pt-2 m-1 rounded-top">
             <ReactPaginate
-              previousLabel={"Previous"}
-              nextLabel={"Next"}
-              breakLabel={"..."}
-              breakClassName={"break-me"}
+              previousLabel={'Previous'}
+              nextLabel={'Next'}
+              breakLabel={'...'}
+              breakClassName={'break-me'}
               pageCount={pageCount}
               onPageChange={handlePageClick}
-              containerClassName={"pagination"}
-              activeClassName={"active"}
+              containerClassName={'pagination'}
+              activeClassName={'active'}
             />
           </div>
         ) : null}

@@ -13,6 +13,13 @@ export const addJobApi = async (payload: any) => {
   return await http.post(url, payload);
 };
 
+export const getJobsSummaryApi = async () => {
+  const url = '/v1.0.0/jobs/summary';
+  return await http.get(url, {
+    headers: { Accept: 'application/json' }
+  });
+};
+
 export const fetchJobApi = async (id: string) => {
   const url = '/v1.0.0/jobs/' + id;
   return await http.get(url);

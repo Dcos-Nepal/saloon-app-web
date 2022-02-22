@@ -76,7 +76,6 @@ sagaMiddleware.run(addJobSaga);
 sagaMiddleware.run(fetchJobsSaga);
 sagaMiddleware.run(updateJobSaga);
 sagaMiddleware.run(fetchJobSaga);
-sagaMiddleware.run(updateJobSaga);
 sagaMiddleware.run(fetchInvoicesSaga);
 sagaMiddleware.run(addInvoiceSaga);
 sagaMiddleware.run(fetchInvoiceSaga);

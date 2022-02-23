@@ -1577,10 +1577,10 @@
     "@fullcalendar/common" "~5.10.1"
     tslib "^2.1.0"
 
-"@fullcalendar/luxon@^5.10.1":
-  version "5.10.1"
-  resolved "https://registry.yarnpkg.com/@fullcalendar/luxon/-/luxon-5.10.1.tgz#1ad8300c6cbbb467574c96980a69ba46730bde24"
-  integrity sha512-THmIytaHo2SFb1lUQ8hhkZjNgt9dmIpioGEuuIj4ETDS3pHFVHMTcV22vBFC74f6kc/OA2Vwfj3+5JHltKjD/g==
+"@fullcalendar/luxon2@^5.10.2":
+  version "5.10.2"
+  resolved "https://registry.yarnpkg.com/@fullcalendar/luxon2/-/luxon2-5.10.2.tgz#1a0ee8cd5f168cb613fbcf84aeaa1d66f97073a5"
+  integrity sha512-aRD+4OUAfJayeR5DKkYPrYzMvqOaBkadpWKoYXs6XYDUxkDCw0uvwNrFglarYUIVjxkrelH824xC1g+jK/fyHQ==
   dependencies:
     "@fullcalendar/common" "~5.10.1"
     tslib "^2.1.0"

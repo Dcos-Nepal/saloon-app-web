@@ -1,4 +1,4 @@
-const JobsOverview = () => {
+const InvoiceOverview = () => {
   return (
     <div className="p-2">
       // TODO
@@ -6,4 +6,4 @@ const JobsOverview = () => {
   );
 };
 
-export default JobsOverview;
+export default InvoiceOverview;

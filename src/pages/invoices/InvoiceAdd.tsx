@@ -5,7 +5,7 @@ interface IProps {
   closeModal: () => void;
 }
 
-const JobAdd: FC<IProps> = ({ closeModal }) => {
+const InvoiceAddPage: FC<IProps> = ({ closeModal }) => {
   return (
     <div className="">
       <div className="modal-header row bg-background-grey">
@@ -23,4 +23,4 @@ const JobAdd: FC<IProps> = ({ closeModal }) => {
   );
 };
 
-export default JobAdd;
+export default InvoiceAddPage;

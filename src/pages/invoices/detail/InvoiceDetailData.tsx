@@ -26,7 +26,7 @@ const InvoiceDetailData: FC<IProps> = ({ isLoading, actions, currentInvoice }) =
     if (id) {
       try {
         const { data } = await sendInvoiceApi(id);
-        debugger;
+
         if (data) {
           toast.info('Invoice sent successfully');
         }

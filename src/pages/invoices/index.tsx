@@ -6,7 +6,7 @@ import InvoiceEdit from './edit';
 import InvoiceDetail from './detail';
 import { endpoints } from 'common/config';
 
-const Jobs = () => {
+const Invoices = () => {
   return (
     <>
       <Routes>
@@ -19,4 +19,4 @@ const Jobs = () => {
   );
 };
 
-export default Jobs;
+export default Invoices;

@@ -99,7 +99,7 @@ const InvoiceDetailData: FC<IProps> = ({ isLoading, actions, currentInvoice }) =
               </div>
               <div className="row p-2 border-bottom">
                 <h6 className="">Message to client</h6>
-                <div className="ps-3">{currentInvoice?.clientMessage}</div>
+                <div className="ps-3">{currentInvoice?.message}</div>
               </div>
               {/* <div className="mt-2 mb-3">
               <h6 className="p-2">Invoice Status Revisions</h6>

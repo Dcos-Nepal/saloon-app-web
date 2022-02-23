@@ -29,9 +29,9 @@ export function* updateInvoiceSaga(): any {
 function* fetchInvoices(action: any): any {
     try {
         const response = yield call(fetchInvoicesApi, action.payload);
-        if (response.data?.data.success) {
-            yield put({ type: actionType.FETCH_INVOICES_SUCCESS, payload: response.data.data });
-            return toast.success(getMessage(response.data.message))
+
+        if (response.data.success) {
+            return yield put({ type: actionType.FETCH_INVOICES_SUCCESS, payload: response?.data });
         }
 
         yield put({ type: actionType.FETCH_INVOICES_ERROR, payload: response.data });

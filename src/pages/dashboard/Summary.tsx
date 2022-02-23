@@ -71,37 +71,37 @@ const Summary = () => {
         </div>
       </div>
       <div className="card bg-white mt-4 p-4">
-        <b className="">Today’s appointments</b>
+        <b className="">Today’s Visits</b>
         <div className="row mt-4 mb-4">
           <div className="col row">
             <div className="col p-3-4 text-center dashboard-h1 rounded-radius bg-grey">3</div>
             <div className="col dashboard-main-label">
-              Total <p className="txt-bold-big mt-2">$0.00</p>
+              Total Visits <p className="txt-bold-big mt-2">$0.00</p>
             </div>
           </div>
           <div className="col row">
             <div className="col p-3-4 text-center dashboard-h1 rounded-radius bg-light-red">3</div>
             <div className="col dashboard-main-label">
-              To Go <p className="txt-bold-big mt-2">$0.00</p>
+              To Go Visits <p className="txt-bold-big mt-2">$0.00</p>
             </div>
           </div>
           <div className="col row">
             <div className="col p-3-4 text-center dashboard-h1 rounded-radius bg-light-blue">0</div>
             <div className="col dashboard-main-label">
-              Active <p className="txt-bold-big mt-2">$0.00</p>
+              Active Visits <p className="txt-bold-big mt-2">$0.00</p>
             </div>
           </div>
           <div className="col row">
             <div className="col p-3-4 text-center dashboard-h1 rounded-radius bg-light-green">0</div>
             <div className="col dashboard-main-label">
-              Complete <p className="txt-bold-big mt-2">$0.00</p>
+              Complete Visits <p className="txt-bold-big mt-2">$0.00</p>
             </div>
           </div>
         </div>
       </div>
       <div className="row mt-3">
         <div className="col">
-          <div className="card">
+          <div className="card full-height">
             <div className="row d-flex flex-row">
               <div className="col ">
                 <h5 className="">Job Request</h5>
@@ -112,7 +112,6 @@ const Summary = () => {
                 </button>
               </div>
             </div>
-
             <div className="row">
               <div className="col mt-2 p-2 txt-bold">
                 <div className="row border-bottom p-2">
@@ -139,7 +138,7 @@ const Summary = () => {
                     </div>
                   </div>
                 </div>
-                <div className="row border-bottom p-2">
+                <div className="row p-2">
                   <div className="">
                     Pending
                     <div className="d-flex float-end">
@@ -151,9 +150,8 @@ const Summary = () => {
             </div>
           </div>
         </div>
-
         <div className="col">
-          <div className="card">
+          <div className="card full-height">
             <div className="row d-flex flex-row">
               <div className="col ">
                 <h5 className="">Quotes</h5>
@@ -164,7 +162,6 @@ const Summary = () => {
                 </button>
               </div>
             </div>
-
             <div className="row">
               <div className="col mt-2 p-2 txt-bold">
                 <div className="row border-bottom p-2">
@@ -183,7 +180,7 @@ const Summary = () => {
                     </div>
                   </div>
                 </div>
-                <div className="row border-bottom p-2">
+                <div className="row p-2">
                   <div className="">
                     Draft
                     <div className="d-flex float-end">
@@ -195,9 +192,8 @@ const Summary = () => {
             </div>
           </div>
         </div>
-
         <div className="col">
-          <div className="card">
+          <div className="card full-height">
             <div className="row d-flex flex-row">
               <div className="col ">
                 <h5 className="">Jobs</h5>
@@ -208,7 +204,6 @@ const Summary = () => {
                 </button>
               </div>
             </div>
-
             <div className="row">
               <div className="col mt-2 p-2 txt-bold">
                 <div className="row border-bottom p-2">
@@ -227,7 +222,7 @@ const Summary = () => {
                     </div>
                   </div>
                 </div>
-                <div className="row border-bottom p-2">
+                <div className="row p-2">
                   <div className="">
                     Completed
                     <div className="d-flex float-end">
@@ -241,9 +236,9 @@ const Summary = () => {
         </div>
       </div>
 
-      <div className="row mt-3">
-        <div className="card">
-          <InvoicesList />
+      <div className="row mt-5">
+        <div className="col">
+          <InvoicesList isEditable={false}/>
         </div>
       </div>
     </>

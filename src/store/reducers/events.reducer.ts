@@ -9,7 +9,7 @@ export function weekendsVisible(weekendsVisible = true, action: { type: any }) {
     default:
       return weekendsVisible;
   }
-}
+}        
 
 export function eventsById(eventsById: any = {}, action: { type: any; plainEventObjects: any; plainEventObject: { id: any }; eventId: string | number }) {
   switch (action.type) {

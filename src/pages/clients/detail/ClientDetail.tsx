@@ -224,30 +224,36 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient, quotes, properties, 
           <div>
             <div className="d-flex flex-row mt-2">
               <h3 className="txt-bold extra">{currentClient.fullName || `${currentClient.firstName} ${currentClient.lastName}`}</h3>
+              <div className="col">
+                <button
+                  onClick={() => id && navigate(`edit`)}
+                  type="button"
+                  className="btn btn-primary d-flex float-end me-2"
+                >
+                  Edit Client
+                </button>
+              </div>
             </div>
-            <div className="row">
+            <div className="row m-1">
               <div className="col card">
                 <div className="row">
                   <div className="col d-flex flex-row">
                     <h5 className="txt-bold">Properties</h5>
                   </div>
-                  <div className="col">
-                    <button className="btn btn-primary d-flex float-end">New property</button>
-                  </div>
                 </div>
                 {properties.length ? (
-                  properties.map((property: any) => (
-                    <div className="row mt-4">
+                  properties.map((property: any, index) => (
+                    <div className={`row ${index === 0 ? 'mt-4' : 'mt-2'}`}>
+                      <div className="col-2 mt-2">
+                        <button className="btn btn-secondary d-flex float-end">
+                          <box-icon name="map" color="#EC7100" />
+                        </button>
+                      </div>
                       <div className="col p-2 ps-4">
                         <div className="txt-grey">{property.name}</div>
                         <div className="">
                           {property.street1}, {property.city}, {property.country} {property.postalCode}
                         </div>
-                      </div>
-                      <div className="col-2 mt-2">
-                        <button className="btn btn-secondary d-flex float-end">
-                          <box-icon name="map" color="#EC7100" />
-                        </button>
                       </div>
                     </div>
                   ))
@@ -271,32 +277,39 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient, quotes, properties, 
                     <h5 className="txt-bold">Contact info</h5>
                   </div>
                 </div>
-                <div className="row mt-4">
+                <div className="row mt-2">
                   <div className="col p-2 ps-4">
-                    <div className="txt-grey">Primary contact</div>
+                    <div className="txt-grey">First Name</div>
                     <div className="">{currentClient.firstName}</div>
+                  </div>
+                  <div className="col p-2 ps-4">
+                    <div className="txt-grey">Last Name</div>
+                    <div className="">{currentClient.lastName}</div>
+                  </div>
+                </div>
+                <div className="row mt-2">
+                  <div className="col p-2 ps-4">
+                    <div className="txt-grey">Email</div>
+                    <div className="">{currentClient.email}</div>
                   </div>
                   <div className="col p-2 ps-4">
                     <div className="txt-grey">Phone</div>
                     <div className="">{currentClient.phoneNumber}</div>
                   </div>
                 </div>
-                <div className="row mt-4">
+                <div className="row mt-2">
                   <div className="col p-2 ps-4">
-                    <div className="txt-grey">Email</div>
-                    <div className="">{currentClient.email}</div>
+                    <div className="txt-grey">Client's Address</div>
+                    <div className="">{currentClient.address?.street1}, {currentClient.address?.street2}, {currentClient.address?.postalCode}</div>
+                    <div className=''>{currentClient.address?.city}, {currentClient.address?.state}, {currentClient.address?.country}</div>
                   </div>
                 </div>
               </div>
             </div>
-
-            <div className="row card">
+            <div className="row card m-1 mt-3">
               <div className="row">
                 <div className="col d-flex flex-row">
                   <h5 className="txt-bold">Overview</h5>
-                </div>
-                <div className="col">
-                  <button className="btn btn-primary d-flex float-end">New</button>
                 </div>
               </div>
               <div className="">
@@ -319,38 +332,6 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient, quotes, properties, 
                 </div>
               </div>
               {<TabContent />}
-            </div>
-
-            <div className="row">
-              <div className="col card">
-                <div className="row">
-                  <div className="col d-flex flex-row">
-                    <h5 className="txt-bold">Schedule</h5>
-                  </div>
-                  <div className="col">
-                    <button className="btn btn-primary d-flex float-end">New Schedule</button>
-                  </div>
-                </div>
-                <div className="row mt-2">
-                  <div className="col p-2 ps-4">
-                    <div className="txt-grey">No scheduling items</div>
-                    <div className="">Nothing is scheduled for this client yet</div>
-                  </div>
-                </div>
-              </div>
-              <div className="col card ms-3">
-                <div className="row">
-                  <div className="col d-flex flex-row">
-                    <h5 className="txt-bold">Billing history</h5>
-                  </div>
-                </div>
-                <div className="row mt-2">
-                  <div className="col p-2 ps-4">
-                    <div className="txt-grey">No billing history</div>
-                    <div className="">This client has not been billed yet</div>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
         ) : (

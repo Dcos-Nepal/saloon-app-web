@@ -12,6 +12,7 @@ import { endpoints } from "common/config";
 import InputField from "common/components/form/Input";
 import SelectField from "common/components/form/Select";
 import { Loader } from "common/components/atoms/Loader";
+import { AlertIcon, CheckCircleIcon } from "@primer/octicons-react";
 
 interface IClient {
   name: string;
@@ -107,14 +108,9 @@ const WorkerList = (props: any) => {
       {
         Header: "STATUS",
         accessor: (row: any) => (
-          <div>
-            <div className={`status ${row.status ? "status-green" : "status-red"}`}>
-              {row.status ? "Verified" : " Verification Pending"}
-            </div>
-            <div className="txt-grey ms-2">
-              {row.updatedAt ? new Date(row.updatedAt).toLocaleString() : new Date(row.createdAt).toLocaleString()}
-            </div>
-          </div>
+          <label className="txt-grey ms-2">
+            {row.status ? <CheckCircleIcon className="txt-green" /> : <AlertIcon className="txt-red"/> } &nbsp; {row.updatedAt ? new Date(row.updatedAt).toLocaleString() : new Date(row.createdAt).toLocaleString()}
+          </label>
         ),
       },
       {
@@ -123,7 +119,7 @@ const WorkerList = (props: any) => {
         accessor: (row: any) => (
           <div className="dropdown">
             <a
-              href="#"
+              href="void(0)"
               role="button"
               id="dropdownMenuLink"
               data-bs-toggle="dropdown"
@@ -162,6 +158,7 @@ const WorkerList = (props: any) => {
         ),
       },
     ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
 

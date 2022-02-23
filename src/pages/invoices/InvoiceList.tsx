@@ -149,17 +149,21 @@ const InvoicesList = (props: any) => {
       {
         Header: 'STATUS',
         accessor: (row: IInvoice) => {
-          return (
-            <div style={{ minWidth: '150px' }}>
-              <SelectField
-                label=""
-                options={invoiceStatusOptions}
-                placeholder="All"
-                value={row.isPaid ? { label: 'PAID', value: 'PAID' } : row.isIssued ? { label: 'PENDING', value: 'PENDING' } : { label: 'ALL', value: 'ALL' }}
-                handleChange={(selected: { label: string; value: string }) => handleStatusChange(row.id, selected, '')}
-              />
-            </div>
-          );
+          if (props.isEditable) {
+            return (
+              <div style={{ minWidth: '150px' }}>
+                <SelectField
+                  label=""
+                  options={invoiceStatusOptions}
+                  placeholder="All"
+                  value={row.isPaid ? { label: 'PAID', value: 'PAID' } : row.isIssued ? { label: 'PENDING', value: 'PENDING' } : { label: 'ALL', value: 'ALL' }}
+                  handleChange={(selected: { label: string; value: string }) => handleStatusChange(row.id, selected, '')}
+                />
+              </div>
+            );
+          }
+
+          return <div>{row.isPaid ? 'PAID' : row.isIssued ? 'PENDING' : 'ALL'}</div>;
         }
       },
       {

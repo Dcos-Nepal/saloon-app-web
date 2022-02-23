@@ -1,78 +1,78 @@
 import * as actionType from '../constants';
 
 const initialState = {
-  jobs: null,
-  job: null,
+  visits: null,
+  visit: null,
   isFailed: false,
   isSuccess: false,
   isLoading: false
 };
 
-const jobsReducer = (state = initialState, action: any) => {
+const visitsReducer = (state = initialState, action: any) => {
   switch (action.type) {
-    case actionType.FETCH_JOBS: {
+    case actionType.FETCH_VISITS: {
       state.isLoading = true;
       return { ...state };
     }
 
-    case actionType.FETCH_JOBS_SUCCESS: {
+    case actionType.FETCH_VISITS_SUCCESS: {
       state.isLoading = false;
-      state.jobs = action.payload;
+      state.visits = action.payload;
       return { ...state };
     }
 
-    case actionType.FETCH_JOBS_ERROR: {
+    case actionType.FETCH_VISITS_ERROR: {
       state.isLoading = false;
       state.isFailed = true;
-      state.jobs = action.payload;
+      state.visits = action.payload;
       return { ...state };
     }
 
-    case actionType.FETCH_JOB: {
+    case actionType.FETCH_VISIT: {
       state.isLoading = true;
       return { ...state };
     }
 
-    case actionType.FETCH_JOB_SUCCESS: {
+    case actionType.FETCH_VISIT_SUCCESS: {
       state.isLoading = false;
-      state.job = action.payload;
+      state.visit = action.payload;
       return { ...state };
     }
 
-    case actionType.ADD_JOB: {
+    case actionType.ADD_VISIT: {
       state.isLoading = true;
       return { ...state };
     }
 
-    case actionType.ADD_JOB_SUCCESS: {
-      state.job = action.payload;
+    case actionType.ADD_VISIT_SUCCESS: {
+      state.visit = action.payload;
       state.isLoading = false;
       state.isFailed = false;
       state.isSuccess = true;
       return { ...state };
     }
 
-    case actionType.ADD_JOB_ERROR: {
+    case actionType.ADD_VISIT_ERROR: {
       state.isSuccess = false;
       state.isLoading = false;
       state.isFailed = true;
-      state.job = action.payload;
+      state.visit = action.payload;
       return { ...state };
     }
 
-    case actionType.UPDATE_JOB: {
+    case actionType.UPDATE_VISIT: {
       state.isLoading = true;
       return { ...state };
     }
 
-    case actionType.UPDATE_JOB_SUCCESS: {
+    case actionType.UPDATE_VISIT_SUCCESS: {
       state.isLoading = false;
       state.isFailed = false;
       state.isSuccess = true;
       return { ...state };
     }
 
-    case actionType.UPDATE_JOB_ERROR: {
+    case actionType.UPDATE_VISIT_ERROR: {
       state.isSuccess = false;
       state.isLoading = false;
       state.isFailed = true;
@@ -85,4 +85,4 @@ const jobsReducer = (state = initialState, action: any) => {
   }
 };
 
-export default jobsReducer;
+export default visitsReducer;

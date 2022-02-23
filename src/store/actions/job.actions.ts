@@ -21,9 +21,9 @@ export const createJobs = (data: any) => {
   };
 };
 
-export const updateJob = (data: any) => {
+export const updateJob = (id: string, data: any) => {
   return {
     type: UPDATE_JOB,
-    payload: data
+    payload: { id, data }
   };
 };

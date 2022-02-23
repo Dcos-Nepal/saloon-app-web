@@ -36,7 +36,7 @@ const InvoiceAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => 
 
   const [initialValues, setInitialValues] = useState({
     subject: '',
-    clientMessage: '',
+    message: '',
     note: '',
     invoiceFor: {
       label: 'Search for Clients...',
@@ -58,7 +58,7 @@ const InvoiceAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => 
           label: 'Search for Services',
           value: ''
         },
-        clientMessage: '',
+        message: '',
         quantity: 0,
         unitPrice: 0,
         total: 0
@@ -68,7 +68,7 @@ const InvoiceAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => 
 
   const RequestSchema = Yup.object().shape({
     subject: Yup.string().required('Invoice subject is required').min(3, 'Invoice subject seems to be too short'),
-    clientMessage: Yup.string(),
+    message: Yup.string(),
     note: Yup.string().notRequired(),
     invoiceFor: Yup.object().shape({
       value: Yup.string().required('Client is required for this invoice'),
@@ -82,7 +82,7 @@ const InvoiceAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => 
           value: Yup.string(),
           label: Yup.string().required('Please select a line item.')
         }),
-        clientMessage: Yup.string(),
+        message: Yup.string(),
         quantity: Yup.number(),
         unitPrice: Yup.number(),
         total: Yup.number().notRequired()
@@ -106,7 +106,7 @@ const InvoiceAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => 
         return {
           ref: li.name.value,
           name: li.name.label,
-          clientMessage: li.clientMessage,
+          message: li.message,
           quantity: li.quantity,
           unitPrice: li.unitPrice,
           total: li.quantity * li.unitPrice
@@ -142,7 +142,7 @@ const InvoiceAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => 
       setInitialValues({
         ...initialValues,
         subject: currentItem?.subject,
-        clientMessage: currentItem?.clientMessage,
+        message: currentItem?.message,
         property: currentItem?.property?._id,
         invoiceFor: {
           label: currentItem?.invoiceFor?.firstName,
@@ -173,7 +173,7 @@ const InvoiceAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => 
    */
   const handleLineItemSelection = (key: string, { label, value, meta }: any) => {
     formik.setFieldValue(`${key}.name`, { label, value });
-    formik.setFieldValue(`${key}.clientMessage`, meta?.clientMessage || 'Enter your notes here...');
+    formik.setFieldValue(`${key}.message`, meta?.message || 'Enter your notes here...');
   };
 
   /**
@@ -275,12 +275,12 @@ const InvoiceAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => 
                   <div className="col-12">
                     <TextArea
                       label={'Invoice Message'}
-                      name={`clientMessage`}
+                      name={`message`}
                       rows={4}
-                      value={formik.values.clientMessage}
+                      value={formik.values.message}
                       onChange={formik.handleChange}
                       className={`form-control`}
-                      placeholder={"Invoice's clientMessage..."}
+                      placeholder={"Invoice's message..."}
                     />
                   </div>
                 </div>
@@ -404,12 +404,12 @@ const InvoiceAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => 
                           />
                           <ErrorMessage name={`lineItems[${index}].name.label`} />
                           <textarea
-                            name={`lineItems[${index}].clientMessage`}
-                            value={formik.values.lineItems[index].clientMessage}
+                            name={`lineItems[${index}].message`}
+                            value={formik.values.lineItems[index].message}
                             disabled={true}
                             onChange={formik.handleChange}
                             className={`form-control mb-3`}
-                            placeholder={"Line item's clientMessage..."}
+                            placeholder={"Line item's message..."}
                           />
                         </div>
                         <div className="col">
@@ -444,7 +444,7 @@ const InvoiceAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => 
                                   label: '',
                                   value: ''
                                 },
-                                clientMessage: '',
+                                message: '',
                                 quantity: 0,
                                 unitPrice: 0,
                                 total: 0

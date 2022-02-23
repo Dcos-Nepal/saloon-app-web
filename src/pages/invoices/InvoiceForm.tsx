@@ -7,7 +7,7 @@ interface IProps {
   closeModal: () => void;
 }
 
-const JobForm: FC<IProps> = ({ closeModal }) => {
+const InvoiceForm: FC<IProps> = ({ closeModal }) => {
   return (
     <form>
       <InputField
@@ -62,4 +62,4 @@ const JobForm: FC<IProps> = ({ closeModal }) => {
   );
 };
 
-export default JobForm;
+export default InvoiceForm;

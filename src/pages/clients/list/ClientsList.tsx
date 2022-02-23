@@ -12,6 +12,7 @@ import ReactPaginate from "react-paginate";
 import { Loader } from "common/components/atoms/Loader";
 import debounce from "lodash/debounce";
 import EmptyState from "common/components/EmptyState";
+import { AlertIcon, CheckCircleIcon } from "@primer/octicons-react";
 
 interface IClient {
   name: string;
@@ -104,14 +105,9 @@ const ClientsList = (props: any) => {
       {
         Header: "STATUS",
         accessor: (row: any) => (
-          <div>
-            <div className={`status ${row.status ? "status-green" : "status-red"}`}>
-              {row.status ? "Email Verified!" : "Pending Verification"}
-            </div>
-            <label className="txt-grey ms-2">
-              {row.updatedAt ? new Date(row.updatedAt).toLocaleString() : new Date(row.createdAt).toLocaleString()}
-            </label>
-          </div>
+          <label className="txt-grey ms-2">
+            {row.status ? <CheckCircleIcon className="txt-green" /> : <AlertIcon className="txt-red"/> } &nbsp; {row.updatedAt ? new Date(row.updatedAt).toLocaleString() : new Date(row.createdAt).toLocaleString()}
+          </label>
         ),
       },
       {

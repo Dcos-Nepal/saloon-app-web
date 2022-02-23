@@ -1,14 +1,13 @@
 import _ from 'lodash';
-import { rrulestr } from 'rrule';
+import RRule, { Frequency, RRuleSet, rrulestr } from 'rrule';
 import { DateTime } from 'luxon';
 import { connect } from 'react-redux';
-import pinterpolate from 'pinterpolate';
-import { useNavigate } from 'react-router-dom';
-import { Column, useTable } from 'react-table';
-import { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import * as jobsActions from 'store/actions/job.actions';
-import { endpoints } from 'common/config';
+import * as visitsActions from 'store/actions/visit.actions';
+import { addVisitApi, updateStatus, updateVisitApi } from 'services/visits.service';
+import { getData } from 'utils/storage';
 
 interface IVisitList {
   overdue: any;
@@ -16,44 +15,90 @@ interface IVisitList {
   [key: string]: any;
 }
 
-const ClientJobDetailData = ({ id, actions, job }: any) => {
-  const navigate = useNavigate();
+const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
   const [visits, setVisits] = useState<IVisitList>({ overdue: [], completed: [] });
 
   const mapVisits = (visitSettings: any[]) => {
+    console.log(job);
     const mappedVisits = visitSettings.reduce((acc: any, visitSetting) => {
-      rrulestr(visitSetting.rruleSet)
-        .all()
-        .map((visit) => {
-          let visitMonth = DateTime.fromJSDate(visit).toFormat('LLL');
-          if (visitSetting.status.status === 'COMPLETED') visitMonth = 'completed';
-          else if (new Date(visit).valueOf() < new Date().valueOf()) visitMonth = 'overdue';
+      const rruleSet = new RRuleSet();
+      rruleSet.rrule(rrulestr(visitSetting.rruleSet));
+      visitSetting.excRrule.map((rule: string) => rruleSet.exrule(rrulestr(rule)));
+      console.log(rruleSet.all());
+      rruleSet.all().map((visit, index: number) => {
+        let visitMonth = DateTime.fromJSDate(visit).toFormat('LLL');
+        if (visitSetting.status.status === 'COMPLETED') visitMonth = 'completed';
+        else if (new Date(visit).valueOf() < new Date().valueOf()) visitMonth = 'overdue';
 
-          const visitObj = {
-            ...visitSetting,
-            startDate: DateTime.fromJSDate(visit).toFormat('yyyy LLL dd'),
-            instruction: job.instruction,
-            team: job.team.map((t: any) => t.fullName).join(', ')
-          };
-          if (acc[visitMonth]) acc[visitMonth].push(visitObj);
-          else acc[visitMonth] = [visitObj];
-          return true;
-        });
+        const visitObj = {
+          group: visitMonth,
+          visitMapId: `${visitSetting._id}_${visitMonth}_${index}`,
+          ...visitSetting,
+          startDate: DateTime.fromJSDate(visit).toFormat('yyyy LLL dd'),
+          instruction: job.instruction,
+          team: job.team.map((t: any) => t.fullName).join(', ')
+        };
+        if (acc[visitMonth]) acc[visitMonth].push(visitObj);
+        else acc[visitMonth] = [visitObj];
+        return true;
+      });
       return acc;
     }, {});
-    console.log(mappedVisits);
+
     return mappedVisits;
   };
 
+  const handleMarkAsCompleted = async (visitCompleted: boolean, visit: IVisitList) => {
+    const isPrimaryVisit = job.primaryVisit._id === visit._id;
+    if (isPrimaryVisit) {
+      visit.status.status = visitCompleted ? 'COMPLETED' : 'NOT-COMPLETED';
+      let rule: any = {
+        dtstart: new Date(`${visit.startDate} ${visit.startTime}`),
+        interval: 1,
+        count: 1,
+        freq: Frequency.DAILY
+      };
+      const rrule = new RRule(rule).toString();
+
+      addVisitApi({
+        inheritJob: true,
+        job: visit.job,
+        startDate: visit.startDate,
+        startTime: visit.startTime,
+        endTime: visit.endTime,
+        rruleSet: rrule,
+        status: {
+          status: visitCompleted ? 'COMPLETED' : 'NOT-COMPLETED',
+          updatedBy: getData('user')._id
+        }
+      });
+
+      updateVisitApi(visit._id, {
+        excRrule: [...visit.excRrule, rrule]
+      });
+    } else {
+      await updateStatus(visit._id, { status: visitCompleted ? 'COMPLETED' : 'NOT-COMPLETED' });
+    }
+
+    const newVisits: any = _.cloneDeep(visits);
+    console.log(visits);
+    const updatedVisit = newVisits[visit.group].find((v: any) => v.visitMapId === visit.visitMapId);
+    updatedVisit.status = { status: visitCompleted ? 'COMPLETED' : 'NOT-COMPLETED' };
+    console.log(newVisits);
+    setVisits(newVisits);
+  };
+
   useEffect(() => {
-    if (id) actions.fetchJob(id);
+    if (!id) return;
+    actions.fetchJob(id);
+    actions.fetchVisits({ job: id });
   }, [id, actions]);
 
   useEffect(() => {
-    if (!job) return;
-    const visits = mapVisits([job.primaryVisit]);
+    if (!job || !jobVisits?.data?.rows?.length) return;
+    const visits = mapVisits(jobVisits.data.rows);
     setVisits(visits);
-  }, [job]);
+  }, [jobVisits, job]);
 
   return (
     <div>
@@ -193,15 +238,15 @@ const ClientJobDetailData = ({ id, actions, job }: any) => {
           <table className="table txt-dark-grey">
             <thead>
               <tr className="rt-head">
-                <th scope="col"><input type="checkbox" /></th>
+                <th scope="col"></th>
                 <th scope="col">Visit Date</th>
                 <th scope="col">Instruction</th>
                 <th scope="col">Team</th>
               </tr>
             </thead>
-            {Object.keys(visits).map((visitKey: string) => (
-              <>
-                <thead>
+            {Object.keys(visits).map((visitKey: string, index: number) => (
+              <React.Fragment key={visitKey}>
+                <thead key={index}>
                   <tr className="rt-head">
                     <th colSpan={7} scope="col" className="th-overdue">
                       {visitKey}
@@ -210,18 +255,38 @@ const ClientJobDetailData = ({ id, actions, job }: any) => {
                 </thead>
 
                 <tbody className="rt-tbody">
-                  {visits[visitKey].map((v: any) => (
-                    <tr className="rt-tr-group">
+                  {visits[visitKey].map((v: any, index: number) => (
+                    <tr key={index} className="rt-tr-group">
                       <td>
-                        <input type="checkbox" />
+                        <input
+                          type="checkbox"
+                          id={v.visitMapId}
+                          checked={v.status.status === 'COMPLETED'}
+                          onChange={(e) => handleMarkAsCompleted(e.target.checked, v)}
+                        />
                       </td>
                       <td>{v.startDate}</td>
                       <td>{v.instruction}</td>
                       <td>{v.team}</td>
+                      <td>
+                        <div className="dropdown">
+                          <span role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                            <box-icon name="dots-vertical-rounded"></box-icon>
+                          </span>
+                          <ul className="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                            <li onClick={() => console.log(v)}>
+                              <span className="dropdown-item pointer">View Detail</span>
+                            </li>
+                            <li onClick={() => console.log(v)}>
+                              <span className="dropdown-item pointer">Edit</span>
+                            </li>
+                          </ul>
+                        </div>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
-              </>
+              </React.Fragment>
             ))}
           </table>
         </div>
@@ -233,7 +298,8 @@ const ClientJobDetailData = ({ id, actions, job }: any) => {
 const mapStateToProps = (state: any) => {
   return {
     isLoading: state.jobs.isLoading,
-    job: state.jobs.job
+    job: state.jobs.job,
+    jobVisits: state.visits.visits
   };
 };
 
@@ -241,6 +307,9 @@ const mapDispatchToProps = (dispatch: any) => ({
   actions: {
     fetchJob: (id: string) => {
       dispatch(jobsActions.fetchJob(id, {}));
+    },
+    fetchVisits: (query: any) => {
+      dispatch(visitsActions.fetchVisits(query));
     }
   }
 });

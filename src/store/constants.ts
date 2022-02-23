@@ -285,3 +285,35 @@ export const FETCH_INVOICE = 'FETCH_INVOICE';
 export const FETCH_INVOICE_SUCCESS = 'FETCH_INVOICE_SUCCESS';
 export const FETCH_INVOICE_LOADING = 'FETCH_INVOICE_LOADING';
 export const FETCH_INVOICE_ERROR = 'FETCH_INVOICE_ERROR';
+
+/**
+ * Create visits action types
+ */
+export const ADD_VISIT = 'ADD_VISIT';
+export const ADD_VISIT_SUCCESS = 'ADD_VISIT_SUCCESS';
+export const ADD_VISIT_LOADING = 'ADD_VISIT_LOADING';
+export const ADD_VISIT_ERROR = 'ADD_VISIT_ERROR';
+
+/**
+ * Update Visit action types
+ */
+export const UPDATE_VISIT = 'UPDATE_VISIT';
+export const UPDATE_VISIT_SUCCESS = 'UPDATE_VISIT_SUCCESS';
+export const UPDATE_VISIT_LOADING = 'UPDATE_VISIT_LOADING';
+export const UPDATE_VISIT_ERROR = 'UPDATE_VISIT_ERROR';
+
+/**
+ * Load Job visits Listing action types
+ */
+export const FETCH_VISITS = 'FETCH_VISITS';
+export const FETCH_VISITS_SUCCESS = 'FETCH_VISITS_SUCCESS';
+export const FETCH_VISITS_LOADING = 'FETCH_VISITS_LOADING';
+export const FETCH_VISITS_ERROR = 'FETCH_VISITS_ERROR';
+
+/**
+ * Fetch Job Visit action types
+ */
+export const FETCH_VISIT = 'FETCH_VISIT';
+export const FETCH_VISIT_SUCCESS = 'FETCH_VISIT_SUCCESS';
+export const FETCH_VISIT_LOADING = 'FETCH_VISIT_LOADING';
+export const FETCH_VISIT_ERROR = 'FETCH_VISIT_ERROR';

@@ -12,7 +12,6 @@ const Jobs = () => {
       <Routes>
         <Route path="/" element={<JobsList />} />
         <Route path={endpoints.admin.jobs.add} element={<ClientJobAdd />} />
-        <Route path={endpoints.admin.jobs.edit} element={<ClientJobAdd />} />
         <Route path={endpoints.admin.jobs.edit} element={<EditJob />} />
         <Route path={endpoints.admin.jobs.detail} element={<ClientJobDetail />} />
       </Routes>

@@ -17,6 +17,7 @@ const EditJob = (props: IProps) => {
   const [initialValues, setInitialValues] = useState<any>(null);
 
   useEffect(() => {
+    console.log('here');
     props.actions.fetchJob(id as string, {});
   }, [id, props.actions]);
 

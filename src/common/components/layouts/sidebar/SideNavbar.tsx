@@ -1,9 +1,9 @@
-import "boxicons";
-import { FC } from "react";
-import { endpoints } from "common/config";
+import 'boxicons';
+import { FC } from 'react';
+import { endpoints } from 'common/config';
 
-import {CalendarIcon, HomeIcon} from '@primer/octicons-react'
-import { useNavigate } from "react-router-dom";
+import { CalendarIcon, HomeIcon } from '@primer/octicons-react';
+import { useNavigate } from 'react-router-dom';
 
 interface IProps {
   active: string;
@@ -15,36 +15,25 @@ const SideNavbar: FC<IProps> = ({ active }) => {
   return (
     <div className="sidebar col-auto col-md-3 col-xl-2 px-sm-2 px-0">
       <div className="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2">
-        <ul
-          className="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start"
-          id="menu"
-        >
+        <ul className="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" id="menu">
           <li className="nav-item">
             <span
-              onClick={() => navigate('.')}
-              className={
-                active === "Overview"
-                  ? "nav-link nav-link-active align-middle px-0"
-                  : "nav-link align-middle px-0"
-              }
+              onClick={() => navigate('/dashboard')}
+              className={active === 'Overview' ? 'nav-link nav-link-active align-middle px-0' : 'nav-link align-middle px-0'}
             >
               <span className="mt-2">
-                <HomeIcon size={'small'}/>
+                <HomeIcon size={'small'} />
               </span>
               <span className="ms-2 d-none d-sm-inline">Overview</span>
             </span>
           </li>
           <li>
             <span
-              onClick={() => navigate(endpoints.admin.schedules.calendar)}
-              className={
-                active === "Schedule"
-                  ? "nav-link nav-link-active align-middle px-0"
-                  : "nav-link align-middle px-0"
-              }
+              onClick={() => navigate('/dashboard/' + endpoints.admin.schedules.calendar)}
+              className={active === 'Schedule' ? 'nav-link nav-link-active align-middle px-0' : 'nav-link align-middle px-0'}
             >
               <span className="mt-2">
-                <CalendarIcon size={'small'}/>
+                <CalendarIcon size={'small'} />
               </span>
               <span className="ms-2 d-none d-sm-inline">Schedule</span>
             </span>
@@ -54,118 +43,66 @@ const SideNavbar: FC<IProps> = ({ active }) => {
 
           <li>
             <span
-              onClick={() => navigate(endpoints.admin.client.list)}
-              className={
-                active === "Clients"
-                  ? "nav-link nav-link-active align-middle px-0"
-                  : "nav-link align-middle px-0"
-              }
+              onClick={() => navigate('/dashboard/' + endpoints.admin.client.list)}
+              className={active === 'Clients' ? 'nav-link nav-link-active align-middle px-0' : 'nav-link align-middle px-0'}
             >
               <span className="mt-2">
-                <box-icon
-                  color={active === "Clients" ? "#f47321" : "#161C21"}
-                  size="16px"
-                  type="solid"
-                  name="user-badge"
-                ></box-icon>
+                <box-icon color={active === 'Clients' ? '#f47321' : '#161C21'} size="16px" type="solid" name="user-badge"></box-icon>
               </span>
               <span className="ms-2 d-none d-sm-inline">Clients</span>
             </span>
           </li>
           <li>
             <span
-              onClick={() => navigate(endpoints.admin.requests.list)}
-              className={
-                active === "Requests"
-                  ? "nav-link nav-link-active align-middle px-0"
-                  : "nav-link align-middle px-0"
-              }
+              onClick={() => navigate('/dashboard/' + endpoints.admin.requests.list)}
+              className={active === 'Requests' ? 'nav-link nav-link-active align-middle px-0' : 'nav-link align-middle px-0'}
             >
               <span className="mt-2">
-                <box-icon
-                  color={active === "Requests" ? "#f47321" : "#161C21"}
-                  size="16px"
-                  type="solid"
-                  name="inbox"
-                ></box-icon>
+                <box-icon color={active === 'Requests' ? '#f47321' : '#161C21'} size="16px" type="solid" name="inbox"></box-icon>
               </span>
               <span className="ms-2 d-none d-sm-inline">Requests</span>
             </span>
           </li>
           <li>
             <span
-              onClick={() => navigate(endpoints.admin.quotes.list)}
-              className={
-                active === "Quotes"
-                  ? "nav-link nav-link-active align-middle px-0"
-                  : "nav-link align-middle px-0"
-              }
+              onClick={() => navigate('/dashboard/' + endpoints.admin.quotes.list)}
+              className={active === 'Quotes' ? 'nav-link nav-link-active align-middle px-0' : 'nav-link align-middle px-0'}
             >
               <span className="mt-2">
-                <box-icon
-                  color={active === "Quotes" ? "#f47321" : "#161C21"}
-                  size="16px"
-                  type="solid"
-                  name="file-import"
-                />
+                <box-icon color={active === 'Quotes' ? '#f47321' : '#161C21'} size="16px" type="solid" name="file-import" />
               </span>
               <span className="ms-2 d-none d-sm-inline">Quotes</span>
             </span>
           </li>
           <li>
             <span
-              onClick={() => navigate(endpoints.admin.jobs.list)}
-              className={
-                active === "Jobs"
-                  ? "nav-link nav-link-active align-middle px-0"
-                  : "nav-link align-middle px-0"
-              }
+              onClick={() => navigate('/dashboard/' + endpoints.admin.jobs.list)}
+              className={active === 'Jobs' ? 'nav-link nav-link-active align-middle px-0' : 'nav-link align-middle px-0'}
             >
               <span className="mt-2">
-                <box-icon
-                  color={active === "Jobs" ? "#f47321" : "#161C21"}
-                  size="16px"
-                  name="briefcase"
-                />
+                <box-icon color={active === 'Jobs' ? '#f47321' : '#161C21'} size="16px" name="briefcase" />
               </span>
               <span className="ms-2 d-none d-sm-inline">Jobs</span>
             </span>
           </li>
           <li>
             <span
-              onClick={() => navigate(endpoints.admin.invoices.list)}
-              className={
-                active === "Invoices"
-                  ? "nav-link nav-link-active align-middle px-0"
-                  : "nav-link align-middle px-0"
-              }
+              onClick={() => navigate('/dashboard/' + endpoints.admin.invoices.list)}
+              className={active === 'Invoices' ? 'nav-link nav-link-active align-middle px-0' : 'nav-link align-middle px-0'}
             >
               <span className="mt-2">
-                <box-icon
-                  color={active === "Invoices" ? "#f47321" : "#161C21"}
-                  size="16px"
-                  name="dollar-circle"
-                />
+                <box-icon color={active === 'Invoices' ? '#f47321' : '#161C21'} size="16px" name="dollar-circle" />
               </span>
               <span className="ms-2 d-none d-sm-inline">Invoices</span>
             </span>
           </li>
           <li>
             <span
-              onClick={() => navigate(endpoints.admin.worker.list)}
-              className={
-                active === "Workers"
-                  ? "nav-link nav-link-active align-middle px-0"
-                  : "nav-link align-middle px-0"
-              }
+              onClick={() => navigate('/dashboard/' + endpoints.admin.worker.list)}
+              className={active === 'Workers' ? 'nav-link nav-link-active align-middle px-0' : 'nav-link align-middle px-0'}
             >
               <span className="mt-2">
-                <box-icon
-                  color={active === "Workers" ? "#f47321" : "#161C21"}
-                  size="16px"
-                  type="solid"
-                  name="user-account"
-                />
+                <box-icon color={active === 'Workers' ? '#f47321' : '#161C21'} size="16px" type="solid" name="user-account" />
               </span>
               <span className="ms-2 d-none d-sm-inline">Workers</span>
             </span>
@@ -175,20 +112,11 @@ const SideNavbar: FC<IProps> = ({ active }) => {
 
           <li>
             <span
-              onClick={() => navigate(endpoints.admin.referral.program)}
-              className={
-                active === "Refer"
-                  ? "nav-link nav-link-active align-middle px-0"
-                  : "nav-link align-middle px-0"
-              }
+              onClick={() => navigate('/dashboard/' + endpoints.admin.referral.program)}
+              className={active === 'Referral' ? 'nav-link nav-link-active align-middle px-0' : 'nav-link align-middle px-0'}
             >
               <span className="mt-2">
-                <box-icon
-                  color={active === "Referral" ? "#f47321" : "#161C21"}
-                  size="16px"
-                  type="solid"
-                  name="user-account"
-                />
+                <box-icon color={active === 'Referral' ? '#f47321' : '#161C21'} size="16px" type="solid" name="user-account" />
               </span>
               <span className="ms-2 d-none d-sm-inline">Refer a Friend</span>
             </span>

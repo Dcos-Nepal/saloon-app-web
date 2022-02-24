@@ -60,13 +60,14 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
   const handleMarkAsCompleted = async (visitCompleted: boolean, visit: IVisitList) => {
     const isPrimaryVisit = job.primaryVisit._id === visit._id;
     if (isPrimaryVisit) {
-      const rrule = createOneOffRule(visit);
+      const rrule = createOneOffRule({ ...visit, startDate: DateTime.fromJSDate(visit?.startDate).toFormat('yyyy-MM-dd') });
 
       let newVisit = { ...visit };
       delete newVisit._id;
 
       addVisitApi({
         ...newVisit,
+        job: newVisit.job._id,
         inheritJob: true,
         rruleSet: rrule,
         status: {
@@ -85,7 +86,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
 
     const newVisits: any = _.cloneDeep(visits);
     const updatedVisit = newVisits[visit.group].find((v: any) => v.visitMapId === visit.visitMapId);
-    updatedVisit.status = { status: visitCompleted ? 'COMPLETED' : 'NOT-COMPLETED' };
+    updatedVisit.status = { status: visitCompleted ? 'COMPLETED' : 'NOT-COMPLETED', updatedBy: getData('user')._id };
     setVisits(newVisits);
   };
 
@@ -111,9 +112,11 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
         Promise.all([
           addVisitApi({
             ...newVisit,
+            job: newVisit.job._id,
             inheritJob: false,
             rruleSet: rrule,
             isPrimary: false,
+            excRrule: [],
             team: newVisit.team.map((t: any) => t._id)
           }),
           updateVisitApi(visit._id, {
@@ -121,19 +124,20 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
           })
         ]);
       } else {
-        await updateVisitApi(visit._id, { ...visit, rruleSet: rrule, team: visit.team.map((t: any) => t._id) });
+        await updateVisitApi(visit._id, { ...visit, job: visit.job._id, rruleSet: rrule, team: visit.team.map((t: any) => t._id) });
       }
 
       toast.success('Job Updated');
       setEditVisitMode(false);
       const newVisits: any = _.cloneDeep(visits);
       const updatedVisit = newVisits[visit.group].find((v: any) => v.visitMapId === visit.visitMapId);
-      Object.assign(updatedVisit, visit);
+      Object.assign(updatedVisit, { ...visit, startDate: new Date(`${visit.startDate} ${visit.startTime}`) });
       setVisits(newVisits);
     }
   });
 
   const createOneOffRule = (visit: any) => {
+    console.log(`${visit.startDate} ${visit.startTime}`);
     return new RRule({
       dtstart: new Date(`${visit.startDate} ${visit.startTime}`),
       interval: 1,

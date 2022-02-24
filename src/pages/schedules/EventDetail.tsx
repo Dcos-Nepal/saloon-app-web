@@ -1,6 +1,9 @@
-import { FC } from "react";
-import { IEvent } from "common/types/events";
-import { useNavigate } from "react-router-dom";
+import { FC, useState } from 'react';
+
+import CompleteJob from './CompleteJob';
+import { IEvent } from 'common/types/events';
+import { useNavigate } from 'react-router-dom';
+import Modal from 'common/components/atoms/Modal';
 
 interface IProps {
   event: IEvent;
@@ -9,6 +12,7 @@ interface IProps {
 
 const EventDetail: FC<IProps> = ({ closeModal, event }) => {
   const navigate = useNavigate();
+  const [completeJobFor, setCompleteJobFor] = useState<any | null>(null);
 
   return (
     <div className="modal-object--sm">
@@ -22,13 +26,12 @@ const EventDetail: FC<IProps> = ({ closeModal, event }) => {
       </div>
       <div className="modal-body">
         <div className="row">
-          <div>
-            <input
-              className="form-check-input"
-              type="checkbox"
-              value=""
-              id="flexCheckDefault"
-            />
+          <div
+            onClick={() => {
+              setCompleteJobFor(event);
+            }}
+          >
+            <input className="form-check-input" type="checkbox" value="" id="flexCheckDefault" />
             <label className="ms-2 form-check-label" htmlFor="flexCheckDefault">
               Completed
             </label>
@@ -77,14 +80,13 @@ const EventDetail: FC<IProps> = ({ closeModal, event }) => {
         <button onClick={() => navigate('/dashboard/quotes/123456')} type="button" className="btn btn-primary">
           View details
         </button>
-        <button
-          onClick={closeModal}
-          type="button"
-          className="btn btn-secondary"
-        >
+        <button onClick={closeModal} type="button" className="btn btn-secondary">
           Edit
         </button>
       </div>
+      <Modal isOpen={completeJobFor} onRequestClose={() => setCompleteJobFor(null)}>
+        <CompleteJob closeModal={() => setCompleteJobFor(null)} job={completeJobFor} />
+      </Modal>
     </div>
   );
 };

@@ -7,6 +7,7 @@ import { Column, useTable } from 'react-table';
 import { useEffect, useMemo, useState } from 'react';
 
 import JobAdd from './JobAdd';
+import Feedback from './Feedback';
 import { endpoints } from 'common/config';
 import Modal from 'common/components/atoms/Modal';
 import InputField from 'common/components/form/Input';
@@ -28,6 +29,7 @@ const JobsList = (props: IProps) => {
   const [jobs, setJobs] = useState<any[]>([]);
   const [pageCount, setPageCount] = useState(1);
   const [isAddJobOpen, setIsAddJobOpen] = useState(false);
+  const [provideFeedbackFor, setProvideFeedbackFor] = useState<any | null>(null);
 
   useEffect(() => {
     props.actions.fetchJobs({ q: search, page, limit: itemsPerPage });
@@ -78,6 +80,10 @@ const JobsList = (props: IProps) => {
               <box-icon name="dots-vertical-rounded"></box-icon>
             </span>
             <ul className="dropdown-menu" aria-labelledby="dropdownMenuLink">
+              <li onClick={() => setProvideFeedbackFor(row)}>
+                <span className="dropdown-item pointer">Provide Feedback</span>
+              </li>
+
               <li onClick={() => navigate(pinterpolate(endpoints.admin.worker.detail, { id: row._id }))}>
                 <span className="dropdown-item pointer">View Detail</span>
               </li>
@@ -196,6 +202,9 @@ const JobsList = (props: IProps) => {
       </div>
       <Modal isOpen={isAddJobOpen} onRequestClose={() => setIsAddJobOpen(false)}>
         <JobAdd closeModal={() => setIsAddJobOpen(false)} />
+      </Modal>
+      <Modal isOpen={provideFeedbackFor} onRequestClose={() => setProvideFeedbackFor(null)}>
+        <Feedback closeModal={() => setProvideFeedbackFor(null)} job={provideFeedbackFor} />
       </Modal>
     </>
   );

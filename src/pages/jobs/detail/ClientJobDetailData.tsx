@@ -2,12 +2,19 @@ import _ from 'lodash';
 import RRule, { Frequency, RRuleSet, rrulestr } from 'rrule';
 import { DateTime } from 'luxon';
 import { connect } from 'react-redux';
-import React, { useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 
+import Modal from 'common/components/atoms/Modal';
 import * as jobsActions from 'store/actions/job.actions';
 import * as visitsActions from 'store/actions/visit.actions';
 import { addVisitApi, updateStatus, updateVisitApi } from 'services/visits.service';
 import { getData } from 'utils/storage';
+import InputField from 'common/components/form/Input';
+import TextArea from 'common/components/form/TextArea';
+import { FieldArray, FormikProvider, useFormik } from 'formik';
+import { InfoIcon, PlusCircleIcon, XCircleIcon } from '@primer/octicons-react';
+import SelectAsync from 'common/components/form/AsyncSelect';
+import { toast } from 'react-toastify';
 
 interface IVisitList {
   overdue: any;
@@ -17,26 +24,28 @@ interface IVisitList {
 
 const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
   const [visits, setVisits] = useState<IVisitList>({ overdue: [], completed: [] });
+  const [editVisitMode, setEditVisitMode] = useState(false);
+  const [selectedVisit, setSelectedVisit] = useState<any>();
 
   const mapVisits = (visitSettings: any[]) => {
-    console.log(job);
     const mappedVisits = visitSettings.reduce((acc: any, visitSetting) => {
       const rruleSet = new RRuleSet();
       rruleSet.rrule(rrulestr(visitSetting.rruleSet));
       visitSetting.excRrule.map((rule: string) => rruleSet.exrule(rrulestr(rule)));
-      console.log(rruleSet.all());
       rruleSet.all().map((visit, index: number) => {
         let visitMonth = DateTime.fromJSDate(visit).toFormat('LLL');
         if (visitSetting.status.status === 'COMPLETED') visitMonth = 'completed';
         else if (new Date(visit).valueOf() < new Date().valueOf()) visitMonth = 'overdue';
 
-        const visitObj = {
+        let visitObj: any = {
+          ...visitSetting,
           group: visitMonth,
           visitMapId: `${visitSetting._id}_${visitMonth}_${index}`,
-          ...visitSetting,
-          startDate: DateTime.fromJSDate(visit).toFormat('yyyy LLL dd'),
-          instruction: job.instruction,
-          team: job.team.map((t: any) => t.fullName).join(', ')
+          startDate: visit,
+          title: visitSetting.inheritJob ? job.title : visitSetting.title,
+          instruction: visitSetting.inheritJob ? job.instruction : visitSetting.instruction,
+          team: visitSetting.inheritJob ? job.team : visitSetting.team,
+          lineItems: visitSetting.inheritJob ? job.lineItems : visitSetting.lineItems
         };
         if (acc[visitMonth]) acc[visitMonth].push(visitObj);
         else acc[visitMonth] = [visitObj];
@@ -51,41 +60,95 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
   const handleMarkAsCompleted = async (visitCompleted: boolean, visit: IVisitList) => {
     const isPrimaryVisit = job.primaryVisit._id === visit._id;
     if (isPrimaryVisit) {
-      visit.status.status = visitCompleted ? 'COMPLETED' : 'NOT-COMPLETED';
-      let rule: any = {
-        dtstart: new Date(`${visit.startDate} ${visit.startTime}`),
-        interval: 1,
-        count: 1,
-        freq: Frequency.DAILY
-      };
-      const rrule = new RRule(rule).toString();
+      const rrule = createOneOffRule({ ...visit, startDate: DateTime.fromJSDate(visit?.startDate).toFormat('yyyy-MM-dd') });
+
+      let newVisit = { ...visit };
+      delete newVisit._id;
 
       addVisitApi({
+        ...newVisit,
+        job: newVisit.job._id,
         inheritJob: true,
-        job: visit.job,
-        startDate: visit.startDate,
-        startTime: visit.startTime,
-        endTime: visit.endTime,
         rruleSet: rrule,
         status: {
           status: visitCompleted ? 'COMPLETED' : 'NOT-COMPLETED',
           updatedBy: getData('user')._id
-        }
+        },
+        isPrimary: false
       });
 
       updateVisitApi(visit._id, {
         excRrule: [...visit.excRrule, rrule]
       });
     } else {
-      await updateStatus(visit._id, { status: visitCompleted ? 'COMPLETED' : 'NOT-COMPLETED' });
+      updateStatus(visit._id, { status: visitCompleted ? 'COMPLETED' : 'NOT-COMPLETED' });
     }
 
     const newVisits: any = _.cloneDeep(visits);
-    console.log(visits);
     const updatedVisit = newVisits[visit.group].find((v: any) => v.visitMapId === visit.visitMapId);
-    updatedVisit.status = { status: visitCompleted ? 'COMPLETED' : 'NOT-COMPLETED' };
-    console.log(newVisits);
+    updatedVisit.status = { status: visitCompleted ? 'COMPLETED' : 'NOT-COMPLETED', updatedBy: getData('user')._id };
     setVisits(newVisits);
+  };
+
+  const editVisit = (visit: any) => {
+    setEditVisitMode(true);
+    setSelectedVisit(visit);
+  };
+
+  const visitEditForm = useFormik({
+    enableReinitialize: true,
+    initialValues: {
+      ..._.cloneDeep(selectedVisit),
+      startDate: DateTime.fromJSDate(selectedVisit?.startDate).toFormat('yyyy-MM-dd'),
+      endDate: DateTime.fromJSDate(selectedVisit?.endDate ? new Date(selectedVisit?.endDate) : selectedVisit?.startDate).toFormat('yyyy-MM-dd')
+    },
+    validateOnChange: true,
+    onSubmit: async (visit) => {
+      const rrule = createOneOffRule(visit);
+      if (visit.isPrimary) {
+        let newVisit = { ...visit, rruleSet: rrule };
+        delete newVisit._id;
+
+        Promise.all([
+          addVisitApi({
+            ...newVisit,
+            job: newVisit.job._id,
+            inheritJob: false,
+            rruleSet: rrule,
+            isPrimary: false,
+            excRrule: [],
+            team: newVisit.team.map((t: any) => t._id)
+          }),
+          updateVisitApi(visit._id, {
+            excRrule: [...visit.excRrule, rrule]
+          })
+        ]);
+      } else {
+        await updateVisitApi(visit._id, { ...visit, job: visit.job._id, rruleSet: rrule, team: visit.team.map((t: any) => t._id) });
+      }
+
+      toast.success('Job Updated');
+      setEditVisitMode(false);
+      const newVisits: any = _.cloneDeep(visits);
+      const updatedVisit = newVisits[visit.group].find((v: any) => v.visitMapId === visit.visitMapId);
+      Object.assign(updatedVisit, { ...visit, startDate: new Date(`${visit.startDate} ${visit.startTime}`) });
+      setVisits(newVisits);
+    }
+  });
+
+  const createOneOffRule = (visit: any) => {
+    console.log(`${visit.startDate} ${visit.startTime}`);
+    return new RRule({
+      dtstart: new Date(`${visit.startDate} ${visit.startTime}`),
+      interval: 1,
+      count: 1,
+      freq: Frequency.DAILY
+    }).toString();
+  };
+
+  const handleLineItemSelection = (key: string, { label, value, meta }: any) => {
+    visitEditForm.setFieldValue(`${key}.name`, label);
+    visitEditForm.setFieldValue(`${key}.description`, meta?.description || 'Enter your notes here...');
   };
 
   useEffect(() => {
@@ -225,6 +288,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
           </div>
         </div>
       </div>
+
       <div className="card">
         <div className="row bg-grey m-2">
           <div className="col d-flex flex-row pt-3 pb-3">
@@ -242,6 +306,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
                 <th scope="col">Visit Date</th>
                 <th scope="col">Instruction</th>
                 <th scope="col">Team</th>
+                <th scope="col"></th>
               </tr>
             </thead>
             {Object.keys(visits).map((visitKey: string, index: number) => (
@@ -265,9 +330,9 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
                           onChange={(e) => handleMarkAsCompleted(e.target.checked, v)}
                         />
                       </td>
-                      <td>{v.startDate}</td>
+                      <td>{DateTime.fromJSDate(v.startDate).toFormat('yyyy LLL dd')}</td>
                       <td>{v.instruction}</td>
-                      <td>{v.team}</td>
+                      <td>{v.team.map((t: any) => t.fullName).join(', ')}</td>
                       <td>
                         <div className="dropdown">
                           <span role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
@@ -277,7 +342,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
                             <li onClick={() => console.log(v)}>
                               <span className="dropdown-item pointer">View Detail</span>
                             </li>
-                            <li onClick={() => console.log(v)}>
+                            <li onClick={() => editVisit(v)}>
                               <span className="dropdown-item pointer">Edit</span>
                             </li>
                           </ul>
@@ -291,6 +356,245 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
           </table>
         </div>
       </div>
+
+      <Modal isOpen={editVisitMode} onRequestClose={() => setEditVisitMode(false)}>
+        <div className="modal-object--md">
+          <form onSubmit={visitEditForm.handleSubmit} style={{ position: 'relative' }}>
+            <FormikProvider value={visitEditForm}>
+              <div className="modal-object--md">
+                <div className="row p-2">
+                  <div className="col pb-3">
+                    <div className="card full-height">
+                      <h6 className="txt-bold">Job Details</h6>
+                      <div className="col">
+                        <div className="row">
+                          <div className="col-12">
+                            <InputField
+                              label="Job Title"
+                              type="text"
+                              placeholder="Title"
+                              name={`title`}
+                              value={visitEditForm.values?.title}
+                              onChange={visitEditForm.handleChange}
+                            />
+                          </div>
+                          <div className="col-12">
+                            <TextArea
+                              label={'Job Instructions'}
+                              name={`instruction`}
+                              rows={4}
+                              value={visitEditForm.values?.instruction}
+                              onChange={visitEditForm.handleChange}
+                              className={`form-control`}
+                              placeholder={"Quote's description..."}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col">
+                    <div className="card">
+                      <h6 className="txt-bold">Job Detail</h6>
+                      <div className="row border-bottom">
+                        <div className="col p-2 ps-4">
+                          <div className="txt-grey">Job number</div>
+                          <div className="row">
+                            <div className="col">#13</div>
+                            <div className="col txt-orange pointer">Change</div>
+                          </div>
+                        </div>
+                        <div className="col p-2 ps-4">
+                          <div className="txt-grey">Job type</div>
+                          <div className="">{job?.type}</div>
+                        </div>
+                      </div>
+                      <div className="row border-bottom">
+                        <div className="col p-2 ps-4">
+                          <div className="txt-grey">Started on</div>
+                          <div className="">{DateTime.fromISO(job?.startDate).toFormat('yyyy LLL dd')}</div>
+                        </div>
+                        <div className="col p-2 ps-4">
+                          <div className="txt-grey">Lasts for</div>
+                          <div className="">6 years</div>
+                        </div>
+                      </div>
+                      <div className="row border-bottom mb-3">
+                        <div className="col p-2 ps-4">
+                          <div className="txt-grey">Billing frequency</div>
+                          <div className="">After every visit</div>
+                        </div>
+                        <div className="col p-2 ps-4">
+                          <div className="txt-grey">Schedule</div>
+                          {job && <div className="">{_.startCase(rrulestr(job?.primaryVisit.rruleSet).toText())}</div>}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="row">
+                  <div className="col card m-4">
+                    <div className="mb-3">
+                      <div className="row">
+                        <div className="col">
+                          <InputField
+                            label="Start date"
+                            type="date"
+                            name={`startDate`}
+                            onChange={visitEditForm.handleChange}
+                            value={visitEditForm.values?.startDate}
+                          />
+                        </div>
+                        <div className="col">
+                          <InputField
+                            label="End date"
+                            name={`endDate`}
+                            type="date"
+                            onChange={visitEditForm.handleChange}
+                            value={visitEditForm.values?.endDate}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="mb-3">
+                      <div className="row">
+                        <div className="col">
+                          <InputField
+                            label="Start time"
+                            name="startTime"
+                            type="time"
+                            onChange={visitEditForm.handleChange}
+                            value={visitEditForm.values?.startTime}
+                          />
+                        </div>
+                        <div className="col">
+                          <InputField label="End time" name="endTime" type="time" onChange={visitEditForm.handleChange} value={visitEditForm.values?.endTime} />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="mb-3">
+                      <input className="form-check-input" type="checkbox" value="" id="flexCheckDefault" />
+                      <label className="ms-2 form-check-label" htmlFor="flexCheckDefault">
+                        Schedule later
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="row p-2">
+                  <div className="col-9">
+                    <div className="card">
+                      <div className="row">
+                        <h6 className="txt-bold">Line items</h6>
+                        <small className="text-warning">
+                          <InfoIcon size={14} /> These line items will appear in the job details and invoice.
+                        </small>
+                        <div className="row">
+                          <div className="col-5 p-2 ps-3">
+                            <div className="bg-light-grey txt-grey p-2 txt-bold">PRODUCT / SERVICE</div>
+                          </div>
+                          <div className="col p-2 ps-3">
+                            <div className="bg-light-grey txt-grey p-2 txt-bold">QTY.</div>
+                          </div>
+                          <div className="col p-2 ps-3">
+                            <div className="bg-light-grey txt-grey p-2 txt-bold">UNIT PRICE</div>
+                          </div>
+                          <div className="col p-2 ps-3">
+                            <div className="bg-light-grey txt-grey p-2 txt-bold">TOTAL</div>
+                          </div>
+                          <div className="col-1 p-2 ps-3">
+                            <div className=""></div>
+                          </div>
+                        </div>
+
+                        <FieldArray
+                          name="lineItems"
+                          render={(arrayHelpers) => (
+                            <div className="row">
+                              {visitEditForm.values?.lineItems?.map((lineItem: any, index: number) => (
+                                <Fragment key={`~${index}`}>
+                                  <div className="col-5">
+                                    <SelectAsync
+                                      name={`lineItem.name`}
+                                      placeholder="Search line items"
+                                      value={{ label: lineItem.name, value: lineItem._id }}
+                                      resource={{ name: 'line-items', labelProp: 'name', valueProp: '_id' }}
+                                      onChange={(selected: any) => handleLineItemSelection(`lineItems[${index}]`, selected)}
+                                    />
+                                    <textarea
+                                      name={`lineItems[${index}].description`}
+                                      value={visitEditForm.values?.lineItems[index].description}
+                                      onChange={visitEditForm.handleChange}
+                                      className={`form-control mb-2`}
+                                      placeholder={"Line item's description..."}
+                                    />
+                                  </div>
+                                  <div className="col">
+                                    <InputField
+                                      placeholder="Quantity"
+                                      type="number"
+                                      name={`lineItems[${index}].quantity`}
+                                      value={lineItem.quantity}
+                                      onChange={visitEditForm.handleChange}
+                                    />
+                                  </div>
+                                  <div className="col">
+                                    <InputField
+                                      type="number"
+                                      placeholder="Unit Price"
+                                      name={`lineItems[${index}].unitPrice`}
+                                      value={lineItem.unitPrice}
+                                      onChange={visitEditForm.handleChange}
+                                    />
+                                  </div>
+                                  <div className="col">
+                                    <strong>{`$ ${lineItem.quantity * lineItem.unitPrice}`}</strong>
+                                  </div>
+                                  <div className="col-1 pointer text-center">
+                                    <span
+                                      className="mr-2"
+                                      onClick={() =>
+                                        arrayHelpers.push({
+                                          name: '',
+                                          description: '',
+                                          quantity: 0,
+                                          unitPrice: 0,
+                                          total: 0
+                                        })
+                                      }
+                                    >
+                                      <PlusCircleIcon size={20} />
+                                    </span>
+                                    &nbsp;&nbsp;
+                                    {index !== 0 ? (
+                                      <span onClick={() => arrayHelpers.remove(index)}>
+                                        <XCircleIcon size={20} />
+                                      </span>
+                                    ) : null}
+                                  </div>
+                                </Fragment>
+                              ))}
+                            </div>
+                          )}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mb-3 mt-3">
+                <button type="submit" className="btn btn-primary">
+                  Update Visit
+                </button>
+              </div>
+            </FormikProvider>
+          </form>
+        </div>
+      </Modal>
     </div>
   );
 };

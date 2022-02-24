@@ -19,6 +19,7 @@ import Truncate from 'react-truncate';
 import { ClockIcon } from '@primer/octicons-react';
 import Footer from 'common/components/layouts/footer';
 import SideNavbar from 'common/components/layouts/sidebar';
+import { rrulestr } from 'rrule';
 
 const WorkSchedule = (props: any) => {
   const isMounted = useMountedRef();
@@ -66,10 +67,11 @@ const WorkSchedule = (props: any) => {
     if (props.schedules?.rows) {
       setEvents(
         props.schedules.rows.map((event: any) => ({
-          title: event.title,
-          start: event.startDate,
-          end: event.endDate,
+          title: event.inheritJob ? event.job.title : event.title,
+          start: event.inheritJob ? event.job.startDate : event.startDate,
+          end: event.inheritJob ? event.job.endDate : event.endDate,
           rrule: event.rruleSet,
+          // exrule: event.excRule?.map((rule: string) => ({ ...rrulestr(rule).origOptions, dtstart: new Date(rrulestr(rule).origOptions.dtstart!) })),
           meta: event
         }))
       );

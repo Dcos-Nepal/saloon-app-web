@@ -304,6 +304,10 @@ a { color: #666666;}
     border-left: 3px solid #10B981 !important;
 }
 
+.fc-button {
+    text-transform: capitalize !important;
+}
+
 .fc-toolbar-label {
     color: #959FAE !important;
 }

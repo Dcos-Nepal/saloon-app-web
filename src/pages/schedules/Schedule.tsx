@@ -81,7 +81,7 @@ const WorkSchedule = (props: any) => {
    * @param rangeInfo
    */
   const handleDates = (rangeInfo: any) => {
-    props.fetchJobSchedule(rangeInfo.startStr, rangeInfo.endStr);
+    props.fetchJobSchedule({ startDate: rangeInfo.start.toISOString(), endDate: rangeInfo.end.toISOString() });
   };
 
   return (

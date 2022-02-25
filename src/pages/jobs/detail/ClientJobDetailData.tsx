@@ -160,21 +160,21 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
     if (!selectedVisit) return;
 
     const rrule = createOneOffRule({ ...selectedVisit, startDate: DateTime.fromJSDate(selectedVisit?.startDate).toFormat('yyyy-MM-dd') });
-
-    if (selectedVisit.isPrimary) {
-      updateVisitApi(selectedVisit._id, {
-        excRrule: [...selectedVisit.excRrule, rrule]
-      });
-    } else {
-      deleteVisitApi(selectedVisit._id);
+    try {
+      if (selectedVisit.isPrimary) {
+        updateVisitApi(selectedVisit._id, {
+          excRrule: [...selectedVisit.excRrule, rrule]
+        });
+      } else {
+        deleteVisitApi(selectedVisit._id);
+      }
+      toast.success('Job deleted');
+      const newVisits: any = _.cloneDeep(visits);
+      newVisits[selectedVisit.group] = newVisits[selectedVisit.group].filter((v: any) => v.visitMapId !== selectedVisit.visitMapId);
+      setVisits(newVisits);
+    } catch (error) {
+      toast.error('Something went wrong');
     }
-
-    toast.success('Job Deleted');
-
-    const newVisits: any = _.cloneDeep(visits);
-    newVisits[selectedVisit.group] = newVisits[selectedVisit.group].filter((v: any) => v.visitMapId !== selectedVisit.visitMapId);
-
-    setVisits(newVisits);
     setShowDeleteConfirmation(false);
     setSelectedVisit(null);
   };

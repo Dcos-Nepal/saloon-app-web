@@ -7,7 +7,7 @@ import React, { Fragment, useEffect, useState } from 'react';
 import Modal from 'common/components/atoms/Modal';
 import * as jobsActions from 'store/actions/job.actions';
 import * as visitsActions from 'store/actions/visit.actions';
-import { addVisitApi, updateStatus, updateVisitApi } from 'services/visits.service';
+import { addVisitApi, updateStatus, updateVisitApi, deleteVisitApi } from 'services/visits.service';
 import { getData } from 'utils/storage';
 import InputField from 'common/components/form/Input';
 import TextArea from 'common/components/form/TextArea';
@@ -25,6 +25,7 @@ interface IVisitList {
 const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
   const [visits, setVisits] = useState<IVisitList>({ overdue: [], completed: [] });
   const [editVisitMode, setEditVisitMode] = useState(false);
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [selectedVisit, setSelectedVisit] = useState<any>();
 
   const mapVisits = (visitSettings: any[]) => {
@@ -137,7 +138,6 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
   });
 
   const createOneOffRule = (visit: any) => {
-    console.log(`${visit.startDate} ${visit.startTime}`);
     return new RRule({
       dtstart: new Date(`${visit.startDate} ${visit.startTime}`),
       interval: 1,
@@ -149,6 +149,34 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
   const handleLineItemSelection = (key: string, { label, value, meta }: any) => {
     visitEditForm.setFieldValue(`${key}.name`, label);
     visitEditForm.setFieldValue(`${key}.description`, meta?.description || 'Enter your notes here...');
+  };
+
+  const handleDeleteVisitClick = (visit: any) => {
+    setShowDeleteConfirmation(true);
+    setSelectedVisit(visit);
+  };
+
+  const deleteVisit = () => {
+    if (!selectedVisit) return;
+
+    const rrule = createOneOffRule({ ...selectedVisit, startDate: DateTime.fromJSDate(selectedVisit?.startDate).toFormat('yyyy-MM-dd') });
+    try {
+      if (selectedVisit.isPrimary) {
+        updateVisitApi(selectedVisit._id, {
+          excRrule: [...selectedVisit.excRrule, rrule]
+        });
+      } else {
+        deleteVisitApi(selectedVisit._id);
+      }
+      toast.success('Job deleted');
+      const newVisits: any = _.cloneDeep(visits);
+      newVisits[selectedVisit.group] = newVisits[selectedVisit.group].filter((v: any) => v.visitMapId !== selectedVisit.visitMapId);
+      setVisits(newVisits);
+    } catch (error) {
+      toast.error('Something went wrong');
+    }
+    setShowDeleteConfirmation(false);
+    setSelectedVisit(null);
   };
 
   useEffect(() => {
@@ -344,6 +372,9 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
                             </li>
                             <li onClick={() => editVisit(v)}>
                               <span className="dropdown-item pointer">Edit</span>
+                            </li>
+                            <li onClick={() => handleDeleteVisitClick(v)}>
+                              <span className="dropdown-item pointer">Delete</span>
                             </li>
                           </ul>
                         </div>
@@ -593,6 +624,22 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
               </div>
             </FormikProvider>
           </form>
+        </div>
+      </Modal>
+
+      <Modal isOpen={showDeleteConfirmation} onRequestClose={() => setShowDeleteConfirmation(false)}>
+        <div className="modal-object">
+          <div className="modal-header row bg-background-grey">
+            <h5 className="col-10">Are you sure you want to delete this visit?</h5>
+          </div>
+          <div className="modal-footer">
+            <button type="button" className="btn btn-danger" onClick={deleteVisit}>
+              Delete
+            </button>
+            <button type="button" className="btn btn-secondary" onClick={() => setShowDeleteConfirmation(false)}>
+              Cancel
+            </button>
+          </div>
         </div>
       </Modal>
     </div>

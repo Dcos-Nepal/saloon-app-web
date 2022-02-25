@@ -25,3 +25,8 @@ export const addVisitApi = async (payload: any) => {
   const url = '/v1.0.0/visits';
   return await http.post(url, payload);
 };
+
+export const deleteVisitApi = async (id: string) => {
+  const url = '/v1.0.0/visits/' + id;
+  return await http.delete(url);
+};

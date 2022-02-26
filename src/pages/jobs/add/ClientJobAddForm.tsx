@@ -58,7 +58,14 @@ const ClientJobAddForm = ({ actions, isLoading }: IProps) => {
     validationSchema: CreateSchema,
     validateOnChange: true,
     onSubmit: async (job) => {
-      await actions.addJob(job);
+      await actions.addJob({
+        ...job,
+        schedule: {
+          ...job.schedule,
+          startDate: new Date(`${job.schedule.startDate} ${job.schedule.startTime}`).toISOString(),
+          endDate: new Date(`${job.schedule.endDate} ${job.schedule.endTime}`).toISOString()
+        }
+      });
     }
   });
 

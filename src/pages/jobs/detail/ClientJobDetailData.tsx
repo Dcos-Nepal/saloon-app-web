@@ -59,8 +59,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
   };
 
   const handleMarkAsCompleted = async (visitCompleted: boolean, visit: IVisitList) => {
-    const isPrimaryVisit = job.primaryVisit._id === visit._id;
-    if (isPrimaryVisit) {
+    if (visit.hasMultiVisit) {
       const rrule = createOneOffRule({ ...visit, startDate: DateTime.fromJSDate(visit?.startDate).toFormat('yyyy-MM-dd') });
 
       let newVisit = { ...visit };
@@ -69,13 +68,14 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
       addVisitApi({
         ...newVisit,
         job: newVisit.job._id,
-        inheritJob: true,
+        inheritJob: false,
         rruleSet: rrule,
         status: {
           status: visitCompleted ? 'COMPLETED' : 'NOT-COMPLETED',
           updatedBy: getData('user')._id
         },
-        isPrimary: false
+        isPrimary: false,
+        hasMultiVisit: false
       });
 
       updateVisitApi(visit._id, {
@@ -105,30 +105,6 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
     },
     validateOnChange: true,
     onSubmit: async (visit) => {
-      const rrule = createOneOffRule(visit);
-      if (visit.isPrimary) {
-        let newVisit = { ...visit, rruleSet: rrule };
-        delete newVisit._id;
-
-        Promise.all([
-          addVisitApi({
-            ...newVisit,
-            job: newVisit.job._id,
-            inheritJob: false,
-            rruleSet: rrule,
-            isPrimary: false,
-            excRrule: [],
-            team: newVisit.team.map((t: any) => t._id)
-          }),
-          updateVisitApi(visit._id, {
-            excRrule: [...visit.excRrule, rrule]
-          })
-        ]);
-      } else {
-        await updateVisitApi(visit._id, { ...visit, job: visit.job._id, rruleSet: rrule, team: visit.team.map((t: any) => t._id) });
-      }
-
-      toast.success('Job Updated');
       setEditVisitMode(false);
       const newVisits: any = _.cloneDeep(visits);
       const updatedVisit = newVisits[visit.group].find((v: any) => v.visitMapId === visit.visitMapId);
@@ -136,6 +112,51 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
       setVisits(newVisits);
     }
   });
+
+  const saveVisit = async (visit: any, updateFollowing = false) => {
+    const rrule = createOneOffRule(visit);
+    if (visit.hasMultiVisit) {
+      let newVisit = { ...visit, rruleSet: rrule };
+      if (!updateFollowing) delete newVisit._id;
+
+      addVisitApi(
+        {
+          ...newVisit,
+          job: newVisit.job._id,
+          inheritJob: false,
+          rruleSet: rrule,
+          isPrimary: false,
+          excRrule: [],
+          startDate: new Date(`${newVisit.startDate} ${newVisit.startTime}`),
+          endDate: new Date(`${newVisit.endDate} ${newVisit.endTime}`),
+          team: newVisit.team.map((t: any) => t._id),
+          hasMultiVisit: updateFollowing
+        },
+        updateFollowing ? { updateFollowing } : null
+      );
+
+      if (!updateFollowing) {
+        updateVisitApi(visit._id, {
+          excRrule: [...visit.excRrule, rrule]
+        });
+      }
+    } else {
+      await updateVisitApi(
+        visit._id,
+        {
+          ...visit,
+          job: visit.job._id,
+          rruleSet: rrule,
+          team: visit.team.map((t: any) => t._id),
+          startDate: new Date(`${visit.startDate} ${visit.startTime}`),
+          endDate: new Date(`${visit.endDate} ${visit.endTime}`)
+        },
+        updateFollowing ? { updateFollowing } : null
+      );
+    }
+
+    toast.success('Job Updated');
+  };
 
   const createOneOffRule = (visit: any) => {
     return new RRule({
@@ -161,7 +182,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
 
     const rrule = createOneOffRule({ ...selectedVisit, startDate: DateTime.fromJSDate(selectedVisit?.startDate).toFormat('yyyy-MM-dd') });
     try {
-      if (selectedVisit.isPrimary) {
+      if (selectedVisit.hasMultiVisit) {
         updateVisitApi(selectedVisit._id, {
           excRrule: [...selectedVisit.excRrule, rrule]
         });
@@ -618,8 +639,11 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
               </div>
 
               <div className="mb-3 mt-3">
-                <button type="submit" className="btn btn-primary">
-                  Update Visit
+                <button type="submit" className="btn btn-primary pr-3" onClick={() => saveVisit(visitEditForm.values, true)}>
+                  Save and Update Future Visit
+                </button>{' '}
+                <button type="submit" className="btn btn-primary" onClick={() => saveVisit(visitEditForm.values)}>
+                  Save
                 </button>
               </div>
             </FormikProvider>

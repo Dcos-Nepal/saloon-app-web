@@ -17,6 +17,7 @@ import Modal from 'common/components/atoms/Modal';
 import { toast } from 'react-toastify';
 import DeleteConfirm from 'common/components/DeleteConfirm';
 import { deleteQuoteApi } from 'services/quotes.service';
+import StatusChangeWithReason from './StatusChangeWithReason';
 
 interface IQuote {
   id: string;
@@ -100,7 +101,9 @@ const QuotesList = (props: any) => {
   const handleSearch = useCallback(debounce(handleQuotesSearch, 300), []);
 
   const handleStatusChange = async (id: string, status: { label: string; value: string }, reason: string) => {
-    await props.actions.updateQuoteStatus({ id, status: status.value });
+    await props.actions.updateQuoteStatus({ id, status: status.value, reason: reason });
+
+    props.actions.fetchQuotes({ q: query, offset: offset, limit: itemsPerPage });
   };
 
   /**
@@ -135,6 +138,34 @@ const QuotesList = (props: any) => {
           />
         </span>
       </div> */}
+      </div>
+    );
+  };
+
+  const Status = ({ row }: { row: IQuote }) => {
+    const [statusChangeInProgress, setStatusChangeInProgress] = useState('');
+
+    return (
+      <div style={{ minWidth: '150px' }}>
+        <SelectField
+          label=""
+          options={quoteStatusOptions}
+          value={{ label: row.status.status, value: row.status.status }}
+          placeholder="All"
+          handleChange={(selected: { label: string; value: string }) => {
+            if (selected.value === 'REJECTED' || selected.value === 'CHANGE_REQUESTED') setStatusChangeInProgress(selected.value);
+            else handleStatusChange(row.id, selected, '');
+          }}
+          helperComponent={<div className="">{row.status?.reason || ''}</div>}
+        />
+        <Modal isOpen={!!statusChangeInProgress} onRequestClose={() => setStatusChangeInProgress('')}>
+          <StatusChangeWithReason
+            id={row.id}
+            status={quoteStatusOptions.find((statusLabelValue) => statusLabelValue.value === statusChangeInProgress)}
+            onSave={handleStatusChange}
+            closeModal={() => setStatusChangeInProgress('')}
+          />
+        </Modal>
       </div>
     );
   };
@@ -193,19 +224,7 @@ const QuotesList = (props: any) => {
       },
       {
         Header: 'STATUS',
-        accessor: (row: IQuote) => {
-          return (
-            <div style={{ minWidth: '150px' }}>
-              <SelectField
-                label=""
-                options={quoteStatusOptions}
-                value={{ label: row.status.status, value: row.status.status }}
-                placeholder="All"
-                handleChange={(selected: { label: string; value: string }) => handleStatusChange(row.id, selected, '')}
-              />
-            </div>
-          );
-        }
+        accessor: (row: IQuote) => <Status row={row} />
       },
       {
         Header: 'TOTAL',
@@ -337,7 +356,7 @@ const mapDispatchToProps = (dispatch: any) => ({
       dispatch(quotesActions.fetchQuotes(payload));
     },
     updateQuoteStatus: (payload: any) => {
-      dispatch(quotesActions.updateQuoteStatus(payload.id, payload.status));
+      dispatch(quotesActions.updateQuoteStatus(payload.id, { status: payload.status, reason: payload.reason }));
     }
   }
 });

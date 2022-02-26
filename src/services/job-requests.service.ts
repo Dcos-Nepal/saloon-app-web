@@ -18,6 +18,11 @@ export const fetchJobRequestApi = async (id: string) => {
   return await http.get(url);
 };
 
+export const deleteJobRequestApi = async (id: string) => {
+  const url = '/v1.0.0/job-requests/' + id;
+  return await http.delete(url);
+};
+
 export const updateJobRequestApi = async (payload: any) => {
   const url = '/v1.0.0/job-requests/' + payload._id;
   return await http.put(url, payload);

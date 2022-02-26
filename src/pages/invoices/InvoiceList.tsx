@@ -14,6 +14,11 @@ import { Loader } from 'common/components/atoms/Loader';
 import debounce from 'lodash/debounce';
 import EmptyState from 'common/components/EmptyState';
 
+import Modal from 'common/components/atoms/Modal';
+import { deleteInvoiceApi } from 'services/invoice.service';
+import { toast } from 'react-toastify';
+import DeleteConfirm from 'common/components/DeleteConfirm';
+
 interface IInvoice {
   id: string;
   subject: string;
@@ -44,6 +49,21 @@ const InvoicesList = (props: any) => {
   const [offset, setOffset] = useState(1);
   const [pageCount, setPageCount] = useState(0);
   const [invoices, setInvoices] = useState<IInvoice[]>([]);
+  const [deleteInProgress, setDeleteInProgress] = useState('');
+
+  const deleteInvoiceHandler = async () => {
+    try {
+      if (deleteInProgress) {
+        await deleteInvoiceApi(deleteInProgress);
+        toast.success('Invoice deleted successfully');
+        setDeleteInProgress('');
+
+        props.actions.fetchInvoices({ q: query, offset: offset, limit: itemsPerPage });
+      }
+    } catch (ex) {
+      toast.error('Failed to delete invoice');
+    }
+  };
 
   useEffect(() => {
     props.actions.fetchInvoices({ q: query, offset: offset, limit: itemsPerPage });
@@ -179,13 +199,13 @@ const InvoicesList = (props: any) => {
               <box-icon name="dots-vertical-rounded" />
             </a>
             <ul className="dropdown-menu" aria-labelledby="dropdownMenuLink">
-              <li onClick={() => navigate(row.id)}>
+              <li className='pointer' onClick={() => navigate(row.id)}>
                 <a className="dropdown-item">View Detail</a>
               </li>
-              <li onClick={() => navigate(row.id + '/edit')}>
+              <li className='pointer' onClick={() => navigate(row.id + '/edit')}>
                 <a className="dropdown-item">Edit</a>
               </li>
-              <li>
+              <li className='pointer' onClick={() => setDeleteInProgress(row.id)}>
                 <a className="dropdown-item">Delete</a>
               </li>
             </ul>
@@ -276,6 +296,10 @@ const InvoicesList = (props: any) => {
           />
         </div>
       </div>
+
+      <Modal isOpen={!!deleteInProgress} onRequestClose={() => setDeleteInProgress('')}>
+        <DeleteConfirm onDelete={deleteInvoiceHandler} closeModal={() => setDeleteInProgress('')} />
+      </Modal>
     </>
   );
 };

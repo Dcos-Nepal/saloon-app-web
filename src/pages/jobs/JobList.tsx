@@ -14,6 +14,9 @@ import InputField from 'common/components/form/Input';
 import SelectField from 'common/components/form/Select';
 import * as jobsActions from '../../store/actions/job.actions';
 import ReactPaginate from 'react-paginate';
+import { deleteJobApi, provideFeedbackApi } from 'services/jobs.service';
+import { toast } from 'react-toastify';
+import DeleteConfirm from 'common/components/DeleteConfirm';
 
 interface IProps {
   actions: { fetchJobs: (query: any) => any };
@@ -29,7 +32,22 @@ const JobsList = (props: IProps) => {
   const [jobs, setJobs] = useState<any[]>([]);
   const [pageCount, setPageCount] = useState(1);
   const [isAddJobOpen, setIsAddJobOpen] = useState(false);
+  const [deleteInProgress, setDeleteInProgress] = useState('');
   const [provideFeedbackFor, setProvideFeedbackFor] = useState<any | null>(null);
+
+  const deleteJobHandler = async () => {
+    try {
+      if (deleteInProgress) {
+        await deleteJobApi(deleteInProgress);
+        toast.success('Job deleted successfully');
+        setDeleteInProgress('');
+
+        props.actions.fetchJobs({ q: search, page, limit: itemsPerPage });
+      }
+    } catch (ex) {
+      toast.error('Failed to delete job');
+    }
+  };
 
   useEffect(() => {
     props.actions.fetchJobs({ q: search, page, limit: itemsPerPage });
@@ -90,7 +108,7 @@ const JobsList = (props: IProps) => {
               <li onClick={() => navigate(pinterpolate(endpoints.admin.jobs.edit, { id: row._id }))}>
                 <span className="dropdown-item pointer">Edit</span>
               </li>
-              <li>
+              <li onClick={() => setDeleteInProgress(row._id)}>
                 <span className="dropdown-item pointer">Delete</span>
               </li>
             </ul>
@@ -117,6 +135,17 @@ const JobsList = (props: IProps) => {
   const handlePageClick = (event: any) => {
     const selectedPage = event.selected;
     setPage(selectedPage + 1);
+  };
+
+  const feedbackHandler = async (data: any) => {
+    try {
+      await provideFeedbackApi(provideFeedbackFor._id, data);
+      toast.success('Feedback provided successfully');
+      setProvideFeedbackFor(null);
+      props.actions.fetchJobs({ q: search, page, limit: itemsPerPage });
+    } catch (ex) {
+      toast.error('Failed to provide feedback');
+    }
   };
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({ columns, data: jobs });
@@ -204,7 +233,11 @@ const JobsList = (props: IProps) => {
         <JobAdd closeModal={() => setIsAddJobOpen(false)} />
       </Modal>
       <Modal isOpen={provideFeedbackFor} onRequestClose={() => setProvideFeedbackFor(null)}>
-        <Feedback closeModal={() => setProvideFeedbackFor(null)} job={provideFeedbackFor} />
+        <Feedback closeModal={() => setProvideFeedbackFor(null)} job={provideFeedbackFor} provideFeedback={feedbackHandler} />
+      </Modal>
+
+      <Modal isOpen={!!deleteInProgress} onRequestClose={() => setDeleteInProgress('')}>
+        <DeleteConfirm onDelete={deleteJobHandler} closeModal={() => setDeleteInProgress('')} />
       </Modal>
     </>
   );

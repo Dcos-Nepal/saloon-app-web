@@ -15,6 +15,11 @@ export const createQuotesApi = async (payload: any) => {
   });
 };
 
+export const deleteQuoteApi = async (id: string) => {
+  const url = '/v1.0.0/quotes/' + id;
+  return await http.delete(url);
+};
+
 export const fetchJobQuoteApi = async (payload: any) => {
   const url = `/v1.0.0/quotes/${payload.id}`;
   return await http.get(url, {

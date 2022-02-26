@@ -1,18 +1,22 @@
-import { connect } from "react-redux";
-import debounce from "lodash/debounce";
-import pinterpolate from "pinterpolate";
-import ReactPaginate from "react-paginate";
-import { useNavigate } from "react-router-dom";
-import { Column, useTable } from "react-table";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { connect } from 'react-redux';
+import debounce from 'lodash/debounce';
+import pinterpolate from 'pinterpolate';
+import ReactPaginate from 'react-paginate';
+import { useNavigate } from 'react-router-dom';
+import { Column, useTable } from 'react-table';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import * as workersActions from "../../../store/actions/workers.actions";
+import * as workersActions from '../../../store/actions/workers.actions';
 
-import { endpoints } from "common/config";
-import InputField from "common/components/form/Input";
-import SelectField from "common/components/form/Select";
-import { Loader } from "common/components/atoms/Loader";
-import { AlertIcon, CheckCircleIcon } from "@primer/octicons-react";
+import { endpoints } from 'common/config';
+import InputField from 'common/components/form/Input';
+import SelectField from 'common/components/form/Select';
+import { Loader } from 'common/components/atoms/Loader';
+import { AlertIcon, CheckCircleIcon } from '@primer/octicons-react';
+import Modal from 'common/components/atoms/Modal';
+import { deleteUserApi } from 'services/users.service';
+import { toast } from 'react-toastify';
+import DeleteConfirm from 'common/components/DeleteConfirm';
 
 interface IClient {
   name: string;
@@ -29,16 +33,36 @@ const WorkerList = (props: any) => {
   const [offset, setOffset] = useState(1);
   const [pageCount, setPageCount] = useState(0);
   const [workers, setWorkers] = useState<IClient[]>([]);
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState('');
+  const [deleteInProgress, setDeleteInProgress] = useState('');
 
   useEffect(() => {
     props.actions.fetchWorkers({
       q: query,
-      roles: "WORKER",
+      roles: 'WORKER',
       page: offset,
-      limit: itemsPerPage,
+      limit: itemsPerPage
     });
   }, [offset, itemsPerPage, props.actions, query]);
+
+  const deleteWorkerHandler = async () => {
+    try {
+      if (deleteInProgress) {
+        await deleteUserApi(deleteInProgress);
+        toast.success('Worker deleted successfully');
+        setDeleteInProgress('');
+
+        props.actions.fetchWorkers({
+          q: query,
+          roles: 'WORKER',
+          page: offset,
+          limit: itemsPerPage
+        });
+      }
+    } catch (ex) {
+      toast.error('Failed to delete worker');
+    }
+  };
 
   useEffect(() => {
     if (props.workers?.data?.rows) {
@@ -48,11 +72,11 @@ const WorkerList = (props: any) => {
           name: `${row.firstName} ${row.lastName}`,
           address: row?.address
             ? `${row.address.street1}, ${row.address.street2}, ${row.address.city}, ${row.address.state}, ${row.address.postalCode}, ${row.address.country}`
-            : "Address not added!",
+            : 'Address not added!',
           phoneNumber: row.phoneNumber,
           email: row.email,
           status: row.auth.email,
-          updatedAt: row.updatedAt,
+          updatedAt: row.updatedAt
         }))
       );
       setPageCount(Math.ceil(props.workers.data.totalCount / itemsPerPage));
@@ -70,28 +94,25 @@ const WorkerList = (props: any) => {
   };
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const debouncedChangeHandler = useCallback(
-    debounce(handleWorkerSearch, 300),
-    []
-  );
+  const debouncedChangeHandler = useCallback(debounce(handleWorkerSearch, 300), []);
 
   const columns: Column<IClient>[] = useMemo(
     () => [
       {
-        Header: "WORKER NAME",
+        Header: 'WORKER NAME',
         accessor: (row: any) => {
           return (
             <div>
               <div>
                 <b>{row.name}</b>
               </div>
-              <small>{row.address || "Address not added."}</small>
+              <small>{row.address || 'Address not added.'}</small>
             </div>
           );
-        },
+        }
       },
       {
-        Header: "CONTACT",
+        Header: 'CONTACT',
         accessor: (row: any) => {
           return (
             <div>
@@ -103,28 +124,23 @@ const WorkerList = (props: any) => {
               </small>
             </div>
           );
-        },
+        }
       },
       {
-        Header: "STATUS",
+        Header: 'STATUS',
         accessor: (row: any) => (
           <label className="txt-grey ms-2">
-            {row.status ? <CheckCircleIcon className="txt-green" /> : <AlertIcon className="txt-red"/> } &nbsp; {row.updatedAt ? new Date(row.updatedAt).toLocaleString() : new Date(row.createdAt).toLocaleString()}
+            {row.status ? <CheckCircleIcon className="txt-green" /> : <AlertIcon className="txt-red" />} &nbsp;{' '}
+            {row.updatedAt ? new Date(row.updatedAt).toLocaleString() : new Date(row.createdAt).toLocaleString()}
           </label>
-        ),
+        )
       },
       {
-        Header: " ",
+        Header: ' ',
         maxWidth: 40,
         accessor: (row: any) => (
           <div className="dropdown">
-            <a
-              href="void(0)"
-              role="button"
-              id="dropdownMenuLink"
-              data-bs-toggle="dropdown"
-              aria-expanded="false"
-            >
+            <a href="void(0)" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
               <box-icon name="dots-vertical-rounded"></box-icon>
             </a>
             <ul className="dropdown-menu" aria-labelledby="dropdownMenuLink">
@@ -132,7 +148,7 @@ const WorkerList = (props: any) => {
                 onClick={() =>
                   navigate(
                     pinterpolate(endpoints.admin.worker.detail, {
-                      id: row._id,
+                      id: row._id
                     })
                   )
                 }
@@ -144,7 +160,7 @@ const WorkerList = (props: any) => {
                 onClick={() =>
                   navigate(
                     pinterpolate(endpoints.admin.worker.edit, {
-                      id: row._id,
+                      id: row._id
                     })
                   )
                 }
@@ -152,18 +168,19 @@ const WorkerList = (props: any) => {
               >
                 Edit
               </li>
-              <li className="p-2 pointer dropdown-item">Delete</li>
+              <li onClick={() => setDeleteInProgress(row._id)} className="p-2 pointer dropdown-item">
+                Delete
+              </li>
             </ul>
           </div>
-        ),
-      },
+        )
+      }
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
 
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
-    useTable({ columns, data: workers });
+  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({ columns, data: workers });
 
   return (
     <>
@@ -182,31 +199,21 @@ const WorkerList = (props: any) => {
             New Worker
           </button>
         </div>
-        <label className="txt-grey">
-          Total{" "}
-          {query
-            ? `${workers.length} search results found!`
-            : `${props?.workers?.data?.totalCount || 0} workers`}
-        </label>
+        <label className="txt-grey">Total {query ? `${workers.length} search results found!` : `${props?.workers?.data?.totalCount || 0} workers`}</label>
       </div>
       <div className="card">
         <div className="row pt-2 m-1 rounded-top bg-grey">
           <Loader isLoading={props.isLoading} />
           <div className="col">
-            <InputField
-              label="Search"
-              placeholder="Search workers"
-              className="search-input"
-              onChange={debouncedChangeHandler}
-            />
+            <InputField label="Search" placeholder="Search workers" className="search-input" onChange={debouncedChangeHandler} />
           </div>
           <div className="col row">
             <div className="col">
               <SelectField
                 label="Sort"
                 options={[
-                  { label: "Name", value: "name" },
-                  { label: "Phone Number", value: "number" },
+                  { label: 'Name', value: 'name' },
+                  { label: 'Phone Number', value: 'number' }
                 ]}
                 placeholder="Sort by"
               />
@@ -215,8 +222,8 @@ const WorkerList = (props: any) => {
               <SelectField
                 label="Filters"
                 options={[
-                  { label: "All results", value: "all" },
-                  { label: "Phone Number", value: "number" },
+                  { label: 'All results', value: 'all' },
+                  { label: 'Phone Number', value: 'number' }
                 ]}
                 placeholder="All results"
               />
@@ -229,7 +236,7 @@ const WorkerList = (props: any) => {
                   <th>SN</th>
                   {headerGroup.headers.map((column) => (
                     <th {...column.getHeaderProps()} scope="col">
-                      {column.render("Header")}
+                      {column.render('Header')}
                     </th>
                   ))}
                 </tr>
@@ -242,12 +249,10 @@ const WorkerList = (props: any) => {
                 return (
                   <tr {...row.getRowProps()} className="rt-tr-group">
                     <td>
-                      <strong>
-                        #{index + 1 + (offset - 1) * itemsPerPage}
-                      </strong>
+                      <strong>#{index + 1 + (offset - 1) * itemsPerPage}</strong>
                     </td>
                     {row.cells.map((cell) => (
-                      <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
+                      <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
                     ))}
                   </tr>
                 );
@@ -257,17 +262,21 @@ const WorkerList = (props: any) => {
         </div>
         <div className="row pt-2 m-1 rounded-top">
           <ReactPaginate
-            previousLabel={"Previous"}
-            nextLabel={"Next"}
-            breakLabel={"..."}
-            breakClassName={"break-me"}
+            previousLabel={'Previous'}
+            nextLabel={'Next'}
+            breakLabel={'...'}
+            breakClassName={'break-me'}
             pageCount={pageCount}
             onPageChange={handlePageClick}
-            containerClassName={"pagination"}
-            activeClassName={"active"}
+            containerClassName={'pagination'}
+            activeClassName={'active'}
           />
         </div>
       </div>
+
+      <Modal isOpen={!!deleteInProgress} onRequestClose={() => setDeleteInProgress('')}>
+        <DeleteConfirm onDelete={deleteWorkerHandler} closeModal={() => setDeleteInProgress('')} />
+      </Modal>
     </>
   );
 };
@@ -275,7 +284,7 @@ const WorkerList = (props: any) => {
 const mapStateToProps = (state: any) => {
   return {
     workers: state.workers.workers,
-    isLoading: state.workers.isLoading,
+    isLoading: state.workers.isLoading
   };
 };
 
@@ -283,8 +292,8 @@ const mapDispatchToProps = (dispatch: any) => ({
   actions: {
     fetchWorkers: (payload: any) => {
       dispatch(workersActions.fetchWorkers(payload));
-    },
-  },
+    }
+  }
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(WorkerList);

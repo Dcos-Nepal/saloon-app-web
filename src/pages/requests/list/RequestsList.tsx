@@ -1,21 +1,25 @@
-import { connect } from "react-redux";
-import pinterpolate from "pinterpolate";
-import ReactPaginate from "react-paginate";
-import React, { useCallback } from "react";
-import { Column, useTable } from "react-table";
-import { Suspense, useEffect, useMemo, useState } from "react";
+import { connect } from 'react-redux';
+import { toast } from 'react-toastify';
+import pinterpolate from 'pinterpolate';
+import ReactPaginate from 'react-paginate';
+import React, { useCallback } from 'react';
+import { Column, useTable } from 'react-table';
+import { Suspense, useEffect, useMemo, useState } from 'react';
 
-import * as jobReqActions from "../../../store/actions/job-requests.actions";
+import * as jobReqActions from '../../../store/actions/job-requests.actions';
 
-import InputField from "common/components/form/Input";
-import SelectField from "common/components/form/Select";
+import InputField from 'common/components/form/Input';
+import SelectField from 'common/components/form/Select';
+import DeleteConfirm from 'common/components/DeleteConfirm';
 
-import { Loader } from "common/components/atoms/Loader";
-import { useNavigate } from "react-router-dom";
-import { endpoints } from "common/config";
-import debounce from "lodash/debounce";
+import { Loader } from 'common/components/atoms/Loader';
+import { useNavigate } from 'react-router-dom';
+import { endpoints } from 'common/config';
+import debounce from 'lodash/debounce';
+import { deleteJobRequestApi } from 'services/job-requests.service';
+import Modal from 'common/components/atoms/Modal';
 
-const QuickAddRequestForm = React.lazy(() => import("../QuickRequestForm"));
+const QuickAddRequestForm = React.lazy(() => import('../QuickRequestForm'));
 
 interface IRequest {
   name: string;
@@ -28,10 +32,25 @@ interface IRequest {
 const RequestsList = (props: any) => {
   const navigate = useNavigate();
   const [itemsPerPage] = useState(10);
+  const [query, setQuery] = useState('');
   const [offset, setOffset] = useState(1);
   const [pageCount, setPageCount] = useState(0);
   const [requests, setRequests] = useState<IRequest[]>([]);
-  const [query, setQuery] = useState("");
+  const [deleteInProgress, setDeleteInProgress] = useState('');
+
+  const deleteJobRequestHandler = async () => {
+    try {
+      if (deleteInProgress) {
+        await deleteJobRequestApi(deleteInProgress);
+        toast.success('Job request deleted successfully');
+        setDeleteInProgress('');
+
+        props.actions.fetchJobRequests({ q: query, page: offset, limit: itemsPerPage });
+      }
+    } catch (ex) {
+      toast.error('Failed to delete job request');
+    }
+  };
 
   useEffect(() => {
     props.actions.fetchJobRequests({ q: query, page: offset, limit: itemsPerPage });
@@ -46,7 +65,7 @@ const RequestsList = (props: any) => {
           requestDate: new Date(row.createdAt).toDateString(),
           status: row.status,
           _id: row._id,
-          updatedDate: new Date(row.updatedAt).toDateString(),
+          updatedDate: new Date(row.updatedAt).toDateString()
         }))
       );
       setPageCount(Math.ceil(props.itemList.data.totalCount / itemsPerPage));
@@ -69,11 +88,11 @@ const RequestsList = (props: any) => {
   const columns: Column<IRequest>[] = useMemo(
     () => [
       {
-        Header: "REQUEST TITLE",
-        accessor: "title",
+        Header: 'REQUEST TITLE',
+        accessor: 'title'
       },
       {
-        Header: "CLIENT NAME",
+        Header: 'CLIENT NAME',
         accessor: (row: any) => {
           return (
             <div>
@@ -87,43 +106,29 @@ const RequestsList = (props: any) => {
               </small>
             </div>
           );
-        },
+        }
       },
       {
-        Header: "REQUEST DATE",
-        accessor: "requestDate",
+        Header: 'REQUEST DATE',
+        accessor: 'requestDate'
       },
       {
-        Header: "STATUS",
+        Header: 'STATUS',
         accessor: (row: any) => (
           <div>
-            <span
-              className={`status ${
-                row.status === "Inactive"
-                  ? "status-red"
-                  : row.status === "Active"
-                  ? "status-green"
-                  : "status-blue"
-              }`}
-            >
+            <span className={`status ${row.status === 'Inactive' ? 'status-red' : row.status === 'Active' ? 'status-green' : 'status-blue'}`}>
               {row.status}
             </span>
             <label className="txt-grey ms-2">{row.updatedDate}</label>
           </div>
-        ),
+        )
       },
       {
-        Header: " ",
+        Header: ' ',
         maxWidth: 40,
         accessor: (row: any) => (
           <div className="dropdown">
-            <a
-              href="#"
-              role="button"
-              id="dropdownMenuLink"
-              data-bs-toggle="dropdown"
-              aria-expanded="false"
-            >
+            <a href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
               <box-icon name="dots-vertical-rounded"></box-icon>
             </a>
             <ul className="dropdown-menu" aria-labelledby="dropdownMenuLink">
@@ -131,7 +136,7 @@ const RequestsList = (props: any) => {
                 onClick={() =>
                   navigate(
                     pinterpolate(endpoints.admin.requests.detail, {
-                      id: row._id,
+                      id: row._id
                     })
                   )
                 }
@@ -144,24 +149,25 @@ const RequestsList = (props: any) => {
                 onClick={() =>
                   navigate(
                     pinterpolate(endpoints.admin.requests.edit, {
-                      id: row._id,
+                      id: row._id
                     })
                   )
                 }
               >
                 Edit
               </li>
-              <li className="p-2 pointer dropdown-item">Delete</li>
+              <li onClick={() => setDeleteInProgress(row._id)} className="p-2 pointer dropdown-item">
+                Delete
+              </li>
             </ul>
           </div>
-        ),
-      },
+        )
+      }
     ],
     []
   );
 
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
-    useTable({ columns, data: requests });
+  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({ columns, data: requests });
 
   return (
     <>
@@ -181,12 +187,7 @@ const RequestsList = (props: any) => {
           >
             New request
           </button>
-          <button
-            type="button"
-            className="btn btn-secondary d-flex float-end me-2"
-            data-bs-toggle="modal"
-            data-bs-target="#quick-job-request-form"
-          >
+          <button type="button" className="btn btn-secondary d-flex float-end me-2" data-bs-toggle="modal" data-bs-target="#quick-job-request-form">
             New quick request
           </button>
         </div>
@@ -196,12 +197,7 @@ const RequestsList = (props: any) => {
         <div className="row pt-2 m-1 rounded-top bg-grey">
           <Loader isLoading={props.isLoading} />
           <div className="col">
-            <InputField
-              label="Search"
-              placeholder="Search requests"
-              className="search-input"
-              onChange={handleSearch}
-            />
+            <InputField label="Search" placeholder="Search requests" className="search-input" onChange={handleSearch} />
           </div>
           <div className="col row">
             <div className="col">
@@ -218,7 +214,7 @@ const RequestsList = (props: any) => {
                   <th>SN</th>
                   {headerGroup.headers.map((column) => (
                     <th {...column.getHeaderProps()} scope="col">
-                      {column.render("Header")}
+                      {column.render('Header')}
                     </th>
                   ))}
                 </tr>
@@ -231,9 +227,11 @@ const RequestsList = (props: any) => {
 
                 return (
                   <tr {...row.getRowProps()} className="rt-tr-group">
-                    <td><strong>#{(index + 1) + (offset - 1) * itemsPerPage}</strong></td>
+                    <td>
+                      <strong>#{index + 1 + (offset - 1) * itemsPerPage}</strong>
+                    </td>
                     {row.cells.map((cell) => (
-                      <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
+                      <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
                     ))}
                   </tr>
                 );
@@ -243,28 +241,25 @@ const RequestsList = (props: any) => {
         </div>
         <div className="row pt-2 m-1 rounded-top">
           <ReactPaginate
-            previousLabel={"Previous"}
-            nextLabel={"Next"}
-            breakLabel={"..."}
-            breakClassName={"break-me"}
+            previousLabel={'Previous'}
+            nextLabel={'Next'}
+            breakLabel={'...'}
+            breakClassName={'break-me'}
             pageCount={pageCount}
             onPageChange={handlePageClick}
-            containerClassName={"pagination"}
-            activeClassName={"active"}
+            containerClassName={'pagination'}
+            activeClassName={'active'}
           />
         </div>
       </div>
-      <div
-        className="modal fade"
-        id="quick-job-request-form"
-        tabIndex={-1}
-        aria-labelledby="exampleModalLabel"
-        aria-hidden="true"
-      >
+      <div className="modal fade" id="quick-job-request-form" tabIndex={-1} aria-labelledby="exampleModalLabel" aria-hidden="true">
         <Suspense fallback={<Loader isLoading={true} />}>
           <QuickAddRequestForm />
         </Suspense>
       </div>
+      <Modal isOpen={!!deleteInProgress} onRequestClose={() => setDeleteInProgress('')}>
+        <DeleteConfirm onDelete={deleteJobRequestHandler} closeModal={() => setDeleteInProgress('')} />
+      </Modal>
     </>
   );
 };
@@ -272,7 +267,7 @@ const RequestsList = (props: any) => {
 const mapStateToProps = (state: any) => {
   return {
     itemList: state.jobRequests.itemList,
-    isLoading: state.jobRequests.isLoading,
+    isLoading: state.jobRequests.isLoading
   };
 };
 
@@ -280,8 +275,8 @@ const mapDispatchToProps = (dispatch: any) => ({
   actions: {
     fetchJobRequests: (payload: any) => {
       dispatch(jobReqActions.fetchJobRequests(payload));
-    },
-  },
+    }
+  }
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(RequestsList);

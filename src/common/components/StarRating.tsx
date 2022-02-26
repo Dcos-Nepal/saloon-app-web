@@ -1,13 +1,14 @@
 import { FC, useState } from 'react';
 
 const StarRating: FC<{
-  onClick: () => any;
+  onValueChange: (newVal: number) => any;
   totalStars?: number;
-}> = ({ totalStars = 5 }) => {
+}> = ({ totalStars = 5, onValueChange }) => {
   const [starsSelected, setStarsSelected] = useState(0);
 
   const change = (starsSelected: number) => {
     setStarsSelected(starsSelected);
+    onValueChange(starsSelected);
   };
 
   const Star = ({ selected = false, onClick = (f: any) => f }) => <div className={selected ? 'star selected' : 'star'} onClick={onClick}></div>;

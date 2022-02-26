@@ -19,6 +19,11 @@ export const sendInvoiceApi = async (id: string) => {
   );
 };
 
+export const deleteInvoiceApi = async (id: string) => {
+  const url = '/v1.0.0/invoices/' + id;
+  return await http.delete(url);
+};
+
 export const fetchInvoicesApi = async (query: Record<string, any>) => {
   const url = '/v1.0.0/invoices' + (query ? `?${generateQueryParams(query)}` : '');
   return await http.get(url, {

@@ -1,18 +1,22 @@
-import { useNavigate } from "react-router-dom";
-import { Column, useTable } from "react-table";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useNavigate } from 'react-router-dom';
+import { Column, useTable } from 'react-table';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import Truncate from 'react-truncate';
 
-import * as quotesActions from "../../../store/actions/quotes.actions";
+import * as quotesActions from '../../../store/actions/quotes.actions';
 
-import InputField from "common/components/form/Input";
-import SelectField from "common/components/form/Select";
-import { endpoints } from "common/config";
-import ReactPaginate from "react-paginate";
-import { connect } from "react-redux";
-import { Loader } from "common/components/atoms/Loader";
-import debounce from "lodash/debounce";
-import EmptyState from "common/components/EmptyState";
+import InputField from 'common/components/form/Input';
+import SelectField from 'common/components/form/Select';
+import { endpoints } from 'common/config';
+import ReactPaginate from 'react-paginate';
+import { connect } from 'react-redux';
+import { Loader } from 'common/components/atoms/Loader';
+import debounce from 'lodash/debounce';
+import EmptyState from 'common/components/EmptyState';
+import Modal from 'common/components/atoms/Modal';
+import { toast } from 'react-toastify';
+import DeleteConfirm from 'common/components/DeleteConfirm';
+import { deleteQuoteApi } from 'services/quotes.service';
 
 interface IQuote {
   id: string;
@@ -21,18 +25,18 @@ interface IQuote {
   quoteFor: any;
   property: any;
   lineItems: any[];
-  status: { status: string, reason: string, updatedAt: string };
+  status: { status: string; reason: string; updatedAt: string };
   total: string;
   createdAt: string;
   updatedAt: string;
 }
 
 const quoteStatusOptions = [
-  {label: 'PENDING', value:'PENDING'},
-  {label: 'ACCEPTED', value:'ACCEPTED'},
-  {label: 'REJECTED', value:'REJECTED'},
-  {label: 'ARCHIVED', value:'ARCHIVED'},
-  {label: 'CHANGE_REQUESTED', value:'CHANGE_REQUESTED'}
+  { label: 'PENDING', value: 'PENDING' },
+  { label: 'ACCEPTED', value: 'ACCEPTED' },
+  { label: 'REJECTED', value: 'REJECTED' },
+  { label: 'ARCHIVED', value: 'ARCHIVED' },
+  { label: 'CHANGE_REQUESTED', value: 'CHANGE_REQUESTED' }
 ];
 
 const QuotesList = (props: any) => {
@@ -40,8 +44,23 @@ const QuotesList = (props: any) => {
   const [query, setQuery] = useState('');
   const [itemsPerPage] = useState(10);
   const [offset, setOffset] = useState(1);
-  const [pageCount, setPageCount] = useState(0)
+  const [pageCount, setPageCount] = useState(0);
   const [quotes, setQuotes] = useState<IQuote[]>([]);
+  const [deleteInProgress, setDeleteInProgress] = useState('');
+
+  const deleteQuoteHandler = async () => {
+    try {
+      if (deleteInProgress) {
+        await deleteQuoteApi(deleteInProgress);
+        toast.success('Quote deleted successfully');
+        setDeleteInProgress('');
+
+        props.actions.fetchQuotes({ q: query, offset: offset, limit: itemsPerPage });
+      }
+    } catch (ex) {
+      toast.error('Failed to delete quote');
+    }
+  };
 
   useEffect(() => {
     props.actions.fetchQuotes({ q: query, offset: offset, limit: itemsPerPage });
@@ -49,8 +68,8 @@ const QuotesList = (props: any) => {
 
   useEffect(() => {
     if (props.itemList?.data?.rows) {
-      setQuotes(props.itemList.data?.rows
-        .map((row: IQuote) => ({
+      setQuotes(
+        props.itemList.data?.rows.map((row: IQuote) => ({
           id: row.id,
           title: row.title,
           description: row.description,
@@ -64,12 +83,12 @@ const QuotesList = (props: any) => {
       );
       setPageCount(Math.ceil(props.itemList.data.totalCount / itemsPerPage));
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.isLoading]);
 
   const handlePageClick = (event: any) => {
     const selectedPage = event.selected;
-    setOffset(selectedPage + 1)
+    setOffset(selectedPage + 1);
   };
 
   const handleQuotesSearch = (event: any) => {
@@ -80,20 +99,21 @@ const QuotesList = (props: any) => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const handleSearch = useCallback(debounce(handleQuotesSearch, 300), []);
 
-  const handleStatusChange = async (id: string, status: {label: string, value: string}, reason: string) => {
-    await props.actions.updateQuoteStatus({id, status: status.value});
-  }
+  const handleStatusChange = async (id: string, status: { label: string; value: string }, reason: string) => {
+    await props.actions.updateQuoteStatus({ id, status: status.value });
+  };
 
   /**
    * Generate Quote
-   * 
-   * @param quote 
+   *
+   * @param quote
    * @returns JSX
    */
   const generateRatings = (quote: IQuote) => {
-    return (<div>
-      <strong>${quote.lineItems.reduce((sum, current) => sum += current.quantity * current.unitPrice, 0)}</strong>
-      {/* <div>
+    return (
+      <div>
+        <strong>${quote.lineItems.reduce((sum, current) => (sum += current.quantity * current.unitPrice), 0)}</strong>
+        {/* <div>
         <span className="row ms-2">
           <box-icon
             name="star"
@@ -115,105 +135,109 @@ const QuotesList = (props: any) => {
           />
         </span>
       </div> */}
-    </div>);
-  }
+      </div>
+    );
+  };
 
   const columns: Column<IQuote>[] = useMemo(
     () => [
       {
-        Header: "CLIENT NAME",
+        Header: 'CLIENT NAME',
         accessor: (row: IQuote) => {
-          return (<div>
-            <div>{row.quoteFor?.firstName} {row.quoteFor?.lastName}</div>
-            <div>{row.quoteFor?.phoneNumber} / {row.quoteFor?.email}</div>
-          </div>)
-        }
-      },
-      {
-        Header: "QUOTE INFO",
-        accessor: (row: IQuote) => {
-          return (<div className="Pointer" onClick={() => navigate(`/dashboard/quotes/${row.id}`)}>
-            <div><strong>{row.title}</strong></div>
+          return (
             <div>
-              <i>
-                <Truncate lines={1} ellipsis={<span>...</span>}>
-                  {row.description}
-                </Truncate>
-              </i>
+              <div>
+                {row.quoteFor?.firstName} {row.quoteFor?.lastName}
+              </div>
+              <div>
+                {row.quoteFor?.phoneNumber} / {row.quoteFor?.email}
+              </div>
             </div>
-            <div>
-              <span className="badge rounded-pill bg-secondary">Total Line Items ({row.lineItems.length})</span>
+          );
+        }
+      },
+      {
+        Header: 'QUOTE INFO',
+        accessor: (row: IQuote) => {
+          return (
+            <div className="Pointer" onClick={() => navigate(`/dashboard/quotes/${row.id}`)}>
+              <div>
+                <strong>{row.title}</strong>
+              </div>
+              <div>
+                <i>
+                  <Truncate lines={1} ellipsis={<span>...</span>}>
+                    {row.description}
+                  </Truncate>
+                </i>
+              </div>
+              <div>
+                <span className="badge rounded-pill bg-secondary">Total Line Items ({row.lineItems.length})</span>
+              </div>
             </div>
-          </div>)
+          );
         }
       },
       {
-        Header: "CREATED DATE",
+        Header: 'CREATED DATE',
         accessor: (row: IQuote) => {
-          return (<div style={{width: '150px'}}>
-            <div><strong>{row.updatedAt}</strong></div>
-            <div>{row.createdAt}</div>
-          </div>);
+          return (
+            <div style={{ width: '150px' }}>
+              <div>
+                <strong>{row.updatedAt}</strong>
+              </div>
+              <div>{row.createdAt}</div>
+            </div>
+          );
         }
       },
       {
-        Header: "STATUS",
+        Header: 'STATUS',
         accessor: (row: IQuote) => {
-          return (<div style={{minWidth: '150px'}}>
-            <SelectField
-              label=""
-              options={quoteStatusOptions}
-              value={{label: row.status.status, value: row.status.status}}
-              placeholder="All"
-              handleChange={(selected: {label: string, value: string}) => handleStatusChange(row.id, selected, '')}
-            />
-          </div>);
+          return (
+            <div style={{ minWidth: '150px' }}>
+              <SelectField
+                label=""
+                options={quoteStatusOptions}
+                value={{ label: row.status.status, value: row.status.status }}
+                placeholder="All"
+                handleChange={(selected: { label: string; value: string }) => handleStatusChange(row.id, selected, '')}
+              />
+            </div>
+          );
         }
       },
       {
-        Header: "TOTAL",
-        accessor: (row: IQuote) => generateRatings(row),
+        Header: 'TOTAL',
+        accessor: (row: IQuote) => generateRatings(row)
       },
       {
-        Header: " ",
+        Header: ' ',
         maxWidth: 40,
         accessor: (row: IQuote) => (
           <div className="dropdown">
-            <a
-              href="void(0)"
-              role="button"
-              id="dropdownMenuLink"
-              data-bs-toggle="dropdown"
-              aria-expanded="false"
-            >
+            <a href="void(0)" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
               <box-icon name="dots-vertical-rounded" />
             </a>
             <ul className="dropdown-menu" aria-labelledby="dropdownMenuLink">
               <li onClick={() => navigate(row.id)}>
-                <a className="dropdown-item">
-                  View Detail
-                </a>
+                <a className="dropdown-item">View Detail</a>
               </li>
               <li onClick={() => navigate(row.id + '/edit')}>
-                <a className="dropdown-item">
-                  Edit
-                </a>
+                <a className="dropdown-item">Edit</a>
               </li>
-              <li>
-                <a className="dropdown-item">
-                  Delete
-                </a>
+              <li onClick={() => setDeleteInProgress(row.id)}>
+                <a className="dropdown-item">Delete</a>
               </li>
             </ul>
           </div>
-        ),
-      },
+        )
+      }
     ],
     []
   );
 
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
-    useTable({ columns, data: quotes });
+  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({ columns, data: quotes });
 
   return (
     <>
@@ -222,11 +246,7 @@ const QuotesList = (props: any) => {
           <h3 className="extra">Quotes</h3>
         </div>
         <div className="col">
-          <button
-            onClick={() => navigate(endpoints.admin.quotes.add)}
-            type="button"
-            className="btn btn-primary d-flex float-end"
-          >
+          <button onClick={() => navigate(endpoints.admin.quotes.add)} type="button" className="btn btn-primary d-flex float-end">
             New quotes
           </button>
         </div>
@@ -236,12 +256,7 @@ const QuotesList = (props: any) => {
         <div className="row pt-2 m-1 rounded-top bg-grey">
           <Loader isLoading={props.isLoading} />
           <div className="col-4">
-            <InputField
-              label="Search"
-              placeholder="Search quotes"
-              className="search-input"
-              onChange={handleSearch}
-            />
+            <InputField label="Search" placeholder="Search quotes" className="search-input" onChange={handleSearch} />
           </div>
           <div className="col row">
             <div className="col">
@@ -254,7 +269,9 @@ const QuotesList = (props: any) => {
               <SelectField label="Type" placeholder="All" />
             </div>
           </div>
-          {!quotes.length ? <EmptyState /> : (
+          {!quotes.length ? (
+            <EmptyState />
+          ) : (
             <table {...getTableProps()} className="table txt-dark-grey">
               <thead>
                 {headerGroups.map((headerGroup) => (
@@ -262,7 +279,7 @@ const QuotesList = (props: any) => {
                     <th>SN</th>
                     {headerGroup.headers.map((column) => (
                       <th {...column.getHeaderProps()} scope="col">
-                        {column.render("Header")}
+                        {column.render('Header')}
                       </th>
                     ))}
                   </tr>
@@ -274,9 +291,11 @@ const QuotesList = (props: any) => {
 
                   return (
                     <tr {...row.getRowProps()} className="rt-tr-group">
-                      <td><strong>#{(index + 1) + (offset - 1) * itemsPerPage}</strong></td>
+                      <td>
+                        <strong>#{index + 1 + (offset - 1) * itemsPerPage}</strong>
+                      </td>
                       {row.cells.map((cell) => (
-                        <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
+                        <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
                       ))}
                     </tr>
                   );
@@ -287,25 +306,29 @@ const QuotesList = (props: any) => {
         </div>
         <div className="row pt-2 m-1 rounded-top">
           <ReactPaginate
-            previousLabel={"Previous"}
-            nextLabel={"Next"}
-            breakLabel={"..."}
-            breakClassName={"break-me"}
+            previousLabel={'Previous'}
+            nextLabel={'Next'}
+            breakLabel={'...'}
+            breakClassName={'break-me'}
             pageCount={pageCount}
             onPageChange={handlePageClick}
-            containerClassName={"pagination"}
-            activeClassName={"active"} />
+            containerClassName={'pagination'}
+            activeClassName={'active'}
+          />
         </div>
       </div>
+      <Modal isOpen={!!deleteInProgress} onRequestClose={() => setDeleteInProgress('')}>
+        <DeleteConfirm onDelete={deleteQuoteHandler} closeModal={() => setDeleteInProgress('')} />
+      </Modal>
     </>
   );
 };
 
 const mapStateToProps = (state: any) => {
-  return ({
+  return {
     itemList: state.quotes.itemList,
     isLoading: state.quotes.isLoading
-  });
+  };
 };
 
 const mapDispatchToProps = (dispatch: any) => ({
@@ -316,8 +339,7 @@ const mapDispatchToProps = (dispatch: any) => ({
     updateQuoteStatus: (payload: any) => {
       dispatch(quotesActions.updateQuoteStatus(payload.id, payload.status));
     }
-  },
+  }
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(QuotesList);
-

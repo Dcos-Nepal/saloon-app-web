@@ -11,8 +11,8 @@ export const fetchVisitApi = async (id: string) => {
   return await http.get(url);
 };
 
-export const updateVisitApi = async (id: string, payload: any) => {
-  const url = '/v1.0.0/visits/' + id;
+export const updateVisitApi = async (id: string, payload: any, query: any = null) => {
+  const url = `/v1.0.0/visits/${id}` + (query ? `?${generateQueryParams(query)}` : '');
   return await http.put(url, payload);
 };
 
@@ -21,8 +21,8 @@ export const updateStatus = async (id: string, payload: any) => {
   return await http.put(url, payload);
 };
 
-export const addVisitApi = async (payload: any) => {
-  const url = '/v1.0.0/visits';
+export const addVisitApi = async (payload: any, query: any = null) => {
+  const url = '/v1.0.0/visits' + (query ? `?${generateQueryParams(query)}` : '');
   return await http.post(url, payload);
 };
 

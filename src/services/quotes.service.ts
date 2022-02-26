@@ -36,13 +36,9 @@ export const updateQuoteApi = async (payload: any) => {
 
 export const updateQuoteStatusApi = async (payload: any) => {
   const url = `/v1.0.0/quotes/${payload.id}/update-status`;
-  return await http.put(
-    url,
-    { status: payload.data },
-    {
-      headers: { Accept: 'application/json' }
-    }
-  );
+  return await http.put(url, payload.data, {
+    headers: { Accept: 'application/json' }
+  });
 };
 
 export const getQuotesSummaryApi = async () => {

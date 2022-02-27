@@ -98,40 +98,42 @@ const WorkSchedule = (props: any) => {
             Total of <strong>56</strong> Jobs/Visits Scheduled for today
           </label>
         </div>
-        <div style={{ position: 'relative' }}>
-          <Loader isLoading={props.isLoading} />
-          <FullCalendar
-            plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, rrulePlugin, luxonPlugin]}
-            headerToolbar={{
-              left: 'prev,next today',
-              center: 'title',
-              right: 'dayGridMonth,timeGridWeek,timeGridDay'
-            }}
-            initialView="dayGridMonth"
-            timeZone="Australia/Adelaide"
-            editable={true}
-            selectable={true}
-            selectMirror={true}
-            dayMaxEvents={true}
-            weekends={props.weekendsVisible}
-            datesSet={handleDates}
-            // select={handleDateSelect}
-            displayEventEnd={true}
-            displayEventTime={true}
-            events={events}
-            eventContent={renderEventContent} // For Custom Rendering
-            eventClick={handleEventClick}
-            // eventAdd={handleEventAdd}
-            // eventChange={handleEventChange} // Called on drag-n-drop/resize
-            // eventRemove={handleEventRemove}
-          />
-        </div>
+        <div className="card pt-4">
+          <div style={{ position: 'relative' }}>
+            <Loader isLoading={props.isLoading} />
+            <FullCalendar
+              plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, rrulePlugin, luxonPlugin]}
+              headerToolbar={{
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+              }}
+              initialView="dayGridMonth"
+              timeZone="Australia/Adelaide"
+              editable={true}
+              selectable={true}
+              selectMirror={true}
+              dayMaxEvents={true}
+              weekends={props.weekendsVisible}
+              datesSet={handleDates}
+              // select={handleDateSelect}
+              displayEventEnd={true}
+              displayEventTime={true}
+              events={events}
+              eventContent={renderEventContent} // For Custom Rendering
+              eventClick={handleEventClick}
+              // eventAdd={handleEventAdd}
+              // eventChange={handleEventChange} // Called on drag-n-drop/resize
+              // eventRemove={handleEventRemove}
+            />
+          </div>
 
-        <div className="form-group">
-          <label>
-            <input type="checkbox" checked={props.weekendsVisible} onChange={props.toggleWeekends}></input>
-            &nbsp;Toggle Weekends
-          </label>
+          <div className="form-group mt-3">
+            <label>
+              <input type="checkbox" checked={props.weekendsVisible} onChange={props.toggleWeekends}></input>
+              &nbsp;Toggle Weekends
+            </label>
+          </div>
         </div>
         <Modal isOpen={!!showEventDetail} onRequestClose={() => setShowEventDetail(null)}>
           {!!showEventDetail ? <EditEvent event={showEventDetail} closeModal={() => setShowEventDetail(null)} /> : <></>}

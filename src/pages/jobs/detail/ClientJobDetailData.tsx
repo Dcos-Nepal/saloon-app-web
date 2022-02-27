@@ -351,11 +351,11 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
           <table className="table txt-dark-grey">
             <thead>
               <tr className="rt-head">
-                <th scope="col"></th>
-                <th scope="col">Visit Date</th>
-                <th scope="col">Instruction</th>
-                <th scope="col">Team</th>
-                <th scope="col"></th>
+                <th className=""></th>
+                <th className="col-3">Visit Date</th>
+                <th className="col-4">Instruction</th>
+                <th className="col-4">Team</th>
+                <th className=""></th>
               </tr>
             </thead>
             {Object.keys(visits).map((visitKey: string, index: number) => (
@@ -381,9 +381,9 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
                       </td>
                       <td>{DateTime.fromJSDate(v.startDate).toFormat('yyyy LLL dd')}</td>
                       <td>{v.instruction}</td>
-                      <td>{v.team.map((t: any) => t.fullName).join(', ')}</td>
-                      <td>
-                        <div className="dropdown">
+                      <td>{v.team.map((t: any) => t.fullName).join(', ') || 'Not assigned yet'}</td>
+                      <td className="d-flex float-end">
+                        <div className="dropdown me-2">
                           <span role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
                             <box-icon name="dots-vertical-rounded"></box-icon>
                           </span>

@@ -172,7 +172,11 @@ const WorkSchedule = (props: any) => {
           </label>
         </div>
         <Modal isOpen={!!showEventDetail} onRequestClose={() => setShowEventDetail(null)}>
-          {!!showEventDetail ? <EditEvent event={showEventDetail} closeModal={() => setShowEventDetail(null)} /> : <></>}
+          {!!showEventDetail ? (
+            <EditEvent fetchJobSchedule={props.fetchJobSchedule} event={showEventDetail} closeModal={() => setShowEventDetail(null)} />
+          ) : (
+            <></>
+          )}
         </Modal>
         <Footer />
       </div>

@@ -98,9 +98,11 @@ const JobsList = (props: IProps) => {
               <box-icon name="dots-vertical-rounded"></box-icon>
             </span>
             <ul className="dropdown-menu" aria-labelledby="dropdownMenuLink">
-              <li onClick={() => setProvideFeedbackFor(row)}>
-                <span className="dropdown-item pointer">Provide Feedback</span>
-              </li>
+              {row.isCompleted ? (
+                <li onClick={() => setProvideFeedbackFor(row)}>
+                  <span className="dropdown-item pointer">Provide Feedback</span>
+                </li>
+              ) : null}
 
               <li onClick={() => navigate(pinterpolate(endpoints.admin.worker.detail, { id: row._id }))}>
                 <span className="dropdown-item pointer">View Detail</span>

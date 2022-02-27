@@ -3,15 +3,30 @@ import { useNavigate } from 'react-router-dom';
 
 import CompleteJob from './CompleteJob';
 import Modal from 'common/components/atoms/Modal';
+import { completeJobApi } from 'services/jobs.service';
+import { toast } from 'react-toastify';
 
 interface IProps {
   event: any;
   closeModal: () => void;
+  fetchJobSchedule: () => void;
 }
 
-const EditEvent: FC<IProps> = ({ closeModal, event }) => {
+const EditEvent: FC<IProps> = ({ closeModal, event, fetchJobSchedule }) => {
   const navigate = useNavigate();
   const [completeJobFor, setCompleteJobFor] = useState<any | null>(null);
+
+  const completeJobHandler = async (data: any) => {
+    try {
+      await completeJobApi(completeJobFor?._id, data);
+      await fetchJobSchedule();
+      toast.success('Job completed successfully');
+      setCompleteJobFor(null);
+      closeModal();
+    } catch (ex) {
+      toast.error('Failed to complete job');
+    }
+  };
 
   return (
     <div className="modal-object--md">
@@ -27,7 +42,7 @@ const EditEvent: FC<IProps> = ({ closeModal, event }) => {
         <div className="row">
           <div
             onClick={() => {
-              setCompleteJobFor(event);
+              setCompleteJobFor(event.extendedProps?.meta?.job);
             }}
           >
             <input
@@ -118,7 +133,7 @@ const EditEvent: FC<IProps> = ({ closeModal, event }) => {
           Edit
         </button>
         <Modal isOpen={completeJobFor} onRequestClose={() => setCompleteJobFor(null)}>
-          <CompleteJob closeModal={() => setCompleteJobFor(null)} job={completeJobFor} />
+          <CompleteJob completeJob={completeJobHandler} closeModal={() => setCompleteJobFor(null)} job={completeJobFor} />
         </Modal>
       </div>
     </div>

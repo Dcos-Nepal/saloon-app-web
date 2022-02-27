@@ -1,6 +1,66 @@
-import { PlusCircleIcon, XCircleIcon } from '@primer/octicons-react';
+import * as Yup from 'yup';
+import { FormikProvider, getIn, useFormik } from 'formik';
 
-const CompleteJob = ({ closeModal, job }: { job: any; closeModal: () => void }) => {
+import { PlusCircleIcon, StopIcon, XCircleIcon } from '@primer/octicons-react';
+import { getData } from 'utils/storage';
+import TextArea from 'common/components/form/TextArea';
+
+const CompleteJob = ({ closeModal, job, completeJob }: { job: any; closeModal: () => void; completeJob: (data: any) => any }) => {
+  const initialValues = {
+    note: '',
+    docs: [
+      {
+        url: '',
+        key: ''
+      }
+    ],
+    completedBy: '',
+    date: null
+  };
+
+  const CompleteJobSchema = Yup.object().shape({
+    note: Yup.string().required('Note is required')
+  });
+
+  const formik = useFormik({
+    enableReinitialize: true,
+    initialValues: initialValues,
+    validationSchema: CompleteJobSchema,
+    validateOnChange: true,
+    onSubmit: async (data: any) => {
+      const currentUser = getData('user');
+      if (currentUser?._id) {
+        await completeJob({
+          ...data,
+          docs: data.docs.filter((doc: { url?: string }) => doc.url),
+          date: new Date().toISOString(),
+          completedBy: currentUser?._id
+        });
+      }
+    }
+  });
+
+  /**
+   * Custom Error Message
+   * @param param0 Props Object
+   * @returns JSX
+   */
+  const ErrorMessage = ({ name }: any) => {
+    if (!name) return <></>;
+
+    const error = getIn(formik.errors, name);
+    const touch = getIn(formik.touched, name);
+
+    return (touch && error) || error ? (
+      <div className="row txt-red">
+        <div className="col-1" style={{ width: '20px' }}>
+          <StopIcon size={14} />
+        </div>
+        <div className="col">{error}</div>
+      </div>
+    ) : null;
+  };
+
   return (
     <div className="modal-content lg">
       <div className="modal-header">
@@ -9,14 +69,21 @@ const CompleteJob = ({ closeModal, job }: { job: any; closeModal: () => void }) 
         </h5>
         <button onClick={() => closeModal()} type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <form className="was-validated">
+      <form className="was-validated" onSubmit={formik.handleSubmit}>
         <div className="modal-body">
           <div className="mb-3">
-            <label htmlFor="validationTextarea" className="form-label">
-              Notes:
-            </label>
-            <textarea rows={8} className="form-control" id="validationTextarea" placeholder="Required notes" required />
-            <div className="invalid-feedback">Please enter a notes.</div>
+            <TextArea
+              rows={8}
+              label={'Notes:'}
+              placeholder="Required notes"
+              name="note"
+              value={formik.values.note || ''}
+              onChange={({ target }: { target: { value: string } }) => {
+                if (target.value !== formik.values.note) formik.setFieldValue('note', target.value);
+              }}
+              helperComponent={<ErrorMessage name="note" />}
+              onBlur={formik.handleBlur}
+            />
           </div>
 
           <div className="mb-3">

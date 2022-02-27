@@ -85,7 +85,7 @@ const EventDetail: FC<IProps> = ({ closeModal, event }) => {
         </button>
       </div>
       <Modal isOpen={completeJobFor} onRequestClose={() => setCompleteJobFor(null)}>
-        <CompleteJob closeModal={() => setCompleteJobFor(null)} job={completeJobFor} />
+        <CompleteJob completeJob={() => {}} closeModal={() => setCompleteJobFor(null)} job={completeJobFor} />
       </Modal>
     </div>
   );

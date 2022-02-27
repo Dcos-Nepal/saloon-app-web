@@ -49,6 +49,18 @@ export const provideFeedbackApi = async (
   return await http.put(url, data);
 };
 
+export const completeJobApi = async (
+  id: string,
+  data: {
+    rating: number;
+    note?: string;
+    date?: any;
+  }
+) => {
+  const url = `/v1.0.0/jobs/${id}/complete`;
+  return await http.put(url, data);
+};
+
 export const deleteJobApi = async (id: string) => {
   const url = '/v1.0.0/jobs/' + id;
   return await http.delete(url);

@@ -392,9 +392,9 @@ tr {
 }
 
 /* Modal */
-/* .ReactModal__Content ReactModal__Content--after-open {
-    padding: 0 !important;
-} */
+.modal-content {
+    box-shadow: 0px 0px 15px -5px grey;
+}
 
 /* .modal-object {
     min-width: 24rem;
@@ -420,7 +420,7 @@ tr {
 }
 
 .ReactModal__Overlay--after-open {
-    z-index: 999;
+    z-index: 9999;
 }
 
 input[type]:focus,

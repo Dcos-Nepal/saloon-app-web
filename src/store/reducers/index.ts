@@ -6,6 +6,7 @@ import propertiesReducer from './properties.reducer';
 import jobsReducer from './jobs.reducer';
 import quotesReducer from './quotes.reducer';
 import workersReducer from './workers.reducer';
+import lineItemsReducer from './lineItems.reducer';
 import invoicesReducer from './invoices.reducer';
 import { weekendsVisible } from './events.reducer';
 import scheduleReducer from './schedules.reducer';
@@ -16,6 +17,7 @@ export default combineReducers({
   clients: clientsReducer,
   jobs: jobsReducer,
   workers: workersReducer,
+  lineItems: lineItemsReducer,
   properties: propertiesReducer,
   jobRequests: jobRequestReducer,
   visits: visitsReducer,

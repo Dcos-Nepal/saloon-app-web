@@ -107,6 +107,17 @@ const SideNavbar: FC<IProps> = ({ active }) => {
               <span className="ms-2 d-none d-sm-inline">Workers</span>
             </span>
           </li>
+          <li>
+            <span
+              onClick={() => navigate('/dashboard/' + endpoints.admin.lineItems.list)}
+              className={active === 'LineItems' ? 'nav-link nav-link-active align-middle px-0' : 'nav-link align-middle px-0'}
+            >
+              <span className="mt-2">
+                <box-icon color={active === 'LineItems' ? '#f47321' : '#161C21'} size="16px" type="solid" name="message-edit" />
+              </span>
+              <span className="ms-2 d-none d-sm-inline">Line Items</span>
+            </span>
+          </li>
 
           <div className="hr mt-2 mb-2"></div>
 

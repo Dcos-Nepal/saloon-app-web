@@ -103,6 +103,38 @@ export const FETCH_WORKER_LOADING = 'FETCH_WORKER_LOADING';
 export const FETCH_WORKER_ERROR = 'FETCH_WORKER_ERROR';
 
 /**
+ * Create Line Item action types
+ */
+export const ADD_LINE_ITEM = 'ADD_LINE_ITEM';
+export const ADD_LINE_ITEM_SUCCESS = 'ADD_LINE_ITEM_SUCCESS';
+export const ADD_LINE_ITEM_LOADING = 'ADD_LINE_ITEM_LOADING';
+export const ADD_LINE_ITEM_ERROR = 'ADD_LINE_ITEM_ERROR';
+
+/**
+ * Load Line Items Listing action types
+ */
+export const FETCH_LINE_ITEMS = 'FETCH_LINE_ITEMS';
+export const FETCH_LINE_ITEMS_SUCCESS = 'FETCH_LINE_ITEMS_SUCCESS';
+export const FETCH_LINE_ITEMS_LOADING = 'FETCH_LINE_ITEMS_LOADING';
+export const FETCH_LINE_ITEMS_ERROR = 'FETCH_LINE_ITEMS_ERROR';
+
+/**
+ * Update Line Item action types
+ */
+export const UPDATE_LINE_ITEM = 'UPDATE_LINE_ITEM';
+export const UPDATE_LINE_ITEM_SUCCESS = 'UPDATE_LINE_ITEM_SUCCESS';
+export const UPDATE_LINE_ITEM_LOADING = 'UPDATE_LINE_ITEM_LOADING';
+export const UPDATE_LINE_ITEM_ERROR = 'UPDATE_LINE_ITEM_ERROR';
+
+/**
+ * Fetch Line Item action types
+ */
+export const FETCH_LINE_ITEM = 'FETCH_LINE_ITEM';
+export const FETCH_LINE_ITEM_SUCCESS = 'FETCH_LINE_ITEM_SUCCESS';
+export const FETCH_LINE_ITEM_LOADING = 'FETCH_LINE_ITEM_LOADING';
+export const FETCH_LINE_ITEM_ERROR = 'FETCH_LINE_ITEM_ERROR';
+
+/**
  * Create Property action types
  */
 export const ADD_PROPERTY = 'ADD_PROPERTY';

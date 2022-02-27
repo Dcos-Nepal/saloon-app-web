@@ -231,13 +231,13 @@ const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker, isWorkersLoa
   };
 
   const onWorkingDaysChange = (day: string) => {
-    if (formik.values.userData.workingDays?.length && formik.values.userData.workingDays.find((selectedDay: string) => selectedDay === day)) {
+    if (formik.values.userData?.workingDays?.length && formik.values.userData?.workingDays.find((selectedDay: string) => selectedDay === day)) {
       formik.setFieldValue(
         'userData.workingDays',
-        formik.values.userData.workingDays.filter((selectedDay: string) => selectedDay !== day)
+        formik.values.userData?.workingDays.filter((selectedDay: string) => selectedDay !== day)
       );
     } else {
-      formik.setFieldValue('userData.workingDays', formik.values.userData.workingDays ? [...formik.values.userData.workingDays, day] : [day]);
+      formik.setFieldValue('userData.workingDays', formik.values.userData?.workingDays ? [...formik.values.userData?.workingDays, day] : [day]);
     }
   };
 
@@ -253,11 +253,11 @@ const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker, isWorkersLoa
   const generateDocSelect = (label: string, name: string, id: string, dropText: string, type: string) => {
     return (<div className="mb-3">
       <label className="form-label txt-dark-grey">{label}</label>
-      {(formik.values.userData.documents as any)[id]?.key || (getDocument as any)[id]?.name  ? (
+      {(formik.values.userData?.documents as any)[id]?.key || (getDocument as any)[id]?.name  ? (
         <div className="row">
           <div className="col-9">
             <span className="mt-1 btn btn-secondary btn-sm">
-              {(formik.values.userData.documents as any)[id]?.key || (getDocument as any)[id]?.name }
+              {(formik.values.userData?.documents as any)[id]?.key || (getDocument as any)[id]?.name }
             </span>
           </div>
           <div className="col-3">
@@ -292,7 +292,7 @@ const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker, isWorkersLoa
         onChange={(event) => handleFileSelect(event, id)}
         onBlur={formik.handleBlur}
       />
-      {!(getDocument as any)[id] && !(formik.values.userData.documents as any)[id]?.key ? (
+      {!(getDocument as any)[id] && !(formik.values.userData?.documents as any)[id]?.key ? (
         <label htmlFor={id} className="txt-orange dashed-file">{dropText}</label>
       ) : null}
     </div>);
@@ -352,7 +352,7 @@ const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker, isWorkersLoa
                 label="Working hours"
                 placeholder="Enter working hours"
                 name="userData.workingHours"
-                value={formik.values.userData.workingHours}
+                value={formik.values.userData?.workingHours}
                 helperComponent={<ErrorMessage name={'userData.workingHours'} />}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
@@ -365,7 +365,7 @@ const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker, isWorkersLoa
                   <li
                     key={day}
                     className={`${
-                      formik.values.userData.workingDays?.length && formik.values.userData.workingDays.find((selectedDay: string) => selectedDay === day) ? 'selected' : null
+                      formik.values.userData?.workingDays?.length && formik.values.userData?.workingDays.find((selectedDay: string) => selectedDay === day) ? 'selected' : null
                     }`}
                     onClick={() => onWorkingDaysChange(day)}
                   >

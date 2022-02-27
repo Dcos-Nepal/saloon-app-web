@@ -144,7 +144,7 @@ const WorkerDetail: FC<IProps> = ({ actions, currentWorker }) => {
                   </div>
                   <div className="txt-info"><StopIcon size={16} /> Click on the each document to download/view the document.</div>
                 </div>
-                {currentWorker.userData.documents &&
+                {currentWorker.userData?.documents &&
                 Object.keys(currentWorker?.userData?.documents).length ? (
                   Object.keys(currentWorker?.userData?.documents).map((key) => (
                     <div className="row mt-3">

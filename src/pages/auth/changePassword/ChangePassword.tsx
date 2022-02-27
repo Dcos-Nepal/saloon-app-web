@@ -1,21 +1,60 @@
-import { useNavigate } from "react-router-dom";
-
-import { endpoints } from "common/config";
+import { useState } from "react";
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
 import LogoFull from "assets/images/LogoFull.svg";
-import ChangePasswordForm from "./ChangePasswordForm";
-import Success from "common/components/atoms/Success";
-import { connect } from "react-redux";
+
+import InputField from "common/components/form/Input";
+import { useNavigate, useParams } from "react-router-dom";
+import { resetUserPasswordApi } from "services/auth.service";
 import { Loader } from "common/components/atoms/Loader";
-import { useEffect } from "react";
 
-const ChangePassword = (props: any) => {
+const ChangePassword = () => {
   const navigate = useNavigate();
+  const { pwdToken } = useParams();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const InitForgotPassword = {
+    email: '',
+    newPassword: '',
+    confirmPassword: ''
+  }
 
-  useEffect(() => {
-    if(props.isSuccess && props.isFailed === false) {
-      setTimeout(() => navigate(endpoints.auth.signIn), 3000);
-    }
-  }, [props.isSuccess, props.isFailed, navigate])
+  const ChangePasswordSchema = Yup.object().shape({
+    email: Yup.string().required('Please provide an email.').email('Invalid email provided'),
+    newPassword: Yup.string()
+      .min(6, 'Password must be at least 6 characters')
+      .max(24, 'Password can be maximum 24 characters')
+      .required('New Password is required'),
+    confirmPassword: Yup.string()
+      .min(6, 'Password must be at least 6 characters')
+      .max(24, 'Password can be maximum 24 characters')
+      .required('Confirm Password is required'),
+  });
+
+  const formik = useFormik({
+    enableReinitialize: true,
+    initialValues: InitForgotPassword,
+    onSubmit: async (userData: any) => {
+      // Set Password Token
+      userData.passwordToken = pwdToken;
+
+      if (userData.newPassword !== userData.confirmPassword) {
+        formik.setErrors({ "confirmPassword": "Password do not match!" })
+        return false;
+      }
+
+      // Making a User Login Request
+      setIsLoading(true);
+      const response: any = await resetUserPasswordApi(userData);
+
+      if (response.data.success === true) {
+        setIsLoading(false);
+        return navigate('/signin');
+      } else {
+        setIsLoading(false);
+      }
+    },
+    validationSchema: ChangePasswordSchema,
+  });
 
   return (
     <div className="container-fluid txt-grey">
@@ -24,36 +63,58 @@ const ChangePassword = (props: any) => {
           <div className="d-flex justify-content-center mb-5">
             <img src={LogoFull} alt="Orange Cleaning" />
           </div>
-          {(!props.isLoading && props.isSuccess && props.isFailed === false) ? (
-            <div className="main-container card bg-white p-4">
-              <Success
-                okMsg="Go to login"
-                okHandler={() => navigate(endpoints.auth.signIn)}
-                msg="You have successfully changed your password"
-              />
-            </div>) : (
-              <div className="main-container card bg-white p-4">
-                <Loader isLoading={props.isLoading} />
-                <div>
-                  <h4>Change password</h4>
-                  <label>Fill your new password to change</label>
-                </div>
-                <ChangePasswordForm />
+          <div className="main-container card bg-white p-4">
+            <Loader isLoading={isLoading} />
+            <div>
+              <h4>Change password</h4>
+              <label>Fill your new password to change</label>
+            </div>
+            <form noValidate onSubmit={formik.handleSubmit}>
+              <div className="row mt-2 min-width-22">
+                <InputField
+                  name="email"
+                  label="Email Address:"
+                  type="email"
+                  placeholder="Enter your email"
+                  helperComponent={formik.errors.email && formik.touched.email ? (<div className="txt-red">{formik.errors.email}</div>) : null}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                />
               </div>
-            )
-          }
+              <div className="row min-width-22">
+                <InputField
+                  name="newPassword"
+                  label="New Password:"
+                  type="password"
+                  placeholder="Password"
+                  helperComponent={formik.errors.newPassword && formik.touched.newPassword ? (<div className="txt-red">{formik.errors.newPassword}</div>) : null}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                />
+              </div>
+              <div className="row">
+                <InputField
+                  name="confirmPassword"
+                  label="Confirm Password:"
+                  type="password"
+                  placeholder="Password"
+                  helperComponent={formik.errors.confirmPassword && formik.touched.confirmPassword ? (<div className="txt-red">{formik.errors.confirmPassword}</div>) : null}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                />
+              </div>
+              <div className="d-flex justify-content-center mt-2">
+                <button type="submit" className="btn btn-primary btn-full">Submit</button>
+              </div>
+            </form>
+          </div>
+          <div className='mb-5 text-center pb-5'>
+            Copyright &copy; 2022 <b>Orange Cleaning</b>, All Rights Reserved.
+          </div>
         </div>
       </div>
     </div>
   );
 };
 
-const mapStateToProps = (state: any) => {
-  return ({ 
-    isLoading: state.auth.forgotPwd.isLoading,
-    isSuccess: state.auth.forgotPwd.isSuccess,
-    isFailed: state.auth.forgotPwd.isFailed,
-  });
-};
-
-export default connect(mapStateToProps)(ChangePassword);
+export default ChangePassword

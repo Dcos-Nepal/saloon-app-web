@@ -48,54 +48,56 @@ const Feedback = ({ closeModal, job, provideFeedback }: { job: any; closeModal: 
   };
 
   return (
-    <div className="modal-content lg">
-      <div className="modal-header">
-        <h5 className="modal-title" id="exampleModalLabel">
-          Job Feedback
-        </h5>
-        <button onClick={() => closeModal()} type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <form noValidate onSubmit={formik.handleSubmit} className="was-validated">
-        <FormikProvider value={formik}>
-          <div className="modal-body">
-            <div className="mb-3">
-              <TextArea
-                rows={8}
-                label={'Feedback:'}
-                placeholder="Required feedback"
-                name="note"
-                value={formik.values.note || ''}
-                onChange={({ target }: { target: { value: string } }) => {
-                  if (target.value !== formik.values.note) formik.setFieldValue('note', target.value);
-                }}
-                helperComponent={<ErrorMessage name="note" />}
-                onBlur={formik.handleBlur}
-              />
-            </div>
+    <div className={`modal fade show mt-5`} role="dialog" style={{ display: 'block' }}>
+      <div className="modal-dialog mt-5">
+        <div className="modal-content">
+          <div className="modal-header">
+            <h5 className="modal-title">Job Feedback</h5>
+            <button type="button" className="btn-close" onClick={closeModal} data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <form noValidate onSubmit={formik.handleSubmit} className="was-validated">
+            <FormikProvider value={formik}>
+              <div className="modal-body">
+                <div className="mb-3">
+                  <TextArea
+                    rows={8}
+                    label={'Feedback:'}
+                    placeholder="Required feedback"
+                    name="note"
+                    value={formik.values.note || ''}
+                    onChange={({ target }: { target: { value: string } }) => {
+                      if (target.value !== formik.values.note) formik.setFieldValue('note', target.value);
+                    }}
+                    helperComponent={<ErrorMessage name="note" />}
+                    onBlur={formik.handleBlur}
+                  />
+                </div>
 
-            <div className="mb-3">
-              <label htmlFor="additional-doc" className="form-label">
-                Ratings:
-              </label>
-              <StarRating
-                totalStars={5}
-                onValueChange={(val: number) => {
-                  if (val !== formik.values.rating) formik.setFieldValue('rating', val);
-                }}
-              />
-              <ErrorMessage name="rating" />
-            </div>
-          </div>
-          <div className="modal-footer">
-            <button type="submit" className="btn btn-primary">
-              Send Feedback
-            </button>
-            <button onClick={() => closeModal()} type="button" className="ms-2 btn btn-secondary" data-bs-dismiss="modal">
-              Close
-            </button>
-          </div>
-        </FormikProvider>
-      </form>
+                <div className="mb-3">
+                  <label htmlFor="additional-doc" className="form-label">
+                    Ratings:
+                  </label>
+                  <StarRating
+                    totalStars={5}
+                    onValueChange={(val: number) => {
+                      if (val !== formik.values.rating) formik.setFieldValue('rating', val);
+                    }}
+                  />
+                  <ErrorMessage name="rating" />
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button type="submit" className="btn btn-primary">
+                  Send Feedback
+                </button>
+                <button onClick={() => closeModal()} type="button" className="btn btn-secondary" data-bs-dismiss="modal">
+                  Close
+                </button>
+              </div>
+            </FormikProvider>
+          </form>
+        </div>
+      </div>
     </div>
   );
 };

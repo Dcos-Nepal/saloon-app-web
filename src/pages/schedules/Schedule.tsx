@@ -24,57 +24,24 @@ import { rrulestr } from 'rrule';
 const WorkSchedule = (props: any) => {
   const isMounted = useMountedRef();
   const [showEventDetail, setShowEventDetail] = useState<IEvent | null>();
-  const [events, setEvents] = useState([
-    // {
-    //   title: "Normal Event",
-    //   rrule: "DTSTART:20220101T000000Z\nRRULE:FREQ=DAILY;COUNT=10",
-    //   exrule: [{
-    //     freq: "DAILY",
-    //     count: 2,
-    //     dtstart: new Date("2022-01-03")
-    //   }]
-    // },
-    // {
-    //   title: "Another Normal Event",
-    //   rrule: "DTSTART:20220101T000000Z\nRRULE:FREQ=DAILY;COUNT=10"
-    // },
-    // {
-    //   id: 'k3c7cxvs7dcx7sffsdfad8cx7v9',
-    //   title: "Recurring Event",
-    //   rrule: "FREQ=DAILY;INTERVAL=1;DTSTART=20201021T100000Z",
-    //   duration: "01:30",
-    //   exdate: ["20220110T100000Z", "20220113T100000Z"],
-    //   metaData: {
-    //     'key': 'value'
-    //   }
-    // },
-    // {
-    //   id: 'k3c7cxvs7dcsx7s8cx7v9',
-    //   title: "Test Event",
-    //   rrule: "FREQ=DAILY;INTERVAL=1;DTSTART=20201021T080000Z",
-    //   duration: "03:00",
-    //   exdate: ["20220112T080000Z", "20220115T080000Z"],
-    // },
-    // {
-    //   id: 'k3c7cxvsasdf7dcx7s8cx7v9',
-    //   title: "Normal Event",
-    //   start: "2022-01-12T09:00:00+02:00", //On the server this is UTC
-    //   end: "22022-01-13T09:00:00+02:00"
-    // }
-  ]);
+  const [events, setEvents] = useState([]);
 
   useEffect(() => {
     if (props.schedules?.rows) {
-      setEvents(
-        props.schedules.rows.map((event: any) => ({
+      const mappedEvents = props.schedules.rows.map((event: any) => {
+        const exRules = event.excRrule?.map((rule: string) => ({ ...rrulestr(rule).origOptions })) || [];
+
+        return {
           title: event.inheritJob ? event.job.title : event.title,
           start: event.inheritJob ? event.job.startDate : event.startDate,
           end: event.inheritJob ? event.job.endDate : event.endDate,
           rrule: event.rruleSet,
-          // exrule: event.excRule?.map((rule: string) => ({ ...rrulestr(rule).origOptions, dtstart: new Date(rrulestr(rule).origOptions.dtstart!) })),
+          exrule: exRules,
           meta: event
-        }))
-      );
+        };
+      });
+
+      setEvents(mappedEvents);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.isLoading]);
@@ -100,28 +67,23 @@ const WorkSchedule = (props: any) => {
   // }
 
   /**
-   *
+   * Handles event click
+   * ------------------------------------------------------------------------------------------
    * @param clickInfo
    */
   const handleEventClick = (clickInfo: any) => {
     if (isMounted) {
       setShowEventDetail(clickInfo.event);
     }
-    // if (window.confirm(`Are you sure you want to delete the event '${clickInfo.event.title}'`)) {
-    //   console.log("Info: ", clickInfo);
-    //   if (isMounted) {
-    //     setShowEventDetail(clickInfo.event);
-    //   }
-    //   //clickInfo.event.remove() // will render immediately. will call handleEventRemove
-    // }
   };
 
-  // handlers that initiate reads/writes via the 'action' props
-  // ------------------------------------------------------------------------------------------
+  /**
+   * Handlers that initiate reads/writes via the 'action' props
+   * ------------------------------------------------------------------------------------------
+   * @param rangeInfo
+   */
   const handleDates = (rangeInfo: any) => {
-    props.fetchJobSchedule();
-    // props.requestEvents(rangeInfo.startStr, rangeInfo.endStr)
-    //   .catch(reportNetworkError);
+    props.fetchJobSchedule(rangeInfo.startStr, rangeInfo.endStr);
   };
 
   return (
@@ -172,11 +134,7 @@ const WorkSchedule = (props: any) => {
           </label>
         </div>
         <Modal isOpen={!!showEventDetail} onRequestClose={() => setShowEventDetail(null)}>
-          {!!showEventDetail ? (
-            <EditEvent fetchJobSchedule={props.fetchJobSchedule} event={showEventDetail} closeModal={() => setShowEventDetail(null)} />
-          ) : (
-            <></>
-          )}
+          {!!showEventDetail ? <EditEvent event={showEventDetail} closeModal={() => setShowEventDetail(null)} /> : <></>}
         </Modal>
         <Footer />
       </div>
@@ -185,9 +143,10 @@ const WorkSchedule = (props: any) => {
 };
 
 /**
+ * Render content/event accordingly
  *
  * @param eventInfo
- * @returns
+ * @returns JSX
  */
 function renderEventContent(eventInfo: any) {
   eventInfo.textColor = eventInfo.event.extendedProps?.meta?.status?.status !== 'COMPLETED' ? 'grey' : 'white';
@@ -202,7 +161,6 @@ function renderEventContent(eventInfo: any) {
         </Truncate>
       </div>
       <div>
-        {' '}
         <ClockIcon size={12} /> {eventInfo.event.extendedProps?.meta?.startTime}
       </div>
     </div>
@@ -210,16 +168,14 @@ function renderEventContent(eventInfo: any) {
 }
 
 /**
+ * Maps state to the props
  *
- * @returns
+ * @returns Object
  */
 function mapStateToProps() {
-  const getEventArray = createSelector((state: any) => state.eventsById, getHashValues);
-
   return (state: any) => {
     return {
       isLoading: state.schedules.isLoading,
-      events: getEventArray(state),
       weekendsVisible: state.weekendsVisible,
       schedules: state.schedules.schedules
     };

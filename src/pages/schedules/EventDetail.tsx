@@ -1,9 +1,7 @@
-import { FC, useState } from 'react';
+import { FC } from 'react';
 
-import CompleteJob from './CompleteJob';
 import { IEvent } from 'common/types/events';
 import { useNavigate } from 'react-router-dom';
-import Modal from 'common/components/atoms/Modal';
 
 interface IProps {
   event: IEvent;
@@ -12,7 +10,6 @@ interface IProps {
 
 const EventDetail: FC<IProps> = ({ closeModal, event }) => {
   const navigate = useNavigate();
-  const [completeJobFor, setCompleteJobFor] = useState<any | null>(null);
 
   return (
     <div className="modal-object--sm">
@@ -26,11 +23,7 @@ const EventDetail: FC<IProps> = ({ closeModal, event }) => {
       </div>
       <div className="modal-body">
         <div className="row">
-          <div
-            onClick={() => {
-              setCompleteJobFor(event);
-            }}
-          >
+          <div>
             <input className="form-check-input" type="checkbox" value="" id="flexCheckDefault" />
             <label className="ms-2 form-check-label" htmlFor="flexCheckDefault">
               Completed
@@ -84,9 +77,6 @@ const EventDetail: FC<IProps> = ({ closeModal, event }) => {
           Edit
         </button>
       </div>
-      <Modal isOpen={completeJobFor} onRequestClose={() => setCompleteJobFor(null)}>
-        <CompleteJob completeJob={() => {}} closeModal={() => setCompleteJobFor(null)} job={completeJobFor} />
-      </Modal>
     </div>
   );
 };

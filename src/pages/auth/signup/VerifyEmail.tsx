@@ -14,6 +14,7 @@ const VerifyEmail = (props: any) => {
 
   useEffect(() => {
     props.actions.verifyEmail(token);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -26,7 +27,7 @@ const VerifyEmail = (props: any) => {
           <div className="main-container card bg-white p-4" style={{minHeight: '200px', minWidth: '350px'}}>
             {(props.isSuccess && props.isFailed === false) ? 
               (<Success
-                msg="You have successfully verified your email."
+                msg="Thank you for verifying your email/account."
                 okMsg="Go to login"
                 okHandler={() => navigate(endpoints.auth.signIn)}
               />) : <Loader isLoading={props.isLoading} />
@@ -34,6 +35,9 @@ const VerifyEmail = (props: any) => {
             {(!props.isSuccess && props.isFailed === true) ? 
               (<div>Resend Email verification!</div>) : ""
             }
+          </div>
+          <div className='mb-5 text-center pb-5'>
+            Copyright &copy; {new Date().getFullYear()} <b>Orange Cleaning</b>, All Rights Reserved.
           </div>
         </div>
       </div>

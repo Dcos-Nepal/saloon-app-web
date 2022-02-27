@@ -19,10 +19,10 @@ const Summary = () => {
   });
   const [visitsSummary, setVisitsSummary] = useState<
     {
-      status: '';
-      startTime: undefined;
-      totalPrice: 0;
-      visitDate: '';
+      status: string;
+      startTime: any;
+      totalPrice: number;
+      visitDate: string;
     }[]
   >([]);
 

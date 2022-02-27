@@ -51,7 +51,9 @@ export const provideFeedbackApi = async (
 
 export const completeJobApi = async (id: string, data: any) => {
   const url = `/v1.0.0/jobs/${id}/complete`;
-  return await http.put(url, data);
+  return await http.put(url, data, {
+    headers: { "Content-Type": "multipart/form-data" }
+  });
 };
 
 export const deleteJobApi = async (id: string) => {

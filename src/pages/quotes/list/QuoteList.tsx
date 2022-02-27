@@ -18,6 +18,7 @@ import { toast } from 'react-toastify';
 import DeleteConfirm from 'common/components/DeleteConfirm';
 import { deleteQuoteApi } from 'services/quotes.service';
 import StatusChangeWithReason from './StatusChangeWithReason';
+import { EyeIcon, PencilIcon, TrashIcon } from '@primer/octicons-react';
 
 interface IQuote {
   id: string;
@@ -116,28 +117,6 @@ const QuotesList = (props: any) => {
     return (
       <div>
         <strong>${quote.lineItems.reduce((sum, current) => (sum += current.quantity * current.unitPrice), 0)}</strong>
-        {/* <div>
-        <span className="row ms-2">
-          <box-icon
-            name="star"
-            size="xs"
-            type="solid"
-            color="#F5E059"
-          />
-          <box-icon
-            name="star"
-            size="xs"
-            type="solid"
-            color="#F5E059"
-          />
-          <box-icon
-            name="star"
-            size="xs"
-            type="solid"
-            color="#F5E059"
-          />
-        </span>
-      </div> */}
       </div>
     );
   };
@@ -235,24 +214,25 @@ const QuotesList = (props: any) => {
         maxWidth: 40,
         accessor: (row: IQuote) => (
           <div className="dropdown">
-            <a href="void(0)" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+            <span role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
               <box-icon name="dots-vertical-rounded" />
-            </a>
+            </span>
             <ul className="dropdown-menu" aria-labelledby="dropdownMenuLink">
               <li onClick={() => navigate(row.id)}>
-                <a className="dropdown-item">View Detail</a>
+                <span className="dropdown-item cursor-pointer"><EyeIcon /> View Detail</span>
               </li>
               <li onClick={() => navigate(row.id + '/edit')}>
-                <a className="dropdown-item">Edit</a>
+                <span className="dropdown-item cursor-pointer"><PencilIcon /> Edit</span>
               </li>
               <li onClick={() => setDeleteInProgress(row.id)}>
-                <a className="dropdown-item">Delete</a>
+                <span className="dropdown-item cursor-pointer"><TrashIcon /> Delete</span>
               </li>
             </ul>
           </div>
         )
       }
     ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
 
@@ -274,19 +254,8 @@ const QuotesList = (props: any) => {
       <div className="card">
         <div className="row pt-2 m-1 rounded-top bg-grey">
           <Loader isLoading={props.isLoading} />
-          <div className="col-4">
+          <div className="col-12">
             <InputField label="Search" placeholder="Search quotes" className="search-input" onChange={handleSearch} />
-          </div>
-          <div className="col row">
-            <div className="col">
-              <SelectField label="Due" placeholder="All" />
-            </div>
-            <div className="col">
-              <SelectField label="Sort" placeholder="total" />
-            </div>
-            <div className="col">
-              <SelectField label="Type" placeholder="All" />
-            </div>
           </div>
           {!quotes.length ? (
             <EmptyState />

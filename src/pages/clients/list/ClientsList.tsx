@@ -6,13 +6,12 @@ import * as clientsActions from '../../../store/actions/clients.actions';
 
 import { endpoints } from 'common/config';
 import InputField from 'common/components/form/Input';
-import SelectField from 'common/components/form/Select';
 import { connect } from 'react-redux';
 import ReactPaginate from 'react-paginate';
 import { Loader } from 'common/components/atoms/Loader';
 import debounce from 'lodash/debounce';
 import EmptyState from 'common/components/EmptyState';
-import { AlertIcon, CheckCircleIcon } from '@primer/octicons-react';
+import { AlertIcon, CheckCircleIcon, EyeIcon, PencilIcon, TrashIcon } from '@primer/octicons-react';
 import Modal from 'common/components/atoms/Modal';
 import { deleteUserApi } from 'services/users.service';
 import { toast } from 'react-toastify';
@@ -140,30 +139,31 @@ const ClientsList = (props: any) => {
         maxWidth: 40,
         accessor: (row: any) => (
           <div className="dropdown">
-            <a href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+            <span role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
               <box-icon name="dots-vertical-rounded"></box-icon>
-            </a>
+            </span>
             <ul className="dropdown-menu" aria-labelledby="dropdownMenuLink">
               <li onClick={() => navigate(pinterpolate(endpoints.admin.client.detail, { id: row._id }))}>
-                <a className="dropdown-item" href="#">
-                  View Detail
-                </a>
+                <span className="dropdown-item cursor-pointer" >
+                  <EyeIcon /> View Detail
+                </span>
               </li>
               <li onClick={() => navigate(pinterpolate(endpoints.admin.client.edit, { id: row._id }))}>
-                <a className="dropdown-item" href="#">
-                  Edit
-                </a>
+                <span className="dropdown-item cursor-pointer">
+                  <PencilIcon /> Edit
+                </span>
               </li>
               <li onClick={() => setDeleteInProgress(row._id)}>
-                <a className="dropdown-item" href="#">
-                  Delete
-                </a>
+                <span className="dropdown-item cursor-pointer">
+                  <TrashIcon /> Delete
+                </span>
               </li>
             </ul>
           </div>
         )
       }
     ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
 
@@ -191,30 +191,8 @@ const ClientsList = (props: any) => {
       <div className="card">
         <div className="row pt-2 m-1 rounded-top bg-grey">
           <Loader isLoading={props.isLoading} />
-          <div className="col">
+          <div className="col-12">
             <InputField label="Search" placeholder="Search clients" className="search-input" onChange={handleSearch} />
-          </div>
-          <div className="col row">
-            <div className="col">
-              <SelectField
-                label="Sort"
-                options={[
-                  { label: 'Name', value: 'name' },
-                  { label: 'Phone Number', value: 'number' }
-                ]}
-                placeholder="Sort by"
-              />
-            </div>
-            <div className="col">
-              <SelectField
-                label="Filters"
-                options={[
-                  { label: 'All results', value: 'all' },
-                  { label: 'Phone Number', value: 'number' }
-                ]}
-                placeholder="All results"
-              />
-            </div>
           </div>
           {!clients.length ? (
             <EmptyState />

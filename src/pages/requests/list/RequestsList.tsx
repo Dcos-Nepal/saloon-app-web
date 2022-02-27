@@ -9,7 +9,6 @@ import { Suspense, useEffect, useMemo, useState } from 'react';
 import * as jobReqActions from '../../../store/actions/job-requests.actions';
 
 import InputField from 'common/components/form/Input';
-import SelectField from 'common/components/form/Select';
 import DeleteConfirm from 'common/components/DeleteConfirm';
 
 import { Loader } from 'common/components/atoms/Loader';
@@ -18,6 +17,7 @@ import { endpoints } from 'common/config';
 import debounce from 'lodash/debounce';
 import { deleteJobRequestApi } from 'services/job-requests.service';
 import Modal from 'common/components/atoms/Modal';
+import { EyeIcon, PencilIcon, TrashIcon } from '@primer/octicons-react';
 
 const QuickAddRequestForm = React.lazy(() => import('../QuickRequestForm'));
 
@@ -128,9 +128,9 @@ const RequestsList = (props: any) => {
         maxWidth: 40,
         accessor: (row: any) => (
           <div className="dropdown">
-            <a href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+            <span role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
               <box-icon name="dots-vertical-rounded"></box-icon>
-            </a>
+            </span>
             <ul className="dropdown-menu" aria-labelledby="dropdownMenuLink">
               <li
                 onClick={() =>
@@ -142,7 +142,7 @@ const RequestsList = (props: any) => {
                 }
                 className="p-2 pointer dropdown-item"
               >
-                View Detail
+                <EyeIcon /> View Detail
               </li>
               <li
                 className="p-2 pointer dropdown-item"
@@ -154,16 +154,17 @@ const RequestsList = (props: any) => {
                   )
                 }
               >
-                Edit
+                <PencilIcon /> Edit
               </li>
               <li onClick={() => setDeleteInProgress(row._id)} className="p-2 pointer dropdown-item">
-                Delete
+                <TrashIcon /> Delete
               </li>
             </ul>
           </div>
         )
       }
     ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
 
@@ -182,13 +183,8 @@ const RequestsList = (props: any) => {
             }}
             type="button"
             className="btn btn-primary d-flex float-end"
-            data-bs-toggle="modal"
-            data-bs-target="#job-request-form"
           >
             New request
-          </button>
-          <button type="button" className="btn btn-secondary d-flex float-end me-2" data-bs-toggle="modal" data-bs-target="#quick-job-request-form">
-            New quick request
           </button>
         </div>
         <label className="txt-grey">{requests.length} Job Requests</label>
@@ -196,16 +192,8 @@ const RequestsList = (props: any) => {
       <div className="card">
         <div className="row pt-2 m-1 rounded-top bg-grey">
           <Loader isLoading={props.isLoading} />
-          <div className="col">
+          <div className="col-12">
             <InputField label="Search" placeholder="Search requests" className="search-input" onChange={handleSearch} />
-          </div>
-          <div className="col row">
-            <div className="col">
-              <SelectField label="Sort" placeholder="First name" />
-            </div>
-            <div className="col">
-              <SelectField label="Filters" placeholder="All results" />
-            </div>
           </div>
           <table {...getTableProps()} className="table txt-dark-grey">
             <thead>
@@ -220,7 +208,6 @@ const RequestsList = (props: any) => {
                 </tr>
               ))}
             </thead>
-
             <tbody {...getTableBodyProps()} className="rt-tbody">
               {rows.map((row, index) => {
                 prepareRow(row);

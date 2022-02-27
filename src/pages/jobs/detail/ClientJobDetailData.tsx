@@ -15,7 +15,6 @@ import { FieldArray, FormikProvider, useFormik } from 'formik';
 import { InfoIcon, PlusCircleIcon, XCircleIcon } from '@primer/octicons-react';
 import SelectAsync from 'common/components/form/AsyncSelect';
 import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
 
 interface IVisitList {
   overdue: any;
@@ -24,7 +23,6 @@ interface IVisitList {
 }
 
 const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
-  const navigate = useNavigate();
   const [visits, setVisits] = useState<IVisitList>({ overdue: [], completed: [] });
   const [editVisitMode, setEditVisitMode] = useState(false);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
@@ -169,7 +167,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
     }).toString();
   };
 
-  const handleLineItemSelection = (key: string, { label, value, meta }: any) => {
+  const handleLineItemSelection = (key: string, { label, meta }: any) => {
     visitEditForm.setFieldValue(`${key}.name`, label);
     visitEditForm.setFieldValue(`${key}.description`, meta?.description || 'Enter your notes here...');
   };
@@ -617,7 +615,6 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
                                     >
                                       <PlusCircleIcon size={20} />
                                     </span>
-                                    &nbsp;&nbsp;
                                     {index !== 0 ? (
                                       <span onClick={() => arrayHelpers.remove(index)}>
                                         <XCircleIcon size={20} />

@@ -18,6 +18,7 @@ import Modal from 'common/components/atoms/Modal';
 import { deleteInvoiceApi } from 'services/invoice.service';
 import { toast } from 'react-toastify';
 import DeleteConfirm from 'common/components/DeleteConfirm';
+import { EyeIcon, PencilIcon, TrashIcon } from '@primer/octicons-react';
 
 interface IInvoice {
   id: string;
@@ -195,24 +196,25 @@ const InvoicesList = (props: any) => {
         maxWidth: 40,
         accessor: (row: IInvoice) => (
           <div className="dropdown">
-            <a href="void(0)" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+            <span role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
               <box-icon name="dots-vertical-rounded" />
-            </a>
+            </span>
             <ul className="dropdown-menu" aria-labelledby="dropdownMenuLink">
               <li className='pointer' onClick={() => navigate(row.id)}>
-                <a className="dropdown-item">View Detail</a>
+                <span className="dropdown-item cursor-pointer"><EyeIcon /> View Detail</span>
               </li>
               <li className='pointer' onClick={() => navigate(row.id + '/edit')}>
-                <a className="dropdown-item">Edit</a>
+                <span className="dropdown-item cursor-pointer"><PencilIcon /> Edit</span>
               </li>
               <li className='pointer' onClick={() => setDeleteInProgress(row.id)}>
-                <a className="dropdown-item">Delete</a>
+                <span className="dropdown-item cursor-pointer"><TrashIcon /> Delete</span>
               </li>
             </ul>
           </div>
         )
       }
     ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
 
@@ -234,19 +236,8 @@ const InvoicesList = (props: any) => {
       <div className="card">
         <div className="row pt-2 m-1 rounded-top bg-grey">
           <Loader isLoading={props.isLoading} />
-          <div className="col-4">
+          <div className="col-12">
             <InputField label="Search" placeholder="Search invoices" className="search-input" onChange={handleSearch} />
-          </div>
-          <div className="col row">
-            <div className="col">
-              <SelectField label="Due" placeholder="All" />
-            </div>
-            <div className="col">
-              <SelectField label="Sort" placeholder="total" />
-            </div>
-            <div className="col">
-              <SelectField label="Type" placeholder="All" />
-            </div>
           </div>
           {!invoices.length ? (
             <EmptyState />

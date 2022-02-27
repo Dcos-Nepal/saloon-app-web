@@ -1,13 +1,11 @@
 import { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import { createSelector } from 'reselect';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import rrulePlugin from '@fullcalendar/rrule';
 import luxonPlugin from '@fullcalendar/luxon2';
-import { getHashValues } from 'utils';
 import EventActions from 'store/actions/events.actions';
 import { IEvent } from 'common/types/events';
 import Modal from 'common/components/atoms/Modal';

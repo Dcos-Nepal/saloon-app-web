@@ -41,23 +41,26 @@ const ReferralProgram = () => {
           <h4 className="m-auto txt-bold">
             Share the link below or use code <span className="txt-orange">{referralCode}</span>
           </h4>
-          <div className="row m-auto mt-4">
-            <div className="col-8">
-              <input className="form-control" value={referralUrl} disabled />
-            </div>
-            <div className="col">
-              <button
-                type="button"
-                onClick={() => {
-                  navigator.clipboard.writeText(referralUrl);
-                  toast.success('Copied to clipboard!');
-                }}
-                className="btn btn-primary"
-              >
-                Copy
-              </button>
+          <div className=''>
+            <div className="row mt-4 mr-5">
+              <div className="col-6">
+                <input className="form-control" value={referralUrl} disabled />
+              </div>
+              <div className="col-4">
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigator.clipboard.writeText(referralUrl);
+                    toast.success('Copied to clipboard!');
+                  }}
+                  className="btn btn-primary full-width"
+                >
+                  Copy Referral Link
+                </button>
+              </div>
             </div>
           </div>
+
         </div>
         <div className="card p-5">
           <h4 className="m-auto txt-bold">Your Referrals</h4>

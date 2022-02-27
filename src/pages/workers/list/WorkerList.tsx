@@ -10,9 +10,8 @@ import * as workersActions from '../../../store/actions/workers.actions';
 
 import { endpoints } from 'common/config';
 import InputField from 'common/components/form/Input';
-import SelectField from 'common/components/form/Select';
 import { Loader } from 'common/components/atoms/Loader';
-import { AlertIcon, CheckCircleIcon } from '@primer/octicons-react';
+import { AlertIcon, CheckCircleIcon, EyeIcon, PencilIcon, TrashIcon } from '@primer/octicons-react';
 import Modal from 'common/components/atoms/Modal';
 import { deleteUserApi } from 'services/users.service';
 import { toast } from 'react-toastify';
@@ -140,9 +139,9 @@ const WorkerList = (props: any) => {
         maxWidth: 40,
         accessor: (row: any) => (
           <div className="dropdown">
-            <a href="void(0)" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+            <span role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
               <box-icon name="dots-vertical-rounded"></box-icon>
-            </a>
+            </span>
             <ul className="dropdown-menu" aria-labelledby="dropdownMenuLink">
               <li
                 onClick={() =>
@@ -154,7 +153,7 @@ const WorkerList = (props: any) => {
                 }
                 className="p-2 pointer dropdown-item"
               >
-                View Detail
+                <EyeIcon /> View Detail
               </li>
               <li
                 onClick={() =>
@@ -166,10 +165,10 @@ const WorkerList = (props: any) => {
                 }
                 className="p-2 pointer dropdown-item"
               >
-                Edit
+                <PencilIcon /> Edit
               </li>
               <li onClick={() => setDeleteInProgress(row._id)} className="p-2 pointer dropdown-item">
-                Delete
+                <TrashIcon /> Delete
               </li>
             </ul>
           </div>
@@ -204,30 +203,8 @@ const WorkerList = (props: any) => {
       <div className="card">
         <div className="row pt-2 m-1 rounded-top bg-grey">
           <Loader isLoading={props.isLoading} />
-          <div className="col">
+          <div className="col-12">
             <InputField label="Search" placeholder="Search workers" className="search-input" onChange={debouncedChangeHandler} />
-          </div>
-          <div className="col row">
-            <div className="col">
-              <SelectField
-                label="Sort"
-                options={[
-                  { label: 'Name', value: 'name' },
-                  { label: 'Phone Number', value: 'number' }
-                ]}
-                placeholder="Sort by"
-              />
-            </div>
-            <div className="col">
-              <SelectField
-                label="Filters"
-                options={[
-                  { label: 'All results', value: 'all' },
-                  { label: 'Phone Number', value: 'number' }
-                ]}
-                placeholder="All results"
-              />
-            </div>
           </div>
           <table {...getTableProps()} className="table txt-dark-grey">
             <thead>

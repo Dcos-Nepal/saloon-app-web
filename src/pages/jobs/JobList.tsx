@@ -8,18 +8,17 @@ import { useNavigate } from 'react-router-dom';
 import { Column, useTable } from 'react-table';
 import { useEffect, useMemo, useState } from 'react';
 
-import JobAdd from './JobAdd';
 import Feedback from './Feedback';
 import CompleteJob from './CompleteJob';
 import { endpoints } from 'common/config';
 import Modal from 'common/components/atoms/Modal';
 import InputField from 'common/components/form/Input';
 import { completeJobApi } from 'services/jobs.service';
-import SelectField from 'common/components/form/Select';
 import DeleteConfirm from 'common/components/DeleteConfirm';
 import * as jobsActions from '../../store/actions/job.actions';
 import { deleteJobApi, provideFeedbackApi } from 'services/jobs.service';
 import { Loader } from 'common/components/atoms/Loader';
+import { CheckIcon, EyeIcon, NoteIcon, PencilIcon, TrashIcon } from '@primer/octicons-react';
 
 interface IProps {
   actions: { fetchJobs: (query: any) => any };
@@ -117,19 +116,19 @@ const JobsList = (props: IProps) => {
                   setCompleteJobFor(row);
                 }}
               >
-                <span className="dropdown-item pointer">Mark as Complete</span>
+                <span className="dropdown-item pointer"><CheckIcon /> Mark as Complete</span>
               </li>
               <li onClick={() => setProvideFeedbackFor(row)}>
-                <span className="dropdown-item pointer">Provide Feedback</span>
+                <span className="dropdown-item pointer"><NoteIcon /> Provide Feedback</span>
               </li>
               <li onClick={() => navigate(pinterpolate(endpoints.admin.worker.detail, { id: row._id }))}>
-                <span className="dropdown-item pointer">View Detail</span>
+                <span className="dropdown-item pointer"><EyeIcon /> View Detail</span>
               </li>
               <li onClick={() => navigate(pinterpolate(endpoints.admin.jobs.edit, { id: row._id }))}>
-                <span className="dropdown-item pointer">Edit</span>
+                <span className="dropdown-item pointer"><PencilIcon /> Edit</span>
               </li>
               <li onClick={() => setDeleteInProgress(row._id)}>
-                <span className="dropdown-item pointer">Delete</span>
+                <span className="dropdown-item pointer"><TrashIcon /> Delete</span>
               </li>
             </ul>
           </div>
@@ -139,8 +138,10 @@ const JobsList = (props: IProps) => {
     [navigate]
   );
 
+  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({ columns, data: jobs });
+
   /**
-   *
+   * Handles job search
    * @param event
    */
   const handleJobsSearch = (event: any) => {
@@ -149,7 +150,7 @@ const JobsList = (props: IProps) => {
   };
 
   /**
-   *
+   * Handles page click
    * @param event
    */
   const handlePageClick = (event: any) => {
@@ -157,6 +158,10 @@ const JobsList = (props: IProps) => {
     setPage(selectedPage + 1);
   };
 
+  /**
+   * Handles feedback on the Jon
+   * @param data 
+   */
   const feedbackHandler = async (data: any) => {
     try {
       await provideFeedbackApi(provideFeedbackFor._id, data);
@@ -167,8 +172,6 @@ const JobsList = (props: IProps) => {
       toast.error('Failed to provide feedback');
     }
   };
-
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({ columns, data: jobs });
 
   return (
     <>
@@ -185,19 +188,8 @@ const JobsList = (props: IProps) => {
       </div>
       <div className="card">
         <div className="row pt-2 m-1 rounded-top bg-grey">
-          <div className="col-4">
+          <div className="col-12">
             <InputField label="Search" placeholder="Search jobs" className="search-input" onClick={handleJobsSearch} />
-          </div>
-          <div className="col row">
-            <div className="col">
-              <SelectField label="Status" placeholder="All" />
-            </div>
-            <div className="col">
-              <SelectField label="Sort" placeholder="First name" />
-            </div>
-            <div className="col">
-              <SelectField label="Type" placeholder="All" />
-            </div>
           </div>
           <table {...getTableProps()} className="table txt-dark-grey">
             <thead>

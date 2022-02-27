@@ -10,7 +10,7 @@ const EditEvent: FC<IProps> = ({ closeModal, event }) => {
   const navigate = useNavigate();
 
   return (
-    <div className={`modal fade show`} role="dialog" style={{ display: 'block' }}>
+    <div className={`modal fade show mt-5`} role="dialog" style={{ display: 'block' }}>
       <div className="modal-dialog">
         <div className="modal-content">
           <div className="modal-header">

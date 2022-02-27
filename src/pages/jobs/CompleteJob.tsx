@@ -5,7 +5,13 @@ import { StopIcon, XCircleIcon } from '@primer/octicons-react';
 import { getData } from 'utils/storage';
 import TextArea from 'common/components/form/TextArea';
 
-const CompleteJob = ({ closeModal, job, completeJob }: { job: any; closeModal: () => void; completeJob: (data: any) => any }) => {
+interface ICompleteJob {
+  job: any;
+  closeModal: () => void;
+  completeJob: (data: any) => any;
+}
+
+const CompleteJob = ({ closeModal, completeJob }: ICompleteJob) => {
   const initialValues = {
     note: '',
     docs: [],
@@ -24,9 +30,14 @@ const CompleteJob = ({ closeModal, job, completeJob }: { job: any; closeModal: (
     validateOnChange: true,
     onSubmit: async (data: any) => {
       const currentUser = getData('user');
+
       if (currentUser?._id) {
-        let formData = new FormData();
-        data.docs.forEach((doc: any) => formData.append('docs[]', doc));
+        const formData = new FormData();
+
+        // Add all added docs to the Form Data
+        data.docs.forEach((doc: any) => formData.append('docs', doc));
+
+        // Add additional info to the Form Data
         formData.append('note', data.note);
         formData.append('date', new Date().toISOString());
         formData.append('completedBy', currentUser?._id);
@@ -63,7 +74,7 @@ const CompleteJob = ({ closeModal, job, completeJob }: { job: any; closeModal: (
         <div className="modal-content">
           <div className="modal-header">
             <h5 className="modal-title" id="exampleModalLabel">
-              Complete Job
+              Mark the Job as Complete
             </h5>
             <button onClick={() => closeModal()} type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
@@ -72,8 +83,8 @@ const CompleteJob = ({ closeModal, job, completeJob }: { job: any; closeModal: (
               <div className="mb-3">
                 <TextArea
                   rows={8}
-                  label={'Notes:'}
-                  placeholder="Required notes"
+                  label={'Message/Notes:'}
+                  placeholder="Required notes or description ..."
                   name="note"
                   value={formik.values.note || ''}
                   onChange={({ target }: { target: { value: string } }) => {
@@ -86,7 +97,7 @@ const CompleteJob = ({ closeModal, job, completeJob }: { job: any; closeModal: (
 
               <div className="mb-3">
                 <label htmlFor="additional-doc" className="form-label">
-                  Files:
+                  Files/Pictures:
                 </label>
                 {formik.values.docs.map((doc: any, index: number) => (
                   <div className="row mb-3 ps-1" key={index}>
@@ -119,17 +130,17 @@ const CompleteJob = ({ closeModal, job, completeJob }: { job: any; closeModal: (
                     }}
                   />
                   <label htmlFor={'file'} className="txt-orange dashed-file mt-2">
-                    Select document to upload
+                    Select documents/pictures related to this Job
                   </label>
                 </div>
               </div>
             </div>
             <div className="modal-footer">
               <button type="submit" className="btn btn-primary">
-                Complete Job
+                Mark Job as Complete
               </button>
               <button onClick={() => closeModal()} type="button" className="ms-2 btn btn-secondary" data-bs-dismiss="modal">
-                Close
+                Cancel
               </button>
             </div>
           </form>

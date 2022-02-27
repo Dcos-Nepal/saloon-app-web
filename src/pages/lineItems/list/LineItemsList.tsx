@@ -1,5 +1,3 @@
-import _ from 'lodash';
-import { rrulestr } from 'rrule';
 import { connect } from 'react-redux';
 import { toast } from 'react-toastify';
 import ReactPaginate from 'react-paginate';
@@ -10,11 +8,11 @@ import LineItemAdd from '../add';
 import LineItemEdit from '../edit';
 import Modal from 'common/components/atoms/Modal';
 import InputField from 'common/components/form/Input';
-import SelectField from 'common/components/form/Select';
 import { Loader } from 'common/components/atoms/Loader';
 import DeleteConfirm from 'common/components/DeleteConfirm';
 import * as lineItemsActions from 'store/actions/lineItems.actions';
 import { deleteLineItemApi, addLineItemApi, updateLineItemApi } from 'services/lineItems.service';
+import { PencilIcon, TrashIcon } from '@primer/octicons-react';
 
 interface IProps {
   actions: { fetchLineItems: (query: any) => any };
@@ -104,15 +102,11 @@ const LineItemsList = (props: IProps) => {
               <box-icon name="dots-vertical-rounded"></box-icon>
             </span>
             <ul className="dropdown-menu" aria-labelledby="dropdownMenuLink">
-              <li
-                onClick={() => {
-                  setEditLineItemFor(row);
-                }}
-              >
-                <span className="dropdown-item pointer">Edit</span>
+              <li onClick={() => {setEditLineItemFor(row)}}>
+                <span className="dropdown-item pointer"><PencilIcon /> Edit</span>
               </li>
               <li onClick={() => setDeleteInProgress(row._id)}>
-                <span className="dropdown-item pointer">Delete</span>
+                <span className="dropdown-item pointer"><TrashIcon /> Delete</span>
               </li>
             </ul>
           </div>
@@ -123,7 +117,7 @@ const LineItemsList = (props: IProps) => {
   );
 
   /**
-   *
+   * Handles Line Item Search
    * @param event
    */
   const handleLineItemsSearch = (event: any) => {
@@ -132,7 +126,7 @@ const LineItemsList = (props: IProps) => {
   };
 
   /**
-   *
+   * Handles Page Click
    * @param event
    */
   const handlePageClick = (event: any) => {
@@ -140,6 +134,10 @@ const LineItemsList = (props: IProps) => {
     setPage(selectedPage + 1);
   };
 
+  /**
+   * Handles line item Save
+   * @param data 
+   */
   const addLineItemHandler = async (data: any) => {
     try {
       await addLineItemApi(data);
@@ -168,19 +166,8 @@ const LineItemsList = (props: IProps) => {
       </div>
       <div className="card">
         <div className="row pt-2 m-1 rounded-top bg-grey">
-          <div className="col-4">
+          <div className="col-12">
             <InputField label="Search" placeholder="Search line items" className="search-input" onChange={handleLineItemsSearch} />
-          </div>
-          <div className="col row">
-            <div className="col">
-              <SelectField label="Tags" placeholder="All" />
-            </div>
-            <div className="col">
-              <SelectField label="Sort" placeholder="Created At" />
-            </div>
-            <div className="col">
-              <SelectField label="Ref Cost" placeholder="All" />
-            </div>
           </div>
           <table {...getTableProps()} className="table txt-dark-grey">
             <thead>

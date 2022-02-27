@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import ReactRRuleGenerator, { translations } from 'common/components/rrule-form';
 import { getJobsSummaryApi } from 'services/jobs.service';
 import { useNavigate } from 'react-router-dom';
 import { getJobRequestsSummaryApi } from 'services/job-requests.service';
@@ -38,16 +37,6 @@ const Summary = () => {
     pendingCount: 0
   });
 
-  const [rruleStr, setRruleStr] = useState('DTSTART:20220114T035500Z RRULE:FREQ=MONTHLY;INTERVAL=1;BYMONTHDAY=1;UNTIL=20220127T050300Z');
-  const getTranslation = () => {
-    switch ('en') {
-      case 'en':
-        return translations.english;
-      default:
-        return translations.english;
-    }
-  };
-
   useEffect(() => {
     const fetchAndSetData = async () => {
       setIsLoading(true);
@@ -77,10 +66,6 @@ const Summary = () => {
 
     fetchAndSetData();
   }, []);
-
-  const handleChange = (newRRule: any) => {
-    setRruleStr(newRRule);
-  };
 
   const nowTime = new Date().getTime();
 

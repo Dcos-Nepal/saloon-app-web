@@ -15,6 +15,7 @@ import { FieldArray, FormikProvider, useFormik } from 'formik';
 import { InfoIcon, PlusCircleIcon, XCircleIcon } from '@primer/octicons-react';
 import SelectAsync from 'common/components/form/AsyncSelect';
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 
 interface IVisitList {
   overdue: any;
@@ -23,6 +24,7 @@ interface IVisitList {
 }
 
 const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
+  const navigate = useNavigate();
   const [visits, setVisits] = useState<IVisitList>({ overdue: [], completed: [] });
   const [editVisitMode, setEditVisitMode] = useState(false);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
@@ -210,6 +212,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
     if (!job || !jobVisits?.data?.rows?.length) return;
     const visits = mapVisits(jobVisits.data.rows);
     setVisits(visits);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [jobVisits, job]);
 
   return (
@@ -344,7 +347,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
             <h6 className="txt-bold mt-2">Visits</h6>
           </div>
           <div className="col pt-3 pb-3">
-            <button onClick={() => {}} type="button" className="btn btn-primary d-flex float-end">
+            <button onClick={() => { }} type="button" className="btn btn-primary d-flex float-end">
               New visit
             </button>
           </div>
@@ -410,84 +413,88 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
       </div>
 
       <Modal isOpen={editVisitMode} onRequestClose={() => setEditVisitMode(false)}>
-        <div className="modal-object--md">
-          <form onSubmit={visitEditForm.handleSubmit} style={{ position: 'relative' }}>
-            <FormikProvider value={visitEditForm}>
-              <div className="modal-object--md">
-                <div className="row p-2">
-                  <div className="col pb-3">
-                    <div className="card full-height">
-                      <h6 className="txt-bold">Job Details</h6>
-                      <div className="col">
-                        <div className="row">
-                          <div className="col-12">
-                            <InputField
-                              label="Job Title"
-                              type="text"
-                              placeholder="Title"
-                              name={`title`}
-                              value={visitEditForm.values?.title}
-                              onChange={visitEditForm.handleChange}
-                            />
-                          </div>
-                          <div className="col-12">
-                            <TextArea
-                              label={'Job Instructions'}
-                              name={`instruction`}
-                              rows={4}
-                              value={visitEditForm.values?.instruction}
-                              onChange={visitEditForm.handleChange}
-                              className={`form-control`}
-                              placeholder={"Quote's description..."}
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col">
-                    <div className="card">
-                      <h6 className="txt-bold">Job Detail</h6>
-                      <div className="row border-bottom">
-                        <div className="col p-2 ps-4">
-                          <div className="txt-grey">Job number</div>
+        <div className={`modal fade show`} role="dialog" style={{ display: 'block' }}>
+          <div className="modal-dialog modal-lg">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Visit Detail</h5>
+                <button type="button" className="btn-close" onClick={() => setEditVisitMode(!editVisitMode)} data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <FormikProvider value={visitEditForm}>
+                <div className="modal-body">
+                  <div className="row p-2">
+                    <div className="col">
+                      <div className="card mt-0 full-height">
+                        <h6 className="txt-bold">Visit Details</h6>
+                        <div className="col">
                           <div className="row">
-                            <div className="col">#13</div>
-                            <div className="col txt-orange pointer">Change</div>
+                            <div className="col-12">
+                              <InputField
+                                label="Job Title"
+                                type="text"
+                                placeholder="Title"
+                                name={`title`}
+                                value={visitEditForm.values?.title}
+                                onChange={visitEditForm.handleChange}
+                              />
+                            </div>
+                            <div className="col-12">
+                              <TextArea
+                                label={'Job Instructions'}
+                                name={`instruction`}
+                                rows={4}
+                                value={visitEditForm.values?.instruction}
+                                onChange={visitEditForm.handleChange}
+                                className={`form-control`}
+                                placeholder={"Quote's description..."}
+                              />
+                            </div>
                           </div>
                         </div>
-                        <div className="col p-2 ps-4">
-                          <div className="txt-grey">Job type</div>
-                          <div className="">{job?.type}</div>
-                        </div>
                       </div>
-                      <div className="row border-bottom">
-                        <div className="col p-2 ps-4">
-                          <div className="txt-grey">Started on</div>
-                          <div className="">{DateTime.fromISO(job?.startDate).toFormat('yyyy LLL dd')}</div>
+                    </div>
+                    <div className="col">
+                      <div className="card mt-0 full-height">
+                        <h6 className="txt-bold">Job Detail</h6>
+                        <div className="row border-bottom">
+                          <div className="col p-2 ps-4">
+                            <div className="txt-grey">Job number</div>
+                            <div className="row">
+                              <div className="col">#13</div>
+                              <div className="col txt-orange pointer">Change</div>
+                            </div>
+                          </div>
+                          <div className="col p-2 ps-4">
+                            <div className="txt-grey">Job type</div>
+                            <div className="">{job?.type}</div>
+                          </div>
                         </div>
-                        <div className="col p-2 ps-4">
-                          <div className="txt-grey">Lasts for</div>
-                          <div className="">6 years</div>
+                        <div className="row border-bottom">
+                          <div className="col p-2 ps-4">
+                            <div className="txt-grey">Started on</div>
+                            <div className="">{DateTime.fromISO(job?.startDate).toFormat('yyyy LLL dd')}</div>
+                          </div>
+                          <div className="col p-2 ps-4">
+                            <div className="txt-grey">Lasts for</div>
+                            <div className="">6 years</div>
+                          </div>
                         </div>
-                      </div>
-                      <div className="row border-bottom mb-3">
-                        <div className="col p-2 ps-4">
-                          <div className="txt-grey">Billing frequency</div>
-                          <div className="">After every visit</div>
-                        </div>
-                        <div className="col p-2 ps-4">
-                          <div className="txt-grey">Schedule</div>
-                          {job && <div className="">{_.startCase(rrulestr(job?.primaryVisit.rruleSet).toText())}</div>}
+                        <div className="row border-bottom mb-3">
+                          <div className="col p-2 ps-4">
+                            <div className="txt-grey">Billing frequency</div>
+                            <div className="">After every visit</div>
+                          </div>
+                          <div className="col p-2 ps-4">
+                            <div className="txt-grey">Schedule</div>
+                            {job && <div className="">{_.startCase(rrulestr(job?.primaryVisit.rruleSet).toText())}</div>}
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
 
-                <div className="row">
-                  <div className="col card m-4">
-                    <div className="mb-3">
+                  <div className="row p-1">
+                    <div className="col card m-3">
                       <div className="row">
                         <div className="col">
                           <InputField
@@ -508,9 +515,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
                           />
                         </div>
                       </div>
-                    </div>
 
-                    <div className="mb-3">
                       <div className="row">
                         <div className="col">
                           <InputField
@@ -526,20 +531,11 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
                         </div>
                       </div>
                     </div>
-
-                    <div className="mb-3">
-                      <input className="form-check-input" type="checkbox" value="" id="flexCheckDefault" />
-                      <label className="ms-2 form-check-label" htmlFor="flexCheckDefault">
-                        Schedule later
-                      </label>
-                    </div>
                   </div>
-                </div>
 
-                <div className="row p-2">
-                  <div className="col-9">
-                    <div className="card">
-                      <div className="row">
+                  <div className="row p-2">
+                    <div className="col">
+                      <div className='card mt-0'>
                         <h6 className="txt-bold">Line items</h6>
                         <small className="text-warning">
                           <InfoIcon size={14} /> These line items will appear in the job details and invoice.
@@ -636,21 +632,22 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
                     </div>
                   </div>
                 </div>
-              </div>
-
-              <div className="mb-3 mt-3">
-                <button type="submit" className="btn btn-primary pr-3" onClick={() => saveVisit(visitEditForm.values, true)}>
-                  Save and Update Future Visit
-                </button>{' '}
-                <button type="submit" className="btn btn-primary" onClick={() => saveVisit(visitEditForm.values)}>
-                  Save
-                </button>
-              </div>
-            </FormikProvider>
-          </form>
+                <div className="modal-footer">
+                  <button type="submit" className="btn btn-secondary" onClick={() => saveVisit(visitEditForm.values, true)}>
+                    Save and Update Future Visit
+                  </button>
+                  <button type="submit" className="btn btn-primary" onClick={() => saveVisit(visitEditForm.values)}>
+                    Update this Visit
+                  </button>
+                  <button type="button" className="btn btn-danger" onClick={() => setEditVisitMode(!editVisitMode)}>
+                    Close
+                  </button>
+                </div>
+              </FormikProvider>
+            </div>
+          </div>
         </div>
-      </Modal>
-
+      </Modal >
       <Modal isOpen={showDeleteConfirmation} onRequestClose={() => setShowDeleteConfirmation(false)}>
         <div className="modal-object">
           <div className="modal-header row bg-background-grey">
@@ -666,7 +663,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
           </div>
         </div>
       </Modal>
-    </div>
+    </div >
   );
 };
 

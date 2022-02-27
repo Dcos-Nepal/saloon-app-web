@@ -392,9 +392,13 @@ tr {
 }
 
 /* Modal */
-.modal-object {
+/* .ReactModal__Content ReactModal__Content--after-open {
+    padding: 0 !important;
+} */
+
+/* .modal-object {
     min-width: 24rem;
-}
+} */
 
 .modal-object--sm {
     width: 24rem;
@@ -425,9 +429,9 @@ textarea:focus {
     border: 1px solid #F47321;
 }
 
-.modal-content.lg {
+/* .modal-content.lg {
     min-width: 25vw;
-}
+} */
 
 /* Rating */
 .star {
@@ -476,9 +480,10 @@ textarea:focus {
     opacity: 0;
 }
 
-.ReactModal__Content {
+/* .ReactModal__Content {
     box-shadow: 0px 0px 10px grey;
-}
+} */
+
 
 .table {
     margin-bottom: 0;

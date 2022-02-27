@@ -46,46 +46,48 @@ const StatusChangeWithReason = ({ id, status, onSave, closeModal }: any) => {
   };
 
   return (
-    <div className="modal-content">
-      <div className="modal-header">
-        <h5 className="modal-title" id="exampleModalLabel">
-          Update Status
-        </h5>
-        <button type="button" className="btn-close" onClick={closeModal} aria-label="Close"></button>
-      </div>
-      <form className="was-validated" onSubmit={formik.handleSubmit}>
-        <div className="modal-body">
-          <div className="mb-3">
-            <label htmlFor="validationTextarea" className="form-label">
-              Changing status to:
-            </label>
-            <div className="txt-bold">{status?.label || ''}</div>
+    <div className={`modal fade show mt-5`} role="dialog" style={{ display: 'block' }}>
+      <div className="modal-dialog mt-5">
+        <div className="modal-content">
+          <div className="modal-header">
+            <h5 className="modal-title">Update Status</h5>
+            <button type="button" className="btn-close" onClick={closeModal} data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
+          <form className="was-validated" onSubmit={formik.handleSubmit}>
+            <div className="modal-body">
+              <div className="mb-3">
+                <label htmlFor="validationTextarea" className="form-label">
+                  Changing status to:
+                </label>
+                <div className="txt-bold">{status?.label || ''}</div>
+              </div>
 
-          <div className="mb-3">
-            <TextArea
-              rows={8}
-              label={'Reason:'}
-              placeholder="Required reason"
-              name="reason"
-              value={formik.values.reason || ''}
-              onChange={({ target }: { target: { value: string } }) => {
-                if (target.value !== formik.values.reason) formik.setFieldValue('reason', target.value);
-              }}
-              helperComponent={<ErrorMessage name="reason" />}
-              onBlur={formik.handleBlur}
-            />
-          </div>
+              <div className="mb-3">
+                <TextArea
+                  rows={8}
+                  label={'Reason/Notes:'}
+                  placeholder={`Add reasons for the status change`}
+                  name="reason"
+                  value={formik.values.reason || ''}
+                  onChange={({ target }: { target: { value: string } }) => {
+                    if (target.value !== formik.values.reason) formik.setFieldValue('reason', target.value);
+                  }}
+                  helperComponent={<ErrorMessage name="reason" />}
+                  onBlur={formik.handleBlur}
+                />
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button type="submit" className="btn btn-primary">
+                Change Status
+              </button>
+              <button type="button" className="btn btn-secondary" onClick={closeModal}>
+                Close
+              </button>
+            </div>
+          </form>
         </div>
-        <div className="modal-footer">
-          <button type="button" className="btn btn-secondary" onClick={closeModal}>
-            Close
-          </button>
-          <button type="submit" className="btn btn-primary">
-            Change Status
-          </button>
-        </div>
-      </form>
+      </div>
     </div>
   );
 };

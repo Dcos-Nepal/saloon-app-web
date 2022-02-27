@@ -31,7 +31,6 @@ const JobsList = (props: IProps) => {
   const [search, setSearch] = useState('');
   const [jobs, setJobs] = useState<any[]>([]);
   const [pageCount, setPageCount] = useState(1);
-  const [isAddJobOpen, setIsAddJobOpen] = useState(false);
   const [deleteInProgress, setDeleteInProgress] = useState('');
   const [provideFeedbackFor, setProvideFeedbackFor] = useState<any | null>(null);
 
@@ -157,10 +156,6 @@ const JobsList = (props: IProps) => {
           <h3 className="extra">Jobs</h3>
         </div>
         <div className="col d-flex flex-row align-items-center justify-content-end">
-          <button onClick={() => setIsAddJobOpen(true)} type="button" className="btn btn-secondary d-flex float-end">
-            Add Job Quickly
-          </button>
-          <div>&nbsp;</div>
           <button onClick={() => navigate(endpoints.admin.jobs.add)} type="button" className="btn btn-primary d-flex float-end">
             Create a Job
           </button>
@@ -229,13 +224,9 @@ const JobsList = (props: IProps) => {
           </div>
         ) : null}
       </div>
-      <Modal isOpen={isAddJobOpen} onRequestClose={() => setIsAddJobOpen(false)}>
-        <JobAdd closeModal={() => setIsAddJobOpen(false)} />
-      </Modal>
       <Modal isOpen={provideFeedbackFor} onRequestClose={() => setProvideFeedbackFor(null)}>
         <Feedback closeModal={() => setProvideFeedbackFor(null)} job={provideFeedbackFor} provideFeedback={feedbackHandler} />
       </Modal>
-
       <Modal isOpen={!!deleteInProgress} onRequestClose={() => setDeleteInProgress('')}>
         <DeleteConfirm onDelete={deleteJobHandler} closeModal={() => setDeleteInProgress('')} />
       </Modal>

@@ -41,12 +41,13 @@ const ReferralProgram = () => {
           <h4 className="m-auto txt-bold">
             Share the link below or use code <span className="txt-orange">{referralCode}</span>
           </h4>
-          <div className=''>
-            <div className="row mt-4 mr-5">
-              <div className="col-6">
+          <div className="">
+            <div className="row mt-4">
+              <div className="col"></div>
+              <div className="col-5">
                 <input className="form-control" value={referralUrl} disabled />
               </div>
-              <div className="col-4">
+              <div className="col-2">
                 <button
                   type="button"
                   onClick={() => {
@@ -58,9 +59,9 @@ const ReferralProgram = () => {
                   Copy Referral Link
                 </button>
               </div>
+              <div className="col"></div>
             </div>
           </div>
-
         </div>
         <div className="card p-5">
           <h4 className="m-auto txt-bold">Your Referrals</h4>

@@ -7,13 +7,25 @@ import { getQuotesSummaryApi } from 'services/quotes.service';
 import InvoicesList from 'pages/invoices/InvoiceList';
 import Footer from 'common/components/layouts/footer';
 import SideNavbar from 'common/components/layouts/sidebar';
+import { getVisitsSummaryApi } from 'services/visits.service';
+import { Loader } from 'common/components/atoms/Loader';
 
 const Summary = () => {
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(true);
   const [jobsSummary, setJobsSummary] = useState({
     activeJobsCount: 0,
     isCompleted: 0
   });
+  const [visitsSummary, setVisitsSummary] = useState<
+    {
+      status: '';
+      startTime: undefined;
+      totalPrice: 0;
+      visitDate: '';
+    }[]
+  >([]);
+
   const [quotesSummary, setQuotesSummary] = useState({
     acceptedCount: 0,
     pendingCount: 0,
@@ -38,19 +50,29 @@ const Summary = () => {
 
   useEffect(() => {
     const fetchAndSetData = async () => {
+      setIsLoading(true);
+
       const jobsSummaryDataPromise = getJobsSummaryApi().then((response) => response.data);
       const requestsSummaryDataPromise = getJobRequestsSummaryApi().then((response) => response.data);
+      const visitsSummaryDataPromise = getVisitsSummaryApi({
+        startDate: new Date(new Date().setHours(0, 0, 0, 0)).toISOString(),
+        endDate: new Date(new Date().setHours(23, 59, 59, 999)).toISOString()
+      }).then((response) => response.data);
       const quotesSummaryDataPromise = getQuotesSummaryApi().then((response) => response.data);
 
-      const [jobsSummaryData, requestsSummaryData, quotesSummaryData] = await Promise.all([
+      const [jobsSummaryData, requestsSummaryData, visitsSummaryData, quotesSummaryData] = await Promise.all([
         jobsSummaryDataPromise,
         requestsSummaryDataPromise,
+        visitsSummaryDataPromise,
         quotesSummaryDataPromise
       ]);
 
       if (jobsSummaryData?.data?.data) setJobsSummary(jobsSummaryData?.data?.data);
       if (requestsSummaryData?.data?.data) setRequestsSummary(requestsSummaryData?.data?.data);
       if (quotesSummaryData?.data?.data) setQuotesSummary(quotesSummaryData?.data?.data);
+      if (visitsSummaryData?.data?.data) setVisitsSummary(visitsSummaryData?.data?.data);
+
+      setIsLoading(false);
     };
 
     fetchAndSetData();
@@ -60,6 +82,20 @@ const Summary = () => {
     setRruleStr(newRRule);
   };
 
+  const nowTime = new Date().getTime();
+
+  const toGoVisits = visitsSummary.filter((visit) => {
+    return visit.visitDate && new Date(visit.visitDate).getTime() > nowTime;
+  });
+
+  const completeVisits = visitsSummary.filter((visit) => {
+    return visit.status && visit.status === 'COMPLETED';
+  });
+
+  const activeVisits = visitsSummary.filter((visit) => {
+    return visit.status && visit.visitDate && new Date(visit.visitDate).getTime() < nowTime && visit.status !== 'COMPLETED';
+  });
+
   return (
     <>
       <SideNavbar active="Overview" />
@@ -68,37 +104,33 @@ const Summary = () => {
           <div className="col d-flex flex-row">
             <h1>Home</h1>
           </div>
-          <div className="col">
-            <button type="button" className="btn btn-primary d-flex float-end">
-              Create
-            </button>
-          </div>
         </div>
+        <Loader isLoading={isLoading} />
         <div className="card bg-white mt-4 p-4">
           <b className="">Today’s appointments</b>
           <div className="row mt-4 mb-4">
             <div className="col row">
-              <div className="col p-3-4 text-center dashboard-h1 rounded-radius bg-grey">3</div>
+              <div className="col p-3-4 text-center dashboard-h1 rounded-radius bg-grey">{visitsSummary.length}</div>
               <div className="col dashboard-main-label">
-                Total <p className="txt-bold-big mt-2">$0.00</p>
+                Total <p className="txt-bold-big mt-2">${`${visitsSummary.reduce((prevSum, visit) => prevSum + visit.totalPrice, 0).toFixed(2)}`}</p>
               </div>
             </div>
             <div className="col row">
-              <div className="col p-3-4 text-center dashboard-h1 rounded-radius bg-light-red">3</div>
+              <div className="col p-3-4 text-center dashboard-h1 rounded-radius bg-light-red">{toGoVisits.length}</div>
               <div className="col dashboard-main-label">
-                To Go <p className="txt-bold-big mt-2">$0.00</p>
+                To Go <p className="txt-bold-big mt-2">${`${toGoVisits.reduce((prevSum, visit) => prevSum + visit.totalPrice, 0).toFixed(2)}`}</p>
               </div>
             </div>
             <div className="col row">
-              <div className="col p-3-4 text-center dashboard-h1 rounded-radius bg-light-blue">0</div>
+              <div className="col p-3-4 text-center dashboard-h1 rounded-radius bg-light-blue">{activeVisits.length}</div>
               <div className="col dashboard-main-label">
-                Active <p className="txt-bold-big mt-2">$0.00</p>
+                Active <p className="txt-bold-big mt-2">${`${activeVisits.reduce((prevSum, visit) => prevSum + visit.totalPrice, 0).toFixed(2)}`}</p>
               </div>
             </div>
             <div className="col row">
-              <div className="col p-3-4 text-center dashboard-h1 rounded-radius bg-light-green">0</div>
+              <div className="col p-3-4 text-center dashboard-h1 rounded-radius bg-light-green">{completeVisits.length}</div>
               <div className="col dashboard-main-label">
-                Complete <p className="txt-bold-big mt-2">$0.00</p>
+                Complete <p className="txt-bold-big mt-2">${`${completeVisits.reduce((prevSum, visit) => prevSum + visit.totalPrice, 0).toFixed(2)}`}</p>
               </div>
             </div>
           </div>

@@ -100,7 +100,6 @@ const WorkSchedule = (props: any) => {
         </div>
         <div className="card pt-4">
           <div style={{ position: 'relative' }}>
-            <Loader isLoading={props.isLoading} />
             <FullCalendar
               plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, rrulePlugin, luxonPlugin]}
               headerToolbar={{
@@ -126,6 +125,7 @@ const WorkSchedule = (props: any) => {
               // eventChange={handleEventChange} // Called on drag-n-drop/resize
               // eventRemove={handleEventRemove}
             />
+            <Loader isLoading={props.isLoading} />
           </div>
 
           <div className="form-group mt-3">

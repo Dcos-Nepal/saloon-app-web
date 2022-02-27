@@ -1,6 +1,6 @@
 import * as Yup from 'yup';
 import { useFormik } from 'formik';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import { endpoints } from 'common/config';
 import LogoFull from 'assets/images/LogoFull.svg';
@@ -13,35 +13,25 @@ const SignUp = (props: any) => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
+  const search = useLocation().search;
+  const referredBy = new URLSearchParams(search).get('referralCode');
+
   const InitSignUp = {
     firstName: '',
     lastName: '',
     email: '',
     phoneNumber: '',
     password: '',
-    userType: '',
-  }
+    userType: ''
+  };
 
   const SignUpSchema = Yup.object().shape({
-    userType: Yup.string()
-      .required('Please select a User Type'),
-    firstName: Yup.string()
-      .min(2, 'Too Short!')
-      .max(20, 'Too Long!')
-      .required('First Name is required'),
-    lastName: Yup.string()
-      .min(2, 'Too Short!')
-      .max(20, 'Too Long!')
-      .required('Last Name is required'),
+    userType: Yup.string().required('Please select a User Type'),
+    firstName: Yup.string().min(2, 'Too Short!').max(20, 'Too Long!').required('First Name is required'),
+    lastName: Yup.string().min(2, 'Too Short!').max(20, 'Too Long!').required('Last Name is required'),
     email: Yup.string().required('Email is required').email('Invalid email'),
-    password: Yup.string()
-      .min(6, 'Password must be at least 6 characters')
-      .max(24, 'Password can be maximum 24 characters')
-      .required('Password is required'),
-    phoneNumber: Yup.string()
-      .length(10)
-      .label("Phone Number")
-      .required('Phone Number is required')
+    password: Yup.string().min(6, 'Password must be at least 6 characters').max(24, 'Password can be maximum 24 characters').required('Password is required'),
+    phoneNumber: Yup.string().length(10).label('Phone Number').required('Phone Number is required')
   });
 
   const formik = useFormik({
@@ -54,6 +44,9 @@ const SignUp = (props: any) => {
       // Remove the userType attribute.
       delete userData.userType;
 
+      // Set referred by
+      if (referredBy) userData.referredBy = referredBy;
+
       // Making a User Registration Request
       setIsLoading(true);
       const response: any = await registerUserApi(userData);
@@ -65,14 +58,14 @@ const SignUp = (props: any) => {
         setIsLoading(false);
       }
     },
-    validationSchema: SignUpSchema,
+    validationSchema: SignUpSchema
   });
 
   useEffect(() => {
     if (props.isSuccess && props.isFailed === false) {
-      navigate(endpoints.auth.signIn)
+      navigate(endpoints.auth.signIn);
     }
-  }, [props.isSuccess, props.isFailed, navigate])
+  }, [props.isSuccess, props.isFailed, navigate]);
 
   return (
     <div className="container-fluid txt-grey">
@@ -92,13 +85,17 @@ const SignUp = (props: any) => {
               <div className="row mt-3 mb-3">
                 <div className="btn-group" role="group" aria-label="Basic radio toggle button group">
                   <input name="userType" onChange={formik.handleChange} type="radio" value="Client" className="btn-check" id="client" autoComplete="off" />
-                  <label className="btn btn-outline-dangerr" htmlFor="client">I am a Client</label>
+                  <label className="btn btn-outline-dangerr" htmlFor="client">
+                    I am a Client
+                  </label>
 
                   <input name="userType" onChange={formik.handleChange} type="radio" value="Worker" className="btn-check" id="worker" autoComplete="off" />
-                  <label className="btn btn-outline-dangerr" htmlFor="worker">I am a Worker</label>
+                  <label className="btn btn-outline-dangerr" htmlFor="worker">
+                    I am a Worker
+                  </label>
                 </div>
                 <div className="form-text">
-                  {formik.errors.userType && formik.touched.userType ? (<div className="txt-red">{formik.errors.userType}</div>) : null}
+                  {formik.errors.userType && formik.touched.userType ? <div className="txt-red">{formik.errors.userType}</div> : null}
                 </div>
               </div>
               <div className="row">
@@ -107,7 +104,7 @@ const SignUp = (props: any) => {
                     label="First Name:"
                     name="firstName"
                     placeholder="First name"
-                    helperComponent={formik.errors.firstName && formik.touched.firstName ? (<div className="txt-red">{formik.errors.firstName}</div>) : null}
+                    helperComponent={formik.errors.firstName && formik.touched.firstName ? <div className="txt-red">{formik.errors.firstName}</div> : null}
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
                   />
@@ -117,7 +114,7 @@ const SignUp = (props: any) => {
                     label="Last Name:"
                     name="lastName"
                     placeholder="Last name"
-                    helperComponent={formik.errors.lastName && formik.touched.lastName ? (<div className="txt-red">{formik.errors.lastName}</div>) : null}
+                    helperComponent={formik.errors.lastName && formik.touched.lastName ? <div className="txt-red">{formik.errors.lastName}</div> : null}
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
                   />
@@ -129,7 +126,9 @@ const SignUp = (props: any) => {
                     label="Phone Number:"
                     name="phoneNumber"
                     placeholder="Phone number"
-                    helperComponent={formik.errors.phoneNumber && formik.touched.phoneNumber ? (<div className="txt-red">{formik.errors.phoneNumber}</div>) : null}
+                    helperComponent={
+                      formik.errors.phoneNumber && formik.touched.phoneNumber ? <div className="txt-red">{formik.errors.phoneNumber}</div> : null
+                    }
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
                   />
@@ -137,31 +136,40 @@ const SignUp = (props: any) => {
               </div>
               <div className="row">
                 <InputField
-                  type={"email"}
+                  type={'email'}
                   name="email"
                   label="Email:"
                   placeholder="Your email (example@gmail.com)"
-                  helperComponent={formik.errors.email && formik.touched.email ? (<div className="txt-red">{formik.errors.email}</div>) : null}
+                  helperComponent={formik.errors.email && formik.touched.email ? <div className="txt-red">{formik.errors.email}</div> : null}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                 />
                 <InputField
                   name="password"
-                  label={(<div>
-                    <div>Password: <label className="txt-orange"><small>Use alphanumeric with special characters</small></label></div>
-                  </div>)}
+                  label={
+                    <div>
+                      <div>
+                        Password:{' '}
+                        <label className="txt-orange">
+                          <small>Use alphanumeric with special characters</small>
+                        </label>
+                      </div>
+                    </div>
+                  }
                   type="password"
                   placeholder="Login Password"
-                  helperComponent={formik.errors.password && formik.touched.password ? (<div className="txt-red">{formik.errors.password}</div>) : null}
+                  helperComponent={formik.errors.password && formik.touched.password ? <div className="txt-red">{formik.errors.password}</div> : null}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                 />
               </div>
               <div className="d-flex justify-content-center mt-2">
-                <button type="submit" className="btn btn-primary btn-long">Sign up</button>
+                <button type="submit" className="btn btn-primary btn-long">
+                  Sign up
+                </button>
               </div>
             </form>
-            <div className='mt-2'>
+            <div className="mt-2">
               <div className="d-flex justify-content-center mt-3">
                 <div>
                   Already have an account?
@@ -172,13 +180,13 @@ const SignUp = (props: any) => {
               </div>
             </div>
           </div>
-          <div className='mb-5 text-center pb-5'>
+          <div className="mb-5 text-center pb-5">
             Copyright &copy; {new Date().getFullYear()} <b>Orange Cleaning</b>, All Rights Reserved.
           </div>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default SignUp;

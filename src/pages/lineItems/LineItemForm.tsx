@@ -1,0 +1,127 @@
+import * as Yup from 'yup';
+import { getIn, useFormik } from 'formik';
+import { StopIcon } from '@primer/octicons-react';
+
+import TextArea from 'common/components/form/TextArea';
+import InputField from 'common/components/form/Input';
+import SelectField from 'common/components/form/Select';
+import { IOption } from 'common/types/form';
+
+const LineItemForm = ({ closeModal, lineItem, saveHandler }: { lineItem?: any; closeModal: () => void; saveHandler: (data: any) => any }) => {
+  const initialValues = lineItem
+    ? lineItem
+    : {
+        name: '',
+        tags: [],
+        description: '',
+        refCost: 0
+      };
+
+  const LineItemFormSchema = Yup.object().shape({
+    name: Yup.string().required('Name is required'),
+    description: Yup.string().optional(),
+    refCost: Yup.number(),
+    tags: Yup.array(Yup.string())
+  });
+
+  const formik = useFormik({
+    enableReinitialize: true,
+    initialValues: initialValues,
+    validationSchema: LineItemFormSchema,
+    validateOnChange: true,
+    onSubmit: async (data: any) => {
+      await saveHandler(data);
+    }
+  });
+
+  /**
+   * Custom Error Message
+   * @param param0 Props Object
+   * @returns JSX
+   */
+  const ErrorMessage = ({ name }: any) => {
+    if (!name) return <></>;
+
+    const error = getIn(formik.errors, name);
+    const touch = getIn(formik.touched, name);
+
+    return (touch && error) || error ? (
+      <div className="row txt-red">
+        <div className="col-1" style={{ width: '20px' }}>
+          <StopIcon size={14} />
+        </div>
+        <div className="col">{error}</div>
+      </div>
+    ) : null;
+  };
+
+  const tagOptions = [
+    { label: 'Window', value: 'Window' },
+    { label: 'Garden', value: 'Garden' },
+    { label: 'Kitchen', value: 'Kitchen' },
+    { label: 'Other', value: 'Other' }
+  ];
+
+  return (
+    <form className="was-validated" onSubmit={formik.handleSubmit}>
+      <div className="modal-body">
+        <InputField
+          label="Name"
+          type="text"
+          placeholder="Enter name"
+          name={`name`}
+          value={formik.values.name}
+          onChange={formik.handleChange}
+          helperComponent={<ErrorMessage name="name" />}
+        />
+        <TextArea
+          rows={5}
+          label={'Description:'}
+          placeholder="Enter description"
+          name="description"
+          value={formik.values.description || ''}
+          onChange={({ target }: { target: { value: string } }) => {
+            if (target.value !== formik.values.description) formik.setFieldValue('description', target.value);
+          }}
+          helperComponent={<ErrorMessage name="description" />}
+          onBlur={formik.handleBlur}
+        />
+
+        <SelectField
+          label="Tags"
+          name="tags"
+          isMulti={true}
+          value={tagOptions.filter((tagOption) => formik.values.tags?.find((tag: string) => tag === tagOption.value))}
+          options={tagOptions}
+          helperComponent={<ErrorMessage name="tags" />}
+          handleChange={(selectedTags: IOption[]) => {
+            formik.setFieldValue(
+              'tags',
+              selectedTags.map((tagOption) => tagOption.value)
+            );
+          }}
+          onBlur={formik.handleBlur}
+        />
+        <InputField
+          label="Ref cost"
+          type="number"
+          placeholder="Enter ref cost"
+          name={`refCost`}
+          value={formik.values.refCost}
+          onChange={formik.handleChange}
+          helperComponent={<ErrorMessage name="refCost" />}
+        />
+      </div>
+      <div className="modal-footer">
+        <button type="submit" className="btn btn-primary">
+          Save
+        </button>
+        <button onClick={() => closeModal()} type="button" className="ms-2 btn btn-secondary" data-bs-dismiss="modal">
+          Close
+        </button>
+      </div>
+    </form>
+  );
+};
+
+export default LineItemForm;

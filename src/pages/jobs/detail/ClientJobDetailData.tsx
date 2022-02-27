@@ -346,11 +346,6 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
           <div className="col d-flex flex-row pt-3 pb-3">
             <h6 className="txt-bold mt-2">Visits</h6>
           </div>
-          <div className="col pt-3 pb-3">
-            <button onClick={() => {}} type="button" className="btn btn-primary d-flex float-end">
-              New visit
-            </button>
-          </div>
           <table className="table txt-dark-grey">
             <thead>
               <tr className="rt-head">

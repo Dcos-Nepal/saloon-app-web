@@ -497,64 +497,6 @@ const ClientJobAddForm = ({ actions, isLoading }: IProps) => {
           </div>
         </div>
 
-        <div className="card">
-          <div className="row bg-grey m-2 p-3">
-            <div className="col d-flex flex-row">
-              <h6 className="txt-bold mt-2">Visits</h6>
-            </div>
-            <div className="col">
-              <button onClick={() => {}} type="button" className="btn btn-primary d-flex float-end">
-                New visit
-              </button>
-            </div>
-          </div>
-
-          <table {...getTableProps()} className="table txt-dark-grey">
-            <thead>
-              {headerGroups.map(
-                (headerGroup: {
-                  getHeaderGroupProps: () => JSX.IntrinsicAttributes & ClassAttributes<HTMLTableRowElement> & HTMLAttributes<HTMLTableRowElement>;
-                  headers: any[];
-                }) => (
-                  <tr {...headerGroup.getHeaderGroupProps()} className="rt-head">
-                    {headerGroup.headers.map(
-                      (column: {
-                        getHeaderProps: () => JSX.IntrinsicAttributes &
-                          ClassAttributes<HTMLTableHeaderCellElement> &
-                          ThHTMLAttributes<HTMLTableHeaderCellElement>;
-                        render: (arg0: string) => boolean | ReactChild | ReactFragment | ReactPortal | null | undefined;
-                      }) => (
-                        <th {...column.getHeaderProps()} scope="col">
-                          {column.render('Header')}
-                        </th>
-                      )
-                    )}
-                  </tr>
-                )
-              )}
-            </thead>
-
-            <tbody {...getTableBodyProps()} className="rt-tbody">
-              {rows.map((row: Row<any>) => {
-                prepareRow(row);
-
-                return (
-                  <tr {...row.getRowProps()} className="rt-tr-group">
-                    {row.cells.map(
-                      (cell: {
-                        getCellProps: () => JSX.IntrinsicAttributes & ClassAttributes<HTMLTableDataCellElement> & TdHTMLAttributes<HTMLTableDataCellElement>;
-                        render: (arg0: string) => boolean | ReactChild | ReactFragment | ReactPortal | null | undefined;
-                      }) => (
-                        <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
-                      )
-                    )}
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-
         <div className="mb-3 mt-3">
           <button type="submit" className="btn btn-primary">
             Save Job

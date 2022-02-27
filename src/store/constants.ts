@@ -1,4 +1,9 @@
 /**
+ * Add User action types
+ */
+export const ADD_CURRENT_USER = 'ADD_CURRENT_USER';
+
+/**
  * User Registration action types
  */
 export const AUTH_SIGNUP = 'AUTH_SIGNUP';

@@ -7,7 +7,6 @@ import { addQuoteSaga, fetchQuoteSaga, fetchQuotesSaga, updateQuoteSaga, updateQ
 import {
   addClientSaga,
   addWorkerSaga,
-  userSignInSaga,
   addPropertySaga,
   fetchWorkerSaga,
   fetchClientSaga,
@@ -15,10 +14,7 @@ import {
   updateClientSaga,
   fetchClientsSaga,
   fetchWorkersSaga,
-  userRegisterSaga,
-  resetPasswordSaga,
   fetchPropertySaga,
-  forgotPasswordSaga,
   updatePropertySaga,
   fetchPropertiesSaga,
   verifyUserEmailSaga
@@ -52,11 +48,7 @@ export const store = createStore(rootReducer, middleware);
 sagaMiddleware.run(addWorkerSaga);
 sagaMiddleware.run(updateWorkerSaga);
 sagaMiddleware.run(fetchWorkerSaga);
-sagaMiddleware.run(userRegisterSaga);
-sagaMiddleware.run(userSignInSaga);
 sagaMiddleware.run(verifyUserEmailSaga);
-sagaMiddleware.run(forgotPasswordSaga);
-sagaMiddleware.run(resetPasswordSaga);
 sagaMiddleware.run(addJobRequestSaga);
 sagaMiddleware.run(fetchJobRequestSaga);
 sagaMiddleware.run(updateJobRequestSaga);

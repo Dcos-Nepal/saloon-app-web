@@ -11,6 +11,13 @@ export const fetchVisitApi = async (id: string) => {
   return await http.get(url);
 };
 
+export const getVisitsSummaryApi = async (query: { startDate: string; endDate: string }) => {
+  const url = `/v1.0.0/visits/summary?${generateQueryParams(query)}`;
+  return await http.get(url, {
+    headers: { Accept: 'application/json' }
+  });
+};
+
 export const updateVisitApi = async (id: string, payload: any, query: any = null) => {
   const url = `/v1.0.0/visits/${id}` + (query ? `?${generateQueryParams(query)}` : '');
   return await http.put(url, payload);

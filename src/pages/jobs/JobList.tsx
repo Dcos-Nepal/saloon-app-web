@@ -19,6 +19,7 @@ import SelectField from 'common/components/form/Select';
 import DeleteConfirm from 'common/components/DeleteConfirm';
 import * as jobsActions from '../../store/actions/job.actions';
 import { deleteJobApi, provideFeedbackApi } from 'services/jobs.service';
+import { Loader } from 'common/components/atoms/Loader';
 
 interface IProps {
   actions: { fetchJobs: (query: any) => any };
@@ -212,6 +213,7 @@ const JobsList = (props: IProps) => {
               ))}
             </thead>
             <tbody {...getTableBodyProps()} className="rt-tbody">
+              <Loader isLoading={props.isLoading} />
               {rows.map((row, index) => {
                 prepareRow(row);
 

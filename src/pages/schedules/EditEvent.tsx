@@ -1,8 +1,5 @@
-import { FC, useState } from 'react';
+import { FC } from 'react';
 import { useNavigate } from 'react-router-dom';
-
-import CompleteJob from './CompleteJob';
-import Modal from 'common/components/atoms/Modal';
 
 interface IProps {
   event: any;
@@ -11,7 +8,6 @@ interface IProps {
 
 const EditEvent: FC<IProps> = ({ closeModal, event }) => {
   const navigate = useNavigate();
-  const [completeJobFor, setCompleteJobFor] = useState<any | null>(null);
 
   return (
     <div className={`modal fade show`} role="dialog" style={{ display: 'block' }}>
@@ -23,11 +19,7 @@ const EditEvent: FC<IProps> = ({ closeModal, event }) => {
           </div>
           <div className="modal-body">
             <div className="row">
-              <div
-                onClick={() => {
-                  setCompleteJobFor(event);
-                }}
-              >
+              <div>
                 <input
                   className="form-check-input"
                   type="checkbox"
@@ -109,14 +101,15 @@ const EditEvent: FC<IProps> = ({ closeModal, event }) => {
             </div>
           </div>
           <div className="modal-footer">
-            <button type="button" className="btn btn-secondary" onClick={() => navigate(`/dashboard/quotes/${event.extendedProps?.meta?.job?._id}`)}>View Details</button>
-            <button type="button" className="btn btn-primary" onClick={closeModal}>Cancel</button>
+            <button type="button" className="btn btn-secondary" onClick={() => navigate(`/dashboard/quotes/${event.extendedProps?.meta?.job?._id}`)}>
+              View Details
+            </button>
+            <button type="button" className="btn btn-primary" onClick={closeModal}>
+              Cancel
+            </button>
           </div>
         </div>
       </div>
-      <Modal isOpen={completeJobFor} onRequestClose={() => setCompleteJobFor(null)}>
-        <CompleteJob closeModal={() => setCompleteJobFor(null)} job={completeJobFor} />
-      </Modal>
     </div>
   );
 };

@@ -38,7 +38,7 @@ const WorkSchedule = (props: any) => {
           rrule: event.rruleSet,
           exrule: exRules,
           meta: event
-        }
+        };
       });
 
       setEvents(mappedEvents);
@@ -47,7 +47,7 @@ const WorkSchedule = (props: any) => {
   }, [props.isLoading]);
 
   /**
-   * 
+   *
    * @param clickInfo
    */
   // const handleDateSelect = (selectInfo: any) => {
@@ -169,8 +169,8 @@ function renderEventContent(eventInfo: any) {
 
 /**
  * Maps state to the props
- * 
- * @returns Object 
+ *
+ * @returns Object
  */
 function mapStateToProps() {
   return (state: any) => {

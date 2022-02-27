@@ -346,19 +346,14 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
           <div className="col d-flex flex-row pt-3 pb-3">
             <h6 className="txt-bold mt-2">Visits</h6>
           </div>
-          <div className="col pt-3 pb-3">
-            <button onClick={() => { }} type="button" className="btn btn-primary d-flex float-end">
-              New visit
-            </button>
-          </div>
           <table className="table txt-dark-grey">
             <thead>
               <tr className="rt-head">
-                <th scope="col"></th>
-                <th scope="col">Visit Date</th>
-                <th scope="col">Instruction</th>
-                <th scope="col">Team</th>
-                <th scope="col"></th>
+                <th className=""></th>
+                <th className="col-3">Visit Date</th>
+                <th className="col-4">Instruction</th>
+                <th className="col-4">Team</th>
+                <th className=""></th>
               </tr>
             </thead>
             {Object.keys(visits).map((visitKey: string, index: number) => (
@@ -384,9 +379,9 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
                       </td>
                       <td>{DateTime.fromJSDate(v.startDate).toFormat('yyyy LLL dd')}</td>
                       <td>{v.instruction}</td>
-                      <td>{v.team.map((t: any) => t.fullName).join(', ')}</td>
-                      <td>
-                        <div className="dropdown">
+                      <td>{v.team.map((t: any) => t.fullName).join(', ') || 'Not assigned yet'}</td>
+                      <td className="d-flex float-end">
+                        <div className="dropdown me-2">
                           <span role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
                             <box-icon name="dots-vertical-rounded"></box-icon>
                           </span>
@@ -412,13 +407,19 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
         </div>
       </div>
 
-      <Modal isOpen={editVisitMode} onRequestClose={() => setEditVisitMode(false)}>
+      <Modal isOpen={!!editVisitMode} onRequestClose={() => setEditVisitMode(false)}>
         <div className={`modal fade show`} role="dialog" style={{ display: 'block' }}>
           <div className="modal-dialog modal-lg">
             <div className="modal-content">
               <div className="modal-header">
                 <h5 className="modal-title">Visit Detail</h5>
-                <button type="button" className="btn-close" onClick={() => setEditVisitMode(!editVisitMode)} data-bs-dismiss="modal" aria-label="Close"></button>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => setEditVisitMode(!editVisitMode)}
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                ></button>
               </div>
               <FormikProvider value={visitEditForm}>
                 <div className="modal-body">
@@ -535,7 +536,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
 
                   <div className="row p-2">
                     <div className="col">
-                      <div className='card mt-0'>
+                      <div className="card mt-0">
                         <h6 className="txt-bold">Line items</h6>
                         <small className="text-warning">
                           <InfoIcon size={14} /> These line items will appear in the job details and invoice.
@@ -647,8 +648,8 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
             </div>
           </div>
         </div>
-      </Modal >
-      <Modal isOpen={showDeleteConfirmation} onRequestClose={() => setShowDeleteConfirmation(false)}>
+      </Modal>
+      <Modal isOpen={!!showDeleteConfirmation} onRequestClose={() => setShowDeleteConfirmation(false)}>
         <div className="modal-object">
           <div className="modal-header row bg-background-grey">
             <h5 className="col-10">Are you sure you want to delete this visit?</h5>
@@ -663,7 +664,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
           </div>
         </div>
       </Modal>
-    </div >
+    </div>
   );
 };
 

@@ -1,22 +1,24 @@
 import _ from 'lodash';
 import { rrulestr } from 'rrule';
 import { connect } from 'react-redux';
+import { toast } from 'react-toastify';
 import pinterpolate from 'pinterpolate';
+import ReactPaginate from 'react-paginate';
 import { useNavigate } from 'react-router-dom';
 import { Column, useTable } from 'react-table';
 import { useEffect, useMemo, useState } from 'react';
 
 import JobAdd from './JobAdd';
 import Feedback from './Feedback';
+import CompleteJob from './CompleteJob';
 import { endpoints } from 'common/config';
 import Modal from 'common/components/atoms/Modal';
 import InputField from 'common/components/form/Input';
+import { completeJobApi } from 'services/jobs.service';
 import SelectField from 'common/components/form/Select';
-import * as jobsActions from '../../store/actions/job.actions';
-import ReactPaginate from 'react-paginate';
-import { deleteJobApi, provideFeedbackApi } from 'services/jobs.service';
-import { toast } from 'react-toastify';
 import DeleteConfirm from 'common/components/DeleteConfirm';
+import * as jobsActions from '../../store/actions/job.actions';
+import { deleteJobApi, provideFeedbackApi } from 'services/jobs.service';
 
 interface IProps {
   actions: { fetchJobs: (query: any) => any };
@@ -32,7 +34,19 @@ const JobsList = (props: IProps) => {
   const [jobs, setJobs] = useState<any[]>([]);
   const [pageCount, setPageCount] = useState(1);
   const [deleteInProgress, setDeleteInProgress] = useState('');
+  const [completeJobFor, setCompleteJobFor] = useState<any | null>(null);
   const [provideFeedbackFor, setProvideFeedbackFor] = useState<any | null>(null);
+
+  const completeJobHandler = async (data: any) => {
+    try {
+      await completeJobApi(completeJobFor?._id, data);
+      toast.success('Job completed successfully');
+      setCompleteJobFor(null);
+      props.actions.fetchJobs({ q: search, page, limit: itemsPerPage });
+    } catch (ex) {
+      toast.error('Failed to complete job');
+    }
+  };
 
   const deleteJobHandler = async () => {
     try {
@@ -97,10 +111,16 @@ const JobsList = (props: IProps) => {
               <box-icon name="dots-vertical-rounded"></box-icon>
             </span>
             <ul className="dropdown-menu" aria-labelledby="dropdownMenuLink">
+              <li
+                onClick={() => {
+                  setCompleteJobFor(row);
+                }}
+              >
+                <span className="dropdown-item pointer">Mark as Complete</span>
+              </li>
               <li onClick={() => setProvideFeedbackFor(row)}>
                 <span className="dropdown-item pointer">Provide Feedback</span>
               </li>
-
               <li onClick={() => navigate(pinterpolate(endpoints.admin.worker.detail, { id: row._id }))}>
                 <span className="dropdown-item pointer">View Detail</span>
               </li>
@@ -229,6 +249,9 @@ const JobsList = (props: IProps) => {
       </Modal>
       <Modal isOpen={!!deleteInProgress} onRequestClose={() => setDeleteInProgress('')}>
         <DeleteConfirm onDelete={deleteJobHandler} closeModal={() => setDeleteInProgress('')} />
+      </Modal>
+      <Modal isOpen={completeJobFor} onRequestClose={() => setCompleteJobFor(null)}>
+        <CompleteJob completeJob={completeJobHandler} closeModal={() => setCompleteJobFor(null)} job={completeJobFor} />
       </Modal>
     </>
   );

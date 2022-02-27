@@ -31,7 +31,7 @@ const ReferralProgram = () => {
                 REFER <span className="txt-orange">ORANGE CLEANING</span> TO GET <span className="txt-orange">TWO FREE MONTHS.</span>
               </h1>
               <p className="txt-l">
-                When you refer a friend to Jobber, they get two free months, you help a fellow entrepreneur be successful, and{' '}
+                When you refer a friend to Orange, they get two free months, you help a fellow entrepreneur be successful, and{' '}
                 <b>we’ll send you two free months</b> if they become a customer.
               </p>
             </div>

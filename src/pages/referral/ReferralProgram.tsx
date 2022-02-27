@@ -2,8 +2,14 @@ import IPhone from 'assets/images/iphone-x.svg';
 import IPhone1 from 'assets/images/iphone-x-1.svg';
 import Footer from 'common/components/layouts/footer';
 import SideNavbar from 'common/components/layouts/sidebar';
+import { getData } from 'utils/storage';
+import { toast } from 'react-toastify';
 
 const ReferralProgram = () => {
+  const user = getData('user');
+  const referralCode = user?.userData?.referralCode || '';
+  const referralUrl = `${window.location.host}/signup?referralCode=${referralCode}`;
+
   return (
     <>
       <SideNavbar active="Referral" />
@@ -25,7 +31,7 @@ const ReferralProgram = () => {
                 REFER <span className="txt-orange">ORANGE CLEANING</span> TO GET <span className="txt-orange">TWO FREE MONTHS.</span>
               </h1>
               <p className="txt-l">
-                When you refer a friend to Jobber, they get two free months, you help a fellow entrepreneur be successful, and{' '}
+                When you refer a friend to Orange, they get two free months, you help a fellow entrepreneur be successful, and{' '}
                 <b>we’ll send you two free months</b> if they become a customer.
               </p>
             </div>
@@ -33,14 +39,21 @@ const ReferralProgram = () => {
         </div>
         <div className="card p-5">
           <h4 className="m-auto txt-bold">
-            Share the link below or use code <span className="txt-orange">DANDINH</span>
+            Share the link below or use code <span className="txt-orange">{referralCode}</span>
           </h4>
           <div className="row m-auto mt-4">
             <div className="col-8">
-              <input className="form-control" value="https://share.orangecleaning.com/mQlDbu5" disabled />
+              <input className="form-control" value={referralUrl} disabled />
             </div>
             <div className="col">
-              <button type="button" onClick={async () => {}} className="btn btn-primary">
+              <button
+                type="button"
+                onClick={() => {
+                  navigator.clipboard.writeText(referralUrl);
+                  toast.success('Copied to clipboard!');
+                }}
+                className="btn btn-primary"
+              >
                 Copy
               </button>
             </div>

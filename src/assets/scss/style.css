@@ -525,13 +525,15 @@ textarea:focus {
 }
 
 .cfc-event-bg-green {
-    border-left: 3px solid rgb(38, 218, 98);
-    background-color: rgb(13 110 253 / 25%);
+    border-left: 3px solid #10B981;
+    color: #047857;
+    background-color: rgba(16, 185, 129, 0.1);
 }
 
 .cfc-event-bg-blue {
-    border-left: 3px solid rgb(30, 139, 241);
-    background-color: rgb(13 110 253 / 25%);
+    border-left: 3px solid #0EA5E9;
+    color: #0369A1;
+    background-color: rgba(14, 165, 233, 0.1);
 }
 
 .fc-col-header-cell a,
@@ -539,14 +541,42 @@ textarea:focus {
     text-decoration: none;
 }
 
+.fc-button-primary {
+    background-color: #CED2D3 !important;
+    font-weight: bold !important;
+    color: white;
+}
+
 .fc-button-primary:active,
 .fc-button-primary:visited {
-    background-color: orange !important;
-    color: white;
+    background-color: #F47321 !important;
+    color: white !important;
 }
 
 .fc .fc-button-primary:focus {
     box-shadow: none !important;
+}
+
+.fc-toolbar-title {
+    color: #959FAE;
+}
+
+.fc-timeGridWeek-button, .fc-timeGridDay-button, .fc-dayGridMonth-button {
+    background: none !important;
+    color: #666666 !important;
+}
+
+.fc-button-active {
+    background-color: #F47321 !important;
+    color: white !important;
+}
+
+.fc-daygrid-day {
+    background-color: #FFFFFF;
+}
+
+.fc-day-today {
+    background-color: #EFF6FF !important;
 }
 
 .fc-timegrid-event .fc-event-main {
@@ -569,7 +599,8 @@ textarea:focus {
 
 .fc-day-sun,
 .fc-day-sat {
-    background-color: #e9eaf1;
+    background-color: #FAFAFA;
+    box-shadow: inset 0px -1px 0px #F7F7F7;
 }
 
 .border-red {

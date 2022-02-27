@@ -15,6 +15,7 @@ import { FieldArray, FormikProvider, useFormik } from 'formik';
 import { InfoIcon, PlusCircleIcon, XCircleIcon } from '@primer/octicons-react';
 import SelectAsync from 'common/components/form/AsyncSelect';
 import { toast } from 'react-toastify';
+import StarRating from 'common/components/StarRating';
 
 interface IVisitList {
   overdue: any;
@@ -338,6 +339,36 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
           </div>
         </div>
       </div>
+
+      {job?.isCompleted ? (
+        <div className="row mt-3 mb-3">
+          <div className="col">
+            <div className="card">
+              <h6 className="txt-bold">Job Completion Info</h6>
+              <div className="row mt-3 pb-2 border-bottom">
+                <div className="col p-2 ps-4 mt-1">
+                  <div className="txt-grey">Statues</div>
+                  <span className={`status status-green`}>Completed</span>
+                </div>
+                <div className="col p-2 ps-4">
+                  <div className="txt-grey">Completion note</div>
+                  <div className="">{job?.completion?.note}</div>
+                </div>
+              </div>
+              <div className="row mb-4 border-bottom">
+                <div className="col p-2 ps-4 mt-1">
+                  <div className="txt-grey">Rating</div>
+                  <StarRating disabled={true} initialRating={job?.feedback?.rating} />
+                </div>
+                <div className="col p-2 ps-4">
+                  <div className="txt-grey">Feedback</div>
+                  <div className="">{job?.feedback?.note}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
 
       <div className="card">
         <div className="row bg-grey m-2">

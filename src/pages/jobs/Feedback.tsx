@@ -74,9 +74,7 @@ const Feedback = ({ closeModal, job, provideFeedback }: { job: any; closeModal: 
                 </div>
 
                 <div className="mb-3">
-                  <label htmlFor="additional-doc" className="form-label">
-                    Ratings:
-                  </label>
+                  <label className="form-label">Ratings:</label>
                   <StarRating
                     totalStars={5}
                     onValueChange={(val: number) => {

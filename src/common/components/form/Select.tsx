@@ -33,7 +33,7 @@ const SelectField: FC<any> = ({
         placeholder={placeholder}
         isMulti={isMulti}
         menuPortalTarget={document.body}
-        styles={{ menuPortal: base => ({ ...base, zIndex: 999 }) }}
+        styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
       />
       <div className="form-text">{helperComponent}</div>
     </div>

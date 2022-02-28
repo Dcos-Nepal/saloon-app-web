@@ -1,7 +1,7 @@
 import { FC } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-import WorkerForm from "../WorkerDetailForm";
+import WorkerForm from "../WorkerForm";
 
 interface IProps {}
 

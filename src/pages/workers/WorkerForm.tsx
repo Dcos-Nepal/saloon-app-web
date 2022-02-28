@@ -48,6 +48,12 @@ const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker, isWorkersLoa
   });
   const statesOption = [{ label: 'LA', value: 'LA' }];
   const countriesOption = [{ label: 'Aus', value: 'AUS' }];
+  const tagOptions = [
+    { label: 'Window', value: 'Window' },
+    { label: 'Garden', value: 'Garden' },
+    { label: 'Kitchen', value: 'Kitchen' },
+    { label: 'Other', value: 'Other' }
+  ];
 
   useEffect(() => {
     if (id) actions.fetchWorker(id);
@@ -143,11 +149,13 @@ const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker, isWorkersLoa
     initialValues: initialValues,
     validationSchema: WorkerSchema,
     onSubmit: async (data: any) => {
+      // Set type if no type is provided
+      if (!data.userData?.type) data.userData.type = 'WORKER';
       // For updating worker
       if (id) await actions.updateWorker(data);
       // For creating worker
       else await actions.addWorker(data);
-
+      // Redirect to previous page
       navigate(-1);
     }
   });
@@ -251,13 +259,14 @@ const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker, isWorkersLoa
    * @returns JSX
    */
   const generateDocSelect = (label: string, name: string, id: string, dropText: string, type: string) => {
+    const documents = (formik.values.userData?.documents as any);
     return (<div className="mb-3">
       <label className="form-label txt-dark-grey">{label}</label>
-      {(formik.values.userData?.documents as any)[id]?.key || (getDocument as any)[id]?.name  ? (
+      {(documents && documents[id]?.key) || (getDocument as any)[id]?.name  ? (
         <div className="row">
           <div className="col-9">
             <span className="mt-1 btn btn-secondary btn-sm">
-              {(formik.values.userData?.documents as any)[id]?.key || (getDocument as any)[id]?.name }
+              {(documents ? documents[id]?.key : (getDocument as any)[id]?.name)}
             </span>
           </div>
           <div className="col-3">
@@ -292,7 +301,7 @@ const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker, isWorkersLoa
         onChange={(event) => handleFileSelect(event, id)}
         onBlur={formik.handleBlur}
       />
-      {!(getDocument as any)[id] && !(formik.values.userData?.documents as any)[id]?.key ? (
+      {!(getDocument as any)[id] && !(documents && documents[id]?.key) ? (
         <label htmlFor={id} className="txt-orange dashed-file">{dropText}</label>
       ) : null}
     </div>);
@@ -376,6 +385,22 @@ const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker, isWorkersLoa
               <ErrorMessage name="userData.workingDays" />
             </div>
           </div>
+
+          <SelectField
+            label="Services"
+            name="userData.services"
+            isMulti={true}
+            value={tagOptions.filter((tagOption) => formik.values.userData?.services?.find((service: string) => service === tagOption.value))}
+            options={tagOptions}
+            helperComponent={<ErrorMessage name="userData.services" />}
+            handleChange={(selectedTags: IOption[]) => {
+              formik.setFieldValue(
+                'userData.services',
+                selectedTags.map((tagOption) => tagOption.value)
+              );
+            }}
+            onBlur={formik.handleBlur}
+          />
 
           <div className="mb-3">
             <label className="txt-bold mt-2 mb-2">Address</label>

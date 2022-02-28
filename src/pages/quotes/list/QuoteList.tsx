@@ -103,8 +103,6 @@ const QuotesList = (props: any) => {
 
   const handleStatusChange = async (id: string, status: { label: string; value: string }, reason: string) => {
     await props.actions.updateQuoteStatus({ id, status: status.value, reason: reason });
-
-    props.actions.fetchQuotes({ q: query, offset: offset, limit: itemsPerPage });
   };
 
   /**

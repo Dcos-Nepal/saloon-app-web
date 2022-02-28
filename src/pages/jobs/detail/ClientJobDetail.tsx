@@ -15,10 +15,9 @@ const ClientAdd = () => {
           </span>
           <span className="col">Back to previous</span>
         </div>
-        <div className="d-flex flex-row">
+        <div className="d-flex flex-row mt-2">
           <h3 className="txt-bold extra">Job Detail View</h3>
         </div>
-        <div className="txt-grey">Job #13</div>
       </div>
       <div className="m-1">
         <ClientJobDetailData id={id} />

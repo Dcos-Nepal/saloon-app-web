@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import WorkerDetailForm from "../WorkerDetailForm";
+import WorkerDetailForm from "../WorkerForm";
 
 const WorkerAdd = () => {
   const navigate = useNavigate();

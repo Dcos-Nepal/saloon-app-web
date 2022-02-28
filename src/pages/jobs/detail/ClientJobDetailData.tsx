@@ -216,7 +216,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
 
   return (
     <div>
-      <div className="row mt-3 mb-3">
+      <div className="row mt-1 mb-3">
         <div className="col">
           <div className="card">
             <div className="row">
@@ -351,13 +351,21 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
                   <span className={`status status-green`}>Completed</span>
                 </div>
                 <div className="col p-2 ps-4">
-                  <div className="txt-grey">Completion note</div>
+                  <div className="txt-grey">Completion Note:</div>
                   <div className="">{job?.completion?.note}</div>
                 </div>
               </div>
+              {job?.completion?.docs?.length ? (
+                <div className="row pb-2 border-bottom">
+                  <div className="col-12 p-2 ps-4 mt-1">
+                    <div className="txt-grey mb-2">Uploaded Documents</div>
+                    {job?.completion?.docs.map((doc: { url: string | undefined; }, i: number) => (<div>{i+1}. <a className='text-decoration-none' href={doc.url}> Document {i+1}</a></div>))}
+                  </div>
+                </div>
+              ) : null}
               <div className="row mb-4 border-bottom">
                 <div className="col p-2 ps-4 mt-1">
-                  <div className="txt-grey">Rating</div>
+                  <div className="txt-grey">Client Rating</div>
                   <StarRating disabled={true} initialRating={job?.feedback?.rating} />
                 </div>
                 <div className="col p-2 ps-4">
@@ -435,7 +443,6 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
           </table>
         </div>
       </div>
-
       <Modal isOpen={!!editVisitMode} onRequestClose={() => setEditVisitMode(false)}>
         <div className={`modal fade show`} role="dialog" style={{ display: 'block' }}>
           <div className="modal-dialog modal-lg">

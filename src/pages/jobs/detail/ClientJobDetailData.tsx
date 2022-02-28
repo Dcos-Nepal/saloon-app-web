@@ -16,6 +16,7 @@ import { InfoIcon, PlusCircleIcon, XCircleIcon } from '@primer/octicons-react';
 import SelectAsync from 'common/components/form/AsyncSelect';
 import { toast } from 'react-toastify';
 import StarRating from 'common/components/StarRating';
+import ConfirmMessage from 'common/components/ConfirmMessage';
 
 interface IVisitList {
   overdue: any;
@@ -26,6 +27,7 @@ interface IVisitList {
 const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
   const [visits, setVisits] = useState<IVisitList>({ overdue: [], completed: [] });
   const [editVisitMode, setEditVisitMode] = useState(false);
+  const [completeVisitMode, setCompleteVisitMode] = useState(false);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [selectedVisit, setSelectedVisit] = useState<any>();
 
@@ -359,7 +361,15 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
                 <div className="row pb-2 border-bottom">
                   <div className="col-12 p-2 ps-4 mt-1">
                     <div className="txt-grey mb-2">Uploaded Documents</div>
-                    {job?.completion?.docs.map((doc: { url: string | undefined; }, i: number) => (<div>{i+1}. <a className='text-decoration-none' href={doc.url}> Document {i+1}</a></div>))}
+                    {job?.completion?.docs.map((doc: { url: string | undefined }, i: number) => (
+                      <div key={i}>
+                        {i + 1}.{' '}
+                        <a className="text-decoration-none" href={doc.url}>
+                          {' '}
+                          Document {i + 1}
+                        </a>
+                      </div>
+                    ))}
                   </div>
                 </div>
               ) : null}
@@ -411,7 +421,10 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
                           type="checkbox"
                           id={v.visitMapId}
                           checked={v.status.status === 'COMPLETED'}
-                          onChange={(e) => handleMarkAsCompleted(e.target.checked, v)}
+                          onChange={(e) => {
+                            setCompleteVisitMode(true);
+                            setSelectedVisit(v);
+                          }}
                         />
                       </td>
                       <td>{DateTime.fromJSDate(v.startDate).toFormat('yyyy LLL dd')}</td>
@@ -698,6 +711,30 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
             </button>
           </div>
         </div>
+      </Modal>
+      <Modal
+        isOpen={completeVisitMode && selectedVisit}
+        onRequestClose={() => {
+          setSelectedVisit(null);
+          setCompleteVisitMode(false);
+        }}
+      >
+        <ConfirmMessage
+          onSubmit={async () => {
+            if (selectedVisit) {
+              await handleMarkAsCompleted(selectedVisit?.status?.status !== 'COMPLETED', selectedVisit);
+
+              setSelectedVisit(null);
+              setCompleteVisitMode(false);
+            }
+          }}
+          closeModal={() => {
+            setSelectedVisit(null);
+            setCompleteVisitMode(false);
+          }}
+          title={`Update visit`}
+          message={`Mark visit as ${selectedVisit?.status?.status === 'COMPLETED' ? 'Incomplete' : 'Complete'}?`}
+        />
       </Modal>
     </div>
   );

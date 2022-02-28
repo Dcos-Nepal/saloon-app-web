@@ -73,6 +73,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
         job: newVisit.job._id,
         inheritJob: false,
         rruleSet: rrule,
+        visitFor: newVisit.job?.jobFor?._id,
         status: {
           status: visitCompleted ? 'COMPLETED' : 'NOT-COMPLETED',
           updatedBy: getData('user')._id
@@ -130,6 +131,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
           rruleSet: rrule,
           isPrimary: false,
           excRrule: [],
+          visitFor: newVisit.job?.jobFor?._id,
           startDate: new Date(`${newVisit.startDate} ${newVisit.startTime}`),
           endDate: new Date(`${newVisit.endDate} ${newVisit.endTime}`),
           team: newVisit.team.map((t: any) => t._id),
@@ -303,7 +305,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
             </thead>
             <tbody>
               {job?.lineItems.map((item: any, index: number) => (
-                <tr key={index}>
+                <tr key={'li-'+index}>
                   <th scope="row">#00{index + 1}</th>
                   <td>
                     <div>
@@ -362,7 +364,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
                   <div className="col-12 p-2 ps-4 mt-1">
                     <div className="txt-grey mb-2">Uploaded Documents</div>
                     {job?.completion?.docs.map((doc: { url: string | undefined }, i: number) => (
-                      <div key={i}>
+                      <div key={'doc_'+i}>
                         {i + 1}.{' '}
                         <a className="text-decoration-none" href={doc.url}>
                           {' '}

@@ -12,7 +12,7 @@ import { getData } from 'utils/storage';
 import InputField from 'common/components/form/Input';
 import TextArea from 'common/components/form/TextArea';
 import { FieldArray, FormikProvider, useFormik } from 'formik';
-import { InfoIcon, PlusCircleIcon, XCircleIcon } from '@primer/octicons-react';
+import { FileIcon, InfoIcon, PlusCircleIcon, XCircleIcon } from '@primer/octicons-react';
 import SelectAsync from 'common/components/form/AsyncSelect';
 import { toast } from 'react-toastify';
 import StarRating from 'common/components/StarRating';
@@ -31,6 +31,12 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [selectedVisit, setSelectedVisit] = useState<any>();
 
+  /**
+   * Maps visits in the respective grouping and prepare a list og groups
+   * 
+   * @param visitSettings []
+   * @returns Object
+   */
   const mapVisits = (visitSettings: any[]) => {
     const mappedVisits = visitSettings.reduce((acc: any, visitSetting) => {
       const rruleSet = new RRuleSet();
@@ -58,9 +64,17 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
       return acc;
     }, {});
 
+    console.log('Mapped: ', mappedVisits);
     return mappedVisits;
   };
 
+  /**
+   * Handles the process of marking the visit as complete
+   * 
+   * @param visitCompleted Boolean
+   * @param visit IVisitList
+   * @returns Void
+   */
   const handleMarkAsCompleted = async (visitCompleted: boolean, visit: IVisitList) => {
     if (visit.hasMultiVisit) {
       const rrule = createOneOffRule({ ...visit, startDate: DateTime.fromJSDate(visit?.startDate).toFormat('yyyy-MM-dd') });
@@ -74,6 +88,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
         inheritJob: false,
         rruleSet: rrule,
         visitFor: newVisit.job?.jobFor?._id,
+        team: newVisit.team.map((t: { _id: string; }) => t._id),
         status: {
           status: visitCompleted ? 'COMPLETED' : 'NOT-COMPLETED',
           updatedBy: getData('user')._id
@@ -95,11 +110,20 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
     setVisits(newVisits);
   };
 
+  /**
+   * Displays the visit in edit mode
+   * 
+   * @param visit any
+   * @returns Void
+   */
   const editVisit = (visit: any) => {
     setEditVisitMode(true);
     setSelectedVisit(visit);
   };
 
+  /**
+   * Handles visit update feature
+   */
   const visitEditForm = useFormik({
     enableReinitialize: true,
     initialValues: {
@@ -117,6 +141,13 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
     }
   });
 
+  /**
+   * Handles visit save feature
+   *
+   * @param visit any
+   * @param updateFollowing 
+   * @returns Void
+   */
   const saveVisit = async (visit: any, updateFollowing = false) => {
     const rrule = createOneOffRule(visit);
     if (visit.hasMultiVisit) {
@@ -131,11 +162,11 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
           rruleSet: rrule,
           isPrimary: false,
           excRrule: [],
+          hasMultiVisit: updateFollowing,
           visitFor: newVisit.job?.jobFor?._id,
           startDate: new Date(`${newVisit.startDate} ${newVisit.startTime}`),
           endDate: new Date(`${newVisit.endDate} ${newVisit.endTime}`),
-          team: newVisit.team.map((t: any) => t._id),
-          hasMultiVisit: updateFollowing
+          team: newVisit.team.map((t: { _id: string; }) => t._id)
         },
         updateFollowing ? { updateFollowing } : null
       );
@@ -163,6 +194,12 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
     toast.success('Job Updated');
   };
 
+  /**
+   * Creates Rrule for one-time-off job visit
+   * 
+   * @param visit any
+   * @returns String
+   */
   const createOneOffRule = (visit: any) => {
     return new RRule({
       dtstart: new Date(`${visit.startDate} ${visit.startTime}`),
@@ -172,16 +209,29 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
     }).toString();
   };
 
+  /**
+   * Handles line items selection
+   * @param key string
+   * @param param Object
+   */
   const handleLineItemSelection = (key: string, { label, meta }: any) => {
     visitEditForm.setFieldValue(`${key}.name`, label);
     visitEditForm.setFieldValue(`${key}.description`, meta?.description || 'Enter your notes here...');
   };
 
+  /**
+   * Handles delete visit click
+   * @param visit any
+   */
   const handleDeleteVisitClick = (visit: any) => {
     setShowDeleteConfirmation(true);
     setSelectedVisit(visit);
   };
 
+  /**
+   * Adds functionality to delete a selected visit.
+   * @returns Void
+   */
   const deleteVisit = () => {
     if (!selectedVisit) return;
 
@@ -368,7 +418,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
                         {i + 1}.{' '}
                         <a className="text-decoration-none" href={doc.url}>
                           {' '}
-                          Document {i + 1}
+                          <FileIcon /> Document {i + 1}
                         </a>
                       </div>
                     ))}
@@ -409,7 +459,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
               <React.Fragment key={visitKey}>
                 <thead key={index}>
                   <tr className="rt-head">
-                    <th colSpan={7} scope="col" className="th-overdue">
+                    <th colSpan={7} scope="col" className={(visitKey === 'completed') ? 'th-completed' : (visitKey === 'overdue') ? 'th-overdue' : 'th-up-coming'}>
                       {visitKey}
                     </th>
                   </tr>

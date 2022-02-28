@@ -669,14 +669,16 @@ textarea:focus {
     color: #f47321;
     font-size: 10px;
     font-family: unset;
+    text-transform: capitalize;
 }
 
-.th-in-progress {
+.th-completed {
     background-color: #e6fced !important;
     border-bottom: 2px solid #d5f3c8 !important;
     color: #08ce72;
     font-size: 10px;
     font-family: unset;
+    text-transform: capitalize;
 }
 
 .th-up-coming {
@@ -685,6 +687,7 @@ textarea:focus {
     color: #088fce;
     font-size: 10px;
     font-family: unset;
+    text-transform: capitalize;
 }
 
 .icon-height-12 {

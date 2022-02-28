@@ -4,12 +4,22 @@ import { FC } from 'react';
 import logo from 'assets/images/Logo.svg';
 import { clearData } from 'utils/storage';
 import avatar from 'assets/images/Avatar.svg';
+import { GearIcon, LockIcon, PersonIcon } from '@primer/octicons-react';
+import { useNavigate } from 'react-router-dom';
+import { endpoints } from 'common/config';
 
 interface IProps {
   loggedIn?: boolean;
 }
 
 const TopNavbar: FC<IProps> = ({ loggedIn = true }) => {
+  const navigate = useNavigate();
+
+  const logout = async () => {
+    await clearData();
+    navigate(endpoints.auth.signIn);
+  }
+
   return (
     <nav className="navbar navbar-expand-lg sticky-top">
       <div className="ms-3 me-3 container-fluid">
@@ -30,30 +40,26 @@ const TopNavbar: FC<IProps> = ({ loggedIn = true }) => {
               </li>
               <li className="nav-item">
                 <div className="dropdown dropstart">
-                  <a href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                  <span role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
                     <img src={avatar} height="34px" alt="Orange" />
-                  </a>
+                  </span>
                   <ul className="dropdown-menu" aria-labelledby="dropdownMenuLink">
                     <li>
-                      <a className="dropdown-item" href="#">
-                        View Profile
-                      </a>
+                      <span className="dropdown-item cursor-pointer" >
+                        <PersonIcon /> View Profile
+                      </span>
                     </li>
                     <li>
-                      <a className="dropdown-item" href="#">
-                        Settings
-                      </a>
+                      <span className="dropdown-item cursor-pointer">
+                        <GearIcon /> Settings
+                      </span>
                     </li>
                     <li
-                      onClick={async () => {
-                        await clearData();
-
-                        window.location.href = '/';
-                      }}
+                      onClick={logout}
                     >
-                      <a className="dropdown-item" href="#">
-                        Logout
-                      </a>
+                      <span className="dropdown-item cursor-pointer">
+                        <LockIcon /> Logout
+                      </span>
                     </li>
                   </ul>
                 </div>

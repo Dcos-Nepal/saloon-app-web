@@ -14,7 +14,7 @@ const Invoices = () => {
       <SideNavbar active="Invoices" />
       <div className="col main-container" style={{ position: 'relative', minHeight: '700px' }}>
         <Routes>
-          <Route path="/" element={<InvoiceList />} />
+          <Route path="/" element={<InvoiceList isEditable={true} />} />
           <Route path={endpoints.admin.invoices.add} element={<InvoiceAdd />} />
           <Route path={endpoints.admin.invoices.edit} element={<InvoiceEdit />} />
           <Route path={endpoints.admin.invoices.detail} element={<InvoiceDetail />} />

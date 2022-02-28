@@ -46,7 +46,6 @@ const quotesReducer = (state = initialState, action: any) => {
       return {...state};
     }
 
-
     case actionType.UPDATE_QUOTE_SUCCESS: {
       state.isLoading = false;
       state.itemList.data.rows = state.itemList?.data?.rows.filter((item: any) => {

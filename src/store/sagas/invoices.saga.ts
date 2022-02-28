@@ -116,10 +116,11 @@ function* updateInvoice(action: any): any {
             updateInvoiceApi,
             action.payload
         );
-        if (invoiceRequest?.data?.success) {
+
+        if (invoiceRequest?.success) {
             yield put({
                 type: actionType.UPDATE_INVOICE_SUCCESS,
-                payload: invoiceRequest?.data?.data,
+                payload: invoiceRequest?.data,
             });
 
             return toast.success(getMessage(invoiceRequest?.data?.message));

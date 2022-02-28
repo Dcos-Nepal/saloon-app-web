@@ -39,8 +39,7 @@ interface IInvoice {
 
 const invoiceStatusOptions = [
   { label: 'PENDING', value: 'PENDING' },
-  { label: 'PAID', value: 'ACCEPTED' },
-  { label: 'ALL', value: 'ALL' }
+  { label: 'PAID', value: 'PAID' }
 ];
 
 const InvoicesList = (props: any) => {
@@ -97,8 +96,13 @@ const InvoicesList = (props: any) => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const handleSearch = useCallback(debounce(handleInvoicesSearch, 300), []);
 
-  const handleStatusChange = async (id: string, status: { label: string; value: string }, reason: string) => {
-    await props.actions.updateInvoiceStatus({ id, status: status.value });
+  const handleStatusChange = async (id: string, status: { label: string; value: string }) => {
+    // Prepare Object
+    const reqObj = {
+      isPaid: status.value === 'PAID' ? true : false,
+      paidDate: new Date().toISOString()
+    };
+    await props.actions.updateInvoiceStatus(id, reqObj);
   };
 
   /**
@@ -177,8 +181,8 @@ const InvoicesList = (props: any) => {
                   label=""
                   options={invoiceStatusOptions}
                   placeholder="All"
-                  value={row.isPaid ? { label: 'PAID', value: 'PAID' } : row.isIssued ? { label: 'PENDING', value: 'PENDING' } : { label: 'ALL', value: 'ALL' }}
-                  handleChange={(selected: { label: string; value: string }) => handleStatusChange(row.id, selected, '')}
+                  value={row.isPaid ? { label: 'PAID', value: 'PAID' } : { label: 'PENDING', value: 'PENDING' }}
+                  handleChange={(selected: { label: string; value: string }) => handleStatusChange(row.id, selected)}
                 />
               </div>
             );
@@ -307,8 +311,8 @@ const mapDispatchToProps = (dispatch: any) => ({
     fetchInvoices: (payload: any) => {
       dispatch(invoicesActions.fetchInvoices(payload));
     },
-    updateInvoiceStatus: (payload: any) => {
-      dispatch(invoicesActions.updateInvoice(payload.id, payload));
+    updateInvoiceStatus: (id: string, payload: any) => {
+      dispatch(invoicesActions.updateInvoice(id, payload));
     }
   }
 });

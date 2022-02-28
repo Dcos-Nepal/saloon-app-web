@@ -18,7 +18,7 @@ const Signin = (props: any) => {
   const currentUser = getData('user');
 
   if (currentUser?._id) {
-    window.location.href = endpoints.admin.home;
+    navigate(endpoints.admin.home);
   }
 
   const InitSignIn = {

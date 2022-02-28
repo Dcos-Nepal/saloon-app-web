@@ -1,3 +1,4 @@
+import { arrowFunctionExpression } from "@babel/types";
 import * as actionType from "../constants";
 
 const initialState = {
@@ -41,14 +42,14 @@ const invoicesReducer = (state = initialState, action: any) => {
       return {...state};
     }
 
-
     case actionType.UPDATE_INVOICE_SUCCESS: {
       state.isLoading = false;
       state.itemList.data.rows = state.itemList?.data?.rows.filter((item: any) => {
         if ((item as any)._id === action.payload._id) {
-          item = action.payload;
+          item.isPaid = action.payload.isPaid;
+          item.paidDate = action.payload.paidDate;
         }
-        return item;
+        return true;
       });
       return {...state};
     }

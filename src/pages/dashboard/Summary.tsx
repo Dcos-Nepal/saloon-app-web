@@ -120,9 +120,9 @@ const Summary = () => {
             </div>
           </div>
         </div>
-        <div className="row mt-3">
+        <div className="row mt-3 pb-3">
           <div className="col">
-            <div className="card">
+            <div className="card full-height">
               <div className="row d-flex flex-row">
                 <div className="col ">
                   <h5 className="">Job Request</h5>
@@ -174,7 +174,7 @@ const Summary = () => {
           </div>
 
           <div className="col">
-            <div className="card">
+            <div className="card full-height">
               <div className="row d-flex flex-row">
                 <div className="col ">
                   <h5 className="">Quotes</h5>
@@ -216,54 +216,52 @@ const Summary = () => {
               </div>
             </div>
           </div>
-        </div>
-        <div className="col">
-          <div className="card full-height">
-            <div className="row d-flex flex-row">
-              <div className="col ">
-                <h5 className="">Jobs</h5>
-              </div>
-              <div className="col d-flex flex-row align-items-center justify-content-end">
-                <button onClick={() => navigate('/dashboard/jobs/add')} type="button" className="btn btn-primary d-flex float-end">
-                  New Job
-                </button>
-              </div>
-            </div>
-            <div className="row">
-              <div className="col mt-2 p-2 txt-bold">
-                <div className="row border-bottom p-2">
-                  <div className="">
-                    Active
-                    <div className="d-flex float-end">
-                      <div className="">{jobsSummary.activeJobsCount}</div>
-                    </div>
-                  </div>
-                </div>
-                <div className="row border-bottom p-2">
-                  <div className="">
-                    In Progress
-                    <div className="d-flex float-end">
-                      <div className="">{jobsSummary.activeJobsCount - jobsSummary.isCompleted}</div>
-                    </div>
-                  </div>
-                </div>
-                <div className="row border-bottom p-2">
-                  <div className="">
-                    Completed
-                    <div className="d-flex float-end">
-                      <div className="">{jobsSummary.isCompleted}</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
 
-        <div className="row mt-3">
-          <div className="card">
-            <InvoicesList />
+          <div className="col">
+            <div className="card full-height">
+              <div className="row d-flex flex-row">
+                <div className="col ">
+                  <h5 className="">Jobs</h5>
+                </div>
+                <div className="col d-flex flex-row align-items-center justify-content-end">
+                  <button onClick={() => navigate('/dashboard/jobs/add')} type="button" className="btn btn-primary d-flex float-end">
+                    New Job
+                  </button>
+                </div>
+              </div>
+              <div className="row">
+                <div className="col mt-2 p-2 txt-bold">
+                  <div className="row border-bottom p-2">
+                    <div className="">
+                      Active
+                      <div className="d-flex float-end">
+                        <div className="">{jobsSummary.activeJobsCount}</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="row border-bottom p-2">
+                    <div className="">
+                      In Progress
+                      <div className="d-flex float-end">
+                        <div className="">{jobsSummary.activeJobsCount > jobsSummary.isCompleted ? jobsSummary.activeJobsCount - jobsSummary.isCompleted : 0}</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="row border-bottom p-2">
+                    <div className="">
+                      Completed
+                      <div className="d-flex float-end">
+                        <div className="">{jobsSummary.isCompleted}</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
+        </div>
+        <div className="card">
+          <InvoicesList />
         </div>
         <Footer />
       </div>

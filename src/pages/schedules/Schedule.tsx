@@ -10,7 +10,7 @@ import EventActions from 'store/actions/events.actions';
 import { IEvent } from 'common/types/events';
 import Modal from 'common/components/atoms/Modal';
 import useMountedRef from 'common/hooks/is-mounted';
-import EditEvent from './EditEvent';
+import EventDetail from './EventDetail';
 import { fetchJobSchedule } from 'store/actions/schedule.actions';
 import { Loader } from 'common/components/atoms/Loader';
 import Truncate from 'react-truncate';
@@ -134,7 +134,7 @@ const WorkSchedule = (props: any) => {
           </div>
         </div>
         <Modal isOpen={!!showEventDetail} onRequestClose={() => setShowEventDetail(null)}>
-          {!!showEventDetail ? <EditEvent event={showEventDetail} closeModal={() => setShowEventDetail(null)} /> : <></>}
+          {!!showEventDetail ? <EventDetail event={showEventDetail} closeModal={() => setShowEventDetail(null)} /> : <></>}
         </Modal>
         <Footer />
       </div>

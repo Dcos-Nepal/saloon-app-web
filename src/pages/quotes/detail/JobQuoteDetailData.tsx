@@ -23,25 +23,28 @@ const JobQuoteDetailData: FC<IProps> = ({isLoading, actions, currentQuote}) => {
 
   return (
     <div>
-      <div className="row mt-1 mb-3">
+      <div className="row pb-3">
         <Loader isLoading={isLoading} />
         {currentQuote?.status?.status === 'CHANGE_REQUESTED' ? (
           <div className="col-12">
-            <div className="alert alert-warning" role="alert">
-              <AlertFillIcon /> {currentQuote?.status.reason}
+            <div className="alert alert-warning mb-0" role="alert">
+              <span><AlertFillIcon />&nbsp; {currentQuote?.status?.status.split('_').join(' ')}</span>
+              <div>{currentQuote?.status.reason}</div>
             </div>
           </div>
         ) : null }
 
         {currentQuote?.status?.status === 'REJECTED' ? (
           <div className="col-12">
-            <div className="alert alert-danger" role="alert">
-              <AlertFillIcon /> {currentQuote?.status.reason}
+            <div className="alert alert-danger mb-0" role="alert">
+              <span><AlertFillIcon />&nbsp; {currentQuote?.status?.status.split('_').join(' ')}</span>
+              <div>{currentQuote?.status.reason}</div>
             </div>
           </div>
         ) : null }
+
         <div className="col">
-          <div className="card">
+          <div className="card full-height">
             <div className="row">
               <div className="col">
                 <h5 className="txt-bold">{`${currentQuote?.quoteFor.firstName} ${currentQuote?.quoteFor.lastName}`}</h5>
@@ -80,13 +83,13 @@ const JobQuoteDetailData: FC<IProps> = ({isLoading, actions, currentQuote}) => {
           </div>
         </div>
         <div className="col">
-          <div className="card">
+          <div className="card full-height">
             <h6 className="txt-bold">Quote Details</h6>
             <div className="row border-bottom">
               <div className="col p-2 ps-4">
                 <div className="txt-grey">Quote number</div>
                 <div className="row">
-                  <div className="col txt-orange">#{currentQuote.refCode}</div>
+                  <div className="col txt-orange">#{currentQuote?.refCode}</div>
                 </div>
               </div>
               <div className="col p-2 ps-4">

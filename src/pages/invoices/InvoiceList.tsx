@@ -204,14 +204,20 @@ const InvoicesList = (props: any) => {
               <box-icon name="dots-vertical-rounded" />
             </span>
             <ul className="dropdown-menu" aria-labelledby="dropdownMenuLink">
-              <li className='pointer' onClick={() => navigate(row.id)}>
-                <span className="dropdown-item cursor-pointer"><EyeIcon /> View Detail</span>
+              <li className="pointer" onClick={() => navigate('/dashboard/invoices/' + row.id)}>
+                <span className="dropdown-item cursor-pointer">
+                  <EyeIcon /> View Detail
+                </span>
               </li>
-              <li className='pointer' onClick={() => navigate(row.id + '/edit')}>
-                <span className="dropdown-item cursor-pointer"><PencilIcon /> Edit</span>
+              <li className="pointer" onClick={() => navigate('/dashboard/invoices/' + row.id + '/edit')}>
+                <span className="dropdown-item cursor-pointer">
+                  <PencilIcon /> Edit
+                </span>
               </li>
-              <li className='pointer' onClick={() => setDeleteInProgress(row.id)}>
-                <span className="dropdown-item cursor-pointer"><TrashIcon /> Delete</span>
+              <li className="pointer" onClick={() => setDeleteInProgress('/dashboard/invoices/' + row.id)}>
+                <span className="dropdown-item cursor-pointer">
+                  <TrashIcon /> Delete
+                </span>
               </li>
             </ul>
           </div>

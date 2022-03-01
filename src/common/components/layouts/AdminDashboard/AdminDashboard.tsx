@@ -15,6 +15,7 @@ const ReferralProgram = React.lazy(() => import('pages/referral'));
 const Requests = React.lazy(() => import('pages/requests'));
 const Quotes = React.lazy(() => import('pages/quotes'));
 const LineItems = React.lazy(() => import('pages/lineItems'));
+const Profile = React.lazy(() => import('pages/profile'));
 
 interface IProps {
   location?: any;
@@ -101,6 +102,14 @@ const AdminDashboard: FC<IProps> = (): JSX.Element => {
           element={
             <Suspense fallback={<Loader isLoading={true} />}>
               <Invoices />
+            </Suspense>
+          }
+        />
+        <Route
+          path={endpoints.profile + '/*'}
+          element={
+            <Suspense fallback={<Loader isLoading={true} />}>
+              <Profile />
             </Suspense>
           }
         />

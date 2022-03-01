@@ -17,6 +17,7 @@ import SelectAsync from 'common/components/form/AsyncSelect';
 import { toast } from 'react-toastify';
 import StarRating from 'common/components/StarRating';
 import ConfirmMessage from 'common/components/ConfirmMessage';
+import VisitCompletedActions from './VisitCompletedActions';
 
 interface IVisitList {
   overdue: any;
@@ -29,11 +30,13 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
   const [editVisitMode, setEditVisitMode] = useState(false);
   const [completeVisitMode, setCompleteVisitMode] = useState(false);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const [askVisitInvoiceGeneration, setAskVisitInvoiceGeneration] = useState(true);
   const [selectedVisit, setSelectedVisit] = useState<any>();
+  const [completedVisit, setCompletedVisit] = useState<any>();
 
   /**
    * Maps visits in the respective grouping and prepare a list og groups
-   * 
+   *
    * @param visitSettings []
    * @returns Object
    */
@@ -70,7 +73,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
 
   /**
    * Handles the process of marking the visit as complete
-   * 
+   *
    * @param visitCompleted Boolean
    * @param visit IVisitList
    * @returns Void
@@ -82,13 +85,13 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
       let newVisit = { ...visit };
       delete newVisit._id;
 
-      addVisitApi({
+      await addVisitApi({
         ...newVisit,
         job: newVisit.job._id,
         inheritJob: false,
         rruleSet: rrule,
         visitFor: newVisit.job?.jobFor?._id,
-        team: newVisit.team.map((t: { _id: string; }) => t._id),
+        team: newVisit.team.map((t: { _id: string }) => t._id),
         status: {
           status: visitCompleted ? 'COMPLETED' : 'NOT-COMPLETED',
           updatedBy: getData('user')._id
@@ -101,18 +104,23 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
         excRrule: [...visit.excRrule, rrule]
       });
     } else {
-      updateStatus(visit._id, { status: visitCompleted ? 'COMPLETED' : 'NOT-COMPLETED' });
+      await updateStatus(visit._id, { status: visitCompleted ? 'COMPLETED' : 'NOT-COMPLETED' });
     }
 
     const newVisits: any = _.cloneDeep(visits);
     const updatedVisit = newVisits[visit.group].find((v: any) => v.visitMapId === visit.visitMapId);
     updatedVisit.status = { status: visitCompleted ? 'COMPLETED' : 'NOT-COMPLETED', updatedBy: getData('user')._id };
     setVisits(newVisits);
+
+    if (visitCompleted) {
+      setAskVisitInvoiceGeneration(true);
+      setCompletedVisit(visit);
+    }
   };
 
   /**
    * Displays the visit in edit mode
-   * 
+   *
    * @param visit any
    * @returns Void
    */
@@ -145,7 +153,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
    * Handles visit save feature
    *
    * @param visit any
-   * @param updateFollowing 
+   * @param updateFollowing
    * @returns Void
    */
   const saveVisit = async (visit: any, updateFollowing = false) => {
@@ -166,7 +174,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
           visitFor: newVisit.job?.jobFor?._id,
           startDate: new Date(`${newVisit.startDate} ${newVisit.startTime}`),
           endDate: new Date(`${newVisit.endDate} ${newVisit.endTime}`),
-          team: newVisit.team.map((t: { _id: string; }) => t._id)
+          team: newVisit.team.map((t: { _id: string }) => t._id)
         },
         updateFollowing ? { updateFollowing } : null
       );
@@ -196,7 +204,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
 
   /**
    * Creates Rrule for one-time-off job visit
-   * 
+   *
    * @param visit any
    * @returns String
    */
@@ -355,7 +363,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
             </thead>
             <tbody>
               {job?.lineItems.map((item: any, index: number) => (
-                <tr key={'li-'+index}>
+                <tr key={'li-' + index}>
                   <th scope="row">#00{index + 1}</th>
                   <td>
                     <div>
@@ -414,7 +422,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
                   <div className="col-12 p-2 ps-4 mt-1">
                     <div className="txt-grey mb-2">Uploaded Documents</div>
                     {job?.completion?.docs.map((doc: { url: string | undefined }, i: number) => (
-                      <div key={'doc_'+i}>
+                      <div key={'doc_' + i}>
                         {i + 1}.{' '}
                         <a className="text-decoration-none" href={doc.url}>
                           {' '}
@@ -459,7 +467,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
               <React.Fragment key={visitKey}>
                 <thead key={index}>
                   <tr className="rt-head">
-                    <th colSpan={7} scope="col" className={(visitKey === 'completed') ? 'th-completed' : (visitKey === 'overdue') ? 'th-overdue' : 'th-up-coming'}>
+                    <th colSpan={7} scope="col" className={visitKey === 'completed' ? 'th-completed' : visitKey === 'overdue' ? 'th-overdue' : 'th-up-coming'}>
                       {visitKey}
                     </th>
                   </tr>
@@ -508,6 +516,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
           </table>
         </div>
       </div>
+
       <Modal isOpen={!!editVisitMode} onRequestClose={() => setEditVisitMode(false)}>
         <div className={`modal fade show`} role="dialog" style={{ display: 'block' }}>
           <div className="modal-dialog modal-lg">
@@ -749,6 +758,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
           </div>
         </div>
       </Modal>
+
       <Modal isOpen={!!showDeleteConfirmation} onRequestClose={() => setShowDeleteConfirmation(false)}>
         <div className="modal-object">
           <div className="modal-header row bg-background-grey">
@@ -764,6 +774,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
           </div>
         </div>
       </Modal>
+
       <Modal
         isOpen={completeVisitMode && selectedVisit}
         onRequestClose={() => {
@@ -787,6 +798,10 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
           title={`Update visit`}
           message={`Mark visit as ${selectedVisit?.status?.status === 'COMPLETED' ? 'Incomplete' : 'Complete'}?`}
         />
+      </Modal>
+
+      <Modal isOpen={askVisitInvoiceGeneration && completedVisit} onRequestClose={() => setAskVisitInvoiceGeneration(false)}>
+        <VisitCompletedActions visit={completedVisit} onClose={() => setAskVisitInvoiceGeneration(false)} />
       </Modal>
     </div>
   );

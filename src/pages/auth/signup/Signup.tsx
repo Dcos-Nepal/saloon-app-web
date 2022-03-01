@@ -37,19 +37,24 @@ const SignUp = (props: any) => {
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: InitSignUp,
-    onSubmit: async (userData: any) => {
+    onSubmit: async (formData: any) => {
       // Setting User Type
-      userData.roles = [userData.userType];
-
-      // Remove the userType attribute.
-      delete userData.userType;
+      formData.roles = [formData.userType];
 
       // Set referred by
-      if (referredBy) userData.referredBy = referredBy;
+      if (referredBy) {
+        formData.userData = {
+          type: formData.userType,
+          referredBy: referredBy
+        };
+      }
+
+      // Remove the userType attribute.
+      delete formData.userType;
 
       // Making a User Registration Request
       setIsLoading(true);
-      const response: any = await registerUserApi(userData);
+      const response: any = await registerUserApi(formData);
 
       if (response.data.success === true) {
         setIsLoading(false);
@@ -84,12 +89,12 @@ const SignUp = (props: any) => {
             <form noValidate onSubmit={formik.handleSubmit}>
               <div className="row mt-3 mb-3">
                 <div className="btn-group" role="group" aria-label="Basic radio toggle button group">
-                  <input name="userType" onChange={formik.handleChange} type="radio" value="Client" className="btn-check" id="client" autoComplete="off" />
+                  <input name="userType" onChange={formik.handleChange} type="radio" value="CLIENT" className="btn-check" id="client" autoComplete="off" />
                   <label className="btn btn-outline-dangerr" htmlFor="client">
                     I am a Client
                   </label>
 
-                  <input name="userType" onChange={formik.handleChange} type="radio" value="Worker" className="btn-check" id="worker" autoComplete="off" />
+                  <input name="userType" onChange={formik.handleChange} type="radio" value="WORKER" className="btn-check" id="worker" autoComplete="off" />
                   <label className="btn btn-outline-dangerr" htmlFor="worker">
                     I am a Worker
                   </label>

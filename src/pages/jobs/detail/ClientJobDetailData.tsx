@@ -1,23 +1,27 @@
 import _ from 'lodash';
-import RRule, { Frequency, RRuleSet, rrulestr } from 'rrule';
-import luxon, { DateTime } from 'luxon';
 import { connect } from 'react-redux';
-import React, { Fragment, useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
+import { DateTime } from 'luxon';
 
-import Modal from 'common/components/atoms/Modal';
-import * as jobsActions from 'store/actions/job.actions';
-import * as visitsActions from 'store/actions/visit.actions';
-import { addVisitApi, updateStatus, updateVisitApi, deleteVisitApi } from 'services/visits.service';
-import { getData } from 'utils/storage';
-import InputField from 'common/components/form/Input';
-import TextArea from 'common/components/form/TextArea';
+import React, { Fragment, useEffect, useState } from 'react';
+import RRule, { Frequency, RRuleSet, rrulestr } from 'rrule';
 import { FieldArray, FormikProvider, useFormik } from 'formik';
 import { AlertIcon, CheckCircleIcon, FileIcon, InfoIcon, PlusCircleIcon, XCircleIcon } from '@primer/octicons-react';
+
+import * as jobsActions from 'store/actions/job.actions';
+import * as visitsActions from 'store/actions/visit.actions';
+
+import { getData } from 'utils/storage';
+import { addVisitApi, updateStatus, updateVisitApi, deleteVisitApi } from 'services/visits.service';
+
+import Modal from 'common/components/atoms/Modal';
+import InputField from 'common/components/form/Input';
+import TextArea from 'common/components/form/TextArea';
 import SelectAsync from 'common/components/form/AsyncSelect';
-import { toast } from 'react-toastify';
 import StarRating from 'common/components/StarRating';
 import ConfirmMessage from 'common/components/ConfirmMessage';
 import VisitCompletedActions from './VisitCompletedActions';
+import { Loader } from 'common/components/atoms/Loader';
 
 interface IVisitList {
   overdue: any;
@@ -25,7 +29,7 @@ interface IVisitList {
   [key: string]: any;
 }
 
-const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
+const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisitLoading}: any) => {
   const [visits, setVisits] = useState<IVisitList>({ overdue: [], completed: [] });
   const [editVisitMode, setEditVisitMode] = useState(false);
   const [completeVisitMode, setCompleteVisitMode] = useState(false);
@@ -67,7 +71,6 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
       return acc;
     }, {});
 
-    console.log('Mapped: ', mappedVisits);
     return mappedVisits;
   };
 
@@ -298,6 +301,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
   return (
     <div>
       <div className="row mt-1 mb-3">
+        <Loader isLoading={isJobLoading} />
         <div className="col">
           <div className="card">
             <div className="row">
@@ -372,6 +376,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
       </div>
 
       <div className="card">
+        <Loader isLoading={isJobLoading} />
         <h6 className="txt-bold">Line items</h6>
         <div className="row border-bottom p-3">
           <table className="table table-striped table-bordered">
@@ -385,6 +390,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
               </tr>
             </thead>
             <tbody>
+              {(!job?.lineItems.length) ? (<tr><td colSpan={5}>No line items selected</td></tr>) : null}
               {job?.lineItems.map((item: any, index: number) => (
                 <tr key={'li-' + index}>
                   <th scope="row">#00{index + 1}</th>
@@ -427,6 +433,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
 
       {job?.isCompleted ? (
         <div className="row mt-3 mb-3">
+          <Loader isLoading={isJobLoading} />
           <div className="col">
             <div className="card">
               <h6 className="txt-bold">Job Completion Info</h6>
@@ -472,6 +479,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
       ) : null}
 
       <div className="card">
+        <Loader isLoading={isVisitLoading} />
         <div className="row bg-grey m-2">
           <div className="col d-flex flex-row pt-3 pb-3">
             <h6 className="txt-bold mt-2">Visits</h6>
@@ -836,9 +844,10 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
 
 const mapStateToProps = (state: any) => {
   return {
-    isLoading: state.jobs.isLoading,
+    isJobLoading: state.jobs.isLoading,
     job: state.jobs.job,
-    jobVisits: state.visits.visits
+    jobVisits: state.visits.visits,
+    isVisitLoading: state.visits.isLoading
   };
 };
 

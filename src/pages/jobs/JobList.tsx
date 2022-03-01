@@ -18,7 +18,7 @@ import DeleteConfirm from 'common/components/DeleteConfirm';
 import * as jobsActions from '../../store/actions/job.actions';
 import { deleteJobApi, provideFeedbackApi } from 'services/jobs.service';
 import { Loader } from 'common/components/atoms/Loader';
-import { CheckIcon, EyeIcon, NoteIcon, PencilIcon, TrashIcon } from '@primer/octicons-react';
+import { CheckIcon, EyeIcon, NoteIcon, PencilIcon, TasklistIcon, TrashIcon } from '@primer/octicons-react';
 
 interface IProps {
   actions: { fetchJobs: (query: any) => any };
@@ -181,7 +181,7 @@ const JobsList = (props: IProps) => {
         </div>
         <div className="col d-flex flex-row align-items-center justify-content-end">
           <button onClick={() => navigate(endpoints.admin.jobs.add)} type="button" className="btn btn-primary d-flex float-end">
-            Create a Job
+            <TasklistIcon className='mt-1' />&nbsp;Create a Job
           </button>
         </div>
         <label className="txt-grey">Total {props?.jobs?.data?.totalCount || 0} Jobs</label>

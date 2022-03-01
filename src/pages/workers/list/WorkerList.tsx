@@ -11,7 +11,7 @@ import * as workersActions from '../../../store/actions/workers.actions';
 import { endpoints } from 'common/config';
 import InputField from 'common/components/form/Input';
 import { Loader } from 'common/components/atoms/Loader';
-import { AlertIcon, CheckCircleIcon, EyeIcon, PencilIcon, TrashIcon } from '@primer/octicons-react';
+import { AlertIcon, CheckCircleIcon, EyeIcon, PencilIcon, PersonAddIcon, TrashIcon } from '@primer/octicons-react';
 import Modal from 'common/components/atoms/Modal';
 import { deleteUserApi } from 'services/users.service';
 import { toast } from 'react-toastify';
@@ -195,7 +195,7 @@ const WorkerList = (props: any) => {
             type="button"
             className="btn btn-primary d-flex float-end"
           >
-            New Worker
+            <PersonAddIcon className='mt-1' />&nbsp;New Worker
           </button>
         </div>
         <label className="txt-grey">Total {query ? `${workers.length} search results found!` : `${props?.workers?.data?.totalCount || 0} workers`}</label>

@@ -87,7 +87,15 @@ const WorkerDetail: FC<IProps> = ({ actions, currentWorker }) => {
                     <div className="">{currentWorker?.userData?.workingDays.toString() || '-'}</div>
                   </div>
                 </div>
-                <div className="row mt-5">
+                <div className="row mt-3">
+                  <div className="col p-1 ps-4">
+                    <div className="txt-grey">Services</div>
+                    <div className="">{currentWorker?.userData?.services.length
+                      ? currentWorker?.userData?.services.map((service: string) => (<><span key={service} className="badge rounded-pill bg-secondary p-1">{service}</span>&nbsp;</>))
+                      : 'No services added yet.'}</div>
+                  </div>
+                </div>
+                <div className="row mt-3">
                   <div className="col d-flex flex-row">
                     <h5 className="txt-bold">Address</h5>
                   </div>

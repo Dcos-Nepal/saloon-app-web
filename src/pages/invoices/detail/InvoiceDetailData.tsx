@@ -1,6 +1,5 @@
-import { StopIcon } from '@primer/octicons-react';
 import { Loader } from 'common/components/atoms/Loader';
-import { FC, useEffect } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -17,20 +16,27 @@ interface IProps {
 
 const InvoiceDetailData: FC<IProps> = ({ isLoading, actions, currentInvoice }) => {
   const { id } = useParams();
+  const [sendingInvoice, setSendingInvoice] = useState(false);
 
   useEffect(() => {
     if (id) actions.fetchInvoice(id);
   }, [id, actions]);
 
+  /**
+   * Send Invoice to the client
+   */
   const sendInvoiceHandler = async () => {
     if (id) {
       try {
+        setSendingInvoice(true);
         const { data } = await sendInvoiceApi(id);
 
         if (data) {
+          setSendingInvoice(false);
           toast.info('Invoice sent successfully');
         }
       } catch (ex) {
+        setSendingInvoice(false);
         toast.error('Failed to send invoice');
       }
     }
@@ -39,8 +45,16 @@ const InvoiceDetailData: FC<IProps> = ({ isLoading, actions, currentInvoice }) =
   return (
     <>
       <div className="card">
-        <div className="border-bottom p-3">
-          <h2 className="txt-grey txt-bold">{currentInvoice?.subject?.toUpperCase()}</h2>
+        <Loader isLoading={isLoading} />
+        <div className="row border-bottom p-3">
+          <div className="col d-flex flex-row">
+            <h3>{currentInvoice?.subject?.toUpperCase()}</h3>
+          </div>
+          <div className="col">
+            <button type="button" onClick={sendInvoiceHandler} className="btn btn-primary d-flex float-end">
+              {sendingInvoice ? <span className="spinner-border spinner-border-sm" role="status" /> : null}&nbsp;Send to client
+            </button>
+          </div>
         </div>
         <div className="row mt-3 mb-3">
           <div className="col">
@@ -155,8 +169,7 @@ const InvoiceDetailData: FC<IProps> = ({ isLoading, actions, currentInvoice }) =
             <div className="col txt-bold mt-3">
               <div className="d-flex float-end">
                 <h3 className="txt-bold mt-2 txt-orange">
-                  $
-                  {currentInvoice?.lineItems.reduce(
+                  ${currentInvoice?.lineItems.reduce(
                     (current: number, next: { quantity: number; unitPrice: number }) => (current += next.quantity * next.unitPrice),
                     0
                   )}
@@ -165,11 +178,6 @@ const InvoiceDetailData: FC<IProps> = ({ isLoading, actions, currentInvoice }) =
             </div>
           </div>
         </div>
-      </div>
-      <div className="m-3 d-flex float-end">
-        <button type="button" onClick={sendInvoiceHandler} className="btn btn-primary">
-          Send to client
-        </button>
       </div>
     </>
   );

@@ -190,6 +190,7 @@ a { color: #666666;}
 .dashed {
     border: 1px dashed #959FAE;
     padding: 1rem;
+    width: 100%;
 }
 
 .dashed-file {

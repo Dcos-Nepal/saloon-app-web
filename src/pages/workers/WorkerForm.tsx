@@ -302,7 +302,7 @@ const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker, isWorkersLoa
         onBlur={formik.handleBlur}
       />
       {!(getDocument as any)[id] && !(documents && documents[id]?.key) ? (
-        <label htmlFor={id} className="txt-orange dashed-file">{dropText}</label>
+        <label htmlFor={id} className="txt-orange dashed-file"><UploadIcon /> {dropText}</label>
       ) : null}
     </div>);
   }
@@ -390,6 +390,7 @@ const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker, isWorkersLoa
             label="Services"
             name="userData.services"
             isMulti={true}
+            placeholder="Search available services..."
             value={tagOptions.filter((tagOption) => formik.values.userData?.services?.find((service: string) => service === tagOption.value))}
             options={tagOptions}
             helperComponent={<ErrorMessage name="userData.services" />}
@@ -478,7 +479,7 @@ const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker, isWorkersLoa
         </div>
         <div className="col card ms-3">
           <h5>Upload documents</h5>
-          <div className="txt-orange"><StopIcon size={16} /> Make sure to upload  each document before saving.</div>
+          <div className="text-success"><StopIcon size={16} /> Make sure to upload  each document before saving.</div>
           <div className='mt-5'/>
           {generateDocSelect("1. ID CARD/DRIVING LICENSE:", "userData.documents['idCard'].url", 'idCard', 'Click to browse or drag and drop your file to upload ID card.', 'ID_CARD')}
           {generateDocSelect("2. CLEANING CERTIFICATE:", "userData.documents['cleaningCert'].url", 'cleaningCert', 'Click to browse or drag and drop your file to upload clinic certificate.', 'CLEANING_CERTIFICATE')}

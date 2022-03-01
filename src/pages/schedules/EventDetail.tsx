@@ -1,3 +1,4 @@
+import { PersonIcon } from '@primer/octicons-react';
 import { FC } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -60,7 +61,7 @@ const EditEvent: FC<IProps> = ({ closeModal, event }) => {
                 {event.extendedProps?.meta?.job?.team ? (
                   event.extendedProps?.meta?.job?.team.map((mem: { fullName: string }) => (
                     <>
-                      <span className="status status-blue">{mem.fullName}</span> &nbsp;
+                      <span className="status status-blue p-2"><PersonIcon /> {mem.fullName}</span> &nbsp;
                     </>
                   ))
                 ) : (

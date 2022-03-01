@@ -18,7 +18,7 @@ import Modal from 'common/components/atoms/Modal';
 import { deleteInvoiceApi } from 'services/invoice.service';
 import { toast } from 'react-toastify';
 import DeleteConfirm from 'common/components/DeleteConfirm';
-import { EyeIcon, PencilIcon, TrashIcon } from '@primer/octicons-react';
+import { EyeIcon, PencilIcon, ReportIcon, TrashIcon } from '@primer/octicons-react';
 
 interface IInvoice {
   id: string;
@@ -140,7 +140,7 @@ const InvoicesList = (props: any) => {
         Header: 'QUOTE INFO',
         accessor: (row: IInvoice) => {
           return (
-            <div className="Pointer" onClick={() => navigate(`/dashboard/invoices/${row.id}`)}>
+            <div className="cursor-pointer" onClick={() => navigate(`/dashboard/invoices/${row.id}`)}>
               <div>
                 <strong>{row.subject}</strong>
               </div>
@@ -238,7 +238,7 @@ const InvoicesList = (props: any) => {
         </div>
         <div className="col">
           <button onClick={() => navigate('/dashboard/invoices/' + endpoints.admin.invoices.add)} type="button" className="btn btn-primary d-flex float-end">
-            New invoices
+            <ReportIcon className='mt-1' />&nbsp;New Invoice
           </button>
         </div>
         <label className="txt-grey">{invoices.length} invoices</label>

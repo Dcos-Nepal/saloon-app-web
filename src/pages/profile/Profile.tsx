@@ -27,7 +27,7 @@ const Profile = () => {
               <h3 className="txt-bold extra">{currentUser.fullName || `${currentUser.firstName} ${currentUser.lastName}`}</h3>
             </div>
             <div className="row m-1">
-              <div className="col card ms-3">
+              <div className="col card">
                 <div className="row">
                   <div className="col d-flex flex-row">
                     <h5 className="txt-bold">Profile</h5>
@@ -37,8 +37,8 @@ const Profile = () => {
                   <div className="col">
                     <div className="row">
                       <div className="col p-2 ps-4">
-                        <div className="txt-grey">User ID</div>
-                        <div className="">{<h5 className="txt-bold txt-orange">{currentUser._id}</h5>}</div>
+                        <div className="txt-grey">User Ref Code</div>
+                        <div className="">{<h5 className="txt-bold txt-orange">{currentUser?.userCode || 'XXXXX'}</h5>}</div>
                       </div>
                     </div>
                     <div className="row">
@@ -101,7 +101,7 @@ const Profile = () => {
                     <div className="">{currentUser?.address?.state}</div>
                   </div>
                 </div>
-                <div className="row border-bottom">
+                <div className="row">
                   <div className="col p-2 ps-4">
                     <div className="txt-grey">Post code</div>
                     <div className="">{currentUser?.address?.postalCode}</div>
@@ -114,7 +114,7 @@ const Profile = () => {
               </div>
             </div>
             <div className="row m-1">
-              <div className="col card ms-3">
+              <div className="col card">
                 <div className="row">
                   <div className="col d-flex flex-row">
                     <h5 className="txt-bold">Other Information</h5>
@@ -122,14 +122,49 @@ const Profile = () => {
                 </div>
                 <div className="row mt-2">
                   <div className="col p-2 ps-4">
-                    <div className="txt-grey">Account Type</div>
-                    <div className="">{currentUser.userData?.type}</div>
+                    <div className="txt-grey">User Type</div>
+                    <div className="text-capitalize">{currentUser.userData?.type}</div>
                   </div>
                   <div className="col p-2 ps-4">
                     <div className="txt-grey">Referral Code</div>
                     <div className="">{currentUser.userData?.referralCode}</div>
                   </div>
                 </div>
+                {currentUser.userData?.type === 'WORKER' ? (
+                  <>
+                    <div className="row mt-2">
+                      <div className="col p-2 ps-4">
+                        <div className="txt-grey">Working Hours</div>
+                        <div className="text-capitalize">{currentUser.userData?.workingHours}</div>
+                      </div>
+                      <div className="col p-2 ps-4">
+                        <div className="txt-grey">Working Days</div>
+                        <div className="">{currentUser.userData?.workingDays}</div>
+                      </div>
+                    </div>
+                    <div className="row mt-2">
+                      <div className="col p-2 ps-4">
+                        <div className="txt-grey">Services</div>
+                        <div className="">{currentUser?.userData?.services.length
+                          ? currentUser?.userData?.services.map((service: string) => (<><span key={service} className="badge rounded-pill bg-secondary p-1">{service}</span>&nbsp;</>))
+                          : 'No services added yet.'}
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                ) : null}
+                {currentUser.userData?.type === 'CLIENT' ? (
+                  <div className="row mt-2">
+                    <div className="col p-2 ps-4">
+                      <div className="txt-grey">Company</div>
+                      <div className="text-capitalize">{currentUser.userData?.company || 'XXXXX-XXXXXX'}</div>
+                    </div>
+                    <div className="col p-2 ps-4">
+                      <div className="txt-grey">Preferred Time</div>
+                      <div className="">{currentUser.userData?.preferredTime || 'XXXXX-XXXXX'}</div>
+                    </div>
+                  </div>
+                ) : null}
               </div>
             </div>
           </div>

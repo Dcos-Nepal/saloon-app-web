@@ -11,7 +11,7 @@ import ReactPaginate from 'react-paginate';
 import { Loader } from 'common/components/atoms/Loader';
 import debounce from 'lodash/debounce';
 import EmptyState from 'common/components/EmptyState';
-import { AlertIcon, CheckCircleIcon, EyeIcon, PencilIcon, TrashIcon } from '@primer/octicons-react';
+import { AlertIcon, CheckCircleIcon, EyeIcon, PencilIcon, PersonAddIcon, TrashIcon } from '@primer/octicons-react';
 import Modal from 'common/components/atoms/Modal';
 import { deleteUserApi } from 'services/users.service';
 import { toast } from 'react-toastify';
@@ -183,7 +183,7 @@ const ClientsList = (props: any) => {
             type="button"
             className="btn btn-primary d-flex float-end"
           >
-            New client
+            <PersonAddIcon className='mt-1' />&nbsp;New client
           </button>
         </div>
         <label className="txt-grey">Total {query ? `${clients.length} search results found!` : `${props?.clients?.data?.totalCount || 0} clients`}</label>

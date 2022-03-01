@@ -1,6 +1,6 @@
 import * as Yup from 'yup';
 import { getIn, useFormik } from 'formik';
-import { StopIcon, XCircleIcon } from '@primer/octicons-react';
+import { StopIcon, UploadIcon, XCircleIcon } from '@primer/octicons-react';
 
 import { getData } from 'utils/storage';
 import TextArea from 'common/components/form/TextArea';
@@ -129,8 +129,8 @@ const CompleteJob = ({ closeModal, completeJob }: ICompleteJob) => {
                       if (event.target.files?.length) formik.setFieldValue(`docs`, [...formik.values.docs, event.target.files[0]]);
                     }}
                   />
-                  <label htmlFor={'file'} className="txt-orange dashed-file mt-2">
-                    Select documents/pictures related to this Job
+                  <label htmlFor={'file'} className="txt-orange dashed mt-2">
+                    <UploadIcon /> Select documents/pictures related to this Job
                   </label>
                 </div>
               </div>

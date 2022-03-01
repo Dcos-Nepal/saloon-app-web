@@ -17,10 +17,6 @@ const Signin = (props: any) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const currentUser = getData('user');
 
-  if (currentUser?._id) {
-    navigate(endpoints.admin.home);
-  }
-
   const InitSignIn = {
     email: "",
     password: "",
@@ -57,7 +53,6 @@ const Signin = (props: any) => {
         setData('refreshToken', refreshToken);
 
         setIsLoading(false);
-        return navigate(endpoints.admin.home);
       } else {
         setIsLoading(false);
       }
@@ -66,10 +61,17 @@ const Signin = (props: any) => {
   });
 
   useEffect(() => {
-    if (props.isSuccess && props.isFailed === false) {
-      navigate(endpoints.admin.home);
+    if (currentUser?._id) {
+      const urlSearchParams = new URLSearchParams(window.location.search);
+      const params = Object.fromEntries(urlSearchParams.entries());
+      if (params.redirect) {
+        window.location.href = decodeURI(params.redirect);
+      } else {
+        navigate(endpoints.admin.home);
+      }
     }
-  }, [props.isSuccess, props.isFailed, navigate]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUser?._id, isLoading]);
 
   return (
     <div className="container-fluid txt-grey">

@@ -6,7 +6,7 @@ import { DateTime } from 'luxon';
 import React, { Fragment, useEffect, useState } from 'react';
 import RRule, { Frequency, RRuleSet, rrulestr } from 'rrule';
 import { FieldArray, FormikProvider, useFormik } from 'formik';
-import { AlertIcon, CheckCircleIcon, FileIcon, InfoIcon, PlusCircleIcon, XCircleIcon } from '@primer/octicons-react';
+import { AlertIcon, CheckCircleIcon, FileIcon, InfoIcon, LocationIcon, PlusCircleIcon, XCircleIcon } from '@primer/octicons-react';
 
 import * as jobsActions from 'store/actions/job.actions';
 import * as visitsActions from 'store/actions/visit.actions';
@@ -322,14 +322,14 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
               <div className="col p-2 ps-4">
                 <div className="txt-grey">Property address</div>
                 <div className="">
-                  {job?.property.street1} {job?.property.country}
+                  <LocationIcon /> {job?.property?.street1}, {job?.property?.street2}, {job?.property?.city}, {job?.property?.state}, {job?.property?.postalCode}, {job?.property?.country}
                 </div>
               </div>
             </div>
-            <div className="row mb-4 border-bottom">
+            <div className="row mb-4">
               <div className="col p-2 ps-4">
                 <div className="txt-grey">Contact details</div>
-                <div className="">{job?.jobFor.phoneNumber}</div>
+                <div className=""><InfoIcon /> {job?.jobFor?.phoneNumber}/{job?.jobFor?.email}</div>
               </div>
             </div>
           </div>
@@ -361,7 +361,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
                 <div className="">{job?.primaryVisit ? calculateJobDuration(job?.primaryVisit): 'N/A'}</div>
               </div>
             </div>
-            <div className="row border-bottom mb-3">
+            <div className="row mb-3">
               <div className="col p-2 ps-4">
                 <div className="txt-grey">Billing frequency</div>
                 <div className="">After every visit</div>
@@ -383,7 +383,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
             <thead>
               <tr>
                 <th scope="col">#SN</th>
-                <th scope="col">PRODUCT / SERVICE</th>
+                <th scope="col" className='col-6'>PRODUCT / SERVICE</th>
                 <th scope="col">QTY</th>
                 <th scope="col">UNIT PRICE</th>
                 <th scope="col">TOTAL</th>

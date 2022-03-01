@@ -3,6 +3,7 @@ import { toast } from 'react-toastify';
 import ReactPaginate from 'react-paginate';
 import { Column, useTable } from 'react-table';
 import { useEffect, useMemo, useState } from 'react';
+import Truncate from 'react-truncate';
 
 import LineItemAdd from '../add';
 import LineItemEdit from '../edit';
@@ -74,7 +75,11 @@ const LineItemsList = (props: IProps) => {
       },
       {
         Header: 'DESCRIPTION',
-        accessor: 'description'
+        accessor: ((row: any) => {
+          return (<Truncate lines={1} ellipsis={<span>...</span>}>
+            {row.description}
+          </Truncate>)
+        })
       },
       {
         Header: 'TAGS',
@@ -90,7 +95,7 @@ const LineItemsList = (props: IProps) => {
           )
       },
       {
-        Header: 'REF COST',
+        Header: 'REF. COST',
         accessor: (row: any) => <div>${(row.refCost || 0).toFixed(2)}</div>
       },
       {
@@ -175,7 +180,7 @@ const LineItemsList = (props: IProps) => {
                 <tr {...headerGroup.getHeaderGroupProps()} className="rt-head">
                   <th>#NO.</th>
                   {headerGroup.headers.map((column) => (
-                    <th {...column.getHeaderProps()} scope="col">
+                    <th {...column.getHeaderProps()} scope="col" className={column.render('Header') === 'DESCRIPTION' ? 'col-4' : ''}>
                       {column.render('Header')}
                     </th>
                   ))}

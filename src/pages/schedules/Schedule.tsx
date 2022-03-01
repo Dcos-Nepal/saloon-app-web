@@ -18,6 +18,7 @@ import { ClockIcon } from '@primer/octicons-react';
 import Footer from 'common/components/layouts/footer';
 import SideNavbar from 'common/components/layouts/sidebar';
 import { rrulestr } from 'rrule';
+import { DateTime } from 'luxon';
 
 const WorkSchedule = (props: any) => {
   const isMounted = useMountedRef();
@@ -138,7 +139,7 @@ function renderEventContent(eventInfo: any) {
         </Truncate>
       </div>
       <div>
-        <ClockIcon size={12} /> {eventInfo.event.extendedProps?.meta?.startTime}
+        <ClockIcon size={12} /> {DateTime.fromISO(eventInfo.event.extendedProps?.meta?.startDate).toFormat('t')}
       </div>
     </div>
   );

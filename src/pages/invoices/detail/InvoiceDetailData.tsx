@@ -1,3 +1,4 @@
+import { InfoIcon } from '@primer/octicons-react';
 import { Loader } from 'common/components/atoms/Loader';
 import { FC, useEffect, useState } from 'react';
 import { connect } from 'react-redux';
@@ -48,11 +49,11 @@ const InvoiceDetailData: FC<IProps> = ({ isLoading, actions, currentInvoice }) =
         <Loader isLoading={isLoading} />
         <div className="row border-bottom p-3">
           <div className="col d-flex flex-row">
-            <h3>{currentInvoice?.subject?.toUpperCase()}</h3>
+            <h5>{currentInvoice?.subject?.toUpperCase()}</h5>
           </div>
           <div className="col">
             <button type="button" onClick={sendInvoiceHandler} className="btn btn-primary d-flex float-end">
-              {sendingInvoice ? <span className="spinner-border spinner-border-sm" role="status" /> : null}&nbsp;Send to client
+              {sendingInvoice ? <span className="spinner-border spinner-border-sm mt-1" role="status" /> : null}&nbsp;Send to client
             </button>
           </div>
         </div>
@@ -70,8 +71,8 @@ const InvoiceDetailData: FC<IProps> = ({ isLoading, actions, currentInvoice }) =
                     {currentInvoice?.invoiceFor?.address?.state}, {currentInvoice?.invoiceFor?.address?.country},{' '}
                     {currentInvoice?.invoiceFor?.address?.postalCode}
                   </div>
-                  <div className="mb-1">Email: {currentInvoice?.invoiceFor?.email || '-'}</div>
-                  <div className="mb-1">Phone: {currentInvoice?.invoiceFor?.phoneNumber || '-'}</div>
+                  <div className="mb-1">{currentInvoice?.invoiceFor?.email || '-'}</div>
+                  <div className="mb-1">{currentInvoice?.invoiceFor?.phoneNumber || '-'}</div>
                 </div>
               </div>
             </div>
@@ -82,8 +83,8 @@ const InvoiceDetailData: FC<IProps> = ({ isLoading, actions, currentInvoice }) =
               <h5 className="txt-bold">Orange Cleaning</h5>
               <div>43 Hamley Cres, Mansfield Park</div>
               <div className="mb-1">SA 5012</div>
-              <div className="mb-1">Email: info@orangecleaning.com.au</div>
-              <div className="mb-1">Phone: 1300 612 667</div>
+              <div className="mb-1">info@orangecleaning.com.au</div>
+              <div className="mb-1">+62 1300 612 667</div>
             </div>
           </div>
           <div className="col-6">
@@ -115,7 +116,7 @@ const InvoiceDetailData: FC<IProps> = ({ isLoading, actions, currentInvoice }) =
               </div>
               <div className="row p-2 border-bottom">
                 <h6 className="">Message to client</h6>
-                <div className="ps-3">{currentInvoice?.message}</div>
+                <div className="ps-3"><InfoIcon /> {currentInvoice?.message}</div>
               </div>
             </div>
           </div>
@@ -128,7 +129,7 @@ const InvoiceDetailData: FC<IProps> = ({ isLoading, actions, currentInvoice }) =
               <thead>
                 <tr>
                   <th scope="col">SN</th>
-                  <th scope="col">PRODUCT / SERVICE</th>
+                  <th scope="col" className='col-6'>PRODUCT / SERVICE</th>
                   <th scope="col">QTY</th>
                   <th scope="col">UNIT PRICE</th>
                   <th scope="col">TOTAL</th>

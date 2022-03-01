@@ -13,10 +13,9 @@ const JobQuoteDetail = () => {
           </span>
           <span className="col">Back to previous</span>
         </div>
-        <div className="d-flex flex-row">
+        <div className="mt-2 d-flex flex-row">
           <h3 className="txt-bold extra">Job Quote</h3>
         </div>
-        <div className="txt-grey">Quote #13</div>
       </div>
       <div className="m-1">
         <ClientJobDetailData />

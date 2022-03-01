@@ -1,6 +1,7 @@
 export interface IRequest {
+  reqCode: string;
   client: any;
-  property: string;
+  property: any | string;
   createdAt: string;
   description: string;
   id: string;

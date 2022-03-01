@@ -3,25 +3,34 @@ import TopNavbar from '../../common/components/layouts/topNavbar';
 import AdminDashboard from 'common/components/layouts/AdminDashboard';
 import { useNavigate } from 'react-router-dom';
 import { endpoints } from 'common/config';
+import { Loader } from 'common/components/atoms/Loader';
+import { useEffect } from 'react';
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const currentUser = getData('user');
 
-  if (!currentUser || !currentUser._id) {
-    clearData();
-    navigate(endpoints.auth.signIn);
-  }
+  useEffect(() => {
+    if (!currentUser || !currentUser?._id) {
+      clearData();
+      navigate(endpoints.auth.signIn + '?redirect=' + encodeURI(window.location.href));
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUser?._id])
 
   return (
     <>
-      <TopNavbar />
-      <div className="container-fluid">
-        <div className="row flex-nowrap">
-          <AdminDashboard />
-        </div>
-      </div>
-    </>
+      {!currentUser ? (<Loader isLoading={!currentUser} />) : (
+        <>
+          <TopNavbar />
+          <div className="container-fluid">
+            <div className="row flex-nowrap">
+              <AdminDashboard />
+            </div>
+          </div>
+        </>
+      )}
+    </> 
   );
 };
 

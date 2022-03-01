@@ -87,8 +87,12 @@ const JobsList = (props: IProps) => {
         accessor: 'jobFor'
       },
       {
-        Header: 'TITLE/ADDRESS',
-        accessor: 'property.street1'
+        Header: 'JOB ADDRESS',
+        accessor: ((row: any) => {
+          return (<div>
+          {row.property?.street1}, {row.property?.street2}, {row.property?.city}, {row.property?.state}, {row.property?.postalCode}, {row.property?.country}
+          </div>);
+        })
       },
       {
         Header: 'JOB SCHEDULE',
@@ -96,7 +100,7 @@ const JobsList = (props: IProps) => {
       },
       {
         Header: 'REQUIRE INVOICING?',
-        accessor: (row: any) => <div>{row.remindInvoicing ? 'Yes' : 'No'}</div>
+        accessor: (row: any) => <div>{!row.isCompleted ? 'Yes' : 'No'}</div>
       },
       {
         Header: 'Total',

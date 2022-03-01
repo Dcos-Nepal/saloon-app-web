@@ -4,7 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import { Loader } from "common/components/atoms/Loader";
 import * as workersActions from "store/actions/workers.actions";
-import { StopIcon } from "@primer/octicons-react";
+import { PencilIcon, StopIcon } from "@primer/octicons-react";
 
 interface IProps {
   actions: {
@@ -46,7 +46,7 @@ const WorkerDetail: FC<IProps> = ({ actions, currentWorker }) => {
                   type="button"
                   className="btn btn-primary d-flex float-end me-2"
                 >
-                  Edit Worker
+                  <PencilIcon className="mt-1" />&nbsp; Edit Worker
                 </button>
               </div>
             </div>
@@ -54,13 +54,13 @@ const WorkerDetail: FC<IProps> = ({ actions, currentWorker }) => {
               <div className="col card me-3">
                 <div className="row">
                   <div className="col d-flex flex-row">
-                    <h5 className="txt-bold">Worker info ({currentWorker?.userCode})</h5>
+                    <h5 className="txt-bold">Worker Info</h5>
                   </div>
                 </div>
                 <div className="row mt-3">
                   <div className="col p-1 ps-4">
                     <div className="txt-grey">Worker Code</div>
-                    <div className=""><strong>{currentWorker?.userCode || '-'}</strong></div>
+                    <div className="txt-orange"><strong>{currentWorker?.userCode || '-'}</strong></div>
                   </div>
                   <div className="col p-1 ps-4">
                     <div className="txt-grey">Full name</div>

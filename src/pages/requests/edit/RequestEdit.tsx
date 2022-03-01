@@ -19,7 +19,7 @@ const RequestEdit: FC<IProps> = () => {
           <span className="col">Back to previous</span>
         </div>
         <div className="d-flex flex-row">
-          <h3>Update Request</h3>
+          <h3 className="extra">Update Request</h3>
         </div>
       </div>
       <RequestForm id={id} />

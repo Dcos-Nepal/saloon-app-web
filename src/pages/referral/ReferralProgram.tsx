@@ -56,7 +56,7 @@ const ReferralProgram = () => {
                   }}
                   className="btn btn-primary full-width"
                 >
-                  Copy Referral Link
+                  Copy Link
                 </button>
               </div>
               <div className="col"></div>

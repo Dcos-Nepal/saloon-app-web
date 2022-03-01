@@ -6,7 +6,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { IRequest } from "common/types/request";
 import { Loader } from "common/components/atoms/Loader";
 import * as requestsActions from "store/actions/job-requests.actions";
-import { endpoints } from "common/config";
+import { PencilIcon } from "@primer/octicons-react";
 
 interface IProps {
   actions: {
@@ -38,17 +38,9 @@ const RequestDetail: FC<IProps> = ({ actions, currentRequest }) => {
           <div>
             <div className="d-flex flex-row row">
               <div className="col">
-                <h3 className="txt-bold">Job Request details</h3>
+                <h3 className="extra mt-2">Job Request details</h3>
               </div>
               <div className="col">
-                <button
-                  type="button"
-                  className="btn btn-secondary d-flex float-end"
-                  data-bs-toggle="modal"
-                  data-bs-target="#quick-job-request-form"
-                >
-                  Convert to Quote
-                </button>
                 <button
                   onClick={() => id && navigate(`edit`)}
                   type="button"
@@ -56,33 +48,42 @@ const RequestDetail: FC<IProps> = ({ actions, currentRequest }) => {
                   data-bs-toggle="modal"
                   data-bs-target="#job-request-form"
                 >
-                  Edit Job Request
+                  <PencilIcon className="mt-1"/>&nbsp; Edit Job Request
                 </button>
               </div>
             </div>
-            <div className="row">
+            <div className="row m-1">
               <div className="col card">
                 <div className="row">
                   <div className="col d-flex flex-row">
-                    <h5 className="txt-bold">Job Detail</h5>
-                  </div>
-                  <div className="col">
-                    <span className="status status-blue d-flex float-end">
-                      {currentRequest.status}
-                    </span>
+                    <h5 className="txt-bold">Request Details</h5>
                   </div>
                 </div>
-                <div className="txt-bold mb-3 mt-3 txt-grey">
-                  {currentRequest.name}
-                </div>
-
                 <div className="row mb-3 border-bottom">
+                  <div className="col p-2 ps-4">
+                    <div className="txt-grey">Ref. Code</div>
+                    <div className="txt-orange">#{currentRequest.reqCode}</div>
+                  </div>
+                  <div className="col p-2 ps-4">
+                    <div className="txt-grey">Request Status</div>
+                    <div className="">
+                      <span className="status status-blue">
+                        {currentRequest.status}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div className="row mb-3 border-bottom">
+                  <div className="col p-2 ps-4">
+                    <div className="txt-grey">Job Title</div>
+                    <div className="">{currentRequest.name}</div>
+                  </div>
                   <div className="col p-2 ps-4">
                     <div className="txt-grey">Job type</div>
                     <div className="">{currentRequest.type}</div>
                   </div>
                 </div>
-                <div className="row mb-3 border-bottom">
+                <div className="row mb-3">
                   <div className="col p-2 ps-4">
                     <div className="txt-grey">Job description</div>
                     <div className="">{currentRequest.description}</div>
@@ -101,13 +102,13 @@ const RequestDetail: FC<IProps> = ({ actions, currentRequest }) => {
                       <div className="col p-2 ps-4">
                         <div className="txt-grey">Primary contact</div>
                         <div className="">
-                          {currentRequest.client.firstName}
+                          {currentRequest.client?.firstName}
                         </div>
                       </div>
                       <div className="col p-2 ps-4">
                         <div className="txt-grey">Phone number</div>
                         <div className="">
-                          {currentRequest.client.phoneNumber}
+                          {currentRequest.client?.phoneNumber}
                         </div>
                       </div>
                     </div>
@@ -117,14 +118,14 @@ const RequestDetail: FC<IProps> = ({ actions, currentRequest }) => {
                         <div className="">{currentRequest.client.email}</div>
                       </div>
                     </div>
-                    <div className="txt-bold mt-3 txt-grey">Property -1</div>
-                    {currentRequest.client.address ? (
+                    <div className="txt-bold mt-3 txt-grey">Property Details</div>
+                    {currentRequest?.property ? (
                       <>
                         <div className="row mb-4 border-bottom">
                           <div className="col p-2 ps-4">
                             <div className="txt-grey">Street 1</div>
                             <div className="">
-                              {currentRequest.client.address.street1}
+                              {currentRequest?.property?.street1}
                             </div>
                           </div>
                         </div>
@@ -132,7 +133,7 @@ const RequestDetail: FC<IProps> = ({ actions, currentRequest }) => {
                           <div className="col p-2 ps-4">
                             <div className="txt-grey">Street 2</div>
                             <div className="">
-                              {currentRequest.client.address.street2}
+                              {currentRequest?.property?.street2}
                             </div>
                           </div>
                         </div>
@@ -140,27 +141,27 @@ const RequestDetail: FC<IProps> = ({ actions, currentRequest }) => {
                           <div className="col p-2 ps-4">
                             <div className="txt-grey">City</div>
                             <div className="">
-                              {currentRequest.client.address.city}
+                              {currentRequest?.property?.city}
                             </div>
                           </div>
                           <div className="col p-2 ps-4">
                             <div className="txt-grey">State</div>
                             <div className="">
-                              {currentRequest.client.address.state}
+                              {currentRequest?.property?.state}
                             </div>
                           </div>
                         </div>
-                        <div className="row border-bottom mb-3">
+                        <div className="row mb-3">
                           <div className="col p-2 ps-4">
                             <div className="txt-grey">Post code</div>
                             <div className="">
-                              {currentRequest.client.address.postalCode}
+                              {currentRequest?.property?.postalCode}
                             </div>
                           </div>
                           <div className="col p-2 ps-4">
                             <div className="txt-grey">Country</div>
                             <div className="">
-                              {currentRequest.client.address.country}
+                              {currentRequest?.property?.country}
                             </div>
                           </div>
                         </div>

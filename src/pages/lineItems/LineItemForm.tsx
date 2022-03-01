@@ -63,7 +63,7 @@ const LineItemForm = ({ closeModal, lineItem, saveHandler }: { lineItem?: any; c
   ];
 
   return (
-    <form className="was-validated" onSubmit={formik.handleSubmit}>
+    <form noValidate onSubmit={formik.handleSubmit}>
       <div className="modal-body">
         <InputField
           label="Name"

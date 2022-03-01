@@ -18,7 +18,7 @@ import { toast } from 'react-toastify';
 import DeleteConfirm from 'common/components/DeleteConfirm';
 import { deleteQuoteApi } from 'services/quotes.service';
 import StatusChangeWithReason from './StatusChangeWithReason';
-import { EyeIcon, PencilIcon, TrashIcon } from '@primer/octicons-react';
+import { EyeIcon, FileBadgeIcon, PencilIcon, TrashIcon } from '@primer/octicons-react';
 
 interface IQuote {
   id: string;
@@ -38,7 +38,7 @@ const quoteStatusOptions = [
   { label: 'ACCEPTED', value: 'ACCEPTED' },
   { label: 'REJECTED', value: 'REJECTED' },
   { label: 'ARCHIVED', value: 'ARCHIVED' },
-  { label: 'CHANGE_REQUESTED', value: 'CHANGE_REQUESTED' }
+  { label: 'RE-REQUESTED', value: 'CHANGE_REQUESTED' }
 ];
 
 const QuotesList = (props: any) => {
@@ -244,7 +244,7 @@ const QuotesList = (props: any) => {
         </div>
         <div className="col">
           <button onClick={() => navigate(endpoints.admin.quotes.add)} type="button" className="btn btn-primary d-flex float-end">
-            New quotes
+            <FileBadgeIcon className='mt-1'/>&nbsp; New Quote
           </button>
         </div>
         <label className="txt-grey">{quotes.length} quotes</label>

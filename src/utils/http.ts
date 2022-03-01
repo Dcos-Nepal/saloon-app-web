@@ -81,7 +81,10 @@ http.interceptors.response.use(
         } catch (_error) {
           toast.error("Your session expired!", {position: 'bottom-center'});
           clearData();
-          window.location.href = "/";
+
+          // Redirect to the signin in URL
+          window.location.href = '/signIn?redirect=' + encodeURI(window.location.href);
+          // Or reject he promise with error
           return Promise.reject(_error);
         }
       }

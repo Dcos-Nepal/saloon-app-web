@@ -21,30 +21,40 @@ const VisitCompletedActions = (props: IProps) => {
     onClose();
   };
 
-  const closeJob = () => {
-    throw new Error('Not implemented.');
-  };
+  // May need later
+  // const closeJob = () => {
+  //   throw new Error('Not implemented.');
+  // };
 
   return (
     <div className={`modal fade show`} role="dialog" style={{ display: 'block' }}>
       <div className="modal-dialog modal-sm">
         <div className="modal-content">
           <div className="modal-header">
-            <h5 className="modal-title">Visit Completed</h5>
+            <h5 className="modal-title">Visit Completed!</h5>
+            <button onClick={() => onClose()} type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div className="modal-body">
-            {visit.job?.allVisitsCompleted && (
-              <div className="row ps-3 pointer" onClick={closeJob}>
-                Close Job
+            <div className='row mt-3 mb-3'>
+              <div className='col'>
+                <button type="button" className="btn btn-primary" onClick={generateInvoice}>
+                  Generate Invoice
+                </button>
               </div>
-            )}
-            <div className="row ps-3 pointer" onClick={generateInvoice}>
-              Generate Invoice
+              <div className='col'>
+                <button type="button" className="ms-2 btn btn-secondary" data-bs-dismiss="modal" onClick={() => onClose()}>
+                  Generate Later
+                </button>
+              </div>
             </div>
-          </div>
-          <div className="modal-footer">
-            <div className="row pointer" onClick={onClose}>
-              Leave as Action Required
+            <div className='row mt-3 mb-3'>
+              <div className='col-12 text-center'>
+                {visit.job?.allVisitsCompleted && (
+                  <button type="button" className="ms-2 btn btn-secondary" data-bs-dismiss="modal" onClick={() => onClose()}>
+                    Close the Job
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         </div>

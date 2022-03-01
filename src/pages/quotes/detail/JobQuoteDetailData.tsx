@@ -3,6 +3,7 @@ import { Loader } from "common/components/atoms/Loader";
 import { FC, useEffect } from "react";
 import { connect } from "react-redux";
 import { useParams } from "react-router-dom";
+import Truncate from 'react-truncate';
 import * as quotesActions from "store/actions/quotes.actions";
 
 interface IProps {
@@ -22,7 +23,7 @@ const JobQuoteDetailData: FC<IProps> = ({isLoading, actions, currentQuote}) => {
 
   return (
     <div>
-      <div className="row mt-3 mb-3">
+      <div className="row mt-1 mb-3">
         <Loader isLoading={isLoading} />
         {currentQuote?.status?.status === 'CHANGE_REQUESTED' ? (
           <div className="col-12">
@@ -54,8 +55,14 @@ const JobQuoteDetailData: FC<IProps> = ({isLoading, actions, currentQuote}) => {
                 <h4 className="txt-bold d-flex float-end mt-2">${currentQuote?.lineItems.reduce((current: number, next: { quantity: number; unitPrice: number; }) => (current += next.quantity * next.unitPrice), 0)} cash</h4>
               </div>
             </div>
+            <div className="row mb-2 border-bottom">
+              <div className="col p-2 ps-4">
+                <div className="txt-grey">Contact details</div>
+                <div className="">{currentQuote?.quoteFor.phoneNumber}/{currentQuote?.quoteFor.email}</div>
+              </div>
+            </div>
             {currentQuote?.property ? (
-              <div className="row mt-3 border-bottom">
+              <div className="row">
                 <div className="col p-2 ps-4">
                   <div className="txt-grey">Property address</div>
                   <div className="txt-grey">Name: <strong>{currentQuote?.property.name}</strong></div>
@@ -63,19 +70,13 @@ const JobQuoteDetailData: FC<IProps> = ({isLoading, actions, currentQuote}) => {
                 </div>
               </div>
             ) : (
-              <div className="row mt-3 border-bottom">
+              <div className="row">
                 <div className="col p-2 ps-4">
                   <div className="txt-grey">Property address</div>
                   <div className="txt-orange"><StopIcon size={14} /> No property listed for this client.</div>
                 </div>
               </div>
             )}
-            <div className="row mb-4">
-              <div className="col p-2 ps-4">
-                <div className="txt-grey">Contact details</div>
-                <div className="">{currentQuote?.quoteFor.phoneNumber}/{currentQuote?.quoteFor.email}</div>
-              </div>
-            </div>
           </div>
         </div>
         <div className="col">
@@ -85,8 +86,7 @@ const JobQuoteDetailData: FC<IProps> = ({isLoading, actions, currentQuote}) => {
               <div className="col p-2 ps-4">
                 <div className="txt-grey">Quote number</div>
                 <div className="row">
-                  <div className="col">#13</div>
-                  {/* <div className="col txt-orange pointer">Change</div> */}
+                  <div className="col txt-orange">#{currentQuote.refCode}</div>
                 </div>
               </div>
               <div className="col p-2 ps-4">
@@ -95,12 +95,15 @@ const JobQuoteDetailData: FC<IProps> = ({isLoading, actions, currentQuote}) => {
               </div>
             </div>
             <div className="mt-2 mb-3" >
-              <h6 className="p-2">Quote Status Revisions</h6>
-              <div className="mt-3" style={{maxHeight: '150px', overflowY: 'scroll'}}>
+              <h6 className="p-2">Status Revisions</h6>
+              <div className="mt-0" style={{maxHeight: '150px', overflowY: 'scroll'}}>
+                {!currentQuote?.statusRevision.length ? (
+                  <div className="col-12 ms-3 txt-grey"><AlertFillIcon /> There are no revisions so far.</div>
+                ) : null}
                 {currentQuote?.statusRevision.map((revision: any) => (<dl key={revision.updatedAt} className="row ms-2">
                   <dt className="col-sm-3">{(new Date(revision.updatedAt)).toLocaleString()}</dt>
                   <dd className="col-sm-9">
-                    <span className="status status-green">{revision.status}</span>&nbsp;
+                    <span className="status status-green">{revision.status}</span><br/>
                     <span className="txt-grey">{(new Date(revision.updatedAt)).toLocaleString()}</span>
                   </dd>
                 </dl>))}
@@ -117,7 +120,7 @@ const JobQuoteDetailData: FC<IProps> = ({isLoading, actions, currentQuote}) => {
             <thead>
               <tr>
                 <th scope="col">SN</th>
-                <th scope="col">PRODUCT / SERVICE</th>
+                <th scope="col" className="col-6">PRODUCT / SERVICE</th>
                 <th scope="col">QTY</th>
                 <th scope="col">UNIT PRICE</th>
                 <th scope="col">TOTAL</th>
@@ -129,7 +132,11 @@ const JobQuoteDetailData: FC<IProps> = ({isLoading, actions, currentQuote}) => {
                   <th scope="row">#00{index + 1}</th>
                   <td>
                     <div><strong>{item.name}</strong></div>
-                    <div><small>{item.description}</small></div>
+                    <div><small>
+                        <Truncate lines={1} ellipsis={<span>...</span>}>
+                          {item.description}
+                        </Truncate>
+                    </small></div>
                   </td>
                   <td><strong>{item.quantity}</strong></td>
                   <td><strong>${item.unitPrice}</strong></td>

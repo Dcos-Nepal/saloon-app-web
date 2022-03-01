@@ -78,7 +78,7 @@ const CompleteJob = ({ closeModal, completeJob }: ICompleteJob) => {
             </h5>
             <button onClick={() => closeModal()} type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
-          <form className="was-validated" onSubmit={formik.handleSubmit}>
+          <form noValidate onSubmit={formik.handleSubmit}>
             <div className="modal-body">
               <div className="mb-3">
                 <TextArea

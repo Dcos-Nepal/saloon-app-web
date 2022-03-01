@@ -1,5 +1,6 @@
 export interface IRequest {
   client: any;
+  property: string;
   createdAt: string;
   description: string;
   id: string;

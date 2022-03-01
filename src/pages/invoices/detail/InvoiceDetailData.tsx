@@ -79,7 +79,9 @@ const InvoiceDetailData: FC<IProps> = ({ isLoading, actions, currentInvoice }) =
                 <div className="col-12 p-2 ps-4">
                   <div className="txt-grey">Invoice number</div>
                   <div className="row">
-                    <h3 className="col txt-orange">#{currentInvoice?.id}</h3>
+                    <div className="col txt-orange">
+                      <strong>#{currentInvoice?.refCode || 'XXXXX'}</strong>
+                    </div>
                   </div>
                 </div>
                 <div className="col p-2 ps-4">
@@ -101,20 +103,6 @@ const InvoiceDetailData: FC<IProps> = ({ isLoading, actions, currentInvoice }) =
                 <h6 className="">Message to client</h6>
                 <div className="ps-3">{currentInvoice?.message}</div>
               </div>
-              {/* <div className="mt-2 mb-3">
-              <h6 className="p-2">Invoice Status Revisions</h6>
-              <div className="mt-3" style={{ maxHeight: '150px', overflowY: 'scroll' }}>
-                {currentInvoice?.statusRevision?.map((revision: any) => (
-                  <dl key={revision.updatedAt} className="row ms-2">
-                    <dt className="col-sm-3">{new Date(revision.updatedAt).toLocaleString()}</dt>
-                    <dd className="col-sm-9">
-                      <span className="status status-green">{revision.status}</span>&nbsp;
-                      <span className="txt-grey">{new Date(revision.updatedAt).toLocaleString()}</span>
-                    </dd>
-                  </dl>
-                ))}
-              </div>
-            </div> */}
             </div>
           </div>
         </div>
@@ -133,6 +121,7 @@ const InvoiceDetailData: FC<IProps> = ({ isLoading, actions, currentInvoice }) =
                 </tr>
               </thead>
               <tbody>
+                {(!currentInvoice?.lineItems.length) ? (<tr><td colSpan={5}>No line items selected</td></tr>) : null}
                 {currentInvoice?.lineItems.map((item: any, index: number) => (
                   <tr key={index}>
                     <th scope="row">{index + 1}</th>

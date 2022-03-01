@@ -101,7 +101,7 @@ const EditEvent: FC<IProps> = ({ closeModal, event }) => {
             </div>
           </div>
           <div className="modal-footer">
-            <button type="button" className="btn btn-secondary" onClick={() => navigate(`/dashboard/quotes/${event.extendedProps?.meta?.job?._id}`)}>
+            <button type="button" className="btn btn-secondary" onClick={() => navigate(`/dashboard/jobs/${event.extendedProps?.meta?.job?._id}`)}>
               View Details
             </button>
             <button type="button" className="btn btn-primary" onClick={closeModal}>

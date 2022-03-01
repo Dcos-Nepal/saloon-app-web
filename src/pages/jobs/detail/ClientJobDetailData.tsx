@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import RRule, { Frequency, RRuleSet, rrulestr } from 'rrule';
-import { DateTime } from 'luxon';
+import luxon, { DateTime } from 'luxon';
 import { connect } from 'react-redux';
 import React, { Fragment, useEffect, useState } from 'react';
 
@@ -12,7 +12,7 @@ import { getData } from 'utils/storage';
 import InputField from 'common/components/form/Input';
 import TextArea from 'common/components/form/TextArea';
 import { FieldArray, FormikProvider, useFormik } from 'formik';
-import { FileIcon, InfoIcon, PlusCircleIcon, XCircleIcon } from '@primer/octicons-react';
+import { AlertIcon, CheckCircleIcon, FileIcon, InfoIcon, PlusCircleIcon, XCircleIcon } from '@primer/octicons-react';
 import SelectAsync from 'common/components/form/AsyncSelect';
 import { toast } from 'react-toastify';
 import StarRating from 'common/components/StarRating';
@@ -255,6 +255,25 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
     setSelectedVisit(null);
   };
 
+  /**
+   * Calculate duration
+   * @param options
+   * @returns String
+   */
+  const calculateJobDuration = (options: any) => {
+    const foundDates = [];
+    const date1 = DateTime.fromISO(options?.endDate);
+    const date2 = DateTime.fromISO(options?.startDate);
+    const {years, months, days, hours} = date1.diff(date2, ["years", "months", "days", "hours"])
+
+    if (years) foundDates.push(`${years} years`);
+    if (months) foundDates.push(`${months} months`);
+    if (days) foundDates.push(`${days} days`);
+    if (hours) foundDates.push(`${hours} hours`);
+
+    return foundDates.join(', ');
+  }
+
   useEffect(() => {
     if (!id) return;
     actions.fetchJob(id);
@@ -277,11 +296,14 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
               <div className="col">
                 <h5 className="txt-bold">{job?.jobFor.fullName}</h5>
                 <div>
-                  <span className={`status status-green`}>Requires invoicing</span>
+                  {job?.isCompleted === true
+                    ? (<span className={`status txt-green`}><CheckCircleIcon /> Job Completed</span>)
+                    : (<span className={`status txt-orange`}><AlertIcon /> Requires Invoicing</span>)
+                  }
                 </div>
               </div>
               <div className="col">
-                <h4 className="txt-bold d-flex float-end mt-2">$80 cash</h4>
+                <h4 className="txt-bold d-flex float-end mt-2">${job?.lineItems.reduce((current: number, next: { quantity: number; unitPrice: number }) => (current += next.quantity * next.unitPrice), 0)} cash</h4>
               </div>
             </div>
             <div className="row mt-3 border-bottom">
@@ -307,8 +329,9 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
               <div className="col p-2 ps-4">
                 <div className="txt-grey">Job number</div>
                 <div className="row">
-                  <div className="col">#13</div>
-                  <div className="col txt-orange pointer">Change</div>
+                  <div className="col txt-orange">
+                    <strong>#{job?.refCode || 'XXXXX'}</strong>
+                  </div>
                 </div>
               </div>
               <div className="col p-2 ps-4">
@@ -323,7 +346,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
               </div>
               <div className="col p-2 ps-4">
                 <div className="txt-grey">Lasts for</div>
-                <div className="">6 years</div>
+                <div className="">{job?.primaryVisit ? calculateJobDuration(job?.primaryVisit): 'N/A'}</div>
               </div>
             </div>
             <div className="row border-bottom mb-3">
@@ -346,7 +369,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
           <table className="table table-striped table-bordered">
             <thead>
               <tr>
-                <th scope="col">SN</th>
+                <th scope="col">#SN</th>
                 <th scope="col">PRODUCT / SERVICE</th>
                 <th scope="col">QTY</th>
                 <th scope="col">UNIT PRICE</th>
@@ -480,7 +503,10 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
                         />
                       </td>
                       <td>{DateTime.fromJSDate(v.startDate).toFormat('yyyy LLL dd')}</td>
-                      <td>{v.instruction}</td>
+                      <td>
+                        <div><strong>{v.title}</strong></div>
+                        <i>{v.instruction}</i>
+                      </td>
                       <td>{v.team.map((t: any) => t.fullName).join(', ') || 'Not assigned yet'}</td>
                       <td className="d-flex float-end">
                         <div className="dropdown me-2">
@@ -562,8 +588,9 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
                           <div className="col p-2 ps-4">
                             <div className="txt-grey">Job number</div>
                             <div className="row">
-                              <div className="col">#13</div>
-                              <div className="col txt-orange pointer">Change</div>
+                              <div className="col txt-orange">
+                                <strong>#{job?.refCode || 'XXXXX'}</strong>
+                              </div>
                             </div>
                           </div>
                           <div className="col p-2 ps-4">
@@ -578,7 +605,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits }: any) => {
                           </div>
                           <div className="col p-2 ps-4">
                             <div className="txt-grey">Lasts for</div>
-                            <div className="">6 years</div>
+                            <div className="">{job?.primaryVisit ? calculateJobDuration(job?.primaryVisit): 'N/A'}</div>
                           </div>
                         </div>
                         <div className="row border-bottom mb-3">

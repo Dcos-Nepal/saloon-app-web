@@ -45,26 +45,6 @@ const WorkSchedule = (props: any) => {
   }, [props.isLoading]);
 
   /**
-   *
-   * @param clickInfo
-   */
-  // const handleDateSelect = (selectInfo: any) => {
-  //   let calendarApi = selectInfo.view.calendar
-  //   let title = prompt('Please enter a new title for your event')
-
-  //   calendarApi.unselect() // clear date selection
-
-  //   if (title) {
-  //     calendarApi.addEvent({ // will render immediately. will call handleEventAdd
-  //       title,
-  //       start: selectInfo.startStr,
-  //       end: selectInfo.endStr,
-  //       allDay: selectInfo.allDay
-  //     }, true) // temporary=true, will get overwritten when reducer gives new events
-  //   }
-  // }
-
-  /**
    * Handles event click
    * ------------------------------------------------------------------------------------------
    * @param clickInfo
@@ -89,11 +69,19 @@ const WorkSchedule = (props: any) => {
       <SideNavbar active="Schedule" />
       <div className="col main-container" style={{ position: 'relative', minHeight: '700px' }}>
         <div className="row d-flex flex-row mb-3">
-          <div className="col ">
+          <div className="col d-flex flex-row">
             <h3 className="extra">Work Schedule</h3>
           </div>
+          <div className="col">
+            <div className="form-group mt-3 d-flex float-end">
+              <input type="checkbox" className="mt-1" checked={props.weekendsVisible} onChange={props.toggleWeekends}></input>
+              <label>
+                &nbsp;Toggle Weekends
+              </label>
+            </div>
+        </div>
           <label className="txt-grey">
-            Total of <strong>56</strong> Jobs/Visits Scheduled for today
+            <ClockIcon /> Jobs/Visits Scheduled for today
           </label>
         </div>
         <div className="card pt-4">
@@ -113,24 +101,13 @@ const WorkSchedule = (props: any) => {
               dayMaxEvents={true}
               weekends={props.weekendsVisible}
               datesSet={handleDates}
-              // select={handleDateSelect}
               displayEventEnd={true}
               displayEventTime={true}
               events={events}
               eventContent={renderEventContent} // For Custom Rendering
               eventClick={handleEventClick}
-              // eventAdd={handleEventAdd}
-              // eventChange={handleEventChange} // Called on drag-n-drop/resize
-              // eventRemove={handleEventRemove}
             />
             <Loader isLoading={props.isLoading} />
-          </div>
-
-          <div className="form-group mt-3">
-            <label>
-              <input type="checkbox" checked={props.weekendsVisible} onChange={props.toggleWeekends}></input>
-              &nbsp;Toggle Weekends
-            </label>
           </div>
         </div>
         <Modal isOpen={!!showEventDetail} onRequestClose={() => setShowEventDetail(null)}>

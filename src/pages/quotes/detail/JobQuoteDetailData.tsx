@@ -1,4 +1,4 @@
-import { StopIcon } from "@primer/octicons-react";
+import { AlertFillIcon, StopIcon } from "@primer/octicons-react";
 import { Loader } from "common/components/atoms/Loader";
 import { FC, useEffect } from "react";
 import { connect } from "react-redux";
@@ -24,14 +24,29 @@ const JobQuoteDetailData: FC<IProps> = ({isLoading, actions, currentQuote}) => {
     <div>
       <div className="row mt-3 mb-3">
         <Loader isLoading={isLoading} />
+        {currentQuote?.status?.status === 'CHANGE_REQUESTED' ? (
+          <div className="col-12">
+            <div className="alert alert-warning" role="alert">
+              <AlertFillIcon /> {currentQuote?.status.reason}
+            </div>
+          </div>
+        ) : null }
+
+        {currentQuote?.status?.status === 'REJECTED' ? (
+          <div className="col-12">
+            <div className="alert alert-danger" role="alert">
+              <AlertFillIcon /> {currentQuote?.status.reason}
+            </div>
+          </div>
+        ) : null }
         <div className="col">
           <div className="card">
             <div className="row">
               <div className="col">
                 <h5 className="txt-bold">{`${currentQuote?.quoteFor.firstName} ${currentQuote?.quoteFor.lastName}`}</h5>
                 <div>
-                  <span className={`status status-green`}>
-                    Requires invoicing
+                  <span className={`status txt-orange`}>
+                    {currentQuote?.status?.status}
                   </span>
                 </div>
               </div>

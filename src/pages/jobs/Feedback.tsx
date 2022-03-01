@@ -55,7 +55,7 @@ const Feedback = ({ closeModal, job, provideFeedback }: { job: any; closeModal: 
             <h5 className="modal-title">Job Feedback</h5>
             <button type="button" className="btn-close" onClick={closeModal} data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
-          <form noValidate onSubmit={formik.handleSubmit} className="was-validated">
+          <form noValidate onSubmit={formik.handleSubmit}>
             <FormikProvider value={formik}>
               <div className="modal-body">
                 <div className="mb-3">

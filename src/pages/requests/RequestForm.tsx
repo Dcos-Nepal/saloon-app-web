@@ -1,17 +1,18 @@
 import * as Yup from 'yup';
-import { useFormik } from 'formik';
+import { getIn, useFormik } from 'formik';
 import { connect } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { FC, useEffect, useState } from 'react';
 
-import { IOption } from 'common/types/form';
 import { IClient } from 'common/types/client';
 import InputField from 'common/components/form/Input';
-import SelectField from 'common/components/form/Select';
 import * as clientsActions from 'store/actions/clients.actions';
 import * as jobRequestsActions from 'store/actions/job-requests.actions';
 import { IRequest } from 'common/types/request';
 import { Loader } from 'common/components/atoms/Loader';
+import SelectAsync from 'common/components/form/AsyncSelect';
+import { fetchUserProperties } from 'services/common.service';
+import { StopIcon } from '@primer/octicons-react';
 
 interface IProps {
   actions: {
@@ -24,15 +25,24 @@ interface IProps {
   id?: string;
   isJobRequestsLoading: boolean;
   currentJobRequest?: IRequest;
-
   isClientsLoading: boolean;
 }
 
 const RequestAddForm: FC<IProps> = ({ id, actions, clients, isJobRequestsLoading, currentJobRequest }) => {
   const navigate = useNavigate();
 
-  const [clientsOption, setClientsOption] = useState<IOption[]>([]);
-  const [activeClient, setActiveClient] = useState<IClient | never>();
+  const [clientDetails, setClientDetails] = useState(null);
+  const [properties, setProperties] = useState([]);
+  const [initialValues, setInitialValues] = useState({
+    name: '',
+    description: '',
+    type: '',
+    client: {
+      label: 'Search for Clients...',
+      value: ''
+    },
+    property: ''
+  });
 
   useEffect(() => {
     actions.fetchClients({ roles: 'CLIENT' });
@@ -43,36 +53,32 @@ const RequestAddForm: FC<IProps> = ({ id, actions, clients, isJobRequestsLoading
   }, [id, actions]);
 
   useEffect(() => {
-    const clientsLabelValues = clients.map((client) => {
-      return {
-        label: client.fullName || `${client.firstName} ${client.lastName}`,
-        value: client._id || ''
-      };
-    });
+    if (currentJobRequest && id) {
+      setInitialValues({
+        ...currentJobRequest,
+        client: {
+          label: currentJobRequest.client?.firstName,
+          value: currentJobRequest.client?._id,
+        },
+        property: currentJobRequest?.property
+      });
 
-    if (currentJobRequest?.client?._id) setActiveClient(clients.find((client) => client._id === currentJobRequest?.client?._id));
-
-    setClientsOption(clientsLabelValues);
-  }, [clients, currentJobRequest?.client?._id]);
-
-  const initialValues =
-    id && currentJobRequest
-      ? {
-          ...currentJobRequest,
-          client: currentJobRequest.client?._id
-        }
-      : {
-          name: '',
-          description: '',
-          type: '',
-          client: ''
-        };
+      setClientDetails(currentJobRequest?.client);
+      fetchUserProperties(currentJobRequest?.client._id).then((response) => {
+        setProperties(response.data?.data?.data?.rows || []);
+      });
+    }
+  }, [id, currentJobRequest]);
 
   const RequestSchema = Yup.object().shape({
     name: Yup.string().required(`Name is required`),
     description: Yup.string().required(`Description is required`),
     type: Yup.string().required(`Type is required`),
-    client: Yup.string().required(`Client is required`),
+    client: Yup.object().shape({
+      value: Yup.string().required('Client is required for this quote'),
+      label: Yup.string()
+    }),
+    property: Yup.string().notRequired(),
     status: Yup.string()
   });
 
@@ -81,14 +87,46 @@ const RequestAddForm: FC<IProps> = ({ id, actions, clients, isJobRequestsLoading
     initialValues: initialValues,
     validationSchema: RequestSchema,
     onSubmit: async (data: any) => {
+      // Formatting Data
+      data.client = data.client.value;
+
       // For updating the job request
       if (id) await actions.updateJobRequest(data);
+
       // For Creating new job request
       else await actions.addJobRequest(data);
 
       navigate(-1);
     }
   });
+
+  /**
+   * Handles Client selection
+   */
+  const handleClientSelection = async ({label, value, meta}: any) => {
+    formik.setFieldValue(`client`, {label, value});
+    setClientDetails(meta);
+
+    const response = await fetchUserProperties(value);
+    setProperties(response.data?.data?.data?.rows || []);
+  }
+
+  /**
+   * Custom Error Message
+   * 
+   * @param param Props Object
+   * @returns JSX
+   */
+  const ErrorMessage = ({ name }: any) => {
+    if (!name) return (<></>);
+    
+    const error = getIn(formik.errors, name);
+    const touch = getIn(formik.touched, name);
+
+    return ((touch && error) || error) ? (<div className="row text-danger mt-1 mb-2">
+      <div className="col-1" style={{width: '20px'}}><StopIcon size={14} /></div><div className="col">{error}</div>
+    </div>) : null;
+  };
 
   return (
     <form noValidate onSubmit={formik.handleSubmit}>
@@ -134,73 +172,37 @@ const RequestAddForm: FC<IProps> = ({ id, actions, clients, isJobRequestsLoading
           </div>
         </div>
         <div className="col">
-          <div className="card">
-            <h6 className="txt-bold mb-5">Client Details</h6>
-            <SelectField
-              label="Client name"
-              name="client"
-              options={clientsOption}
-              helperComponent={formik.errors.client && formik.touched.client ? <div className="txt-red">{formik.errors.client}</div> : null}
-              value={clientsOption.find((option) => option.value === formik.values.client)}
-              handleChange={(selectedOption: IOption) => {
-                formik.setFieldValue('client', selectedOption.value);
-                setActiveClient(clients.find((client) => client._id === selectedOption.value));
-              }}
-              onBlur={formik.handleBlur}
+          <div className="card" style={{"height": "100%"}}>
+            <h6 className="txt-bold">Client Details</h6>
+            <SelectAsync
+              name={`quoteFor`}
+              label="Select Client"
+              value={formik.values.client}
+              resource={{ name: 'users', labelProp: 'fullName', valueProp: '_id', params: { roles: 'CLIENT' } }}
+              onChange={handleClientSelection}
             />
-            {activeClient && formik.values.client ? (
-              <>
-                <div className="row border-bottom mt-2">
-                  <div className="col p-2 ps-4">
-                    <div className="txt-grey">Phone number</div>
-                    <div className="">{activeClient.phoneNumber}</div>
-                  </div>
+            <ErrorMessage name={`quoteFor.value`} />
+            {clientDetails ? (
+              <div className="row bg-grey m-0">
+                <div className="col p-2 ps-4">
+                  <div className="txt-orange">{(clientDetails as any)?.fullName}</div>
+                  <div className="txt-bold">{(clientDetails as any)?.email} / {(clientDetails as any)?.phoneNumber}</div>
+                  <div className="txt-grey">{(clientDetails as any)?.address?.street1}, {(clientDetails as any)?.address?.city}, {(clientDetails as any)?.address?.country}</div>
                 </div>
-                <div className="txt-bold mt-3 txt-grey">Property -1</div>
-                {activeClient.address ? (
-                  <>
-                    <div className="row mb-4 border-bottom">
-                      <div className="col p-2 ps-4">
-                        <div className="txt-grey">Street 1</div>
-                        <div className="">{activeClient.address.street1}</div>
-                      </div>
-                    </div>
-                    <div className="row mb-4 border-bottom">
-                      <div className="col p-2 ps-4">
-                        <div className="txt-grey">Street 2</div>
-                        <div className="">{activeClient.address.street2}</div>
-                      </div>
-                    </div>
-                    <div className="row border-bottom">
-                      <div className="col p-2 ps-4">
-                        <div className="txt-grey">City</div>
-                        <div className="">{activeClient.address.city}</div>
-                      </div>
-                      <div className="col p-2 ps-4">
-                        <div className="txt-grey">State</div>
-                        <div className="">{activeClient.address.state}</div>
-                      </div>
-                    </div>
-                    <div className="row border-bottom mb-3">
-                      <div className="col p-2 ps-4">
-                        <div className="txt-grey">Post code</div>
-                        <div className="">{activeClient.address.postalCode}</div>
-                      </div>
-                      <div className="col p-2 ps-4">
-                        <div className="txt-grey">Country</div>
-                        <div className="">{activeClient.address.country}</div>
-                      </div>
-                    </div>
-                  </>
-                ) : (
-                  <div className="row border-bottom mb-3">
-                    <div className="col p-2 ps-4">
-                      <div className="txt-grey">No address data</div>
-                    </div>
-                  </div>
-                )}
-              </>
-            ) : null}
+              </div>) : null }
+            <div className="txt-bold mt-3 txt-grey">Client's Properties</div>
+            {!properties.length ? <div className="txt-orange"><StopIcon size={16} /> There are no properties assigned to the client.</div> : null}
+            {properties.map((property: any) => {
+              return (<div key={property._id} className="row mb-2 border-bottom">
+                <div className="col-1 p-2 pt-3 ps-4">
+                  <input name="property" type="radio" value={property._id} onChange={formik.handleChange} checked={property._id === formik.values.property}/>
+                </div>
+                <div className="col p-2 ps-4">
+                  <div className="txt-grey">{property.name}</div>
+                  <div className="">{property?.street1}, {property?.postalCode}, {property?.city}, {property?.state}, {property?.country}</div>
+                </div>
+              </div>)
+            })}
           </div>
         </div>
       </div>

@@ -18,7 +18,7 @@ const TopNavbar: FC<IProps> = ({ loggedIn = true }) => {
   const logout = async () => {
     await clearData();
     navigate(endpoints.auth.signIn);
-  }
+  };
 
   return (
     <nav className="navbar navbar-expand-lg sticky-top">
@@ -44,8 +44,8 @@ const TopNavbar: FC<IProps> = ({ loggedIn = true }) => {
                     <img src={avatar} height="34px" alt="Orange" />
                   </span>
                   <ul className="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                    <li>
-                      <span className="dropdown-item cursor-pointer" >
+                    <li onClick={() => navigate('/dashboard/' + endpoints.profile)}>
+                      <span className="dropdown-item cursor-pointer">
                         <PersonIcon /> View Profile
                       </span>
                     </li>
@@ -54,9 +54,7 @@ const TopNavbar: FC<IProps> = ({ loggedIn = true }) => {
                         <GearIcon /> Settings
                       </span>
                     </li>
-                    <li
-                      onClick={logout}
-                    >
+                    <li onClick={logout}>
                       <span className="dropdown-item cursor-pointer">
                         <LockIcon /> Logout
                       </span>

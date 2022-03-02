@@ -1,4 +1,4 @@
-const DeleteConfirm = ({ onDelete, closeModal }: { onDelete: any; closeModal: () => void }) => {
+const DeleteConfirm = ({ content, onDelete, closeModal }: { content?: string; onDelete: any; closeModal: () => void }) => {
   return (
     <div className={`modal fade show mt-5`} role="dialog" style={{ display: 'block' }}>
       <div className="modal-dialog mt-5">
@@ -10,7 +10,7 @@ const DeleteConfirm = ({ onDelete, closeModal }: { onDelete: any; closeModal: ()
           <div className="modal-body">
             <div className="row">
               <div className="col">
-                <div>Deleting this data will mark it as deleted from the system.</div>
+                <div>{content ? content : 'Deleting this data will mark it as deleted from the system.'}</div>
               </div>
             </div>
           </div>

@@ -6,7 +6,7 @@ import { DateTime } from 'luxon';
 import React, { Fragment, useEffect, useState } from 'react';
 import RRule, { Frequency, RRuleSet, rrulestr } from 'rrule';
 import { FieldArray, FormikProvider, useFormik } from 'formik';
-import { AlertIcon, CheckCircleIcon, FileIcon, InfoIcon, LocationIcon, PlusCircleIcon, XCircleIcon } from '@primer/octicons-react';
+import { AlertIcon, CheckCircleIcon, EyeIcon, FileIcon, InfoIcon, LocationIcon, PencilIcon, PlusCircleIcon, TrashIcon, XCircleIcon } from '@primer/octicons-react';
 
 import * as jobsActions from 'store/actions/job.actions';
 import * as visitsActions from 'store/actions/visit.actions';
@@ -22,6 +22,8 @@ import StarRating from 'common/components/StarRating';
 import ConfirmMessage from 'common/components/ConfirmMessage';
 import VisitCompletedActions from './VisitCompletedActions';
 import { Loader } from 'common/components/atoms/Loader';
+import VisitDetail from './VisitDetail';
+import DeleteConfirm from 'common/components/DeleteConfirm';
 
 interface IVisitList {
   overdue: any;
@@ -37,6 +39,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
   const [askVisitInvoiceGeneration, setAskVisitInvoiceGeneration] = useState(true);
   const [selectedVisit, setSelectedVisit] = useState<any>();
   const [completedVisit, setCompletedVisit] = useState<any>();
+  const [showEventDetail, setShowEventDetail] = useState<any | null>();
 
   /**
    * Maps visits in the respective grouping and prepare a list og groups
@@ -377,7 +380,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
 
       <div className="card">
         <Loader isLoading={isJobLoading} />
-        <h6 className="txt-bold">Line items</h6>
+        <h6 className="txt-bold">Line items/Services</h6>
         <div className="row border-bottom p-3">
           <table className="table table-striped table-bordered">
             <thead>
@@ -530,14 +533,14 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
                             <box-icon name="dots-vertical-rounded"></box-icon>
                           </span>
                           <ul className="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                            <li onClick={() => console.log(v)}>
-                              <span className="dropdown-item pointer">View Detail</span>
+                            <li onClick={() => setShowEventDetail(v)}>
+                              <span className="dropdown-item pointer"><EyeIcon /> View Detail</span>
                             </li>
                             <li onClick={() => editVisit(v)}>
-                              <span className="dropdown-item pointer">Edit</span>
+                              <span className="dropdown-item pointer"><PencilIcon /> Edit</span>
                             </li>
                             <li onClick={() => handleDeleteVisitClick(v)}>
-                              <span className="dropdown-item pointer">Delete</span>
+                              <span className="dropdown-item pointer"><TrashIcon /> Delete</span>
                             </li>
                           </ul>
                         </div>
@@ -556,7 +559,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
           <div className="modal-dialog modal-lg">
             <div className="modal-content">
               <div className="modal-header">
-                <h5 className="modal-title">Visit Detail</h5>
+                <h5 className="modal-title">Edit Visit</h5>
                 <button
                   type="button"
                   className="btn-close"
@@ -625,7 +628,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
                             <div className="">{job?.primaryVisit ? calculateJobDuration(job?.primaryVisit): 'N/A'}</div>
                           </div>
                         </div>
-                        <div className="row border-bottom mb-3">
+                        <div className="row mb-3">
                           <div className="col p-2 ps-4">
                             <div className="txt-grey">Billing frequency</div>
                             <div className="">After every visit</div>
@@ -795,23 +798,11 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
       </Modal>
 
       <Modal isOpen={!!showDeleteConfirmation} onRequestClose={() => setShowDeleteConfirmation(false)}>
-        <div className="modal-object">
-          <div className="modal-header row bg-background-grey">
-            <h5 className="col-10">Are you sure you want to delete this visit?</h5>
-          </div>
-          <div className="modal-footer">
-            <button type="button" className="btn btn-danger" onClick={deleteVisit}>
-              Delete
-            </button>
-            <button type="button" className="btn btn-secondary" onClick={() => setShowDeleteConfirmation(false)}>
-              Cancel
-            </button>
-          </div>
-        </div>
-      </Modal>
+        <DeleteConfirm content={'Are you sure you want to delete this visit?'} onDelete={deleteVisit} closeModal={() => setShowDeleteConfirmation(false)} />
+      </Modal>                               
 
       <Modal
-        isOpen={completeVisitMode && selectedVisit}
+        isOpen={(completeVisitMode && selectedVisit) ? true : false}
         onRequestClose={() => {
           setSelectedVisit(null);
           setCompleteVisitMode(false);
@@ -835,8 +826,12 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
         />
       </Modal>
 
-      <Modal isOpen={askVisitInvoiceGeneration && completedVisit} onRequestClose={() => setAskVisitInvoiceGeneration(false)}>
+      <Modal isOpen={(askVisitInvoiceGeneration && completedVisit) ? true : false} onRequestClose={() => setAskVisitInvoiceGeneration(false)}>
         <VisitCompletedActions visit={completedVisit} onClose={() => setAskVisitInvoiceGeneration(false)} />
+      </Modal>
+
+      <Modal isOpen={!!showEventDetail} onRequestClose={() => setShowEventDetail(null)}>
+        {!!showEventDetail ? <VisitDetail event={showEventDetail} closeModal={() => setShowEventDetail(null)} /> : <></>}
       </Modal>
     </div>
   );

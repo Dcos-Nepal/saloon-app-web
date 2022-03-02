@@ -9,6 +9,7 @@ interface IProps {
 
 const EditEvent: FC<IProps> = ({ closeModal, event }) => {
   const navigate = useNavigate();
+  const property = event.extendedProps?.meta?.job?.property;
 
   return (
     <div className={`modal fade show mt-5`} role="dialog" style={{ display: 'block' }}>
@@ -74,11 +75,11 @@ const EditEvent: FC<IProps> = ({ closeModal, event }) => {
 
             <div className="row">
               <h5>Property Location</h5>
-              <div className="txt-grey">{event.extendedProps?.meta?.job?.property?.name || ''}</div>
+              <div className="txt-grey">{property?.name || ''}</div>
               <div className="">
-                {event.extendedProps?.meta?.job?.property?.street1}, {event.extendedProps?.meta?.job?.property?.postalCode},{' '}
-                {event.extendedProps?.meta?.job?.property?.city}, {event.extendedProps?.meta?.job?.property?.state},{' '}
-                {event.extendedProps?.meta?.job?.property?.country}
+                {property?.street1}, {property?.postalCode},{' '}
+                {property?.city}, {property?.state},{' '}
+                {property?.country}
               </div>
             </div>
 

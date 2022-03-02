@@ -300,10 +300,10 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
 
   return (
     <div>
-      <div className="row mt-1 mb-3">
+      <div className="row mt-1 pb-3">
         <Loader isLoading={isJobLoading} />
         <div className="col">
-          <div className="card">
+          <div className="card full-height">
             <div className="row">
               <div className="col">
                 <h5 className="txt-bold">{job?.jobFor.fullName}</h5>
@@ -335,7 +335,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
           </div>
         </div>
         <div className="col">
-          <div className="card">
+          <div className="card full-height">
             <h6 className="txt-bold">Job Detail</h6>
             <div className="row border-bottom">
               <div className="col p-2 ps-4">

@@ -68,7 +68,6 @@ const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker, isWorkersLoa
           email: '',
           roles: ['WORKER'],
           phoneNumber: '',
-          password: 'password',
           address: {
             street1: '',
             street2: '',
@@ -149,6 +148,9 @@ const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker, isWorkersLoa
     initialValues: initialValues,
     validationSchema: WorkerSchema,
     onSubmit: async (data: any) => {
+      // Set default password as phone number
+      data.password = data.phoneNumber;
+
       // Set type if no type is provided
       if (!data.userData?.type) data.userData.type = 'WORKER';
       // For updating worker

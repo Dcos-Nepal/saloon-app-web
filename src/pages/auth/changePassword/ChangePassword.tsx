@@ -7,6 +7,7 @@ import InputField from "common/components/form/Input";
 import { useNavigate, useParams } from "react-router-dom";
 import { resetUserPasswordApi } from "services/auth.service";
 import { Loader } from "common/components/atoms/Loader";
+import { toast } from "react-toastify";
 
 const ChangePassword = () => {
   const navigate = useNavigate();
@@ -48,9 +49,11 @@ const ChangePassword = () => {
 
       if (response.data.success === true) {
         setIsLoading(false);
+        toast.success('Success!! Password reset email sent.');
         return navigate('/signin');
       } else {
         setIsLoading(false);
+        toast.error('Error! Error while sending password reset email.');
       }
     },
     validationSchema: ChangePasswordSchema,

@@ -8,13 +8,11 @@ import { IOption } from 'common/types/form';
 import PropertyDetail from './PropertyDetail';
 import { IClient } from 'common/types/client';
 import { StopIcon } from '@primer/octicons-react';
-import Modal from 'common/components/atoms/Modal';
 import InputField from 'common/components/form/Input';
 import { Loader } from 'common/components/atoms/Loader';
 import SelectField from 'common/components/form/Select';
 import * as clientsActions from 'store/actions/clients.actions';
 import * as propertiesActions from 'store/actions/properties.actions';
-import { toast } from 'react-toastify';
 
 const PropertyForm = React.lazy(() => import('./PropertyForm'));
 
@@ -62,7 +60,7 @@ const ClientDetailForm: FC<IProps> = ({ id, actions, currentClient, properties, 
     email: '',
     roles: ['CLIENT'],
     phoneNumber: '',
-    password: 'password',
+    password: '',
     address: {
       street1: '',
       street2: '',
@@ -120,6 +118,9 @@ const ClientDetailForm: FC<IProps> = ({ id, actions, currentClient, properties, 
     initialValues: initialValues,
     validationSchema: ClientSchema,
     onSubmit: async (data: any) => {
+      // Set default password as phone number
+      data.password = data.phoneNumber;
+
       // Update client
       if (id) await actions.updateClient(data);
       // Add new client

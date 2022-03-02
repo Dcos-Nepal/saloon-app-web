@@ -82,7 +82,7 @@ const WorkSchedule = (props: any) => {
             </div>
         </div>
           <label className="txt-grey">
-            <ClockIcon /> Jobs/Visits Scheduled for today
+            <ClockIcon /> Scheduled Jobs/Visits 
           </label>
         </div>
         <div className="card pt-4">
@@ -139,7 +139,7 @@ function renderEventContent(eventInfo: any) {
         </Truncate>
       </div>
       <div>
-        <ClockIcon size={12} /> {DateTime.fromISO(eventInfo.event.extendedProps?.meta?.startDate).toFormat('t')}
+        <ClockIcon size={12} /> {DateTime.fromISO(eventInfo.event.extendedProps?.meta?.startDate, {zone: 'Australia/Adelaide'}).toFormat('t')}
       </div>
     </div>
   );

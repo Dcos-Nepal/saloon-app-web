@@ -90,7 +90,7 @@ const JobsList = (props: IProps) => {
         Header: 'JOB ADDRESS',
         accessor: ((row: any) => {
           return (<div>
-          {row.property?.street1}, {row.property?.street2}, {row.property?.city}, {row.property?.state}, {row.property?.postalCode}, {row.property?.country}
+            {row.property?.street1}, {row.property?.street2}, {row.property?.city}, {row.property?.state}, {row.property?.postalCode}, {row.property?.country}
           </div>);
         })
       },
@@ -104,7 +104,7 @@ const JobsList = (props: IProps) => {
       },
       {
         Header: 'Total',
-        accessor: 'total'
+        accessor: (row: any) => <strong>${row.total}</strong>
       },
       {
         Header: ' ',

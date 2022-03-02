@@ -8,6 +8,7 @@ import InputField from "common/components/form/Input";
 import { Loader } from "common/components/atoms/Loader";
 import { forgotUserPasswordApi } from "services/auth.service";
 import { endpoints } from 'common/config';
+import { toast } from 'react-toastify';
 
 const ResetPassword = () => {
   const navigate = useNavigate();
@@ -30,9 +31,11 @@ const ResetPassword = () => {
 
       if (response.data.success === true) {
         setIsLoading(false);
+        toast.success('Success!! Password reset successful.');
         return navigate('/signin');
       } else {
         setIsLoading(false);
+        toast.error('Error! Error while resetting password.');
       }
     },
     validationSchema: ResetPasswordSchema,

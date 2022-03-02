@@ -18,7 +18,7 @@ const Setting = () => {
   const currentUser = getData('user');
 
   const initialValues = {
-    email: currentUser.email,
+    email: currentUser?.email,
     currentPassword: '',
     newPassword: '',
     confirmPassword: ''
@@ -49,14 +49,14 @@ const Setting = () => {
         return false;
       }
 
-      // Making a User Login Request
+      // Making a Password Reset Request
       setIsLoading(true);
       const response: any = await changePasswordApi(userData);
 
       if (response.data.success === true) {
-        setIsLoading(false);
         clearData();
-        toast.success('Password changed');
+        setIsLoading(false);
+        toast.success('Password changed successfully!');
         return navigate('/signin');
       } else {
         setIsLoading(false);
@@ -82,7 +82,7 @@ const Setting = () => {
               <h3 className="txt-bold extra">Settings</h3>
             </div>
 
-            <div className="row">
+            <div className="row m-1">
               <div className="card col">
                 <Loader isLoading={isLoading} />
                 <div className="mb-2">

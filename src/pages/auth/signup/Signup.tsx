@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react';
 import { Loader } from 'common/components/atoms/Loader';
 import InputField from 'common/components/form/Input';
 import { registerUserApi } from 'services/auth.service';
+import { toast } from 'react-toastify';
 
 const SignUp = (props: any) => {
   const navigate = useNavigate();
@@ -58,9 +59,11 @@ const SignUp = (props: any) => {
 
       if (response.data.success === true) {
         setIsLoading(false);
+        toast.success('Success!! Check your email for verification.');
         return navigate(endpoints.auth.signIn);
       } else {
         setIsLoading(false);
+        toast.error('Error! Error while registering user.');
       }
     },
     validationSchema: SignUpSchema

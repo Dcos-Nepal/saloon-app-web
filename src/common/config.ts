@@ -1,5 +1,6 @@
 export const endpoints = {
   profile: 'profile',
+  setting: 'setting',
   auth: {
     signUp: '/signUp',
     signIn: '/signIn',

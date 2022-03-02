@@ -49,7 +49,7 @@ const TopNavbar: FC<IProps> = ({ loggedIn = true }) => {
                         <PersonIcon /> View Profile
                       </span>
                     </li>
-                    <li>
+                    <li onClick={() => navigate('/dashboard/' + endpoints.setting)}>
                       <span className="dropdown-item cursor-pointer">
                         <GearIcon /> Settings
                       </span>

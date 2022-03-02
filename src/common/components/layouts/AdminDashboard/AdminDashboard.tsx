@@ -16,6 +16,7 @@ const Requests = React.lazy(() => import('pages/requests'));
 const Quotes = React.lazy(() => import('pages/quotes'));
 const LineItems = React.lazy(() => import('pages/lineItems'));
 const Profile = React.lazy(() => import('pages/profile'));
+const Setting = React.lazy(() => import('pages/setting'));
 
 interface IProps {
   location?: any;
@@ -110,6 +111,14 @@ const AdminDashboard: FC<IProps> = (): JSX.Element => {
           element={
             <Suspense fallback={<Loader isLoading={true} />}>
               <Profile />
+            </Suspense>
+          }
+        />
+        <Route
+          path={endpoints.setting + '/*'}
+          element={
+            <Suspense fallback={<Loader isLoading={true} />}>
+              <Setting />
             </Suspense>
           }
         />

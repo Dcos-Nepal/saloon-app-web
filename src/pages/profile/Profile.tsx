@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router';
 
 import { getData } from 'utils/storage';
+import { endpoints } from 'common/config';
 import avatar from 'assets/images/Avatar.svg';
 import Footer from 'common/components/layouts/footer';
 import SideNavbar from 'common/components/layouts/sidebar';
@@ -9,7 +10,6 @@ const Profile = () => {
   const navigate = useNavigate();
 
   const currentUser = getData('user');
-  console.log(currentUser);
 
   return (
     <>
@@ -165,6 +165,20 @@ const Profile = () => {
                     </div>
                   </div>
                 ) : null}
+              </div>
+            </div>
+            <div className="row m-1 mt-4">
+              <div className="col ms-3">
+                <div className="row">
+                  <div className="col d-flex flex-row">
+                    <h5 className="txt-bold">Change Password</h5>
+                  </div>
+                </div>
+                <div className="mt-2">
+                  <button type="button" className="btn btn-primary" onClick={() => navigate('/dashboard/' + endpoints.setting)}>
+                    Change Password
+                  </button>
+                </div>
               </div>
             </div>
           </div>

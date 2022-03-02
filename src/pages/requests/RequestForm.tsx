@@ -58,9 +58,9 @@ const RequestAddForm: FC<IProps> = ({ id, actions, clients, isJobRequestsLoading
         ...currentJobRequest,
         client: {
           label: currentJobRequest.client?.firstName,
-          value: currentJobRequest.client?._id,
+          value: currentJobRequest.client?._id
         },
-        property: currentJobRequest?.property
+        property: currentJobRequest?.property?.id || ''
       });
 
       setClientDetails(currentJobRequest?.client);
@@ -92,7 +92,6 @@ const RequestAddForm: FC<IProps> = ({ id, actions, clients, isJobRequestsLoading
 
       // For updating the job request
       if (id) await actions.updateJobRequest(data);
-
       // For Creating new job request
       else await actions.addJobRequest(data);
 
@@ -103,29 +102,34 @@ const RequestAddForm: FC<IProps> = ({ id, actions, clients, isJobRequestsLoading
   /**
    * Handles Client selection
    */
-  const handleClientSelection = async ({label, value, meta}: any) => {
-    formik.setFieldValue(`client`, {label, value});
+  const handleClientSelection = async ({ label, value, meta }: any) => {
+    formik.setFieldValue(`client`, { label, value });
     setClientDetails(meta);
 
     const response = await fetchUserProperties(value);
     setProperties(response.data?.data?.data?.rows || []);
-  }
+  };
 
   /**
    * Custom Error Message
-   * 
+   *
    * @param param Props Object
    * @returns JSX
    */
   const ErrorMessage = ({ name }: any) => {
-    if (!name) return (<></>);
-    
+    if (!name) return <></>;
+
     const error = getIn(formik.errors, name);
     const touch = getIn(formik.touched, name);
 
-    return ((touch && error) || error) ? (<div className="row text-danger mt-1 mb-2">
-      <div className="col-1" style={{width: '20px'}}><StopIcon size={14} /></div><div className="col">{error}</div>
-    </div>) : null;
+    return (touch && error) || error ? (
+      <div className="row text-danger mt-1 mb-2">
+        <div className="col-1" style={{ width: '20px' }}>
+          <StopIcon size={14} />
+        </div>
+        <div className="col">{error}</div>
+      </div>
+    ) : null;
   };
 
   return (
@@ -172,7 +176,7 @@ const RequestAddForm: FC<IProps> = ({ id, actions, clients, isJobRequestsLoading
           </div>
         </div>
         <div className="col">
-          <div className="card" style={{"height": "100%"}}>
+          <div className="card" style={{ height: '100%' }}>
             <h6 className="txt-bold">Client Details</h6>
             <SelectAsync
               name={`quoteFor`}
@@ -186,22 +190,35 @@ const RequestAddForm: FC<IProps> = ({ id, actions, clients, isJobRequestsLoading
               <div className="row bg-grey m-0">
                 <div className="col p-2 ps-4">
                   <div className="txt-orange">{(clientDetails as any)?.fullName}</div>
-                  <div className="txt-bold">{(clientDetails as any)?.email} / {(clientDetails as any)?.phoneNumber}</div>
-                  <div className="txt-grey">{(clientDetails as any)?.address?.street1}, {(clientDetails as any)?.address?.city}, {(clientDetails as any)?.address?.country}</div>
+                  <div className="txt-bold">
+                    {(clientDetails as any)?.email} / {(clientDetails as any)?.phoneNumber}
+                  </div>
+                  <div className="txt-grey">
+                    {(clientDetails as any)?.address?.street1}, {(clientDetails as any)?.address?.city}, {(clientDetails as any)?.address?.country}
+                  </div>
                 </div>
-              </div>) : null }
+              </div>
+            ) : null}
             <div className="txt-bold mt-3 txt-grey">Client's Properties</div>
-            {!properties.length ? <div className="txt-orange"><StopIcon size={16} /> There are no properties assigned to the client.</div> : null}
+            {!properties.length ? (
+              <div className="txt-orange">
+                <StopIcon size={16} /> There are no properties assigned to the client.
+              </div>
+            ) : null}
             {properties.map((property: any) => {
-              return (<div key={property._id} className="row mb-2 border-bottom">
-                <div className="col-1 p-2 pt-3 ps-4">
-                  <input name="property" type="radio" value={property._id} onChange={formik.handleChange} checked={property._id === formik.values.property}/>
+              return (
+                <div key={property._id} className="row mb-2 border-bottom">
+                  <div className="col-1 p-2 pt-3 ps-4">
+                    <input name="property" type="radio" value={property._id} onChange={formik.handleChange} checked={property._id === formik.values.property} />
+                  </div>
+                  <div className="col p-2 ps-4">
+                    <div className="txt-grey">{property.name}</div>
+                    <div className="">
+                      {property?.street1}, {property?.postalCode}, {property?.city}, {property?.state}, {property?.country}
+                    </div>
+                  </div>
                 </div>
-                <div className="col p-2 ps-4">
-                  <div className="txt-grey">{property.name}</div>
-                  <div className="">{property?.street1}, {property?.postalCode}, {property?.city}, {property?.state}, {property?.country}</div>
-                </div>
-              </div>)
+              );
             })}
           </div>
         </div>

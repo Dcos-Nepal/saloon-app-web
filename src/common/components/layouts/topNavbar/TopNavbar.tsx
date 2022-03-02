@@ -1,7 +1,7 @@
 import 'boxicons';
 import { FC } from 'react';
 
-import logo from 'assets/images/Logo.svg';
+import logo from 'assets/images/LogoLong.svg';
 import { clearData } from 'utils/storage';
 import avatar from 'assets/images/Avatar.svg';
 import { GearIcon, LockIcon, PersonIcon } from '@primer/octicons-react';

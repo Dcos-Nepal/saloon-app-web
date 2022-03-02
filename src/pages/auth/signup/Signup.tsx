@@ -80,7 +80,7 @@ const SignUp = (props: any) => {
       <div className="vh-100 d-flex justify-content-center">
         <div className="mb-5">
           <div className="d-flex justify-content-center">
-            <img src={LogoFull} alt="Orange Cleaning" />
+            <img src={LogoFull} alt="Orange Cleaning" style={{height: '175px'}} />
           </div>
 
           <div className="main-container card bg-white p-4">

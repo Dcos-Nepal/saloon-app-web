@@ -22,7 +22,7 @@ const VerifyEmail = (props: any) => {
       <div className="vh-100 d-flex justify-content-center align-items-center">
         <div className="">
           <div className="d-flex justify-content-center mb-5">
-            <img src={LogoFull} alt="Orange Cleaning" />
+            <img src={LogoFull} alt="Orange Cleaning" style={{height: '175px'}} />
           </div>
           <div className="main-container card bg-white p-4" style={{minHeight: '200px', minWidth: '350px'}}>
             {(props.isSuccess && props.isFailed === false) ? 

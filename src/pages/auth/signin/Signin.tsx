@@ -12,7 +12,7 @@ import LogoFull from 'assets/images/LogoFull.svg';
 import { Loader } from 'common/components/atoms/Loader';
 import InputField from 'common/components/form/Input';
 
-const Signin = (props: any) => {
+const Signin = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const currentUser = getData('user');

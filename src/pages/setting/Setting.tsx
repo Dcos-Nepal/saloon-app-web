@@ -82,8 +82,8 @@ const Setting = () => {
               <h3 className="txt-bold extra">Settings</h3>
             </div>
 
-            <div className="row card">
-              <div className="col">
+            <div className="row">
+              <div className="card col">
                 <Loader isLoading={isLoading} />
                 <div className="mb-2">
                   <h4>Change password</h4>
@@ -136,6 +136,7 @@ const Setting = () => {
                   </div>
                 </form>
               </div>
+              <div className="col"></div>
             </div>
           </div>
         </div>

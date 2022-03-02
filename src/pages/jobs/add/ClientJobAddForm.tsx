@@ -1,11 +1,13 @@
+import { Fragment, useState } from 'react';
 import { connect } from 'react-redux';
 import RRule, { Frequency } from 'rrule';
 import { DateTime } from 'luxon';
-import { useEffect, useMemo } from 'react';
-import { Column, Row, useTable } from 'react-table';
-import { FieldArray, FormikProvider, useFormik, getIn } from 'formik';
-
+import { useEffect} from 'react';
 import { useNavigate } from 'react-router-dom';
+import { FieldArray, FormikProvider, useFormik, getIn } from 'formik';
+import ReactRRuleGenerator, { translations } from 'common/components/rrule-form';
+import { InfoIcon, PlusCircleIcon, StopIcon, XCircleIcon } from '@primer/octicons-react';
+
 import InputField from 'common/components/form/Input';
 import TextArea from 'common/components/form/TextArea';
 import * as jobActions from 'store/actions/job.actions';
@@ -13,9 +15,6 @@ import { Loader } from 'common/components/atoms/Loader';
 import { CreateSchema } from './validations/create.schema';
 import SelectAsync from 'common/components/form/AsyncSelect';
 import { fetchUserProperties } from 'services/common.service';
-import ReactRRuleGenerator, { translations } from 'common/components/rrule-form';
-import { InfoIcon, PlusCircleIcon, StopIcon, XCircleIcon } from '@primer/octicons-react';
-import { ClassAttributes, Fragment, HTMLAttributes, ReactChild, ReactFragment, ReactPortal, ThHTMLAttributes, TdHTMLAttributes, useState } from 'react';
 
 interface IProps {
   actions: {
@@ -49,7 +48,8 @@ const ClientJobAddForm = ({ actions, isLoading }: IProps) => {
     team: [],
     lineItems: [{ name: { label: '', value: '' }, description: '', quantity: 0, unitPrice: 0, total: 0 }],
     schedule: { rruleSet: '', startDate: '', startTime: '', endDate: '', endTime: '' },
-    oneOff: { rruleSet: '', startDate: '', startTime: '', endDate: '', endTime: '' }
+    oneOff: { rruleSet: '', startDate: '', startTime: '', endDate: '', endTime: '' },
+    notifyTeam: false
   };
 
   const formik = useFormik({
@@ -130,11 +130,13 @@ const ClientJobAddForm = ({ actions, isLoading }: IProps) => {
     formik.setFieldValue('schedule', { ...formik.values.oneOff, rruleSet: rrule.toString() });
   };
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(handleOneOffChange, [formik.values.oneOff]);
 
   useEffect(() => {
     formik.setFieldValue('type', activeTab);
     if (activeTab === 'ONE-OFF') handleOneOffChange();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab]);
 
   /**
@@ -158,10 +160,6 @@ const ClientJobAddForm = ({ actions, isLoading }: IProps) => {
       </>
     ) : null;
   };
-
-  const columns: Column<any>[] = useMemo(() => [], []);
-
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({ columns, data: [] });
 
   return (
     <form onSubmit={formik.handleSubmit} style={{ position: 'relative' }}>
@@ -278,7 +276,7 @@ const ClientJobAddForm = ({ actions, isLoading }: IProps) => {
           </div>
           <div className="row">
             {activeTab === 'ONE-OFF' ? (
-              <div className="col card m-4">
+              <div className="col card m-3">
                 <div className="mb-3">
                   <div className="row">
                     <div className="col">
@@ -320,17 +318,10 @@ const ClientJobAddForm = ({ actions, isLoading }: IProps) => {
                     </div>
                   </div>
                 </div>
-
-                <div className="mb-3">
-                  <input className="form-check-input" type="checkbox" value="" id="flexCheckDefault" />
-                  <label className="ms-2 form-check-label" htmlFor="flexCheckDefault">
-                    Schedule later
-                  </label>
-                </div>
               </div>
             ) : null}
             {activeTab === 'RECURRING' ? (
-              <div className="col-6 my-3 mx-2">
+              <div className="col-6 my-3 mx-1">
                 <ReactRRuleGenerator
                   onChange={handleRecurringChange as any}
                   value={formik.values.schedule.rruleSet || rruleStr}
@@ -341,9 +332,6 @@ const ClientJobAddForm = ({ actions, isLoading }: IProps) => {
                   }
                   translations={getTranslation() as any}
                 />
-                <div className="col-12 mt-3">
-                  <small>{formik.values.schedule.rruleSet || rruleStr}</small>
-                </div>
               </div>
             ) : null}
             <div className="col card m-3">
@@ -368,9 +356,9 @@ const ClientJobAddForm = ({ actions, isLoading }: IProps) => {
               </div>
 
               <div className="mt-3">
-                <input className="form-check-input" type="checkbox" value="" id="flexCheckDefault" />
+                <input name="notifyTeam" className="form-check-input" type="checkbox" value="true" id="flexCheckDefault" onChange={formik.handleChange}/>
                 <label className="ms-2 form-check-label" htmlFor="flexCheckDefault">
-                  Email team about assignment
+                  Notify team about this assignment
                 </label>
                 <div>
                   <small>

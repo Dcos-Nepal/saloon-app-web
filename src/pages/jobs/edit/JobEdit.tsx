@@ -46,11 +46,11 @@ const EditJob = (props: IProps) => {
         endTime: job.primaryVisit?.endTime || ''
       },
       oneOff: {
-        rruleSet: job.oneOff?.rruleSet || '',
-        startDate: job.oneOff?.startDate || '',
-        startTime: job.oneOff?.startTime || '',
-        endDate: job.oneOff?.endDate || '',
-        endTime: job.oneOff?.endTime || ''
+        rruleSet: job.primaryVisit?.rruleSet || '',
+        startDate: job.primaryVisit?.startDate || '',
+        startTime: job.primaryVisit?.startTime || '',
+        endDate: job.primaryVisit?.endDate || '',
+        endTime: job.primaryVisit?.endTime || ''
       }
     });
   }, [props.job]);

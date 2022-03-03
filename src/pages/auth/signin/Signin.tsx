@@ -12,7 +12,7 @@ import LogoFull from 'assets/images/LogoFull.svg';
 import { Loader } from 'common/components/atoms/Loader';
 import InputField from 'common/components/form/Input';
 
-const Signin = (props: any) => {
+const Signin = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const currentUser = getData('user');
@@ -148,7 +148,7 @@ const Signin = (props: any) => {
               </div>
             </div>
           </div>
-          <div className='mb-5 text-center pb-5'>
+          <div className='mb-5 mt-5 text-center pb-5'>
             Copyright &copy; {new Date().getFullYear()} <b>Orange Cleaning</b>, All Rights Reserved.
           </div>
         </div>

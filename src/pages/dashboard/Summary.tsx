@@ -8,9 +8,11 @@ import Footer from 'common/components/layouts/footer';
 import SideNavbar from 'common/components/layouts/sidebar';
 import { getVisitsSummaryApi } from 'services/visits.service';
 import { Loader } from 'common/components/atoms/Loader';
+import { getCurrentUser } from 'utils';
 
 const Summary = () => {
   const navigate = useNavigate();
+  const currUser = getCurrentUser();
   const [isLoading, setIsLoading] = useState(true);
   const [jobsSummary, setJobsSummary] = useState({
     activeJobsCount: 0,
@@ -38,21 +40,39 @@ const Summary = () => {
   });
 
   useEffect(() => {
+    const jobQuery: { createdBy?: string; team?: string; jobFor?: string; } = {};
+    const visitQuery: { team?: string; visitFor?: string; } = {};
+    const jobReqQuery: { CLIENT?: string; } = {};
+    const quotesQuery: { quoteFor?: string; } = {};
+
+    if (currUser.role === 'WORKER') {
+      jobQuery.team = currUser.id;
+      visitQuery.team = currUser.id;
+    }
+
+    if (currUser.role === 'CLIENT') {
+      jobQuery.jobFor = currUser.id;
+      visitQuery.visitFor = currUser.id;
+      jobReqQuery.CLIENT = currUser.id;
+      quotesQuery.quoteFor = currUser.id;
+    }
+
     const fetchAndSetData = async () => {
       setIsLoading(true);
 
-      const jobsSummaryDataPromise = getJobsSummaryApi().then((response) => response.data);
-      const requestsSummaryDataPromise = getJobRequestsSummaryApi().then((response) => response.data);
+      const jobsSummaryDataPromise = getJobsSummaryApi({...jobQuery}).then((response) => response.data);
+      const quotesSummaryDataPromise = (currUser.role === 'CLIENT') ? getQuotesSummaryApi({...quotesQuery}).then((response) => response.data) : Promise.resolve(null);
+      const requestsSummaryDataPromise = (currUser.role === 'CLIENT') ? getJobRequestsSummaryApi({...jobReqQuery}).then((response) => response.data) : Promise.resolve(null);
       const visitsSummaryDataPromise = getVisitsSummaryApi({
+        ...visitQuery,
         startDate: new Date(new Date().setHours(0, 0, 0, 0)).toISOString(),
         endDate: new Date(new Date().setHours(23, 59, 59, 999)).toISOString()
       }).then((response) => response.data);
-      const quotesSummaryDataPromise = getQuotesSummaryApi().then((response) => response.data);
 
-      const [jobsSummaryData, requestsSummaryData, visitsSummaryData, quotesSummaryData] = await Promise.all([
+      const [jobsSummaryData, visitsSummaryData, requestsSummaryData, quotesSummaryData] = await Promise.all([
         jobsSummaryDataPromise,
-        requestsSummaryDataPromise,
         visitsSummaryDataPromise,
+        requestsSummaryDataPromise,
         quotesSummaryDataPromise
       ]);
 
@@ -65,6 +85,7 @@ const Summary = () => {
     };
 
     fetchAndSetData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const nowTime = new Date().getTime();
@@ -121,101 +142,105 @@ const Summary = () => {
           </div>
         </div>
         <div className="row mt-3 pb-3">
-          <div className="col">
-            <div className="card full-height">
-              <div className="row d-flex flex-row">
-                <div className="col ">
-                  <h5 className="">Job Request</h5>
+          {(currUser.role === 'ADMIN' || currUser.role === 'CLIENT') ? (
+            <div className="col">
+              <div className="card full-height">
+                <div className="row d-flex flex-row">
+                  <div className="col ">
+                    <h5 className="">Job Request</h5>
+                  </div>
+                  <div className="col d-flex flex-row align-items-center justify-content-end">
+                    <button onClick={() => navigate('/dashboard/requests/add')} type="button" className="btn btn-primary d-flex float-end">
+                      New Request
+                    </button>
+                  </div>
                 </div>
-                <div className="col d-flex flex-row align-items-center justify-content-end">
-                  <button onClick={() => navigate('/dashboard/requests/add')} type="button" className="btn btn-primary d-flex float-end">
-                    New Request
-                  </button>
-                </div>
-              </div>
 
-              <div className="row">
-                <div className="col mt-2 p-2 txt-bold">
-                  <div className="row border-bottom p-2">
-                    <div className="">
-                      Active
-                      <div className="d-flex float-end">
-                        <div className="">{requestsSummary.activeCount}</div>
+                <div className="row">
+                  <div className="col mt-2 p-2 txt-bold">
+                    <div className="row border-bottom p-2">
+                      <div className="">
+                        Active
+                        <div className="d-flex float-end">
+                          <div className="">{requestsSummary.activeCount}</div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="row border-bottom p-2">
-                    <div className="">
-                      In Progress
-                      <div className="d-flex float-end">
-                        <div className="">{requestsSummary.inProgressCount}</div>
+                    <div className="row border-bottom p-2">
+                      <div className="">
+                        In Progress
+                        <div className="d-flex float-end">
+                          <div className="">{requestsSummary.inProgressCount}</div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="row border-bottom p-2">
-                    <div className="">
-                      InActive
-                      <div className="d-flex float-end">
-                        <div className="">{requestsSummary.inActiveCount}</div>
+                    <div className="row border-bottom p-2">
+                      <div className="">
+                        InActive
+                        <div className="d-flex float-end">
+                          <div className="">{requestsSummary.inActiveCount}</div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="row border-bottom p-2">
-                    <div className="">
-                      Pending
-                      <div className="d-flex float-end">
-                        <div className="">{requestsSummary.pendingCount}</div>
+                    <div className="row border-bottom p-2">
+                      <div className="">
+                        Pending
+                        <div className="d-flex float-end">
+                          <div className="">{requestsSummary.pendingCount}</div>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
+          ) : null}
 
-          <div className="col">
-            <div className="card full-height">
-              <div className="row d-flex flex-row">
-                <div className="col ">
-                  <h5 className="">Quotes</h5>
+          {(currUser.role === 'ADMIN' || currUser.role === 'CLIENT') ? (
+            <div className="col">
+              <div className="card full-height">
+                <div className="row d-flex flex-row">
+                  <div className="col ">
+                    <h5 className="">Quotes</h5>
+                  </div>
+                  <div className="col d-flex flex-row align-items-center justify-content-end">
+                    <button onClick={() => navigate('/dashboard/quotes/add')} type="button" className="btn btn-primary d-flex float-end">
+                      New Quote
+                    </button>
+                  </div>
                 </div>
-                <div className="col d-flex flex-row align-items-center justify-content-end">
-                  <button onClick={() => navigate('/dashboard/quotes/add')} type="button" className="btn btn-primary d-flex float-end">
-                    New Quote
-                  </button>
-                </div>
-              </div>
 
-              <div className="row">
-                <div className="col mt-2 p-2 txt-bold">
-                  <div className="row border-bottom p-2">
-                    <div className="">
-                      Approved
-                      <div className="d-flex float-end">
-                        <div className="">{quotesSummary.acceptedCount}</div>
+                <div className="row">
+                  <div className="col mt-2 p-2 txt-bold">
+                    <div className="row border-bottom p-2">
+                      <div className="">
+                        Approved
+                        <div className="d-flex float-end">
+                          <div className="">{quotesSummary.acceptedCount}</div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="row border-bottom p-2">
-                    <div className="">
-                      Change Requested
-                      <div className="d-flex float-end">
-                        <div className="">{quotesSummary.rejectedCount}</div>
+                    <div className="row border-bottom p-2">
+                      <div className="">
+                        Change Requested
+                        <div className="d-flex float-end">
+                          <div className="">{quotesSummary.rejectedCount}</div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="row border-bottom p-2">
-                    <div className="">
-                      Draft
-                      <div className="d-flex float-end">
-                        <div className="">{quotesSummary.pendingCount}</div>
+                    <div className="row border-bottom p-2">
+                      <div className="">
+                        Draft
+                        <div className="d-flex float-end">
+                          <div className="">{quotesSummary.pendingCount}</div>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
+          ) : null}
 
           <div className="col">
             <div className="card full-height">
@@ -260,9 +285,11 @@ const Summary = () => {
             </div>
           </div>
         </div>
-        <div className="card">
-          <InvoicesList />
-        </div>
+        {(currUser.role === 'ADMIN' || currUser.role === 'CLIENT') ? (
+          <div className="card">
+            <InvoicesList />
+          </div>
+        ): null }
         <Footer />
       </div>
     </>

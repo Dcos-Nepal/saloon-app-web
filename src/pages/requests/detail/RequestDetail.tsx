@@ -1,6 +1,5 @@
 import { FC, useEffect } from "react";
 import { connect } from "react-redux";
-import pinterpolate from "pinterpolate";
 import { useNavigate, useParams } from "react-router-dom";
 
 import { IRequest } from "common/types/request";

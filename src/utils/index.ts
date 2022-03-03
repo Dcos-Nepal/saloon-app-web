@@ -1,3 +1,5 @@
+import { getData } from "./storage";
+
 /**
  * Generates Query params using the given object.
  *
@@ -8,6 +10,20 @@ export const generateQueryParams = (params: Record<string, any>): string => {
   return Object.keys(params).map(key => key + '=' + params[key]).join('&');
 }
 
+/**
+ * Get current logged in user
+ *
+ * @returns User | null
+ */
+export const getCurrentUser = () => {
+  const currentUser = getData('user');
+
+  if (currentUser) {
+    return { id: currentUser._id, role: currentUser.roles[0] };
+  }
+
+  return { role: '', id: '' };
+}
 
 export const getHashValues = (hash: any) => {
   return Object.values(hash) // needs modern browser

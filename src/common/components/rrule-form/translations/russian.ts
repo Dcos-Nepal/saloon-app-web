@@ -1,4 +1,4 @@
-export default {
+const russianLang = {
   locale: 'ru',
   invalid_rrule:
     "Вы предоставили компоненту недопустимое значение RRule. '% {value}' не является правильной строкой RRule.",
@@ -93,3 +93,5 @@ export default {
     executions: 'выполнения(ий).'
   }
 };
+
+export default russianLang;

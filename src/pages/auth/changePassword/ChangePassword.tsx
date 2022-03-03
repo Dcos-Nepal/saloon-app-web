@@ -111,8 +111,8 @@ const ChangePassword = () => {
               </div>
             </form>
           </div>
-          <div className='mb-5 text-center pb-5'>
-            Copyright &copy; 2022 <b>Orange Cleaning</b>, All Rights Reserved.
+          <div className='mb-5 mt-5 text-center pb-5'>
+            Copyright &copy; {new Date().getFullYear()} <b>Orange Cleaning</b>, All Rights Reserved.
           </div>
         </div>
       </div>

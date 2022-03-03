@@ -1,4 +1,4 @@
-import { rrulestr as RRuleObjectFromString, RRule } from 'rrule';
+import { rrulestr as RRuleObjectFromString } from 'rrule';
 import { DATE_TIME_FORMAT } from '../../../constants/index';
 import computeStartOnDate from './computeStartOnDate';
 import computeFrequency from './computeFrequency';

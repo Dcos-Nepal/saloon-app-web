@@ -28,8 +28,8 @@ export const updateJobRequestApi = async (payload: any) => {
   return await http.put(url, payload);
 };
 
-export const getJobRequestsSummaryApi = async () => {
-  const url = '/v1.0.0/job-requests/summary';
+export const getJobRequestsSummaryApi = async (query: any) => {
+  const url = '/v1.0.0/job-requests/summary' + (query ? `?${generateQueryParams(query)}` : '');;
   return await http.get(url, {
     headers: { Accept: 'application/json' }
   });

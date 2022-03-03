@@ -13,8 +13,8 @@ export const addJobApi = async (payload: any) => {
   return await http.post(url, payload);
 };
 
-export const getJobsSummaryApi = async () => {
-  const url = '/v1.0.0/jobs/summary';
+export const getJobsSummaryApi = async (query: any) => {
+  const url = '/v1.0.0/jobs/summary' + (query ? `?${generateQueryParams(query)}` : '');
   return await http.get(url, {
     headers: { Accept: 'application/json' }
   });

@@ -19,6 +19,8 @@ import Footer from 'common/components/layouts/footer';
 import SideNavbar from 'common/components/layouts/sidebar';
 import { rrulestr } from 'rrule';
 import { DateTime } from 'luxon';
+import { getCurrentUser } from 'utils';
+import { toast } from 'react-toastify';
 
 const WorkSchedule = (props: any) => {
   const isMounted = useMountedRef();
@@ -62,7 +64,14 @@ const WorkSchedule = (props: any) => {
    * @param rangeInfo
    */
   const handleDates = (rangeInfo: any) => {
-    props.fetchJobSchedule({ startDate: rangeInfo.start.toISOString(), endDate: rangeInfo.end.toISOString() });
+    const currUser = getCurrentUser();
+    const scheduleFor: { visitFor?: string; team?: string } = {}
+
+    if (!currUser) return toast.error('No User Found!');
+    if (currUser.role === 'CLIENT') scheduleFor.visitFor = currUser.id;
+    if (currUser.role === 'WORKER') scheduleFor.team = currUser.id;
+
+    props.fetchJobSchedule({ ...scheduleFor, startDate: rangeInfo.start.toISOString(), endDate: rangeInfo.end.toISOString() });
   };
 
   return (

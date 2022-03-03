@@ -19,6 +19,7 @@ import * as jobsActions from '../../store/actions/job.actions';
 import { deleteJobApi, provideFeedbackApi } from 'services/jobs.service';
 import { Loader } from 'common/components/atoms/Loader';
 import { CheckIcon, EyeIcon, NoteIcon, PencilIcon, TasklistIcon, TrashIcon } from '@primer/octicons-react';
+import { getCurrentUser } from 'utils';
 
 interface IProps {
   actions: { fetchJobs: (query: any) => any };
@@ -63,7 +64,13 @@ const JobsList = (props: IProps) => {
   };
 
   useEffect(() => {
-    props.actions.fetchJobs({ q: search, page, limit: itemsPerPage });
+    const currUser = getCurrentUser();
+    const jobQuery: { jobFor?: string; team?: string } = {}
+
+    if (currUser.role === 'CLIENT') jobQuery.jobFor = currUser.id;
+    if (currUser.role === 'WORKER') jobQuery.team = currUser.id;
+
+    props.actions.fetchJobs({ q: search, ...jobQuery, page, limit: itemsPerPage });
   }, [page, search, itemsPerPage, props.actions]);
 
   useEffect(() => {

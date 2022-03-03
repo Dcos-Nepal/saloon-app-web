@@ -164,6 +164,7 @@ const InvoiceAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => 
         setProperties(response.data?.data?.data?.rows || []);
       });
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, currentItem]);
 
   /**

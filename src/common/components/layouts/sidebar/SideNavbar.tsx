@@ -4,7 +4,7 @@ import { endpoints } from 'common/config';
 
 import { CalendarIcon, HomeIcon } from '@primer/octicons-react';
 import { useNavigate } from 'react-router-dom';
-import { getData } from 'utils/storage';
+import { getCurrentUser } from 'utils';
 
 interface IProps {
   active: string;
@@ -12,7 +12,7 @@ interface IProps {
 
 const SideNavbar: FC<IProps> = ({ active }) => {
   const navigate = useNavigate();
-  const currentUser = getData('user');
+  const currUser: {role: string, id: string} = getCurrentUser();
 
   return (
     <div className="sidebar col-auto col-md-3 col-xl-2 px-sm-2 px-0">
@@ -43,7 +43,7 @@ const SideNavbar: FC<IProps> = ({ active }) => {
 
           <div className="hr mt-2 mb-2"></div>
 
-          {currentUser?.roles.includes('ADMIN') ? (
+          {(currUser.role === 'ADMIN' || currUser.role === 'WORKER') ? (
             <li>
               <span
                 onClick={() => navigate('/dashboard/' + endpoints.admin.client.list)}
@@ -57,7 +57,7 @@ const SideNavbar: FC<IProps> = ({ active }) => {
             </li>
           ) : null}
 
-          {(currentUser?.roles.includes('ADMIN') || currentUser?.roles.includes('CLIENTS'))  ? (
+          {(currUser.role === 'ADMIN' || currUser.role === 'CLIENT')  ? (
             <>
               <li>
                 <span
@@ -107,7 +107,7 @@ const SideNavbar: FC<IProps> = ({ active }) => {
             </span>
           </li>
 
-          {currentUser?.roles.includes('ADMIN')  ? (
+          {(currUser.role === 'ADMIN') ? (
             <>
               <li>
                 <span
@@ -134,7 +134,7 @@ const SideNavbar: FC<IProps> = ({ active }) => {
             </>
           ) : null}
           
-          {!currentUser?.roles.includes('ADMIN')  ? (
+          {!(currUser.role === 'ADMIN') ? (
             <>
               <div className="hr mt-2 mb-2"></div>
               <li>

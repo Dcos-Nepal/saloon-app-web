@@ -19,6 +19,7 @@ import { deleteInvoiceApi } from 'services/invoice.service';
 import { toast } from 'react-toastify';
 import DeleteConfirm from 'common/components/DeleteConfirm';
 import { EyeIcon, PencilIcon, ReportIcon, TrashIcon } from '@primer/octicons-react';
+import { getCurrentUser } from 'utils';
 
 interface IInvoice {
   id: string;
@@ -66,7 +67,12 @@ const InvoicesList = (props: any) => {
   };
 
   useEffect(() => {
-    props.actions.fetchInvoices({ q: query, offset: offset, limit: itemsPerPage });
+    const currUser = getCurrentUser();
+    const clientQuery: { invoiceFor?: string; } = {}
+
+    if (currUser.role === 'CLIENT') clientQuery.invoiceFor = currUser.id;
+
+    props.actions.fetchInvoices({ q: query, ...clientQuery, offset: offset, limit: itemsPerPage });
   }, [offset, itemsPerPage, props.actions, query]);
 
   useEffect(() => {

@@ -434,9 +434,9 @@ textarea:focus {
     border: 1px solid #F47321;
 }
 
-/* .modal-content.lg {
-    min-width: 25vw;
-} */
+input, textarea {
+    font-size: 14px !important;
+}
 
 /* Rating */
 .star {
@@ -485,11 +485,6 @@ textarea:focus {
     opacity: 0;
 }
 
-/* .ReactModal__Content {
-    box-shadow: 0px 0px 10px grey;
-} */
-
-
 .table {
     margin-bottom: 0;
 }
@@ -517,7 +512,6 @@ textarea:focus {
     display: block;
     border: 0 !important;
     color: #4B5563 !important;
-    /* background-color: rgb(252, 237, 189) !important; */
 }
 
 .fc * {
@@ -586,7 +580,6 @@ textarea:focus {
 
 .fc-timegrid-event .fc-event-main {
     padding: 0;
-    /* padding: 1px 1px 0; */
 }
 
 .fc-event:focus:after {
@@ -608,6 +601,7 @@ textarea:focus {
     box-shadow: inset 0px -1px 0px #F7F7F7;
 }
 
+/** Other custom styles **/
 .border-red {
     border-left: 3px solid red;
     border-bottom: 3px solid rgb(250, 250, 250);
@@ -659,7 +653,7 @@ textarea:focus {
     font-size: 85%;
 }
 
-/* */
+/* Custom Table Styles */
 .c-th {
     border-top: 2px solid #e3e3e3 !important;
 }

@@ -6,6 +6,7 @@ import { IRequest } from "common/types/request";
 import { Loader } from "common/components/atoms/Loader";
 import * as requestsActions from "store/actions/job-requests.actions";
 import { PencilIcon } from "@primer/octicons-react";
+import { getCurrentUser } from "utils";
 
 interface IProps {
   actions: {
@@ -19,6 +20,7 @@ interface IProps {
 const RequestDetail: FC<IProps> = ({ actions, currentRequest }) => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const currentUser = getCurrentUser();
 
   useEffect(() => {
     if (id) actions.fetchRequest(id);
@@ -39,17 +41,19 @@ const RequestDetail: FC<IProps> = ({ actions, currentRequest }) => {
               <div className="col">
                 <h3 className="extra mt-2">Job Request details</h3>
               </div>
-              <div className="col">
-                <button
-                  onClick={() => id && navigate(`edit`)}
-                  type="button"
-                  className="btn btn-primary d-flex float-end me-2"
-                  data-bs-toggle="modal"
-                  data-bs-target="#job-request-form"
-                >
-                  <PencilIcon className="mt-1"/>&nbsp; Edit Job Request
-                </button>
-              </div>
+              {((currentUser.role === 'WORKER' || currentUser.role === 'CLIENT') && currentUser.id === currentRequest?.createdBy) || currentUser.role === 'ADMIN' ? (
+                <div className="col">
+                  <button
+                    onClick={() => id && navigate(`edit`)}
+                    type="button"
+                    className="btn btn-primary d-flex float-end me-2"
+                    data-bs-toggle="modal"
+                    data-bs-target="#job-request-form"
+                  >
+                    <PencilIcon className="mt-1"/>&nbsp; Edit Job Request
+                  </button>
+                </div>
+              ) : null}
             </div>
             <div className="row m-1">
               <div className="col card">

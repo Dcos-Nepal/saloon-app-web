@@ -9,5 +9,6 @@ export interface IRequest {
   status: string;
   type: string;
   updatedAt: string;
+  createdBy: string;
   _id: string;
 }

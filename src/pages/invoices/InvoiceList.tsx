@@ -46,6 +46,7 @@ const invoiceStatusOptions = [
 const InvoicesList = (props: any) => {
   const navigate = useNavigate();
   const [query, setQuery] = useState('');
+  const currentUser = getCurrentUser();
   const [itemsPerPage] = useState(10);
   const [offset, setOffset] = useState(1);
   const [pageCount, setPageCount] = useState(0);
@@ -67,13 +68,12 @@ const InvoicesList = (props: any) => {
   };
 
   useEffect(() => {
-    const currUser = getCurrentUser();
     const clientQuery: { invoiceFor?: string; } = {}
 
-    if (currUser.role === 'CLIENT') clientQuery.invoiceFor = currUser.id;
+    if (currentUser.role === 'CLIENT') clientQuery.invoiceFor = currentUser.id;
 
     props.actions.fetchInvoices({ q: query, ...clientQuery, offset: offset, limit: itemsPerPage });
-  }, [offset, itemsPerPage, props.actions, query]);
+  }, [offset, itemsPerPage, props.actions, query, currentUser.id, currentUser.role]);
 
   useEffect(() => {
     if (props.itemList?.data?.rows) {
@@ -215,16 +215,20 @@ const InvoicesList = (props: any) => {
                   <EyeIcon /> View Detail
                 </span>
               </li>
-              <li className="pointer" onClick={() => navigate('/dashboard/invoices/' + row.id + '/edit')}>
-                <span className="dropdown-item cursor-pointer">
-                  <PencilIcon /> Edit
-                </span>
-              </li>
-              <li className="pointer" onClick={() => setDeleteInProgress('/dashboard/invoices/' + row.id)}>
-                <span className="dropdown-item cursor-pointer">
-                  <TrashIcon /> Delete
-                </span>
-              </li>
+              {(currentUser.role === 'ADMIN') ? (
+                <>
+                  <li className="pointer" onClick={() => navigate('/dashboard/invoices/' + row.id + '/edit')}>
+                    <span className="dropdown-item cursor-pointer">
+                      <PencilIcon /> Edit
+                    </span>
+                  </li>
+                  <li className="pointer" onClick={() => setDeleteInProgress('/dashboard/invoices/' + row.id)}>
+                    <span className="dropdown-item cursor-pointer">
+                      <TrashIcon /> Delete
+                    </span>
+                  </li>
+                </>
+              ) : null}
             </ul>
           </div>
         )

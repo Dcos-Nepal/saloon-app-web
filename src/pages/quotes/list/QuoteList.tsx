@@ -19,6 +19,7 @@ import DeleteConfirm from 'common/components/DeleteConfirm';
 import { deleteQuoteApi } from 'services/quotes.service';
 import StatusChangeWithReason from './StatusChangeWithReason';
 import { EyeIcon, FileBadgeIcon, PencilIcon, TrashIcon } from '@primer/octicons-react';
+import { getCurrentUser } from 'utils';
 
 interface IQuote {
   id: string;
@@ -43,6 +44,7 @@ const quoteStatusOptions = [
 
 const QuotesList = (props: any) => {
   const navigate = useNavigate();
+  const currentUser = getCurrentUser();
   const [query, setQuery] = useState('');
   const [itemsPerPage] = useState(10);
   const [offset, setOffset] = useState(1);
@@ -65,8 +67,12 @@ const QuotesList = (props: any) => {
   };
 
   useEffect(() => {
-    props.actions.fetchQuotes({ q: query, offset: offset, limit: itemsPerPage });
-  }, [offset, itemsPerPage, props.actions, query]);
+    const quoteQuery: { quoteFor?: string; } = {}
+
+    if (currentUser.role === 'CLIENT') quoteQuery.quoteFor = currentUser.id;
+
+    props.actions.fetchQuotes({ q: query, ...quoteQuery, offset: offset, limit: itemsPerPage });
+  }, [offset, itemsPerPage, props.actions, query, currentUser.id, currentUser.role]);
 
   useEffect(() => {
     if (props.itemList?.data?.rows) {
@@ -219,12 +225,16 @@ const QuotesList = (props: any) => {
               <li onClick={() => navigate(row.id)}>
                 <span className="dropdown-item cursor-pointer"><EyeIcon /> View Detail</span>
               </li>
-              <li onClick={() => navigate(row.id + '/edit')}>
-                <span className="dropdown-item cursor-pointer"><PencilIcon /> Edit</span>
-              </li>
-              <li onClick={() => setDeleteInProgress(row.id)}>
-                <span className="dropdown-item cursor-pointer"><TrashIcon /> Delete</span>
-              </li>
+              {(currentUser.role === 'ADMIN') ? (
+                <>
+                  <li onClick={() => navigate(row.id + '/edit')}>
+                    <span className="dropdown-item cursor-pointer"><PencilIcon /> Edit</span>
+                  </li>
+                  <li onClick={() => setDeleteInProgress(row.id)}>
+                    <span className="dropdown-item cursor-pointer"><TrashIcon /> Delete</span>
+                  </li>
+                </>
+              ) : null}
             </ul>
           </div>
         )

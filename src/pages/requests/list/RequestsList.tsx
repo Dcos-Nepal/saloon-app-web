@@ -18,6 +18,8 @@ import debounce from 'lodash/debounce';
 import { deleteJobRequestApi } from 'services/job-requests.service';
 import Modal from 'common/components/atoms/Modal';
 import { EyeIcon, PencilIcon, TrashIcon } from '@primer/octicons-react';
+import EmptyState from 'common/components/EmptyState';
+import { getCurrentUser } from 'utils';
 
 const QuickAddRequestForm = React.lazy(() => import('../QuickRequestForm'));
 
@@ -31,6 +33,7 @@ interface IRequest {
 
 const RequestsList = (props: any) => {
   const navigate = useNavigate();
+  const currentUser = getCurrentUser();
   const [itemsPerPage] = useState(10);
   const [query, setQuery] = useState('');
   const [offset, setOffset] = useState(1);
@@ -53,8 +56,12 @@ const RequestsList = (props: any) => {
   };
 
   useEffect(() => {
-    props.actions.fetchJobRequests({ q: query, page: offset, limit: itemsPerPage });
-  }, [offset, itemsPerPage, props.actions, query]);
+    const reqQuery: { client?: string; } = {}
+
+    if (currentUser.role === 'CLIENT') reqQuery.client = currentUser.id;
+
+    props.actions.fetchJobRequests({ q: query, ...reqQuery, page: offset, limit: itemsPerPage });
+  }, [offset, itemsPerPage, props.actions, query, currentUser.role, currentUser.id]);
 
   useEffect(() => {
     if (props.itemList?.data?.rows) {
@@ -144,21 +151,25 @@ const RequestsList = (props: any) => {
               >
                 <EyeIcon /> View Detail
               </li>
-              <li
-                className="p-2 pointer dropdown-item"
-                onClick={() =>
-                  navigate(
-                    pinterpolate(endpoints.admin.requests.edit, {
-                      id: row._id
-                    })
-                  )
-                }
-              >
-                <PencilIcon /> Edit
-              </li>
-              <li onClick={() => setDeleteInProgress(row._id)} className="p-2 pointer dropdown-item">
-                <TrashIcon /> Delete
-              </li>
+              {((currentUser.role === 'WORKER' || currentUser.role === 'CLIENT') && currentUser.id === row?.createdBy) || currentUser.role === 'ADMIN' ? (
+                <>
+                  <li
+                    className="p-2 pointer dropdown-item"
+                    onClick={() =>
+                      navigate(
+                        pinterpolate(endpoints.admin.requests.edit, {
+                          id: row._id
+                        })
+                      )
+                    }
+                  >
+                    <PencilIcon /> Edit
+                  </li>
+                  <li onClick={() => setDeleteInProgress(row._id)} className="p-2 pointer dropdown-item">
+                    <TrashIcon /> Delete
+                  </li>
+                </>
+              ) : null}
             </ul>
           </div>
         )
@@ -195,36 +206,40 @@ const RequestsList = (props: any) => {
           <div className="col-12">
             <InputField label="Search" placeholder="Search requests" className="search-input" onChange={handleSearch} />
           </div>
-          <table {...getTableProps()} className="table txt-dark-grey">
-            <thead>
-              {headerGroups.map((headerGroup) => (
-                <tr {...headerGroup.getHeaderGroupProps()} className="rt-head">
-                  <th>SN</th>
-                  {headerGroup.headers.map((column) => (
-                    <th {...column.getHeaderProps()} scope="col">
-                      {column.render('Header')}
-                    </th>
-                  ))}
-                </tr>
-              ))}
-            </thead>
-            <tbody {...getTableBodyProps()} className="rt-tbody">
-              {rows.map((row, index) => {
-                prepareRow(row);
-
-                return (
-                  <tr {...row.getRowProps()} className="rt-tr-group">
-                    <td>
-                      <strong>#{index + 1 + (offset - 1) * itemsPerPage}</strong>
-                    </td>
-                    {row.cells.map((cell) => (
-                      <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+          {!requests.length ? (
+            <EmptyState />
+          ) : (
+            <table {...getTableProps()} className="table txt-dark-grey">
+              <thead>
+                {headerGroups.map((headerGroup) => (
+                  <tr {...headerGroup.getHeaderGroupProps()} className="rt-head">
+                    <th>SN</th>
+                    {headerGroup.headers.map((column) => (
+                      <th {...column.getHeaderProps()} scope="col">
+                        {column.render('Header')}
+                      </th>
                     ))}
                   </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                ))}
+              </thead>
+              <tbody {...getTableBodyProps()} className="rt-tbody">
+                {rows.map((row, index) => {
+                  prepareRow(row);
+
+                  return (
+                    <tr {...row.getRowProps()} className="rt-tr-group">
+                      <td>
+                        <strong>#{index + 1 + (offset - 1) * itemsPerPage}</strong>
+                      </td>
+                      {row.cells.map((cell) => (
+                        <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+                      ))}
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          )}
         </div>
         <div className="row pt-2 m-1 rounded-top">
           <ReactPaginate

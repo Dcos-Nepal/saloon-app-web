@@ -6,6 +6,7 @@ import { useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { sendInvoiceApi } from 'services/invoice.service';
 import * as invoicesActions from 'store/actions/invoices.actions';
+import { getCurrentUser } from 'utils';
 
 interface IProps {
   actions: {
@@ -17,6 +18,7 @@ interface IProps {
 
 const InvoiceDetailData: FC<IProps> = ({ isLoading, actions, currentInvoice }) => {
   const { id } = useParams();
+  const currentUser = getCurrentUser();
   const [sendingInvoice, setSendingInvoice] = useState(false);
 
   useEffect(() => {
@@ -51,11 +53,13 @@ const InvoiceDetailData: FC<IProps> = ({ isLoading, actions, currentInvoice }) =
           <div className="col d-flex flex-row">
             <h5>{currentInvoice?.subject?.toUpperCase()}</h5>
           </div>
-          <div className="col">
-            <button type="button" onClick={sendInvoiceHandler} className="btn btn-primary d-flex float-end">
-              {sendingInvoice ? <span className="spinner-border spinner-border-sm mt-1" role="status" /> : null}&nbsp;Send to client
-            </button>
-          </div>
+          {(currentUser.role === 'ADMIN') ? (
+            <div className="col">
+              <button type="button" onClick={sendInvoiceHandler} className="btn btn-primary d-flex float-end">
+                {sendingInvoice ? <span className="spinner-border spinner-border-sm mt-1" role="status" /> : null}&nbsp;Send to client
+              </button>
+            </div>
+          ) : null}
         </div>
         <div className="row mt-3 mb-3">
           <div className="col">

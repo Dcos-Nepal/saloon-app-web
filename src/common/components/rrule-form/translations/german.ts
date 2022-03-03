@@ -1,4 +1,4 @@
-export default {
+const langGerman = {
   locale: 'de',
   invalid_rrule:
     "Sie haben eine ungültige RRule an die Komponente übergeben. '%{value}' ist keine gültige RRule.",
@@ -93,3 +93,5 @@ export default {
     executions: 'Ausführungen.'
   }
 };
+
+export default langGerman;

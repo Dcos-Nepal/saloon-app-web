@@ -1,4 +1,3 @@
-import { arrowFunctionExpression } from "@babel/types";
 import * as actionType from "../constants";
 
 const initialState = {

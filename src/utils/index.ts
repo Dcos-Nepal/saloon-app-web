@@ -22,7 +22,7 @@ export const getCurrentUser = () => {
     return { id: currentUser._id, role: currentUser.roles[0] };
   }
 
-  return null;
+  return { role: '', id: '' };
 }
 
 export const getHashValues = (hash: any) => {

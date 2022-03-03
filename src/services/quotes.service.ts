@@ -41,8 +41,8 @@ export const updateQuoteStatusApi = async (payload: any) => {
   });
 };
 
-export const getQuotesSummaryApi = async () => {
-  const url = '/v1.0.0/quotes/summary';
+export const getQuotesSummaryApi = async (query: any) => {
+  const url = '/v1.0.0/quotes/summary' + (query ? `?${generateQueryParams(query)}` : '');;
   return await http.get(url, {
     headers: { Accept: 'application/json' }
   });

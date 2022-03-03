@@ -1,4 +1,4 @@
-export default {
+const langEng = {
   locale: 'en',
   invalid_rrule:
     "You provided an invalid RRule value to component. '%{value}' is not a correct RRule string.",
@@ -93,3 +93,5 @@ export default {
     executions: 'executions.'
   }
 };
+
+export default langEng;

@@ -16,6 +16,7 @@ import Modal from 'common/components/atoms/Modal';
 import { deleteUserApi } from 'services/users.service';
 import { toast } from 'react-toastify';
 import DeleteConfirm from 'common/components/DeleteConfirm';
+import { getCurrentUser } from 'utils';
 
 interface IClient {
   name: string;
@@ -55,8 +56,14 @@ const ClientsList = (props: any) => {
   };
 
   useEffect(() => {
+    const currUser = getCurrentUser();
+    const clientQuery: { createdBy?: string; } = {}
+
+    if (currUser.role === 'WORKER') clientQuery.createdBy = currUser.id;
+
     props.actions.fetchClients({
       q: query,
+      ...clientQuery,
       roles: 'CLIENT',
       page: offset,
       limit: itemsPerPage

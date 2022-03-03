@@ -148,7 +148,7 @@ const Signin = () => {
               </div>
             </div>
           </div>
-          <div className='mb-5 text-center pb-5'>
+          <div className='mb-5 mt-5 text-center pb-5'>
             Copyright &copy; {new Date().getFullYear()} <b>Orange Cleaning</b>, All Rights Reserved.
           </div>
         </div>

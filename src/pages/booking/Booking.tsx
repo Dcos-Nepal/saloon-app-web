@@ -278,7 +278,7 @@ const serviceAreas = [
 const Booking = () => {
   const [selectedServiceArea, setSelectedServiceArea] = useState<any | never>();
   const [selectedService, setSelectedService] = useState<IService | never>();
-  const [initialValues, setInitialValues] = useState<any>({
+  const [initialValues] = useState<any>({
     postalCode: "",
     cleaningService: "",
     cleaningFrequency: "",

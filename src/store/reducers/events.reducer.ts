@@ -1,5 +1,3 @@
-import { hashById } from "utils";
-
 export function weekendsVisible(weekendsVisible = true, action: { type: any }) {
   switch (action.type) {
 

@@ -3,6 +3,7 @@ import SelectAsync from 'common/components/form/AsyncSelect';
 import InputField from 'common/components/form/Input';
 import TextArea from 'common/components/form/TextArea';
 import ReactRRuleGenerator, { translations } from 'common/components/rrule-form';
+import { format } from 'date-fns';
 import { FieldArray, FormikProvider, useFormik } from 'formik';
 import { DateTime } from 'luxon';
 import { Fragment } from 'react';
@@ -144,7 +145,7 @@ const EditJobForm = (props: IProps) => {
                         label="Start date"
                         type="date"
                         onChange={(e: any) => formik.setFieldValue('oneOff.startDate', e.target.value)}
-                        value={formik.values.oneOff.startDate}
+                        value={formik.values.oneOff?.startDate ? format(new Date(formik.values.oneOff?.startDate), 'yyyy-MM-dd') : ''}
                       />
                     </div>
                     <div className="col">
@@ -152,7 +153,7 @@ const EditJobForm = (props: IProps) => {
                         label="End date"
                         type="date"
                         onChange={(e: any) => formik.setFieldValue('oneOff.endDate', e.target.value)}
-                        value={formik.values.oneOff.endDate}
+                        value={formik.values.oneOff?.endDate ? format(new Date(formik.values.oneOff?.endDate), 'yyyy-MM-dd') : ''}
                       />
                     </div>
                   </div>
@@ -165,7 +166,7 @@ const EditJobForm = (props: IProps) => {
                         label="Start time"
                         type="time"
                         onChange={(e: any) => formik.setFieldValue('oneOff.startTime', e.target.value)}
-                        value={formik.values.oneOff.startTime}
+                        value={formik.values.oneOff?.startTime}
                       />
                     </div>
                     <div className="col">
@@ -173,7 +174,7 @@ const EditJobForm = (props: IProps) => {
                         label="End time"
                         type="time"
                         onChange={(e: any) => formik.setFieldValue('oneOff.endTime', e.target.value)}
-                        value={formik.values.oneOff.endTime}
+                        value={formik.values.oneOff?.endTime}
                       />
                     </div>
                   </div>

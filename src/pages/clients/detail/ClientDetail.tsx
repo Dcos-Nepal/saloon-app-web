@@ -38,7 +38,7 @@ interface IQuote {
 interface IInvoice {
   id: string;
   subject: string;
-  clientMessage: string;
+  message: string;
   dueOnReceipt: boolean;
   isPaid: boolean;
   isIssued: boolean;
@@ -187,7 +187,7 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient, quotes, properties, 
               >
                 <div className="col p-2 ps-4">
                   <div className="txt-grey">{invoice.subject}</div>
-                  <div className="">{invoice.clientMessage}</div>
+                  <div className="">{invoice.message}</div>
                 </div>
                 <div className="col p-2 ps-4">
                   {invoice.isPaid ? (

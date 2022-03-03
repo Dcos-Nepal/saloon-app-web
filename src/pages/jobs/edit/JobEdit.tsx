@@ -45,7 +45,13 @@ const EditJob = (props: IProps) => {
         endDate: job.primaryVisit?.endDate || '',
         endTime: job.primaryVisit?.endTime || ''
       },
-      oneOff: { rruleSet: '', startDate: '', startTime: '', endDate: '', endTime: '' }
+      oneOff: {
+        rruleSet: job.oneOff?.rruleSet || '',
+        startDate: job.oneOff?.startDate || '',
+        startTime: job.oneOff?.startTime || '',
+        endDate: job.oneOff?.endDate || '',
+        endTime: job.oneOff?.endTime || ''
+      }
     });
   }, [props.job]);
 

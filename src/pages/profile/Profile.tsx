@@ -135,11 +135,15 @@ const Profile = () => {
                     <div className="row mt-2">
                       <div className="col p-2 ps-4">
                         <div className="txt-grey">Working Hours</div>
-                        <div className="text-capitalize">{currentUser.userData?.workingHours}</div>
+                        <div className="text-capitalize">
+                          {currentUser.userData?.workingHours ? currentUser.userData?.workingHours : 'No working hours set.'}
+                        </div>
                       </div>
                       <div className="col p-2 ps-4">
                         <div className="txt-grey">Working Days</div>
-                        <div className="">{currentUser.userData?.workingDays}</div>
+                        <div className="">
+                          {currentUser.userData?.workingDays ? currentUser.userData?.workingDays : 'No working days set.'}
+                        </div>
                       </div>
                     </div>
                     <div className="row mt-2">

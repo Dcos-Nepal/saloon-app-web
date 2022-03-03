@@ -10,6 +10,7 @@ import * as quotesActions from 'store/actions/quotes.actions';
 import * as clientsActions from 'store/actions/clients.actions';
 import * as jobReqActions from 'store/actions/job-requests.actions';
 import * as propertiesActions from 'store/actions/properties.actions';
+import { getCurrentUser } from 'utils';
 
 interface IRequest {
   id: string;
@@ -54,6 +55,7 @@ interface IProps {
 const ClientDetail: FC<IProps> = ({ actions, currentClient, quotes, properties, requests, jobs }) => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const currentUser = getCurrentUser();
 
   const Tabs = {
     ActiveWork: 'ActiveWork',
@@ -70,9 +72,19 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient, quotes, properties, 
   }, [id, actions]);
 
   useEffect(() => {
-    actions.fetchJobs({ jobFor: id });
-    actions.fetchQuotes({ quoteFor: id });
-    actions.fetchJobRequests({ client: id });
+    const jobQuery: { createdBy?: string; team?: string; jobFor?: string; } = {};
+
+    if (currentUser.role === 'WORKER') {
+      jobQuery.team = currentUser.id;
+    }
+
+    actions.fetchJobs({ ...jobQuery, jobFor: id });
+
+    if (currentUser.role !== 'WORKER') {
+      actions.fetchQuotes({ quoteFor: id });
+      actions.fetchJobRequests({ client: id });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, actions]);
 
   useEffect(() => {
@@ -317,17 +329,21 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient, quotes, properties, 
                   <div className={`col tab me-1 ${tab === Tabs.ActiveWork ? 'active-tab' : ''}`} onClick={() => setTab(Tabs.ActiveWork)}>
                     Active work
                   </div>
-                  <div className={`col tab me-1 ${tab === Tabs.Requests ? 'active-tab' : ''}`} onClick={() => setTab(Tabs.Requests)}>
-                    Requests
-                  </div>
-                  <div className={`col tab me-1 ${tab === Tabs.Quotes ? 'active-tab' : ''}`} onClick={() => setTab(Tabs.Quotes)}>
-                    Quotes
-                  </div>
+                  {(currentUser.role !== 'WORKER') ? (
+                    <>
+                      <div className={`col tab me-1 ${tab === Tabs.Requests ? 'active-tab' : ''}`} onClick={() => setTab(Tabs.Requests)}>
+                        Requests
+                      </div>
+                      <div className={`col tab me-1 ${tab === Tabs.Quotes ? 'active-tab' : ''}`} onClick={() => setTab(Tabs.Quotes)}>
+                        Quotes
+                      </div>
+                      <div className={`col tab me-1 ${tab === Tabs.Invoices ? 'active-tab' : ''}`} onClick={() => setTab(Tabs.Invoices)}>
+                        Invoices
+                      </div>
+                    </>
+                  ) : null}
                   <div className={`col tab me-1 ${tab === Tabs.Jobs ? 'active-tab' : ''}`} onClick={() => setTab(Tabs.Jobs)}>
                     Jobs
-                  </div>
-                  <div className={`col tab me-1 ${tab === Tabs.Invoices ? 'active-tab' : ''}`} onClick={() => setTab(Tabs.Invoices)}>
-                    Invoices
                   </div>
                 </div>
               </div>

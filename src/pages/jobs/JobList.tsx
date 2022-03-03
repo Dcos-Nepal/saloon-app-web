@@ -37,6 +37,7 @@ const JobsList = (props: IProps) => {
   const [deleteInProgress, setDeleteInProgress] = useState('');
   const [completeJobFor, setCompleteJobFor] = useState<any | null>(null);
   const [provideFeedbackFor, setProvideFeedbackFor] = useState<any | null>(null);
+  const currentUser = getCurrentUser();
 
   const completeJobHandler = async (data: any) => {
     try {
@@ -64,13 +65,13 @@ const JobsList = (props: IProps) => {
   };
 
   useEffect(() => {
-    const currUser = getCurrentUser();
     const jobQuery: { jobFor?: string; team?: string } = {}
 
-    if (currUser.role === 'CLIENT') jobQuery.jobFor = currUser.id;
-    if (currUser.role === 'WORKER') jobQuery.team = currUser.id;
+    if (currentUser.role === 'CLIENT') jobQuery.jobFor = currentUser.id;
+    if (currentUser.role === 'WORKER') jobQuery.team = currentUser.id;
 
     props.actions.fetchJobs({ q: search, ...jobQuery, page, limit: itemsPerPage });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, search, itemsPerPage, props.actions]);
 
   useEffect(() => {
@@ -122,30 +123,36 @@ const JobsList = (props: IProps) => {
               <box-icon name="dots-vertical-rounded"></box-icon>
             </span>
             <ul className="dropdown-menu" aria-labelledby="dropdownMenuLink">
-              <li
-                onClick={() => {
-                  setCompleteJobFor(row);
-                }}
-              >
-                <span className="dropdown-item pointer"><CheckIcon /> Mark as Complete</span>
-              </li>
-              <li onClick={() => setProvideFeedbackFor(row)}>
-                <span className="dropdown-item pointer"><NoteIcon /> Provide Feedback</span>
-              </li>
+              {(currentUser.role === 'CLIENT') ? (
+                <li onClick={() => setCompleteJobFor(row)}>
+                  <span className="dropdown-item pointer"><CheckIcon /> Mark as Complete</span>
+                </li>
+              ) : null}
+              {(currentUser.role === 'WORKER') ? (
+                <li onClick={() => setProvideFeedbackFor(row)}>
+                  <span className="dropdown-item pointer"><NoteIcon /> Provide Feedback</span>
+                </li>
+              ) : null}
               <li onClick={() => navigate(pinterpolate(endpoints.admin.worker.detail, { id: row._id }))}>
                 <span className="dropdown-item pointer"><EyeIcon /> View Detail</span>
               </li>
-              <li onClick={() => navigate(pinterpolate(endpoints.admin.jobs.edit, { id: row._id }))}>
-                <span className="dropdown-item pointer"><PencilIcon /> Edit</span>
-              </li>
-              <li onClick={() => setDeleteInProgress(row._id)}>
-                <span className="dropdown-item pointer"><TrashIcon /> Delete</span>
-              </li>
+              
+              {((currentUser.role === 'WORKER' || currentUser.role === 'CLIENT') && currentUser.id === row?.createdBy) || currentUser.role === 'ADMIN' ? (
+                <>
+                  <li onClick={() => navigate(pinterpolate(endpoints.admin.jobs.edit, { id: row._id }))}>
+                    <span className="dropdown-item pointer"><PencilIcon /> Edit</span>
+                  </li>
+                  <li onClick={() => setDeleteInProgress(row._id)}>
+                    <span className="dropdown-item pointer"><TrashIcon /> Delete</span>
+                  </li>
+                </>
+              ) : null}
             </ul>
           </div>
         )
       }
     ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [navigate]
   );
 

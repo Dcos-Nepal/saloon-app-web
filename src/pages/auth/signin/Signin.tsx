@@ -76,9 +76,9 @@ const Signin = () => {
   return (
     <div className="container-fluid txt-grey">
       <div className="vh-100 d-flex justify-content-center align-items-center">
-        <div className="">
-          <div className="d-flex justify-content-center mb-5">
-            <img src={LogoFull} alt="Orange Cleaning" style={{height: '175px'}}/>
+        <div className="mt-5">
+          <div className="d-flex justify-content-center mt-5 mb-4">
+            <img src={LogoFull} alt="Orange Cleaning" style={{height: '145px'}}/>
           </div>
 
           <div className="main-container card bg-white p-4">

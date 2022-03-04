@@ -78,16 +78,16 @@ const SignUp = (props: any) => {
   return (
     <div className="container-fluid txt-grey">
       <div className="vh-100 d-flex justify-content-center">
-        <div className="mb-5">
-          <div className="d-flex justify-content-center">
-            <img src={LogoFull} alt="Orange Cleaning" style={{height: '175px'}} />
+        <div className="mt-5">
+          <div className="d-flex justify-content-center mb-4">
+            <img src={LogoFull} alt="Orange Cleaning" style={{height: '145px'}} />
           </div>
 
           <div className="main-container card bg-white p-4">
             <Loader isLoading={isLoading} />
             <div>
               <h4>Register Account</h4>
-              <label>Fill your details or continue with google account</label>
+              <label>Fill your details for signing up at Orange Cleaning</label>
             </div>
             <form noValidate onSubmit={formik.handleSubmit}>
               <div className="row mt-3 mb-3">

@@ -19,7 +19,7 @@ const InvoiceEdit: FC<IProps> = () => {
           <span className="col">Back to previous</span>
         </div>
         <div className="d-flex flex-row mt-2">
-          <h3 className="extra">Edit Invoice's Details</h3>
+          <h3 className="extra">Edit Invoice</h3>
         </div>
       </div>
       <InvoiceDetailForm id={id || ''} />

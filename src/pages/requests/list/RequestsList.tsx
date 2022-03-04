@@ -2,9 +2,9 @@ import { connect } from 'react-redux';
 import { toast } from 'react-toastify';
 import pinterpolate from 'pinterpolate';
 import ReactPaginate from 'react-paginate';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import { Column, useTable } from 'react-table';
-import { Suspense, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import * as jobReqActions from '../../../store/actions/job-requests.actions';
 
@@ -20,8 +20,6 @@ import Modal from 'common/components/atoms/Modal';
 import { EyeIcon, PencilIcon, TrashIcon } from '@primer/octicons-react';
 import EmptyState from 'common/components/EmptyState';
 import { getCurrentUser } from 'utils';
-
-const QuickAddRequestForm = React.lazy(() => import('../QuickRequestForm'));
 
 interface IRequest {
   name: string;
@@ -253,11 +251,6 @@ const RequestsList = (props: any) => {
             activeClassName={'active'}
           />
         </div>
-      </div>
-      <div className="modal fade" id="quick-job-request-form" tabIndex={-1} aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <Suspense fallback={<Loader isLoading={true} />}>
-          <QuickAddRequestForm />
-        </Suspense>
       </div>
       <Modal isOpen={!!deleteInProgress} onRequestClose={() => setDeleteInProgress('')}>
         <DeleteConfirm onDelete={deleteJobRequestHandler} closeModal={() => setDeleteInProgress('')} />

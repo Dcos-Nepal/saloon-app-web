@@ -133,125 +133,130 @@ const RequestAddForm: FC<IProps> = ({ id, actions, clients, isJobRequestsLoading
   };
 
   return (
-    <form noValidate onSubmit={formik.handleSubmit}>
-      <Loader isLoading={isJobRequestsLoading} />
-      <div className="row mb-3">
-        <div className="col">
-          <div className="card">
-            <h6 className="txt-bold">Job Details</h6>
-            <InputField
-              label="Job title"
-              placeholder="Enter job title"
-              name="name"
-              helperComponent={formik.errors.name && formik.touched.name ? <div className="txt-red">{formik.errors.name}</div> : null}
-              value={formik.values.name}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-            />
-            <InputField
-              label="Job type"
-              placeholder="Enter job type"
-              name="type"
-              value={formik.values.type}
-              helperComponent={formik.errors.type && formik.touched.type ? <div className="txt-red">{formik.errors.type}</div> : null}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-            />
-            <div className="mb-3">
-              <label htmlFor="instructions" className="form-label txt-dark-grey">
-                Job description
-              </label>
-              <textarea
-                id="instructions"
-                name="description"
+    <>
+      <div className="txt-orange">
+        Ref. #{currentJobRequest?.reqCode || 'XXXXX'}
+      </div>
+      <form noValidate onSubmit={formik.handleSubmit}>
+        <Loader isLoading={isJobRequestsLoading} />
+        <div className="row mb-3">
+          <div className="col">
+            <div className="card">
+              <h6 className="txt-bold">Job Details</h6>
+              <InputField
+                label="Job title"
+                placeholder="Enter job title"
+                name="name"
+                helperComponent={formik.errors.name && formik.touched.name ? <div className="txt-red">{formik.errors.name}</div> : null}
+                value={formik.values.name}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                rows={12}
-                value={formik.values.description}
-                className={`form-control`}
-                placeholder={'Enter job description'}
               />
-              {formik.errors.description && formik.touched.description ? <div className="txt-red">{formik.errors.description}</div> : null}
+              <InputField
+                label="Job type"
+                placeholder="Enter job type"
+                name="type"
+                value={formik.values.type}
+                helperComponent={formik.errors.type && formik.touched.type ? <div className="txt-red">{formik.errors.type}</div> : null}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+              />
+              <div className="mb-3">
+                <label htmlFor="instructions" className="form-label txt-dark-grey">
+                  Job description
+                </label>
+                <textarea
+                  id="instructions"
+                  name="description"
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  rows={12}
+                  value={formik.values.description}
+                  className={`form-control`}
+                  placeholder={'Enter job description'}
+                />
+                {formik.errors.description && formik.touched.description ? <div className="txt-red">{formik.errors.description}</div> : null}
+              </div>
             </div>
           </div>
-        </div>
-        <div className="col">
-          <div className="card" style={{ height: '100%' }}>
-            <h6 className="txt-bold">Client Details</h6>
-            <SelectAsync
-              name={`quoteFor`}
-              label="Select Client"
-              value={formik.values.client}
-              resource={{ name: 'users', labelProp: 'fullName', valueProp: '_id', params: { roles: 'CLIENT' } }}
-              onChange={handleClientSelection}
-            />
-            <ErrorMessage name={`quoteFor.value`} />
-            {clientDetails ? (
-              <div className="row bg-grey m-0">
-                <div className="col p-2 ps-4">
-                  <div className="txt-orange">{(clientDetails as any)?.fullName}</div>
-                  <div className="txt-bold">
-                    {(clientDetails as any)?.email} / {(clientDetails as any)?.phoneNumber}
-                  </div>
-                  <div className="txt-grey">
-                    {(clientDetails as any)?.address?.street1}, {(clientDetails as any)?.address?.city}, {(clientDetails as any)?.address?.country}
-                  </div>
-                </div>
-              </div>
-            ) : null}
-            <div className="txt-bold mt-3 txt-grey">Client's Properties</div>
-            {!properties.length ? (
-              <div className="txt-orange">
-                <StopIcon size={16} /> There are no properties assigned to the client.
-              </div>
-            ) : null}
-            {properties.map((property: any) => {
-              return (
-                <div key={property._id} className="row mb-2 border-bottom">
-                  <div className="col-1 p-2 pt-3 ps-4">
-                    <input name="property" type="radio" value={property._id} onChange={formik.handleChange} checked={property._id === formik.values.property} />
-                  </div>
+          <div className="col">
+            <div className="card" style={{ height: '100%' }}>
+              <h6 className="txt-bold">Client Details</h6>
+              <SelectAsync
+                name={`quoteFor`}
+                label="Select Client"
+                value={formik.values.client}
+                resource={{ name: 'users', labelProp: 'fullName', valueProp: '_id', params: { roles: 'CLIENT' } }}
+                onChange={handleClientSelection}
+              />
+              <ErrorMessage name={`quoteFor.value`} />
+              {clientDetails ? (
+                <div className="row bg-grey m-0">
                   <div className="col p-2 ps-4">
-                    <div className="txt-grey">{property.name}</div>
-                    <div className="">
-                      {property?.street1}, {property?.postalCode}, {property?.city}, {property?.state}, {property?.country}
+                    <div className="txt-orange">{(clientDetails as any)?.fullName}</div>
+                    <div className="txt-bold">
+                      {(clientDetails as any)?.email} / {(clientDetails as any)?.phoneNumber}
+                    </div>
+                    <div className="txt-grey">
+                      {(clientDetails as any)?.address?.street1}, {(clientDetails as any)?.address?.city}, {(clientDetails as any)?.address?.country}
                     </div>
                   </div>
                 </div>
-              );
-            })}
+              ) : null}
+              <div className="txt-bold mt-3 txt-grey">Client's Properties</div>
+              {!properties.length ? (
+                <div className="txt-orange">
+                  <StopIcon size={16} /> There are no properties assigned to the client.
+                </div>
+              ) : null}
+              {properties.map((property: any) => {
+                return (
+                  <div key={property._id} className="row mb-2 border-bottom">
+                    <div className="col-1 p-2 pt-3 ps-4">
+                      <input name="property" type="radio" value={property._id} onChange={formik.handleChange} checked={property._id === formik.values.property} />
+                    </div>
+                    <div className="col p-2 ps-4">
+                      <div className="txt-grey">{property.name}</div>
+                      <div className="">
+                        {property?.street1}, {property?.postalCode}, {property?.city}, {property?.state}, {property?.country}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="mb-3 mt-3">
-        <button
-          type="button"
-          onClick={async () => {
-            await formik.handleSubmit();
-            // navigate(-1);
-          }}
-          className="btn btn-primary"
-        >
-          Save Request
-        </button>
-        {!id ? (
+        <div className="mb-3 mt-3">
           <button
             type="button"
             onClick={async () => {
               await formik.handleSubmit();
-              // formik.resetForm();
+              // navigate(-1);
             }}
-            className="btn btn-secondary ms-3"
+            className="btn btn-primary"
           >
-            Save and create another
+            Save Request
           </button>
-        ) : null}
-        <button onClick={() => navigate(-1)} type="button" className="btn ms-3">
-          Cancel
-        </button>
-      </div>
-    </form>
+          {!id ? (
+            <button
+              type="button"
+              onClick={async () => {
+                await formik.handleSubmit();
+                // formik.resetForm();
+              }}
+              className="btn btn-secondary ms-3"
+            >
+              Save and create another
+            </button>
+          ) : null}
+          <button onClick={() => navigate(-1)} type="button" className="btn ms-3">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </>
   );
 };
 

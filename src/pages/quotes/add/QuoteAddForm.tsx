@@ -53,7 +53,7 @@ const QuoteAddForm: FC<IProps> = ({id, isLoading, currentItem, actions}) => {
     }]
   });
 
-  const RequestSchema = Yup.object().shape({
+  const QuoteSchema = Yup.object().shape({
     title: Yup.string()
       .required('Quote title is required')
       .min(3, 'Quote title seems to be too short'),
@@ -83,13 +83,13 @@ const QuoteAddForm: FC<IProps> = ({id, isLoading, currentItem, actions}) => {
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: initialValues,
-    validationSchema: RequestSchema,
+    validationSchema: QuoteSchema,
     validateOnChange: true,
     onSubmit: async (data: any) => {
       // Preparing the Object for saving
       const quotePayload = {...data};
 
-      // making propertied compliant to Request payload
+      // Making properties compliant to Request payload
       quotePayload.title = data.title;
       quotePayload.quoteFor = data.quoteFor.value;
       quotePayload.lineItems = data.lineItems.map((li: any) => {
@@ -185,197 +185,202 @@ const QuoteAddForm: FC<IProps> = ({id, isLoading, currentItem, actions}) => {
   };
 
   return (
-    <form onSubmit={formik.handleSubmit} style={{position: 'relative'}}>
-      <Loader isLoading={isLoading} />
-      <FormikProvider value={formik}>
-        <div className="row mb-3">
-          <div className="col pb-3">
-            <div className="card" style={{"height": "100%"}}>
-              <h6 className="txt-bold">Quote Details</h6>
-              <div className="col">
-                <div className="row">
-                  <div className="col-12">
-                    <InputField
-                      label="Quote Title"
-                      type="text"
-                      placeholder="Title"
-                      name={`title`}
-                      value={formik.values.title}
-                      onChange={formik.handleChange}
-                      helperComponent={
-                        formik.errors.title && formik.touched.title ? (
-                          <div className="txt-red">{formik.errors.title}</div>
-                        ) : null
-                      }
-                    />
-                  </div>
-                  <div className="col-12">
-                    <TextArea
-                      label={'Quote Description'}
-                      name={`description`}
-                      rows={4}
-                      value={formik.values.description}
-                      onChange={formik.handleChange}
-                      className={`form-control`} placeholder={"Quote's description..."}
-                    />
+    <>
+      <div className="txt-orange">
+          Ref. #{currentItem?.refCode || 'XXXXX'}
+      </div>
+      <form onSubmit={formik.handleSubmit} style={{position: 'relative'}}>
+        <Loader isLoading={isLoading} />
+        <FormikProvider value={formik}>
+          <div className="row mb-3">
+            <div className="col pb-3">
+              <div className="card" style={{"height": "100%"}}>
+                <h6 className="txt-bold">Quote Details</h6>
+                <div className="col">
+                  <div className="row">
+                    <div className="col-12">
+                      <InputField
+                        label="Quote Title"
+                        type="text"
+                        placeholder="Title"
+                        name={`title`}
+                        value={formik.values.title}
+                        onChange={formik.handleChange}
+                        helperComponent={
+                          formik.errors.title && formik.touched.title ? (
+                            <div className="txt-red">{formik.errors.title}</div>
+                          ) : null
+                        }
+                      />
+                    </div>
+                    <div className="col-12">
+                      <TextArea
+                        label={'Quote Description'}
+                        name={`description`}
+                        rows={4}
+                        value={formik.values.description}
+                        onChange={formik.handleChange}
+                        className={`form-control`} placeholder={"Quote's description..."}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-          <div className="col pb-3">
-            <div className="card" style={{"height": "100%"}}>
-              <h6 className="txt-bold">Client Details</h6>
-              <SelectAsync
-                name={`quoteFor`}
-                label="Select Client"
-                value={formik.values.quoteFor}
-                resource={{ name: 'users', labelProp: 'fullName', valueProp: '_id', params: { roles: 'CLIENT' } }}
-                onChange={handleClientSelection}
-              />
-              <ErrorMessage name={`quoteFor.value`} />
-              {clientDetails ? (
-                <div className="row bg-grey m-0">
+            <div className="col pb-3">
+              <div className="card" style={{"height": "100%"}}>
+                <h6 className="txt-bold">Client Details</h6>
+                <SelectAsync
+                  name={`quoteFor`}
+                  label="Select Client"
+                  value={formik.values.quoteFor}
+                  resource={{ name: 'users', labelProp: 'fullName', valueProp: '_id', params: { roles: 'CLIENT' } }}
+                  onChange={handleClientSelection}
+                />
+                <ErrorMessage name={`quoteFor.value`} />
+                {clientDetails ? (
+                  <div className="row bg-grey m-0">
+                    <div className="col p-2 ps-4">
+                      <div className="txt-orange">{(clientDetails as any)?.fullName}</div>
+                      <div className="txt-bold">{(clientDetails as any)?.email} / {(clientDetails as any)?.phoneNumber}</div>
+                      <div className="txt-grey">{(clientDetails as any)?.address?.street1}, {(clientDetails as any)?.address?.city}, {(clientDetails as any)?.address?.country}</div>
+                    </div>
+                  </div>) : null }
+                <div className="txt-bold mt-3 txt-grey">Client's Properties</div>
+                {!properties.length ? <div className="txt-orange"><StopIcon size={16} /> There are no properties assigned to the client.</div> : null}
+                {properties.map((property: any) => {
+                  return (<div key={property._id} className="row mb-2 border-bottom">
+                  <div className="col-1 p-2 pt-3 ps-4">
+                    <input name="property" type="radio" value={property._id} onChange={formik.handleChange} checked={property._id === formik.values.property}/>
+                  </div>
                   <div className="col p-2 ps-4">
-                    <div className="txt-orange">{(clientDetails as any)?.fullName}</div>
-                    <div className="txt-bold">{(clientDetails as any)?.email} / {(clientDetails as any)?.phoneNumber}</div>
-                    <div className="txt-grey">{(clientDetails as any)?.address?.street1}, {(clientDetails as any)?.address?.city}, {(clientDetails as any)?.address?.country}</div>
+                    <div className="txt-grey">{property.name}</div>
+                    <div className="">{property?.street1}, {property?.postalCode}, {property?.city}, {property?.state}, {property?.country}</div>
                   </div>
-                </div>) : null }
-              <div className="txt-bold mt-3 txt-grey">Client's Properties</div>
-              {!properties.length ? <div className="txt-orange"><StopIcon size={16} /> There are no properties assigned to the client.</div> : null}
-              {properties.map((property: any) => {
-                return (<div key={property._id} className="row mb-2 border-bottom">
-                <div className="col-1 p-2 pt-3 ps-4">
-                  <input name="property" type="radio" value={property._id} onChange={formik.handleChange} checked={property._id === formik.values.property}/>
-                </div>
-                <div className="col p-2 ps-4">
-                  <div className="txt-grey">{property.name}</div>
-                  <div className="">{property?.street1}, {property?.postalCode}, {property?.city}, {property?.state}, {property?.country}</div>
-                </div>
-              </div>)
-            })}
-            </div>
-          </div>
-        </div>
-
-        <div className="card">
-          <h6 className="txt-bold">Line items</h6>
-          <div className="row">
-            <div className="col-5 p-2 ps-3">
-              <div className="bg-light-grey txt-grey p-2 txt-bold">
-                PRODUCT / SERVICE
-              </div>
-            </div>
-            <div className="col p-2 ps-3">
-              <div className="bg-light-grey txt-grey p-2 txt-bold">QTY.</div>
-            </div>
-            <div className="col p-2 ps-3">
-              <div className="bg-light-grey txt-grey p-2 txt-bold">
-                UNIT PRICE
-              </div>
-            </div>
-            <div className="col p-2 ps-3">
-              <div className="bg-light-grey txt-grey p-2 txt-bold">TOTAL</div>
-            </div>
-            <div className="col-1 p-2 ps-3">
-              <div className=""></div>
-            </div>
-          </div>
-
-          <div className="row pb-3">
-            <FieldArray
-              name="lineItems"
-              render={(arrayHelpers) => (
-                <div>
-                  {formik.values.lineItems.map((friend: any, index: number) => (
-                    <Fragment key={`~${index}`}>
-                      <div className="row ps-1">
-                        <div className="col-5">
-                          <SelectAsync
-                            name={`lineItems[${index}].name`}
-                            placeholder="Search line items"
-                            value={formik.values.lineItems[index].name}
-                            resource={{ name: 'line-items', labelProp: 'name', valueProp: '_id' }}
-                            onChange={(selected: any) => handleLineItemSelection(`lineItems[${index}]`, selected)}
-                          />
-                          <ErrorMessage name={`lineItems[${index}].name.label`} />
-                          <textarea
-                            name={`lineItems[${index}].description`}
-                            value={formik.values.lineItems[index].description}
-                            onChange={formik.handleChange}
-                            className={`form-control mb-3`} placeholder={"Line item's description..."}
-                          />
-                        </div>
-                        <div className="col">
-                          <InputField
-                            placeholder="Quantity"
-                            type="number"
-                            name={`lineItems[${index}].quantity`}
-                            value={formik.values.lineItems[index].quantity}
-                            onChange={formik.handleChange}
-                          />
-                        </div>
-                        <div className="col">
-                          <InputField
-                            type="number"
-                            placeholder="Unit Price"
-                            name={`lineItems[${index}].unitPrice`}
-                            value={formik.values.lineItems[index].unitPrice}
-                            onChange={formik.handleChange}
-                          />
-                        </div>
-                        <div className="col mt-3 ps-1 text-center">
-                          <strong>{`$ ${formik.values.lineItems[index].quantity * formik.values.lineItems[index].unitPrice}`}</strong>
-                        </div>
-                        <div className="col-1 mt-3 ps-1 pointer text-center">
-                          <span className="mr-2" onClick={() => arrayHelpers.push({
-                            name: {
-                              label: '',
-                              value: ''
-                            },
-                            description: '',
-                            quantity: 0,
-                            unitPrice: 0,
-                            total: 0
-                          })}>
-                            <PlusCircleIcon size={20} />
-                          </span>
-                          &nbsp;&nbsp;
-                          {(index !== 0) ? (<span onClick={() => arrayHelpers.remove(index)}>
-                            <XCircleIcon size={20} />
-                          </span>) : null}
-                        </div>
-                      </div>
-                    </Fragment>)
-                  )}
-                </div>
-              )}
-            />
-          </div>
-
-          <div className="row border-top">
-            <div className="col d-flex flex-row mt-3">
-              <h6 className="txt-bold mt-2">Quote Total</h6>
-            </div>
-            <div className="col txt-bold mt-3">
-              <div className="d-flex float-end">
-                <h5 className="txt-bold mt-2">$ {formik.values?.lineItems?.length ? (formik.values?.lineItems.reduce((current, next) => (current += next.quantity * next.unitPrice), 0)) : 0}</h5>
+                </div>)
+              })}
               </div>
             </div>
           </div>
-        </div>
 
-        <div className="mb-3 mt-3">
-          <button type="submit" className="btn btn-primary">
-            {id ? 'Update' : 'Save'} Quote
-          </button>
-          <button onClick={() => navigate(-1)} type="button" className="btn ms-3 btn-secondary">
-            Cancel
-          </button>
-        </div>
-      </FormikProvider>
-    </form>
+          <div className="card">
+            <h6 className="txt-bold">Line items</h6>
+            <div className="row">
+              <div className="col-5 p-2 ps-3">
+                <div className="bg-light-grey txt-grey p-2 txt-bold">
+                  PRODUCT / SERVICE
+                </div>
+              </div>
+              <div className="col p-2 ps-3">
+                <div className="bg-light-grey txt-grey p-2 txt-bold">QTY.</div>
+              </div>
+              <div className="col p-2 ps-3">
+                <div className="bg-light-grey txt-grey p-2 txt-bold">
+                  UNIT PRICE
+                </div>
+              </div>
+              <div className="col p-2 ps-3">
+                <div className="bg-light-grey txt-grey p-2 txt-bold">TOTAL</div>
+              </div>
+              <div className="col-1 p-2 ps-3">
+                <div className=""></div>
+              </div>
+            </div>
+
+            <div className="row pb-3">
+              <FieldArray
+                name="lineItems"
+                render={(arrayHelpers) => (
+                  <div>
+                    {formik.values.lineItems.map((friend: any, index: number) => (
+                      <Fragment key={`~${index}`}>
+                        <div className="row ps-1">
+                          <div className="col-5">
+                            <SelectAsync
+                              name={`lineItems[${index}].name`}
+                              placeholder="Search line items"
+                              value={formik.values.lineItems[index].name}
+                              resource={{ name: 'line-items', labelProp: 'name', valueProp: '_id' }}
+                              onChange={(selected: any) => handleLineItemSelection(`lineItems[${index}]`, selected)}
+                            />
+                            <ErrorMessage name={`lineItems[${index}].name.label`} />
+                            <textarea
+                              name={`lineItems[${index}].description`}
+                              value={formik.values.lineItems[index].description}
+                              onChange={formik.handleChange}
+                              className={`form-control mb-3`} placeholder={"Line item's description..."}
+                            />
+                          </div>
+                          <div className="col">
+                            <InputField
+                              placeholder="Quantity"
+                              type="number"
+                              name={`lineItems[${index}].quantity`}
+                              value={formik.values.lineItems[index].quantity}
+                              onChange={formik.handleChange}
+                            />
+                          </div>
+                          <div className="col">
+                            <InputField
+                              type="number"
+                              placeholder="Unit Price"
+                              name={`lineItems[${index}].unitPrice`}
+                              value={formik.values.lineItems[index].unitPrice}
+                              onChange={formik.handleChange}
+                            />
+                          </div>
+                          <div className="col mt-3 ps-1 text-center">
+                            <strong>{`$ ${formik.values.lineItems[index].quantity * formik.values.lineItems[index].unitPrice}`}</strong>
+                          </div>
+                          <div className="col-1 mt-3 ps-1 pointer text-center">
+                            <span className="mr-2" onClick={() => arrayHelpers.push({
+                              name: {
+                                label: '',
+                                value: ''
+                              },
+                              description: '',
+                              quantity: 0,
+                              unitPrice: 0,
+                              total: 0
+                            })}>
+                              <PlusCircleIcon size={20} />
+                            </span>
+                            &nbsp;&nbsp;
+                            {(index !== 0) ? (<span onClick={() => arrayHelpers.remove(index)}>
+                              <XCircleIcon size={20} />
+                            </span>) : null}
+                          </div>
+                        </div>
+                      </Fragment>)
+                    )}
+                  </div>
+                )}
+              />
+            </div>
+
+            <div className="row border-top">
+              <div className="col d-flex flex-row mt-3">
+                <h6 className="txt-bold mt-2">Quote Total</h6>
+              </div>
+              <div className="col txt-bold mt-3">
+                <div className="d-flex float-end">
+                  <h5 className="txt-bold mt-2">$ {formik.values?.lineItems?.length ? (formik.values?.lineItems.reduce((current, next) => (current += next.quantity * next.unitPrice), 0)) : 0}</h5>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="mb-3 mt-3">
+            <button type="submit" className="btn btn-primary">
+              {id ? 'Update' : 'Save'} Quote
+            </button>
+            <button onClick={() => navigate(-1)} type="button" className="btn ms-3 btn-secondary">
+              Cancel
+            </button>
+          </div>
+        </FormikProvider>
+      </form>
+    </>
   );
 };
 

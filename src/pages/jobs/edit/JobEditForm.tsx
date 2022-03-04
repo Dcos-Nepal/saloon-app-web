@@ -1,15 +1,18 @@
-import { InfoIcon, PlusCircleIcon, XCircleIcon } from '@primer/octicons-react';
+
+import { format } from 'date-fns';
+import { DateTime } from 'luxon';
+import { connect } from 'react-redux';
+import { Fragment, useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { FieldArray, FormikProvider, getIn, useFormik } from 'formik';
+import { InfoIcon, PlusCircleIcon, StopIcon, XCircleIcon } from '@primer/octicons-react';
+
+import { fetchUserProperties } from 'services/common.service';
+import * as jobsActions from '../../../store/actions/job.actions';
 import SelectAsync from 'common/components/form/AsyncSelect';
 import InputField from 'common/components/form/Input';
 import TextArea from 'common/components/form/TextArea';
 import ReactRRuleGenerator, { translations } from 'common/components/rrule-form';
-import { format } from 'date-fns';
-import { FieldArray, FormikProvider, useFormik } from 'formik';
-import { DateTime } from 'luxon';
-import { Fragment } from 'react';
-import { connect } from 'react-redux';
-import { useNavigate, useParams } from 'react-router-dom';
-import * as jobsActions from '../../../store/actions/job.actions';
 
 interface IProps {
   isLoading: boolean;
@@ -21,7 +24,13 @@ interface IProps {
 const EditJobForm = (props: IProps) => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [clientDetails, setClientDetails] = useState(null);
+  const [properties, setProperties] = useState([]);
 
+  /**
+   * Get Translation for RRule
+   * @returns 
+   */
   const getTranslation = () => {
     switch ('en') {
       case 'en':
@@ -31,6 +40,9 @@ const EditJobForm = (props: IProps) => {
     }
   };
 
+  /**
+   * Initialize formik form
+   */
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: props.job,
@@ -63,6 +75,10 @@ const EditJobForm = (props: IProps) => {
     });
   };
 
+  /**
+   * Handles Worker Selection
+   * @param selected 
+   */
   const handleWorkerSelection = (selected: any[]) => {
     formik.setFieldValue(
       `team`,
@@ -80,11 +96,46 @@ const EditJobForm = (props: IProps) => {
     formik.setFieldValue(`${key}.description`, meta?.description || 'Enter your notes here...');
   };
 
+  /**
+   * Handles Client selection
+   */
+  const handleClientSelection = async ({ label, value, meta }: any) => {
+    formik.setFieldValue(`jobFor`, { label, value });
+    setClientDetails(meta);
+
+    const response = await fetchUserProperties(value);
+    setProperties(response.data?.data?.data?.rows || []);
+  }
+
+  /**
+   * Custom Error Message
+   * 
+   * @param param Props Object
+   * @returns JSX
+   */
+  const ErrorMessage = ({ name }: any) => {
+    if (!name) return (<></>);
+
+    const error = getIn(formik.errors, name);
+    const touch = getIn(formik.touched, name);
+
+    return ((touch && error) || error) ? (<div className="row text-danger mt-1 mb-2">
+      <div className="col-1" style={{ width: '20px' }}><StopIcon size={14} /></div><div className="col">{error}</div>
+    </div>) : null;
+  };
+
+  useEffect(() => {
+    setClientDetails(props.job?.jobFor.meta);
+    fetchUserProperties(props.job?.jobFor.value).then((response) => {
+      setProperties(response.data?.data?.data?.rows || []);
+    });
+  }, [props.isLoading, props.job?.jobFor]);
+
   return (
     <form onSubmit={formik.handleSubmit} style={{ position: 'relative' }}>
       <FormikProvider value={formik}>
-        <div className="row">
-          <div className="col pb-3">
+        <div className="row pb-3">
+          <div className="col">
             <div className="card full-height">
               <div className="col">
                 <div className="row">
@@ -115,29 +166,71 @@ const EditJobForm = (props: IProps) => {
             </div>
           </div>
           <div className="col">
-            <div className="card">
-              <h6 className="txt-bold">Job Detail</h6>
-              <div className="row border-bottom">
-                <div className="p-2 ps-4">
-                  <div className="txt-grey">Job number</div>
-                  <div className="row">
-                    <div className="col">#13</div>
-                    <div className="txt-orange pointer">Change</div>
-                  </div>
-                </div>
-                <div className="p-2 ps-4">
-                  <div className="txt-grey">Job type</div>
-                  <div className="">{formik.values.type}</div>
-                </div>
+            <div className="card full-height">
+              <div className="row">
+                <h6 className="txt-bold">Client Details</h6>
+                <SelectAsync
+                  name={`jobFor`}
+                  label="Select Client"
+                  value={formik.values.jobFor}
+                  resource={{ name: 'users', labelProp: 'fullName', valueProp: '_id', params: { roles: 'CLIENT' } }}
+                  onChange={handleClientSelection}
+                />
+                <ErrorMessage name={`jobFor.value`} />
+                {clientDetails ? (
+                  <div className="row bg-grey m-0">
+                    <div className="col p-2 ps-4">
+                      <div className="txt-orange">{(clientDetails as any)?.fullName}</div>
+                      <div className="txt-bold">{(clientDetails as any)?.email} / {(clientDetails as any)?.phoneNumber}</div>
+                      <div className="txt-grey">{(clientDetails as any)?.address?.street1}, {(clientDetails as any)?.address?.city}, {(clientDetails as any)?.address?.country}</div>
+                    </div>
+                  </div>) : null}
+                <div className="txt-bold mt-3 txt-grey">Client's Properties</div>
+                {!properties.length ? <div className="txt-orange"><StopIcon size={16} /> There are no properties assigned to the client.</div> : null}
+                {properties.map((property: any) => {
+                  return (<div key={property._id} className="row mb-2 border-bottom">
+                    <div className="col-1 p-2 pt-3 ps-4">
+                      <input name="property" type="radio" value={property._id} onChange={formik.handleChange} checked={property._id === formik.values.property} />
+                    </div>
+                    <div className="col p-2 ps-4">
+                      <div className="txt-grey">{property.name}</div>
+                      <div className="">{property?.street1}, {property?.postalCode}, {property?.city}, {property?.state}, {property?.country}</div>
+                    </div>
+                  </div>)
+                })}
               </div>
             </div>
           </div>
         </div>
 
         <div className="card">
+          <div className="row m-2">
+            <div className="col">
+              <div className={`row pt-4 cursor-pointer ${formik.values.type === 'ONE-OFF' ? 'border-top-orange' : 'bg-light-grey border-top-grey'}`}>
+                <div className="col-1">
+                  <box-icon size="md" name="calendar-week"></box-icon>
+                </div>
+                <div className="col ms-2">
+                  <h5>ONE-OFF JOB</h5>
+                  <p>A one time job with one or more visits</p>
+                </div>
+              </div>
+            </div>
+            <div className="col">
+              <div className={`row pt-4 cursor-pointer ${formik.values.type === 'RECURRING' ? 'border-top-orange' : 'bg-light-grey border-top-grey'}`}>
+                <div className="col-1">
+                  <box-icon size="md" name="calendar"></box-icon>
+                </div>
+                <div className="col ms-2">
+                  <h5>RECURRING JOB</h5>
+                  <p>A recurring job with one or more visits</p>
+                </div>
+              </div>
+            </div>
+          </div>
           <div className="row">
             {formik.values.type === 'ONE-OFF' ? (
-              <div className="col card m-4">
+              <div className="col card m-3">
                 <div className="mb-3">
                   <div className="row">
                     <div className="col">
@@ -179,13 +272,6 @@ const EditJobForm = (props: IProps) => {
                     </div>
                   </div>
                 </div>
-
-                <div className="mb-3">
-                  <input className="form-check-input" type="checkbox" value="" id="flexCheckDefault" />
-                  <label className="ms-2 form-check-label" htmlFor="flexCheckDefault">
-                    Schedule later
-                  </label>
-                </div>
               </div>
             ) : null}
             {formik.values.type === 'RECURRING' ? (
@@ -196,9 +282,6 @@ const EditJobForm = (props: IProps) => {
                   config={{ hideStart: false }}
                   translations={getTranslation()}
                 />
-                <div className="col-12 mt-3">
-                  <small>{formik.values.schedule.rruleSet}</small>
-                </div>
               </div>
             ) : null}
             <div className="col card m-3">

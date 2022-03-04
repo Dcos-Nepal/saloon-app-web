@@ -15,16 +15,12 @@ const VisitCompletedActions = (props: IProps) => {
       invoiceFor: visit.job.jobFor._id,
       total: visit.lineItems.reduce((sum: number, item: any) => (sum += item.quantity * item.unitPrice), 0),
       isPaid: false,
-      lineItems: visit.lineItems
+      lineItems: visit.lineItems,
+      refJob: visit.job._id
     };
     createInvoiceApi(invoicePayload);
     onClose();
   };
-
-  // May need later
-  // const closeJob = () => {
-  //   throw new Error('Not implemented.');
-  // };
 
   return (
     <div className={`modal fade show`} role="dialog" style={{ display: 'block' }}>

@@ -17,17 +17,17 @@ const EditJob = (props: IProps) => {
   const [initialValues, setInitialValues] = useState<any>(null);
 
   useEffect(() => {
-    console.log('here');
     props.actions.fetchJob(id as string, {});
   }, [id, props.actions]);
 
   useEffect(() => {
     const job = props.job;
     if (!job) return;
+
     setInitialValues({
       title: job.title,
       instruction: job.instruction,
-      jobFor: { value: job.jobFor._id, label: job.jobFor.fullName },
+      jobFor: { value: job.jobFor._id, label: job.jobFor.fullName, meta: job.jobFor },
       property: job.property._id,
       type: job.type,
       team: job.team.map((t: any) => ({ value: t._id, label: t.fullName })),
@@ -67,10 +67,13 @@ const EditJob = (props: IProps) => {
         <div className="d-flex flex-row">
           <h3 className="extra">Edit Job for {props.job?.jobFor.fullName}</h3>
         </div>
+        <div className="txt-orange">
+            Ref. #{props.job?.refCode || 'XXXXX'}
+        </div>
       </div>
       {initialValues && (
         <div className="">
-          <JobEditForm isLoading={props.isLoading} job={initialValues} jobUpdated={() => console.log('updated')} />
+          <JobEditForm isLoading={props.isLoading} job={{...initialValues, refCode: props.job?.refCode}} jobUpdated={() => console.log('updated')} />
         </div>
       )}
     </>

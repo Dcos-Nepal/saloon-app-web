@@ -9,10 +9,16 @@ import SideNavbar from 'common/components/layouts/sidebar';
 import { getVisitsSummaryApi } from 'services/visits.service';
 import { Loader } from 'common/components/atoms/Loader';
 import { getCurrentUser } from 'utils';
+import { getUsersSummaryApi } from 'services/users.service';
 
 const Summary = () => {
   const navigate = useNavigate();
   const currUser = getCurrentUser();
+  const [usersSummary, setUsersSummary] = useState({
+    clientCount: 0,
+    total: 0,
+    workerCount: 0
+  });
   const [isLoading, setIsLoading] = useState(true);
   const [jobsSummary, setJobsSummary] = useState({
     activeJobsCount: 0,
@@ -40,10 +46,10 @@ const Summary = () => {
   });
 
   useEffect(() => {
-    const jobQuery: { createdBy?: string; team?: string; jobFor?: string; } = {};
-    const visitQuery: { team?: string; visitFor?: string; } = {};
-    const jobReqQuery: { CLIENT?: string; } = {};
-    const quotesQuery: { quoteFor?: string; } = {};
+    const jobQuery: { createdBy?: string; team?: string; jobFor?: string } = {};
+    const visitQuery: { team?: string; visitFor?: string } = {};
+    const jobReqQuery: { CLIENT?: string } = {};
+    const quotesQuery: { quoteFor?: string } = {};
 
     if (currUser.role === 'WORKER') {
       jobQuery.team = currUser.id;
@@ -60,17 +66,21 @@ const Summary = () => {
     const fetchAndSetData = async () => {
       setIsLoading(true);
 
-      const jobsSummaryDataPromise = getJobsSummaryApi({...jobQuery}).then((response) => response.data);
-      const quotesSummaryDataPromise = (currUser.role === 'CLIENT') ? getQuotesSummaryApi({...quotesQuery}).then((response) => response.data) : Promise.resolve(null);
-      const requestsSummaryDataPromise = (currUser.role === 'CLIENT') ? getJobRequestsSummaryApi({...jobReqQuery}).then((response) => response.data) : Promise.resolve(null);
+      const jobsSummaryDataPromise = getJobsSummaryApi({ ...jobQuery }).then((response) => response.data);
+      const quotesSummaryDataPromise =
+        currUser.role === 'CLIENT' ? getQuotesSummaryApi({ ...quotesQuery }).then((response) => response.data) : Promise.resolve(null);
+      const requestsSummaryDataPromise =
+        currUser.role === 'CLIENT' ? getJobRequestsSummaryApi({ ...jobReqQuery }).then((response) => response.data) : Promise.resolve(null);
       const visitsSummaryDataPromise = getVisitsSummaryApi({
         ...visitQuery,
         startDate: new Date(new Date().setHours(0, 0, 0, 0)).toISOString(),
         endDate: new Date(new Date().setHours(23, 59, 59, 999)).toISOString()
       }).then((response) => response.data);
+      const usersSummaryDataPromise = getUsersSummaryApi().then((response) => response.data);
 
-      const [jobsSummaryData, visitsSummaryData, requestsSummaryData, quotesSummaryData] = await Promise.all([
+      const [jobsSummaryData, usersSummaryData, visitsSummaryData, requestsSummaryData, quotesSummaryData] = await Promise.all([
         jobsSummaryDataPromise,
+        usersSummaryDataPromise,
         visitsSummaryDataPromise,
         requestsSummaryDataPromise,
         quotesSummaryDataPromise
@@ -80,12 +90,13 @@ const Summary = () => {
       if (requestsSummaryData?.data?.data) setRequestsSummary(requestsSummaryData?.data?.data);
       if (quotesSummaryData?.data?.data) setQuotesSummary(quotesSummaryData?.data?.data);
       if (visitsSummaryData?.data?.data) setVisitsSummary(visitsSummaryData?.data?.data);
+      if (usersSummaryData?.data?.data) setUsersSummary(usersSummaryData.data.data);
 
       setIsLoading(false);
     };
 
     fetchAndSetData();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const nowTime = new Date().getTime();
@@ -142,7 +153,7 @@ const Summary = () => {
           </div>
         </div>
         <div className="row mt-3 pb-3">
-          {(currUser.role === 'ADMIN' || currUser.role === 'CLIENT') ? (
+          {currUser.role === 'ADMIN' || currUser.role === 'CLIENT' ? (
             <div className="col">
               <div className="card full-height">
                 <div className="row d-flex flex-row">
@@ -196,7 +207,7 @@ const Summary = () => {
             </div>
           ) : null}
 
-          {(currUser.role === 'ADMIN' || currUser.role === 'CLIENT') ? (
+          {currUser.role === 'ADMIN' || currUser.role === 'CLIENT' ? (
             <div className="col">
               <div className="card full-height">
                 <div className="row d-flex flex-row">
@@ -268,7 +279,9 @@ const Summary = () => {
                     <div className="">
                       In Progress
                       <div className="d-flex float-end">
-                        <div className="">{jobsSummary.activeJobsCount > jobsSummary.isCompleted ? jobsSummary.activeJobsCount - jobsSummary.isCompleted : 0}</div>
+                        <div className="">
+                          {jobsSummary.activeJobsCount > jobsSummary.isCompleted ? jobsSummary.activeJobsCount - jobsSummary.isCompleted : 0}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -285,11 +298,28 @@ const Summary = () => {
             </div>
           </div>
         </div>
-        {(currUser.role === 'ADMIN' || currUser.role === 'CLIENT') ? (
+        <div className="card bg-white mt-4 p-4">
+          <b className="">Users Summary</b>
+          <div className="row mt-4 mb-4">
+            <div className="col row">
+              <div className="col ms-4 p-3-4 text-center dashboard-h1 rounded-radius bg-light-blue">{usersSummary.total}</div>
+              <div className="col-4 dashboard-main-label mt-3">Total <p className="txt-bold-big mt-1">Users</p></div>
+            </div>
+            <div className="col row">
+              <div className="col ms-4 p-3-4 text-center dashboard-h1 rounded-radius bg-light-green">{usersSummary.clientCount}</div>
+              <div className="col-4 dashboard-main-label mt-3">Happy <p className="txt-bold-big mt-1">Clients</p></div>
+            </div>
+            <div className="col row">
+              <div className="col ms-4 p-3-4 text-center dashboard-h1 rounded-radius bg-grey">{usersSummary.workerCount}</div>
+              <div className="col-4 dashboard-main-label mt-3">Active <p className="txt-bold-big mt-1">Workers</p></div>
+            </div>
+          </div>
+        </div>
+        {currUser.role === 'ADMIN' || currUser.role === 'CLIENT' ? (
           <div className="card">
             <InvoicesList />
           </div>
-        ): null }
+        ) : null}
         <Footer />
       </div>
     </>

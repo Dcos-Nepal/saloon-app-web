@@ -34,3 +34,10 @@ export const filterUsersApi = async (query: Record<string, any>) => {
     headers: { Accept: 'application/json' }
   });
 };
+
+export const getUsersSummaryApi = async () => {
+  const url = '/v1.0.0/users/summary';
+  return await http.get(url, {
+    headers: { Accept: 'application/json' }
+  });
+};

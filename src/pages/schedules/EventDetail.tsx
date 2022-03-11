@@ -62,7 +62,10 @@ const EditEvent: FC<IProps> = ({ closeModal, event }) => {
                 {event.extendedProps?.meta?.job?.team ? (
                   event.extendedProps?.meta?.job?.team.map((mem: { fullName: string }) => (
                     <>
-                      <span className="status status-blue p-2"><PersonIcon /> {mem.fullName}</span> &nbsp;
+                      <span className="status status-blue p-2">
+                        <PersonIcon /> {mem.fullName}
+                      </span>{' '}
+                      &nbsp;
                     </>
                   ))
                 ) : (
@@ -77,9 +80,7 @@ const EditEvent: FC<IProps> = ({ closeModal, event }) => {
               <h5>Property Location</h5>
               <div className="txt-grey">{property?.name || ''}</div>
               <div className="">
-                {property?.street1}, {property?.postalCode},{' '}
-                {property?.city}, {property?.state},{' '}
-                {property?.country}
+                {property?.street1}, {property?.postalCode}, {property?.city}, {property?.state}, {property?.country}
               </div>
             </div>
 
@@ -89,15 +90,15 @@ const EditEvent: FC<IProps> = ({ closeModal, event }) => {
               {event.start ? (
                 <div className="col">
                   <h5>Start Date/Time</h5>
-                  <div>{new Date(event.start).toLocaleDateString()}</div>
-                  <div>{new Date(event.start).toLocaleTimeString()}</div>
+                  <div>{new Date(event.start).toLocaleDateString('en-US', { timeZone: 'Australia/Adelaide' })}</div>
+                  <div>{new Date(event.start).toLocaleTimeString('en-US', { timeZone: 'Australia/Adelaide' })}</div>
                 </div>
               ) : null}
               {event.end ? (
                 <div className="col">
                   <h5>End Date/Time</h5>
-                  <div>{new Date(event.end).toLocaleDateString()}</div>
-                  <div>{new Date(event.end).toLocaleTimeString()}</div>
+                  <div>{new Date(event.end).toLocaleDateString('en-US', { timeZone: 'Australia/Adelaide' })}</div>
+                  <div>{new Date(event.end).toLocaleTimeString('en-US', { timeZone: 'Australia/Adelaide' })}</div>
                 </div>
               ) : null}
             </div>

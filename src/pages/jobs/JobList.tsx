@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import _, { debounce } from 'lodash';
 import { rrulestr } from 'rrule';
 import { connect } from 'react-redux';
 import { toast } from 'react-toastify';
@@ -6,7 +6,7 @@ import pinterpolate from 'pinterpolate';
 import ReactPaginate from 'react-paginate';
 import { useNavigate } from 'react-router-dom';
 import { Column, useTable } from 'react-table';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import Feedback from './Feedback';
 import CompleteJob from './CompleteJob';
@@ -20,6 +20,7 @@ import { deleteJobApi, provideFeedbackApi } from 'services/jobs.service';
 import { Loader } from 'common/components/atoms/Loader';
 import { CheckIcon, EyeIcon, NoteIcon, PencilIcon, TasklistIcon, TrashIcon } from '@primer/octicons-react';
 import { getCurrentUser } from 'utils';
+import Truncate from 'react-truncate';
 
 interface IProps {
   actions: { fetchJobs: (query: any) => any };
@@ -65,13 +66,13 @@ const JobsList = (props: IProps) => {
   };
 
   useEffect(() => {
-    const jobQuery: { jobFor?: string; team?: string } = {}
+    const jobQuery: { jobFor?: string; team?: string } = {};
 
     if (currentUser.role === 'CLIENT') jobQuery.jobFor = currentUser.id;
     if (currentUser.role === 'WORKER') jobQuery.team = currentUser.id;
 
     props.actions.fetchJobs({ q: search, ...jobQuery, page, limit: itemsPerPage });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, search, itemsPerPage, props.actions]);
 
   useEffect(() => {
@@ -91,16 +92,33 @@ const JobsList = (props: IProps) => {
   const columns: Column<any>[] = useMemo(
     () => [
       {
+        Header: 'TITLE/INSTRUCTION',
+        accessor: (row: any) => {
+          return (
+            <div>
+              <div className="txt-bold">{row.title}</div>
+              <div className="txt-grey">
+                <Truncate lines={1} ellipsis={<span>...</span>}>
+                  {row.instruction}
+                </Truncate>
+              </div>
+            </div>
+          );
+        }
+      },
+      {
         Header: 'CLIENT',
         accessor: 'jobFor'
       },
       {
         Header: 'JOB ADDRESS',
-        accessor: ((row: any) => {
-          return (<div>
-            {row.property?.street1}, {row.property?.street2}, {row.property?.city}, {row.property?.state}, {row.property?.postalCode}, {row.property?.country}
-          </div>);
-        })
+        accessor: (row: any) => {
+          return (
+            <div>
+              {row.property?.street1}, {row.property?.street2}, {row.property?.city}, {row.property?.state}, {row.property?.postalCode}, {row.property?.country}
+            </div>
+          );
+        }
       },
       {
         Header: 'JOB SCHEDULE',
@@ -123,27 +141,37 @@ const JobsList = (props: IProps) => {
               <box-icon name="dots-vertical-rounded"></box-icon>
             </span>
             <ul className="dropdown-menu" aria-labelledby="dropdownMenuLink">
-              {(currentUser.role === 'CLIENT') ? (
+              {currentUser.role === 'CLIENT' ? (
                 <li onClick={() => setCompleteJobFor(row)}>
-                  <span className="dropdown-item pointer"><CheckIcon /> Mark as Complete</span>
+                  <span className="dropdown-item pointer">
+                    <CheckIcon /> Mark as Complete
+                  </span>
                 </li>
               ) : null}
-              {(currentUser.role === 'WORKER') ? (
+              {currentUser.role === 'WORKER' ? (
                 <li onClick={() => setProvideFeedbackFor(row)}>
-                  <span className="dropdown-item pointer"><NoteIcon /> Provide Feedback</span>
+                  <span className="dropdown-item pointer">
+                    <NoteIcon /> Provide Feedback
+                  </span>
                 </li>
               ) : null}
               <li onClick={() => navigate(pinterpolate(endpoints.admin.worker.detail, { id: row._id }))}>
-                <span className="dropdown-item pointer"><EyeIcon /> View Detail</span>
+                <span className="dropdown-item pointer">
+                  <EyeIcon /> View Detail
+                </span>
               </li>
-              
+
               {((currentUser.role === 'WORKER' || currentUser.role === 'CLIENT') && currentUser.id === row?.createdBy) || currentUser.role === 'ADMIN' ? (
                 <>
                   <li onClick={() => navigate(pinterpolate(endpoints.admin.jobs.edit, { id: row._id }))}>
-                    <span className="dropdown-item pointer"><PencilIcon /> Edit</span>
+                    <span className="dropdown-item pointer">
+                      <PencilIcon /> Edit
+                    </span>
                   </li>
                   <li onClick={() => setDeleteInProgress(row._id)}>
-                    <span className="dropdown-item pointer"><TrashIcon /> Delete</span>
+                    <span className="dropdown-item pointer">
+                      <TrashIcon /> Delete
+                    </span>
                   </li>
                 </>
               ) : null}
@@ -162,10 +190,14 @@ const JobsList = (props: IProps) => {
    * Handles job search
    * @param event
    */
-  const handleJobsSearch = (event: any) => {
-    const query = event.target.value;
-    setSearch(query);
-  };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const handleJobsSearch = useCallback(
+    debounce((event: any) => {
+      const query = event.target.value;
+      setSearch(query);
+    }, 300),
+    []
+  );
 
   /**
    * Handles page click
@@ -178,7 +210,7 @@ const JobsList = (props: IProps) => {
 
   /**
    * Handles feedback on the Jon
-   * @param data 
+   * @param data
    */
   const feedbackHandler = async (data: any) => {
     try {
@@ -199,7 +231,8 @@ const JobsList = (props: IProps) => {
         </div>
         <div className="col d-flex flex-row align-items-center justify-content-end">
           <button onClick={() => navigate(endpoints.admin.jobs.add)} type="button" className="btn btn-primary d-flex float-end">
-            <TasklistIcon className='mt-1' />&nbsp;Create a Job
+            <TasklistIcon className="mt-1" />
+            &nbsp;Create a Job
           </button>
         </div>
         <label className="txt-grey">Total {props?.jobs?.data?.totalCount || 0} Jobs</label>
@@ -207,7 +240,7 @@ const JobsList = (props: IProps) => {
       <div className="card">
         <div className="row pt-2 m-1 rounded-top bg-grey">
           <div className="col-12">
-            <InputField label="Search" placeholder="Search jobs" className="search-input" onClick={handleJobsSearch} />
+            <InputField label="Search" placeholder="Search jobs" className="search-input" onChange={handleJobsSearch} />
           </div>
           <table {...getTableProps()} className="table txt-dark-grey">
             <thead>

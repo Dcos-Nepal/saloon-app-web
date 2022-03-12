@@ -6,7 +6,18 @@ import { DateTime } from 'luxon';
 import React, { Fragment, useEffect, useState } from 'react';
 import RRule, { Frequency, RRuleSet, rrulestr } from 'rrule';
 import { FieldArray, FormikProvider, useFormik } from 'formik';
-import { AlertIcon, CheckCircleIcon, EyeIcon, FileIcon, InfoIcon, LocationIcon, PencilIcon, PlusCircleIcon, TrashIcon, XCircleIcon } from '@primer/octicons-react';
+import {
+  AlertIcon,
+  CheckCircleIcon,
+  EyeIcon,
+  FileIcon,
+  InfoIcon,
+  LocationIcon,
+  PencilIcon,
+  PlusCircleIcon,
+  TrashIcon,
+  XCircleIcon
+} from '@primer/octicons-react';
 
 import * as jobsActions from 'store/actions/job.actions';
 import * as visitsActions from 'store/actions/visit.actions';
@@ -31,7 +42,7 @@ interface IVisitList {
   [key: string]: any;
 }
 
-const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisitLoading}: any) => {
+const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisitLoading }: any) => {
   const [visits, setVisits] = useState<IVisitList>({ overdue: [], completed: [] });
   const [editVisitMode, setEditVisitMode] = useState(false);
   const [completeVisitMode, setCompleteVisitMode] = useState(false);
@@ -278,7 +289,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
     const foundDates = [];
     const date1 = DateTime.fromISO(options?.endDate);
     const date2 = DateTime.fromISO(options?.startDate);
-    const {years, months, days, hours} = date1.diff(date2, ["years", "months", "days", "hours"])
+    const { years, months, days, hours } = date1.diff(date2, ['years', 'months', 'days', 'hours']);
 
     if (years) foundDates.push(`${years} years`);
     if (months) foundDates.push(`${months} months`);
@@ -286,7 +297,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
     if (hours) foundDates.push(`${hours} hours`);
 
     return foundDates.join(', ');
-  }
+  };
 
   useEffect(() => {
     if (!id) return;
@@ -305,34 +316,66 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
     <div>
       <div className="row mt-1 pb-3">
         <Loader isLoading={isJobLoading} />
+        <div className="col-12 mb-4">
+          <div className="card">
+            <div className="row">
+              <div className="col">
+                <h5 className="txt-bold">Information</h5>
+              </div>
+            </div>
+            <div className="row border-bottom">
+              <div className="col p-2 ps-4">
+                <div className="txt-grey">Job Title</div>
+                <div className="">{job?.title}</div>
+              </div>
+            </div>
+            <div className="row">
+              <div className="col p-2 ps-4">
+                <div className="txt-grey">Instructions</div>
+                <i className="">{job?.instruction}</i>
+              </div>
+            </div>
+          </div>
+        </div>
         <div className="col">
           <div className="card full-height">
             <div className="row">
               <div className="col">
                 <h5 className="txt-bold">{job?.jobFor.fullName}</h5>
                 <div>
-                  {job?.isCompleted === true
-                    ? (<span className={`status txt-green`}><CheckCircleIcon /> Job Completed</span>)
-                    : (<span className={`status txt-orange`}><AlertIcon /> Requires Invoicing</span>)
-                  }
+                  {job?.isCompleted === true ? (
+                    <span className={`status txt-green`}>
+                      <CheckCircleIcon /> Job Completed
+                    </span>
+                  ) : (
+                    <span className={`status txt-orange`}>
+                      <AlertIcon /> Requires Invoicing
+                    </span>
+                  )}
                 </div>
               </div>
               <div className="col">
-                <h4 className="txt-bold d-flex float-end mt-2">${job?.lineItems.reduce((current: number, next: { quantity: number; unitPrice: number }) => (current += next.quantity * next.unitPrice), 0)} cash</h4>
+                <h4 className="txt-bold d-flex float-end mt-2">
+                  ${job?.lineItems.reduce((current: number, next: { quantity: number; unitPrice: number }) => (current += next.quantity * next.unitPrice), 0)}{' '}
+                  cash
+                </h4>
               </div>
             </div>
             <div className="row mt-3 border-bottom">
               <div className="col p-2 ps-4">
                 <div className="txt-grey">Property address</div>
                 <div className="">
-                  <LocationIcon /> {job?.property?.street1}, {job?.property?.street2}, {job?.property?.city}, {job?.property?.state}, {job?.property?.postalCode}, {job?.property?.country}
+                  <LocationIcon /> {job?.property?.street1}, {job?.property?.street2}, {job?.property?.city}, {job?.property?.state},{' '}
+                  {job?.property?.postalCode}, {job?.property?.country}
                 </div>
               </div>
             </div>
             <div className="row mb-4">
               <div className="col p-2 ps-4">
                 <div className="txt-grey">Contact details</div>
-                <div className=""><InfoIcon /> {job?.jobFor?.phoneNumber}/{job?.jobFor?.email}</div>
+                <div className="">
+                  <InfoIcon /> {job?.jobFor?.phoneNumber}/{job?.jobFor?.email}
+                </div>
               </div>
             </div>
           </div>
@@ -361,7 +404,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
               </div>
               <div className="col p-2 ps-4">
                 <div className="txt-grey">Lasts for</div>
-                <div className="">{job?.primaryVisit ? calculateJobDuration(job?.primaryVisit): 'N/A'}</div>
+                <div className="">{job?.primaryVisit ? calculateJobDuration(job?.primaryVisit) : 'N/A'}</div>
               </div>
             </div>
             <div className="row mb-3">
@@ -386,14 +429,20 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
             <thead>
               <tr>
                 <th scope="col">#SN</th>
-                <th scope="col" className='col-6'>PRODUCT / SERVICE</th>
+                <th scope="col" className="col-6">
+                  PRODUCT / SERVICE
+                </th>
                 <th scope="col">QTY</th>
                 <th scope="col">UNIT PRICE</th>
                 <th scope="col">TOTAL</th>
               </tr>
             </thead>
             <tbody>
-              {(!job?.lineItems.length) ? (<tr><td colSpan={5}>No line items selected</td></tr>) : null}
+              {!job?.lineItems.length ? (
+                <tr>
+                  <td colSpan={5}>No line items selected</td>
+                </tr>
+              ) : null}
               {job?.lineItems.map((item: any, index: number) => (
                 <tr key={'li-' + index}>
                   <th scope="row">#00{index + 1}</th>
@@ -523,7 +572,9 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
                       </td>
                       <td>{DateTime.fromJSDate(v.startDate).toFormat('yyyy LLL dd')}</td>
                       <td>
-                        <div><strong>{v.title}</strong></div>
+                        <div>
+                          <strong>{v.title}</strong>
+                        </div>
                         <i>{v.instruction}</i>
                       </td>
                       <td>{v.team.map((t: any) => t.fullName).join(', ') || 'Not assigned yet'}</td>
@@ -534,13 +585,19 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
                           </span>
                           <ul className="dropdown-menu" aria-labelledby="dropdownMenuLink">
                             <li onClick={() => setShowEventDetail(v)}>
-                              <span className="dropdown-item pointer"><EyeIcon /> View Detail</span>
+                              <span className="dropdown-item pointer">
+                                <EyeIcon /> View Detail
+                              </span>
                             </li>
                             <li onClick={() => editVisit(v)}>
-                              <span className="dropdown-item pointer"><PencilIcon /> Edit</span>
+                              <span className="dropdown-item pointer">
+                                <PencilIcon /> Edit
+                              </span>
                             </li>
                             <li onClick={() => handleDeleteVisitClick(v)}>
-                              <span className="dropdown-item pointer"><TrashIcon /> Delete</span>
+                              <span className="dropdown-item pointer">
+                                <TrashIcon /> Delete
+                              </span>
                             </li>
                           </ul>
                         </div>
@@ -625,7 +682,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
                           </div>
                           <div className="col p-2 ps-4">
                             <div className="txt-grey">Lasts for</div>
-                            <div className="">{job?.primaryVisit ? calculateJobDuration(job?.primaryVisit): 'N/A'}</div>
+                            <div className="">{job?.primaryVisit ? calculateJobDuration(job?.primaryVisit) : 'N/A'}</div>
                           </div>
                         </div>
                         <div className="row mb-3">
@@ -799,10 +856,10 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
 
       <Modal isOpen={!!showDeleteConfirmation} onRequestClose={() => setShowDeleteConfirmation(false)}>
         <DeleteConfirm content={'Are you sure you want to delete this visit?'} onDelete={deleteVisit} closeModal={() => setShowDeleteConfirmation(false)} />
-      </Modal>                               
+      </Modal>
 
       <Modal
-        isOpen={(completeVisitMode && selectedVisit) ? true : false}
+        isOpen={completeVisitMode && selectedVisit ? true : false}
         onRequestClose={() => {
           setSelectedVisit(null);
           setCompleteVisitMode(false);
@@ -826,7 +883,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
         />
       </Modal>
 
-      <Modal isOpen={(askVisitInvoiceGeneration && completedVisit) ? true : false} onRequestClose={() => setAskVisitInvoiceGeneration(false)}>
+      <Modal isOpen={askVisitInvoiceGeneration && completedVisit ? true : false} onRequestClose={() => setAskVisitInvoiceGeneration(false)}>
         <VisitCompletedActions visit={completedVisit} onClose={() => setAskVisitInvoiceGeneration(false)} />
       </Modal>
 

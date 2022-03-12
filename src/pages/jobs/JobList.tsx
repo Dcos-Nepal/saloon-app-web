@@ -20,6 +20,7 @@ import { deleteJobApi, provideFeedbackApi } from 'services/jobs.service';
 import { Loader } from 'common/components/atoms/Loader';
 import { CheckIcon, EyeIcon, NoteIcon, PencilIcon, TasklistIcon, TrashIcon } from '@primer/octicons-react';
 import { getCurrentUser } from 'utils';
+import Truncate from 'react-truncate';
 
 interface IProps {
   actions: { fetchJobs: (query: any) => any };
@@ -90,6 +91,21 @@ const JobsList = (props: IProps) => {
 
   const columns: Column<any>[] = useMemo(
     () => [
+      {
+        Header: 'TITLE/INSTRUCTION',
+        accessor: (row: any) => {
+          return (
+            <div>
+              <div className="txt-bold">{row.title}</div>
+              <div className="txt-grey">
+                <Truncate lines={1} ellipsis={<span>...</span>}>
+                  {row.instruction}
+                </Truncate>
+              </div>
+            </div>
+          );
+        }
+      },
       {
         Header: 'CLIENT',
         accessor: 'jobFor'

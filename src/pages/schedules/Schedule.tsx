@@ -34,8 +34,8 @@ const WorkSchedule = (props: any) => {
 
         return {
           title: event.inheritJob ? event.job.title : event.title,
-          start: event.inheritJob ? event.job.startDate : event.startDate,
-          end: event.inheritJob ? event.job.endDate : event.endDate,
+          start: event.inheritJob && event.job.startDate ? event.job.startDate : event.startDate,
+          end: event.inheritJob && event.job.endDate ? event.job.endDate : event.endDate,
           rrule: event.rruleSet,
           exrule: exRules,
           meta: event
@@ -65,7 +65,7 @@ const WorkSchedule = (props: any) => {
    */
   const handleDates = (rangeInfo: any) => {
     const currUser = getCurrentUser();
-    const scheduleFor: { visitFor?: string; team?: string } = {}
+    const scheduleFor: { visitFor?: string; team?: string } = {};
 
     if (!currUser) return toast.error('No User Found!');
     if (currUser.role === 'CLIENT') scheduleFor.visitFor = currUser.id;
@@ -85,13 +85,11 @@ const WorkSchedule = (props: any) => {
           <div className="col">
             <div className="form-group mt-3 d-flex float-end">
               <input type="checkbox" className="mt-1" checked={props.weekendsVisible} onChange={props.toggleWeekends}></input>
-              <label>
-                &nbsp;Toggle Weekends
-              </label>
+              <label>&nbsp;Toggle Weekends</label>
             </div>
-        </div>
+          </div>
           <label className="txt-grey">
-            <ClockIcon /> Scheduled Jobs/Visits 
+            <ClockIcon /> Scheduled Jobs/Visits
           </label>
         </div>
         <div className="card pt-4">
@@ -148,7 +146,7 @@ function renderEventContent(eventInfo: any) {
         </Truncate>
       </div>
       <div>
-        <ClockIcon size={12} /> {DateTime.fromISO(eventInfo.event.extendedProps?.meta?.startDate, {zone: 'Australia/Adelaide'}).toFormat('t')}
+        <ClockIcon size={12} /> {new Date(eventInfo.event.start).toLocaleTimeString('en-US', { timeZone: 'Australia/Adelaide' })}
       </div>
     </div>
   );

@@ -298,23 +298,32 @@ const Summary = () => {
             </div>
           </div>
         </div>
-        <div className="card bg-white mt-4 p-4">
-          <b className="">Users Summary</b>
-          <div className="row mt-4 mb-4">
-            <div className="col row">
-              <div className="col ms-4 p-3-4 text-center dashboard-h1 rounded-radius bg-light-blue">{usersSummary.total}</div>
-              <div className="col-4 dashboard-main-label mt-3">Total <p className="txt-bold-big mt-1">Users</p></div>
-            </div>
-            <div className="col row">
-              <div className="col ms-4 p-3-4 text-center dashboard-h1 rounded-radius bg-light-green">{usersSummary.clientCount}</div>
-              <div className="col-4 dashboard-main-label mt-3">Happy <p className="txt-bold-big mt-1">Clients</p></div>
-            </div>
-            <div className="col row">
-              <div className="col ms-4 p-3-4 text-center dashboard-h1 rounded-radius bg-grey">{usersSummary.workerCount}</div>
-              <div className="col-4 dashboard-main-label mt-3">Active <p className="txt-bold-big mt-1">Workers</p></div>
+        {currUser.role === 'ADMIN' ? (
+          <div className="card bg-white mt-4 p-4">
+            <b className="">Users Summary</b>
+            <div className="row mt-4 mb-4">
+              <div className="col row">
+                <div className="col ms-4 p-3-4 text-center dashboard-h1 rounded-radius bg-light-blue">{usersSummary.total}</div>
+                <div className="col-4 dashboard-main-label mt-3">
+                  Total <p className="txt-bold-big mt-1">Users</p>
+                </div>
+              </div>
+              <div className="col row">
+                <div className="col ms-4 p-3-4 text-center dashboard-h1 rounded-radius bg-light-green">{usersSummary.clientCount}</div>
+                <div className="col-4 dashboard-main-label mt-3">
+                  Happy <p className="txt-bold-big mt-1">Clients</p>
+                </div>
+              </div>
+              <div className="col row">
+                <div className="col ms-4 p-3-4 text-center dashboard-h1 rounded-radius bg-grey">{usersSummary.workerCount}</div>
+                <div className="col-4 dashboard-main-label mt-3">
+                  Active <p className="txt-bold-big mt-1">Workers</p>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
+        ) : null}
+
         {currUser.role === 'ADMIN' || currUser.role === 'CLIENT' ? (
           <div className="card">
             <InvoicesList />

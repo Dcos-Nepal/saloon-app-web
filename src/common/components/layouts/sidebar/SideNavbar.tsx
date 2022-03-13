@@ -2,7 +2,17 @@ import 'boxicons';
 import { FC } from 'react';
 import { endpoints } from 'common/config';
 
-import { CalendarIcon, HomeIcon } from '@primer/octicons-react';
+import {
+  LogIcon,
+  HomeIcon,
+  InboxIcon,
+  PeopleIcon,
+  CalendarIcon,
+  BriefcaseIcon,
+  FileBadgeIcon,
+  PersonFillIcon,
+  AccessibilityIcon
+} from '@primer/octicons-react';
 import { useNavigate } from 'react-router-dom';
 import { getCurrentUser } from 'utils';
 
@@ -12,7 +22,7 @@ interface IProps {
 
 const SideNavbar: FC<IProps> = ({ active }) => {
   const navigate = useNavigate();
-  const currUser: {role: string, id: string} = getCurrentUser();
+  const currUser: { role: string; id: string } = getCurrentUser();
 
   return (
     <div className="sidebar col-auto col-md-3 col-xl-2 px-sm-2 px-0">
@@ -23,7 +33,7 @@ const SideNavbar: FC<IProps> = ({ active }) => {
               onClick={() => navigate('/dashboard')}
               className={active === 'Overview' ? 'nav-link nav-link-active align-middle px-0' : 'nav-link align-middle px-0'}
             >
-              <span className="mt-2">
+              <span className="mt-1">
                 <HomeIcon size={'small'} />
               </span>
               <span className="ms-2 d-none d-sm-inline">Overview</span>
@@ -34,7 +44,7 @@ const SideNavbar: FC<IProps> = ({ active }) => {
               onClick={() => navigate('/dashboard/' + endpoints.admin.schedules.calendar)}
               className={active === 'Schedule' ? 'nav-link nav-link-active align-middle px-0' : 'nav-link align-middle px-0'}
             >
-              <span className="mt-2">
+              <span className="mt-1">
                 <CalendarIcon size={'small'} />
               </span>
               <span className="ms-2 d-none d-sm-inline">Schedule</span>
@@ -43,21 +53,21 @@ const SideNavbar: FC<IProps> = ({ active }) => {
 
           <div className="hr mt-2 mb-2"></div>
 
-          {(currUser.role === 'ADMIN' || currUser.role === 'WORKER') ? (
+          {currUser.role === 'ADMIN' || currUser.role === 'WORKER' ? (
             <li>
               <span
                 onClick={() => navigate('/dashboard/' + endpoints.admin.client.list)}
                 className={active === 'Clients' ? 'nav-link nav-link-active align-middle px-0' : 'nav-link align-middle px-0'}
               >
-                <span className="mt-2">
-                  <box-icon color={active === 'Clients' ? '#f47321' : '#161C21'} size="16px" type="solid" name="user-badge"></box-icon>
+                <span className="mt-1">
+                  <PersonFillIcon size={'small'} />
                 </span>
                 <span className="ms-2 d-none d-sm-inline">Clients</span>
               </span>
             </li>
           ) : null}
 
-          {(currUser.role === 'ADMIN' || currUser.role === 'CLIENT')  ? (
+          {currUser.role === 'ADMIN' || currUser.role === 'CLIENT' ? (
             <>
               <li>
                 <span
@@ -65,34 +75,34 @@ const SideNavbar: FC<IProps> = ({ active }) => {
                   className={active === 'Requests' ? 'nav-link nav-link-active align-middle px-0' : 'nav-link align-middle px-0'}
                 >
                   <span className="mt-2">
-                    <box-icon color={active === 'Requests' ? '#f47321' : '#161C21'} size="16px" type="solid" name="inbox"></box-icon>
+                    <InboxIcon size={'small'} />
                   </span>
                   <span className="ms-2 d-none d-sm-inline">Requests</span>
                 </span>
               </li>
               <li>
-              <span
-                onClick={() => navigate('/dashboard/' + endpoints.admin.quotes.list)}
-                className={active === 'Quotes' ? 'nav-link nav-link-active align-middle px-0' : 'nav-link align-middle px-0'}
-              >
-                <span className="mt-2">
-                  <box-icon color={active === 'Quotes' ? '#f47321' : '#161C21'} size="16px" type="solid" name="file-import" />
+                <span
+                  onClick={() => navigate('/dashboard/' + endpoints.admin.quotes.list)}
+                  className={active === 'Quotes' ? 'nav-link nav-link-active align-middle px-0' : 'nav-link align-middle px-0'}
+                >
+                  <span className="mt-2">
+                    <FileBadgeIcon size={'small'} />
+                  </span>
+                  <span className="ms-2 d-none d-sm-inline">Quotes</span>
                 </span>
-                <span className="ms-2 d-none d-sm-inline">Quotes</span>
-              </span>
-            </li>
-            <li>
-              <span
-                onClick={() => navigate('/dashboard/' + endpoints.admin.invoices.list)}
-                className={active === 'Invoices' ? 'nav-link nav-link-active align-middle px-0' : 'nav-link align-middle px-0'}
-              >
-                <span className="mt-2">
-                  <box-icon color={active === 'Invoices' ? '#f47321' : '#161C21'} size="16px" name="dollar-circle" />
+              </li>
+              <li>
+                <span
+                  onClick={() => navigate('/dashboard/' + endpoints.admin.invoices.list)}
+                  className={active === 'Invoices' ? 'nav-link nav-link-active align-middle px-0' : 'nav-link align-middle px-0'}
+                >
+                  <span className="pt-2">
+                    <box-icon color={active === 'Invoices' ? '#f47321' : '#161C21'} size="15px" name="dollar-circle" />
+                  </span>
+                  <span className="ms-2 d-none d-sm-inline">Invoices</span>
                 </span>
-                <span className="ms-2 d-none d-sm-inline">Invoices</span>
-              </span>
-            </li>
-          </>
+              </li>
+            </>
           ) : null}
 
           <li>
@@ -101,13 +111,13 @@ const SideNavbar: FC<IProps> = ({ active }) => {
               className={active === 'Jobs' ? 'nav-link nav-link-active align-middle px-0' : 'nav-link align-middle px-0'}
             >
               <span className="mt-2">
-                <box-icon color={active === 'Jobs' ? '#f47321' : '#161C21'} size="16px" name="briefcase" />
+                <BriefcaseIcon size={'small'} />
               </span>
               <span className="ms-2 d-none d-sm-inline">Jobs</span>
             </span>
           </li>
 
-          {(currUser.role === 'ADMIN') ? (
+          {currUser.role === 'ADMIN' ? (
             <>
               <li>
                 <span
@@ -115,7 +125,7 @@ const SideNavbar: FC<IProps> = ({ active }) => {
                   className={active === 'Workers' ? 'nav-link nav-link-active align-middle px-0' : 'nav-link align-middle px-0'}
                 >
                   <span className="mt-2">
-                    <box-icon color={active === 'Workers' ? '#f47321' : '#161C21'} size="16px" type="solid" name="user-account" />
+                    <AccessibilityIcon size={'small'} />
                   </span>
                   <span className="ms-2 d-none d-sm-inline">Workers</span>
                 </span>
@@ -126,14 +136,14 @@ const SideNavbar: FC<IProps> = ({ active }) => {
                   className={active === 'LineItems' ? 'nav-link nav-link-active align-middle px-0' : 'nav-link align-middle px-0'}
                 >
                   <span className="mt-2">
-                    <box-icon color={active === 'LineItems' ? '#f47321' : '#161C21'} size="16px" type="solid" name="message-edit" />
+                    <LogIcon size={'small'} />
                   </span>
                   <span className="ms-2 d-none d-sm-inline">Line Items</span>
                 </span>
               </li>
             </>
           ) : null}
-          
+
           {!(currUser.role === 'ADMIN') ? (
             <>
               <div className="hr mt-2 mb-2"></div>
@@ -143,7 +153,7 @@ const SideNavbar: FC<IProps> = ({ active }) => {
                   className={active === 'Referral' ? 'nav-link nav-link-active align-middle px-0' : 'nav-link align-middle px-0'}
                 >
                   <span className="mt-2">
-                    <box-icon color={active === 'Referral' ? '#f47321' : '#161C21'} size="16px" type="solid" name="user-account" />
+                    <PeopleIcon size={'small'} />
                   </span>
                   <span className="ms-2 d-none d-sm-inline">Refer a Friend</span>
                 </span>

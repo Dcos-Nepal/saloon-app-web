@@ -68,9 +68,9 @@ const Summary = () => {
 
       const jobsSummaryDataPromise = getJobsSummaryApi({ ...jobQuery }).then((response) => response.data);
       const quotesSummaryDataPromise =
-        currUser.role === 'CLIENT' ? getQuotesSummaryApi({ ...quotesQuery }).then((response) => response.data) : Promise.resolve(null);
+        (currUser.role === 'CLIENT' || currUser.role === 'ADMIN')  ? getQuotesSummaryApi({ ...quotesQuery }).then((response) => response.data) : Promise.resolve(null);
       const requestsSummaryDataPromise =
-        currUser.role === 'CLIENT' ? getJobRequestsSummaryApi({ ...jobReqQuery }).then((response) => response.data) : Promise.resolve(null);
+        (currUser.role === 'CLIENT' || currUser.role === 'ADMIN') ? getJobRequestsSummaryApi({ ...jobReqQuery }).then((response) => response.data) : Promise.resolve(null);
       const visitsSummaryDataPromise = getVisitsSummaryApi({
         ...visitQuery,
         startDate: new Date(new Date().setHours(0, 0, 0, 0)).toISOString(),

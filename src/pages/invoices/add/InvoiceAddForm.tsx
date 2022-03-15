@@ -198,7 +198,12 @@ const InvoiceAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => 
 
     const response = await fetchJobVisits(value);
     setJobVisits(response.data?.data?.data?.rows || []);
-    setVisits(response.data?.data?.data?.rows.map((visit: any) => ({ label: visit.title, value: visit.id })) || []);
+    setVisits(
+      response.data?.data?.data?.rows.map((visit: any) => ({
+        label: visit.title || `${visit?.job?.title} - ${new Date(visit?.startDate).toLocaleDateString()}`,
+        value: visit.id
+      })) || []
+    );
   };
 
   /**
@@ -298,7 +303,7 @@ const InvoiceAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => 
                 <SelectAsync
                   name={`invoiceFor`}
                   label="Select Client"
-                  isDisabled={currentItem?._id !== null}
+                  isDisabled={!!id}
                   value={formik.values.invoiceFor}
                   resource={{ name: 'users', labelProp: 'fullName', valueProp: '_id', params: { roles: 'CLIENT' } }}
                   onChange={handleClientSelection}
@@ -321,7 +326,7 @@ const InvoiceAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => 
             </div>
           </div>
 
-          {!currentItem?._id ? (
+          {!id ? (
             <div className="col">
               <div className="card" style={{ height: '100%' }}>
                 <h6 className="txt-bold">Job/Visit Details</h6>

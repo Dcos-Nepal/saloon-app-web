@@ -18,7 +18,6 @@ import { ClockIcon } from '@primer/octicons-react';
 import Footer from 'common/components/layouts/footer';
 import SideNavbar from 'common/components/layouts/sidebar';
 import { rrulestr } from 'rrule';
-import { DateTime } from 'luxon';
 import { getCurrentUser } from 'utils';
 import { toast } from 'react-toastify';
 

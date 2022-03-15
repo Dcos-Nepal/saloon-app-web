@@ -7,12 +7,14 @@ import { endpoints } from 'common/config';
 import ResetPassword from 'pages/auth/resetPassword';
 import ChangePassword from 'pages/auth/changePassword';
 import { SignUp, VerifyEmail } from 'pages/auth/signup';
+import PrivacyPolicy from 'pages/privacy-policy';
 
 const AllRoutes = () => {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<Signin />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path={endpoints.auth.signIn} element={<Signin />} />
         <Route path={endpoints.auth.signUp} element={<SignUp />} />
         <Route path={endpoints.auth.changePassword} element={<ChangePassword />} />

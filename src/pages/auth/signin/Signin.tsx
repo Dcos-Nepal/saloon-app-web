@@ -150,6 +150,8 @@ const Signin = () => {
           </div>
           <div className='mb-5 mt-5 text-center pb-5'>
             Copyright &copy; {new Date().getFullYear()} <b>Orange Cleaning</b>, All Rights Reserved.
+            <br/>
+            <span className='cursor-pointer' onClick={() => navigate('/' + endpoints.privacy)}>Privacy Policy</span>
           </div>
         </div>
       </div>

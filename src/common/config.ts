@@ -1,4 +1,5 @@
 export const endpoints = {
+  privacy: 'privacy-policy',
   profile: 'profile',
   setting: 'setting',
   auth: {

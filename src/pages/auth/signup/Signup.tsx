@@ -9,6 +9,7 @@ import { Loader } from 'common/components/atoms/Loader';
 import InputField from 'common/components/form/Input';
 import { registerUserApi } from 'services/auth.service';
 import { toast } from 'react-toastify';
+import { AlertFillIcon } from '@primer/octicons-react';
 
 const SignUp = (props: any) => {
   const navigate = useNavigate();
@@ -171,6 +172,13 @@ const SignUp = (props: any) => {
                   onBlur={formik.handleBlur}
                 />
               </div>
+
+              <div className='row mb-3'>
+                <small className='text-success'>
+                  <AlertFillIcon /> By signing up you agree to our <span className='cursor-pointer' onClick={() => navigate('/' + endpoints.privacy)}><strong>Privacy Policy</strong></span>.
+                </small>
+              </div>
+
               <div className="d-flex justify-content-center mt-2">
                 <button type="submit" className="btn btn-primary btn-long">
                   Sign up
@@ -190,6 +198,8 @@ const SignUp = (props: any) => {
           </div>
           <div className="mb-5 mt-5 text-center pb-5">
             Copyright &copy; {new Date().getFullYear()} <b>Orange Cleaning</b>, All Rights Reserved.
+            <br/>
+            <span className='cursor-pointer' onClick={() => navigate('/' + endpoints.privacy)}>Privacy Policy</span>
           </div>
         </div>
       </div>

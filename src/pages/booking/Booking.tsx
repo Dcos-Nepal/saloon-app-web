@@ -1,13 +1,14 @@
-import * as Yup from "yup";
-import { useState } from "react";
+import * as Yup from 'yup';
+import { useState } from 'react';
 
-import { IOption } from "common/types/form";
-import SelectField from "common/components/form/Select";
-import { FormikProvider, getIn, useFormik } from "formik";
-import { StopIcon } from "@primer/octicons-react";
-import InputField from "common/components/form/Input";
-import TextArea from "common/components/form/TextArea";
-import Modal from "common/components/atoms/Modal";
+import { IOption } from 'common/types/form';
+import SelectField from 'common/components/form/Select';
+import { FormikProvider, getIn, useFormik } from 'formik';
+import { StopIcon } from '@primer/octicons-react';
+import InputField from 'common/components/form/Input';
+import TextArea from 'common/components/form/TextArea';
+import Modal from 'common/components/atoms/Modal';
+import { COUNTRIES_OPTIONS, DEFAULT_COUNTRY, STATES_OPTIONS } from 'common/constants';
 
 interface IService {
   name: string;
@@ -18,347 +19,318 @@ interface IService {
 
 const cleaningFrequencyOptions = [
   {
-    label: "Weekly",
-    value: "WEEKLY",
+    label: 'Weekly',
+    value: 'WEEKLY'
   },
   {
-    label: "Fortnightly",
-    value: "FORTH_NIGHT",
+    label: 'Fortnightly',
+    value: 'FORTH_NIGHT'
   },
   {
-    label: "Multi X per week",
-    value: "MULTI_X_PER_WEEK",
-  },
+    label: 'Multi X per week',
+    value: 'MULTI_X_PER_WEEK'
+  }
 ];
 
 const paidByOptions = [
   {
-    label: "Agency Managed",
-    value: "AGENCY_MANAGED",
+    label: 'Agency Managed',
+    value: 'AGENCY_MANAGED'
   },
   {
-    label: "Plan Managed",
-    value: "PLAN_MANAGED",
+    label: 'Plan Managed',
+    value: 'PLAN_MANAGED'
   },
   {
-    label: "Self Managed",
-    value: "SELF_MANAGED",
-  },
+    label: 'Self Managed',
+    value: 'SELF_MANAGED'
+  }
 ];
 
 const bestDescribingYouOptions = [
   {
-    label: "I am an individual receiving and paying for the service",
-    value: "INDIVIDUAL",
+    label: 'I am an individual receiving and paying for the service',
+    value: 'INDIVIDUAL'
   },
   {
-    label: "I am a business paying for an individual",
-    value: "BUSINESS",
-  },
+    label: 'I am a business paying for an individual',
+    value: 'BUSINESS'
+  }
 ];
 
 const NDISServiceOptions = [
   {
-    label: "Yes",
-    value: true,
+    label: 'Yes',
+    value: true
   },
   {
-    label: "No",
-    value: false,
-  },
+    label: 'No',
+    value: false
+  }
 ];
 
 const selfBookingOptions = [
   {
-    label: "Yes",
-    value: true,
+    label: 'Yes',
+    value: true
   },
   {
-    label: "No",
-    value: false,
-  },
+    label: 'No',
+    value: false
+  }
 ];
 
 const serviceManagedByOptions = [
   {
-    label: "Family Member",
-    value: "FAMILY_MEMBER",
+    label: 'Family Member',
+    value: 'FAMILY_MEMBER'
   },
   {
-    label: "Occupational Therapist",
-    value: "OCCUPATIONAL_THERAPIST",
+    label: 'Occupational Therapist',
+    value: 'OCCUPATIONAL_THERAPIST'
   },
   {
-    label: "Carer",
-    value: "CARER",
+    label: 'Carer',
+    value: 'CARER'
   },
   {
-    label: "Other",
-    value: "OTHER",
-  },
+    label: 'Other',
+    value: 'OTHER'
+  }
 ];
 
 const cleaningDayOptions = [
   {
-    label: "Any Day",
-    value: "ANY",
+    label: 'Any Day',
+    value: 'ANY'
   },
   {
-    label: "Monday",
-    value: "MONDAY",
+    label: 'Monday',
+    value: 'MONDAY'
   },
   {
-    label: "Tuesday",
-    value: "TUESDAY",
+    label: 'Tuesday',
+    value: 'TUESDAY'
   },
   {
-    label: "Wednesday",
-    value: "WEDNESDAY",
+    label: 'Wednesday',
+    value: 'WEDNESDAY'
   },
   {
-    label: "Thursday",
-    value: "THURSDAY",
+    label: 'Thursday',
+    value: 'THURSDAY'
   },
   {
-    label: "Friday",
-    value: "FRIDAY",
+    label: 'Friday',
+    value: 'FRIDAY'
   },
   {
-    label: "Saturday *",
-    value: "SATURDAY",
-  },
+    label: 'Saturday *',
+    value: 'SATURDAY'
+  }
 ];
 
 const heardFromOptions = [
   {
-    label: "Google",
-    value: "GOOGLE",
+    label: 'Google',
+    value: 'GOOGLE'
   },
   {
-    label: "Facebook",
-    value: "FACEBOOK",
+    label: 'Facebook',
+    value: 'FACEBOOK'
   },
   {
-    label: "Referral",
-    value: "REFERRAL",
+    label: 'Referral',
+    value: 'REFERRAL'
   },
   {
-    label: "Instagram",
-    value: "INSTAGRAM",
+    label: 'Instagram',
+    value: 'INSTAGRAM'
   },
   {
-    label: "Email",
-    value: "EMAIL",
+    label: 'Email',
+    value: 'EMAIL'
   },
   {
-    label: "Other",
-    value: "OTHER",
-  },
+    label: 'Other',
+    value: 'OTHER'
+  }
 ];
 
 const cleaningHourOptions = [
   {
-    label: "2 Hours",
-    value: 2,
+    label: '2 Hours',
+    value: 2
   },
   {
-    label: "3 Hours",
-    value: 3,
+    label: '3 Hours',
+    value: 3
   },
   {
-    label: "4 Hours",
-    value: 4,
+    label: '4 Hours',
+    value: 4
   },
   {
-    label: "5 Hours",
-    value: 5,
-  },
+    label: '5 Hours',
+    value: 5
+  }
 ];
 
 const serviceTypeOptions = [
   {
-    label: "Move out/End of lease",
-    value: "MOVE_OUT_END_OF_LEASE",
+    label: 'Move out/End of lease',
+    value: 'MOVE_OUT_END_OF_LEASE'
   },
   {
-    label: "Moving In",
-    value: "MOVING_IN",
+    label: 'Moving In',
+    value: 'MOVING_IN'
   },
   {
-    label: "Spring Clean",
-    value: "SPRING_CLEAN",
-  },
-];
-
-const statesOption = [{ label: "New South Wales", value: "New South Wales" }];
-
-const countriesOption = [
-  {
-    label: "AUS",
-    value: "AUS",
-  },
+    label: 'Spring Clean',
+    value: 'SPRING_CLEAN'
+  }
 ];
 
 const serviceAreas = [
   {
     area: {
-      name: "Baandee",
-      postalCode: "WA 6412",
+      name: 'Baandee',
+      postalCode: 'WA 6412'
     },
     services: [
       {
-        name: "Weekly/Fortnightly",
-        description:
-          "Book an ongoing weekly or fortnightly clean and never worry about the general chores again!",
+        name: 'Weekly/Fortnightly',
+        description: 'Book an ongoing weekly or fortnightly clean and never worry about the general chores again!',
         hourlyRate: 26,
-        offer: { rate: 73, hours: 2 },
-      },
-    ],
+        offer: { rate: 73, hours: 2 }
+      }
+    ]
   },
   {
     area: {
-      name: "Sadliers Crossing",
-      postalCode: "QLD 4305",
+      name: 'Sadliers Crossing',
+      postalCode: 'QLD 4305'
     },
     services: [
       {
-        name: "Weekly/Fortnightly",
-        description:
-          "Book an ongoing weekly or fortnightly clean and never worry about the general chores again!",
+        name: 'Weekly/Fortnightly',
+        description: 'Book an ongoing weekly or fortnightly clean and never worry about the general chores again!',
         hourlyRate: 30,
-        offer: { rate: 82, hours: 2 },
+        offer: { rate: 82, hours: 2 }
       },
       {
-        name: "Moving Out/Spring Clean",
-        description:
-          "Our spring clean takes the hard work out of a big cleaning job by using our expert one-off cleaners.",
+        name: 'Moving Out/Spring Clean',
+        description: 'Our spring clean takes the hard work out of a big cleaning job by using our expert one-off cleaners.',
         hourlyRate: 60,
-        offer: { rate: 235, hours: 3 },
-      },
-    ],
+        offer: { rate: 235, hours: 3 }
+      }
+    ]
   },
   {
     area: {
-      name: "Sadliers",
-      postalCode: "MOCK 1231",
+      name: 'Sadliers',
+      postalCode: 'MOCK 1231'
     },
     services: [
       {
-        name: "Weekly/Fortnightly",
-        description:
-          "Book an ongoing weekly or fortnightly clean and never worry about the general chores again!",
+        name: 'Weekly/Fortnightly',
+        description: 'Book an ongoing weekly or fortnightly clean and never worry about the general chores again!',
         hourlyRate: 30,
-        offer: { rate: 82, hours: 2 },
+        offer: { rate: 82, hours: 2 }
       },
       {
-        name: "Moving Out/Spring Clean",
-        description:
-          "Our spring clean takes the hard work out of a big cleaning job by using our expert one-off cleaners.",
+        name: 'Moving Out/Spring Clean',
+        description: 'Our spring clean takes the hard work out of a big cleaning job by using our expert one-off cleaners.',
         hourlyRate: 60,
-        offer: { rate: 235, hours: 3 },
+        offer: { rate: 235, hours: 3 }
       },
       {
-        name: "Aged Care/Disability",
-        description:
-          "Providers for NDIS, Veteran Affairs, Workers Compensation, Insurance and aged care providers.",
+        name: 'Aged Care/Disability',
+        description: 'Providers for NDIS, Veteran Affairs, Workers Compensation, Insurance and aged care providers.',
         hourlyRate: undefined,
-        offer: undefined,
-      },
-    ],
+        offer: undefined
+      }
+    ]
   },
   {
     area: {
-      name: "MOCK City",
-      postalCode: "MOCK 321",
+      name: 'MOCK City',
+      postalCode: 'MOCK 321'
     },
-    services: [],
-  },
+    services: []
+  }
 ];
 
 const Booking = () => {
   const [selectedServiceArea, setSelectedServiceArea] = useState<any | never>();
   const [selectedService, setSelectedService] = useState<IService | never>();
   const [initialValues] = useState<any>({
-    postalCode: "",
-    cleaningService: "",
-    cleaningFrequency: "",
+    postalCode: '',
+    cleaningService: '',
+    cleaningFrequency: '',
     cleaningHour: 2,
     numberOfDaysPerWeek: 1,
     cleaningDays: [],
     startDate: undefined,
-    heardFrom: "",
-    serviceType: "",
-    bestDescribedAs: "",
+    heardFrom: '',
+    serviceType: '',
+    bestDescribedAs: '',
     numberOfBedrooms: undefined,
     numberOfBathrooms: undefined,
     userData: {
-      firstName: "",
-      lastName: "",
-      email: "",
-      phoneNumber: "",
+      firstName: '',
+      lastName: '',
+      email: '',
+      phoneNumber: '',
       address: {
-        street1: "",
-        street2: "",
-        city: "",
-        state: "",
-        country: "",
-      },
+        street1: '',
+        street2: '',
+        city: '',
+        state: '',
+        country: DEFAULT_COUNTRY.value
+      }
     },
     isNDIS: undefined,
     selfBooking: undefined,
-    agedCareDisabilityCleaningService: "",
+    agedCareDisabilityCleaningService: ''
   });
 
   const postalCodeOptions = serviceAreas.map((serviceArea) => {
     return {
       label: `${serviceArea.area.name} (${serviceArea.area.postalCode})`,
-      value: serviceArea.area.postalCode,
+      value: serviceArea.area.postalCode
     };
   });
 
   const BookingSchema = Yup.object().shape({
-    postalCode: Yup.string().required("Please select postal code"),
-    cleaningService: Yup.string().required("Please select service"),
-    cleaningFrequency: Yup.string().required("Please select frequency"),
-    cleaningHour: Yup.number().required("Please select cleaning hour"),
-    numberOfDaysPerWeek: Yup.number().required(
-      "Please enter number of days per week"
-    ),
+    postalCode: Yup.string().required('Please select postal code'),
+    cleaningService: Yup.string().required('Please select service'),
+    cleaningFrequency: Yup.string().required('Please select frequency'),
+    cleaningHour: Yup.number().required('Please select cleaning hour'),
+    numberOfDaysPerWeek: Yup.number().required('Please enter number of days per week'),
     // numberOfBedrooms: Yup.number().required("Please enter number bedrooms"),
     // numberOfBathrooms: Yup.number().required("Please enter number bathrooms"),
-    cleaningDays: Yup.array(Yup.string()).min(
-      1,
-      "Please select days to clean (More than 1 preferred)"
-    ),
-    startDate: Yup.string().required("Please select start date"),
+    cleaningDays: Yup.array(Yup.string()).min(1, 'Please select days to clean (More than 1 preferred)'),
+    startDate: Yup.string().required('Please select start date'),
     serviceType: Yup.string().optional(),
     heardFrom: Yup.string().optional(),
     userData: Yup.object().shape({
-      firstName: Yup.string()
-        .required(`First name is required`)
-        .min(2, "Too Short!")
-        .max(20, "Too Long!"),
-      lastName: Yup.string()
-        .required(`Last name is required`)
-        .min(2, "Too Short!")
-        .max(20, "Too Long!"),
-      email: Yup.string().required(`Email is required`).email("Invalid email"),
-      phoneNumber: Yup.string()
-        .label("Phone Number")
-        .required(`Phone number is required`)
-        .length(10),
+      firstName: Yup.string().required(`First name is required`).min(2, 'Too Short!').max(20, 'Too Long!'),
+      lastName: Yup.string().required(`Last name is required`).min(2, 'Too Short!').max(20, 'Too Long!'),
+      email: Yup.string().required(`Email is required`).email('Invalid email'),
+      phoneNumber: Yup.string().label('Phone Number').required(`Phone number is required`).length(10),
       address: Yup.object().shape({
         street1: Yup.string().required(`Street 1 is required`),
-        street2: Yup.string().required(`Street 2 is required`),
+        street2: Yup.string(),
         city: Yup.string().required(`City is required`),
         state: Yup.string().required(`State is required`),
         postalCode: Yup.string().required(`Postal Code is required`),
-        country: Yup.string().required(`Country is required`),
+        country: Yup.string().required(`Country is required`)
       }),
       isNDIS: Yup.boolean(),
       selfBooking: Yup.boolean(),
-      agedCareDisabilityCleaningService: Yup.string(),
-    }),
+      agedCareDisabilityCleaningService: Yup.string()
+    })
   });
 
   const formik = useFormik({
@@ -367,7 +339,7 @@ const Booking = () => {
     validationSchema: BookingSchema,
     onSubmit: async (data: any) => {
       console.log(data);
-    },
+    }
   });
 
   const ErrorMessage = ({ name }: { name: string }) => {
@@ -378,7 +350,7 @@ const Booking = () => {
 
     return error && touch ? (
       <div className="row txt-red">
-        <div className="col-1" style={{ width: "16px" }}>
+        <div className="col-1" style={{ width: '16px' }}>
           <StopIcon size={14} />
         </div>
         <div className="col">{error}</div>
@@ -393,10 +365,7 @@ const Booking = () => {
 
         <div className="hr-orange mb-5 mt-3"></div>
 
-        <p className="mb-5 p-3 lh-lg">
-          Sorry the service is not in this area. Please check another services.
-          Thank you!
-        </p>
+        <p className="mb-5 p-3 lh-lg">Sorry the service is not in this area. Please check another services. Thank you!</p>
         <div className="mt-3">
           <span className="txt-orange txt-l txt-bold">{`$${0} `}</span>
           <label className="float-left">
@@ -433,13 +402,9 @@ const Booking = () => {
                   }
 
                   setSelectedService(service);
-                  formik.setFieldValue("cleaningService", service.name);
+                  formik.setFieldValue('cleaningService', service.name);
                 }}
-                className={`card hover-card m-2 col text-center ${
-                  selectedService?.name === service.name
-                    ? "border-orange-color"
-                    : ""
-                }`}
+                className={`card hover-card m-2 col text-center ${selectedService?.name === service.name ? 'border-orange-color' : ''}`}
               >
                 <h5 className="txt-bold p-4">{service.name}</h5>
                 <div className="hr-orange mb-5 mt-3"></div>
@@ -447,44 +412,27 @@ const Booking = () => {
                 <div className="mt-3">
                   {service.offer ? (
                     <>
-                      <span className="txt-orange txt-l txt-bold">
-                        {`$${service.offer.rate} `}
-                      </span>
+                      <span className="txt-orange txt-l txt-bold">{`$${service.offer.rate} `}</span>
                       <label className="float-left">
                         for
-                        <span className="txt-bold">
-                          {` ${service.offer.hours || 1} `}
-                        </span>
+                        <span className="txt-bold">{` ${service.offer.hours || 1} `}</span>
                         hours
                       </label>
                     </>
                   ) : (
-                    ""
+                    ''
                   )}
                   <div>
                     {service.hourlyRate ? (
-                      `$${service.hourlyRate}/hour${
-                        service.offer ? " thereafter" : ""
-                      }`
+                      `$${service.hourlyRate}/hour${service.offer ? ' thereafter' : ''}`
                     ) : (
-                      <div className="txt-orange m-3 p-1">
-                        Specific rates apply
-                      </div>
+                      <div className="txt-orange m-3 p-1">Specific rates apply</div>
                     )}
                   </div>
                 </div>
                 <div className="m-3">
-                  <button
-                    type="button"
-                    className={`btn btn-full p-2 txt-bold ${
-                      selectedService?.name === service.name
-                        ? "btn-primary"
-                        : "bg-grey"
-                    }`}
-                  >
-                    {selectedService?.name === service.name
-                      ? "UNSELECT"
-                      : "SELECT"}
+                  <button type="button" className={`btn btn-full p-2 txt-bold ${selectedService?.name === service.name ? 'btn-primary' : 'bg-grey'}`}>
+                    {selectedService?.name === service.name ? 'UNSELECT' : 'SELECT'}
                   </button>
                 </div>
               </div>
@@ -492,9 +440,7 @@ const Booking = () => {
             {selectedServiceArea.services.length < 3 ? (
               <>
                 <NotAvailableCard />
-                {selectedServiceArea.services.length === 1 ? (
-                  <NotAvailableCard />
-                ) : null}
+                {selectedServiceArea.services.length === 1 ? <NotAvailableCard /> : null}
               </>
             ) : null}
           </div>
@@ -505,9 +451,7 @@ const Booking = () => {
         <>
           <div className="hr-orange mb-3"></div>
           <div className="card">
-            <h5 className="text-center">
-              Sorry no cleaning service available in this area
-            </h5>
+            <h5 className="text-center">Sorry no cleaning service available in this area</h5>
           </div>
         </>
       )
@@ -522,13 +466,9 @@ const Booking = () => {
           {cleaningFrequencyOptions.map((frequencyOption) => (
             <div
               className={`col text-center card hover-card m-2 txt-bold ${
-                formik.values.cleaningFrequency === frequencyOption.value
-                  ? "bg-orange txt-white"
-                  : ""
+                formik.values.cleaningFrequency === frequencyOption.value ? 'bg-orange txt-white' : ''
               }`}
-              onClick={() =>
-                formik.setFieldValue("cleaningFrequency", frequencyOption.value)
-              }
+              onClick={() => formik.setFieldValue('cleaningFrequency', frequencyOption.value)}
             >
               {frequencyOption.label}
             </div>
@@ -546,12 +486,8 @@ const Booking = () => {
         <div className="row p-2">
           {paidByOptions.map((paidByOption) => (
             <div
-              className={`col text-center card hover-card m-2 txt-bold ${
-                formik.values.paidBy === paidByOption.value
-                  ? "bg-orange txt-white"
-                  : ""
-              }`}
-              onClick={() => formik.setFieldValue("paidBy", paidByOption.value)}
+              className={`col text-center card hover-card m-2 txt-bold ${formik.values.paidBy === paidByOption.value ? 'bg-orange txt-white' : ''}`}
+              onClick={() => formik.setFieldValue('paidBy', paidByOption.value)}
             >
               {paidByOption.label}
             </div>
@@ -570,16 +506,9 @@ const Booking = () => {
           {bestDescribingYouOptions.map((bestDescribingOption) => (
             <div
               className={`col text-center card hover-card m-2 txt-bold ${
-                formik.values.bestDescribedAs === bestDescribingOption.value
-                  ? "bg-orange txt-white"
-                  : ""
+                formik.values.bestDescribedAs === bestDescribingOption.value ? 'bg-orange txt-white' : ''
               }`}
-              onClick={() =>
-                formik.setFieldValue(
-                  "bestDescribedAs",
-                  bestDescribingOption.value
-                )
-              }
+              onClick={() => formik.setFieldValue('bestDescribedAs', bestDescribingOption.value)}
             >
               {bestDescribingOption.label}
             </div>
@@ -597,14 +526,8 @@ const Booking = () => {
         <div className="row p-2">
           {NDISServiceOptions.map((NDISServiceOption) => (
             <div
-              className={`col text-center card hover-card m-2 txt-bold ${
-                formik.values.isNDIS === NDISServiceOption.value
-                  ? "bg-orange txt-white"
-                  : ""
-              }`}
-              onClick={() =>
-                formik.setFieldValue("isNDIS", NDISServiceOption.value)
-              }
+              className={`col text-center card hover-card m-2 txt-bold ${formik.values.isNDIS === NDISServiceOption.value ? 'bg-orange txt-white' : ''}`}
+              onClick={() => formik.setFieldValue('isNDIS', NDISServiceOption.value)}
             >
               {NDISServiceOption.label}
             </div>
@@ -623,16 +546,9 @@ const Booking = () => {
           {serviceManagedByOptions.map((serviceManagedByOption) => (
             <div
               className={`col text-center card hover-card m-2 txt-bold ${
-                formik.values.serviceManagedBy === serviceManagedByOption.value
-                  ? "bg-orange txt-white"
-                  : ""
+                formik.values.serviceManagedBy === serviceManagedByOption.value ? 'bg-orange txt-white' : ''
               }`}
-              onClick={() =>
-                formik.setFieldValue(
-                  "serviceManagedBy",
-                  !serviceManagedByOption.value
-                )
-              }
+              onClick={() => formik.setFieldValue('serviceManagedBy', !serviceManagedByOption.value)}
             >
               {serviceManagedByOption.label}
             </div>
@@ -664,7 +580,7 @@ const Booking = () => {
                   label=""
                   type="date"
                   onChange={formik.handleChange}
-                  value={formik.values.serviceUntil || ""}
+                  value={formik.values.serviceUntil || ''}
                   placeholder="Select date"
                 />
                 <ErrorMessage name="serviceUntil" />
@@ -679,21 +595,14 @@ const Booking = () => {
   const SelfBooking = () => {
     return (
       <>
-        <h4 className="txt-bold mt-3">
-          Are you booking the service on behalf of someone else?
-        </h4>
+        <h4 className="txt-bold mt-3">Are you booking the service on behalf of someone else?</h4>
         <div className="row p-2">
           {selfBookingOptions.map((selfBookingOption) => (
             <div
               className={`col text-center card hover-card m-2 txt-bold ${
-                formik.values.selfBooking !== undefined &&
-                formik.values.selfBooking !== selfBookingOption.value
-                  ? "bg-orange txt-white"
-                  : ""
+                formik.values.selfBooking !== undefined && formik.values.selfBooking !== selfBookingOption.value ? 'bg-orange txt-white' : ''
               }`}
-              onClick={() =>
-                formik.setFieldValue("selfBooking", !selfBookingOption.value)
-              }
+              onClick={() => formik.setFieldValue('selfBooking', !selfBookingOption.value)}
             >
               {selfBookingOption.label}
             </div>
@@ -712,16 +621,9 @@ const Booking = () => {
           {serviceManagedByOptions.map((serviceManagedByOption) => (
             <div
               className={`col text-center card hover-card m-2 txt-bold ${
-                formik.values.serviceManagedBy === serviceManagedByOption.value
-                  ? "bg-orange txt-white"
-                  : ""
+                formik.values.serviceManagedBy === serviceManagedByOption.value ? 'bg-orange txt-white' : ''
               }`}
-              onClick={() =>
-                formik.setFieldValue(
-                  "serviceManagedBy",
-                  !serviceManagedByOption.value
-                )
-              }
+              onClick={() => formik.setFieldValue('serviceManagedBy', !serviceManagedByOption.value)}
             >
               {serviceManagedByOption.label}
             </div>
@@ -885,20 +787,12 @@ const Booking = () => {
   const CleaningHour = () => {
     return (
       <>
-        <h4 className="txt-bold">
-          How many hours will your cleaner be required?
-        </h4>
+        <h4 className="txt-bold">How many hours will your cleaner be required?</h4>
         <div className="row p-2">
           {cleaningHourOptions.map((hourOption) => (
             <div
-              className={`col text-center card hover-card m-2 txt-bold ${
-                formik.values.cleaningHour === hourOption.value
-                  ? "bg-orange txt-white"
-                  : ""
-              }`}
-              onClick={() =>
-                formik.setFieldValue("cleaningHour", hourOption.value)
-              }
+              className={`col text-center card hover-card m-2 txt-bold ${formik.values.cleaningHour === hourOption.value ? 'bg-orange txt-white' : ''}`}
+              onClick={() => formik.setFieldValue('cleaningHour', hourOption.value)}
             >
               {hourOption.label}
             </div>
@@ -912,21 +806,12 @@ const Booking = () => {
   const NumberOfDaysPerWeek = () => {
     return (
       <>
-        <h4 className="txt-bold">
-          How many days per week would you like the clean to occur?
-        </h4>
+        <h4 className="txt-bold">How many days per week would you like the clean to occur?</h4>
         <div className="row p-2">
           <div className="row col-3">
             <div className="col-2 me-1 mt-3 p-1">
               <button
-                onClick={() =>
-                  formik.setFieldValue(
-                    "numberOfDaysPerWeek",
-                    formik.values?.numberOfDaysPerWeek
-                      ? formik.values?.numberOfDaysPerWeek + 1
-                      : 1
-                  )
-                }
+                onClick={() => formik.setFieldValue('numberOfDaysPerWeek', formik.values?.numberOfDaysPerWeek ? formik.values?.numberOfDaysPerWeek + 1 : 1)}
                 className="btn btn-circle border-orange-color txt-bold"
               >
                 +
@@ -946,11 +831,8 @@ const Booking = () => {
               <button
                 onClick={() =>
                   formik.setFieldValue(
-                    "numberOfDaysPerWeek",
-                    formik.values?.numberOfDaysPerWeek &&
-                      formik.values?.numberOfDaysPerWeek > 1
-                      ? formik.values?.numberOfDaysPerWeek - 1
-                      : 1
+                    'numberOfDaysPerWeek',
+                    formik.values?.numberOfDaysPerWeek && formik.values?.numberOfDaysPerWeek > 1 ? formik.values?.numberOfDaysPerWeek - 1 : 1
                   )
                 }
                 className="btn btn-circle border-orange-color txt-bold"
@@ -972,14 +854,8 @@ const Booking = () => {
         <div className="row p-2">
           {serviceTypeOptions.map((serviceTypeOption) => (
             <div
-              className={`col text-center card hover-card m-2 txt-bold ${
-                formik.values.serviceType === serviceTypeOption.value
-                  ? "bg-orange txt-white"
-                  : ""
-              }`}
-              onClick={() =>
-                formik.setFieldValue("serviceType", serviceTypeOption.value)
-              }
+              className={`col text-center card hover-card m-2 txt-bold ${formik.values.serviceType === serviceTypeOption.value ? 'bg-orange txt-white' : ''}`}
+              onClick={() => formik.setFieldValue('serviceType', serviceTypeOption.value)}
             >
               {serviceTypeOption.label}
             </div>
@@ -993,9 +869,7 @@ const Booking = () => {
   const CleaningDays = () => {
     return (
       <>
-        <h4 className="txt-bold mt-3">
-          What day would you like your clean on?
-        </h4>
+        <h4 className="txt-bold mt-3">What day would you like your clean on?</h4>
         <div className="row p-2 me-5">
           {cleaningDayOptions.map((dayOption) => (
             <div className="col">
@@ -1005,26 +879,18 @@ const Booking = () => {
                 checked={formik.values.cleaningDays?.includes(dayOption.value)}
                 onChange={({ target }) => {
                   if (target.checked) {
-                    formik.setFieldValue("cleaningDays", [
-                      ...formik.values.cleaningDays,
-                      dayOption.value,
-                    ]);
+                    formik.setFieldValue('cleaningDays', [...formik.values.cleaningDays, dayOption.value]);
                   } else {
                     formik.setFieldValue(
-                      "cleaningDays",
-                      formik.values.cleaningDays.filter(
-                        (existingDay: string) => existingDay !== dayOption.value
-                      )
+                      'cleaningDays',
+                      formik.values.cleaningDays.filter((existingDay: string) => existingDay !== dayOption.value)
                     );
                   }
                 }}
                 name="cleaningDays"
                 id={dayOption.value}
               />
-              <label
-                className="ms-2 form-check-label"
-                htmlFor={dayOption.value}
-              >
+              <label className="ms-2 form-check-label" htmlFor={dayOption.value}>
                 {dayOption.label}
               </label>
             </div>
@@ -1038,16 +904,14 @@ const Booking = () => {
   const StartDate = () => {
     return (
       <>
-        <h4 className="txt-bold mt-3">
-          When would you like the clean to start?
-        </h4>
+        <h4 className="txt-bold mt-3">When would you like the clean to start?</h4>
         <div className="row p-2">
           <InputField
             name="startDate"
             label=""
             type="date"
             onChange={formik.handleChange}
-            value={formik.values.startDate || ""}
+            value={formik.values.startDate || ''}
             placeholder="Special Requirements"
           />
           <ErrorMessage name="startDate" />
@@ -1066,7 +930,7 @@ const Booking = () => {
             label=""
             type="date"
             onChange={formik.handleChange}
-            value={formik.values.endDate || ""}
+            value={formik.values.endDate || ''}
             placeholder="Special Requirements"
           />
           <ErrorMessage name="endDate" />
@@ -1080,20 +944,18 @@ const Booking = () => {
       <>
         <h4 className="txt-bold mt-3">Special requirements</h4>
 
-        <i className="txt-grey">
-          Please be aware these comments will be shown to cleaners.
-        </i>
+        <i className="txt-grey">Please be aware these comments will be shown to cleaners.</i>
         <div className="row pb-2">
           <TextArea
             name="specialRequirements"
             label=""
             rows={3}
             onChange={({ target }: { target: { value: string } }) => {
-              formik.setFieldValue("specialRequirements", target.value);
+              formik.setFieldValue('specialRequirements', target.value);
             }}
             placeholder="Special Requirements"
             handleBlur={formik.handleBlur}
-            value={formik.values.specialRequirements || ""}
+            value={formik.values.specialRequirements || ''}
           />
           <ErrorMessage name="specialRequirements" />
         </div>
@@ -1113,15 +975,12 @@ const Booking = () => {
                 type="radio"
                 checked={formik.values.heardFrom === dayOption.value}
                 onChange={() => {
-                  formik.setFieldValue("heardFrom", dayOption.value);
+                  formik.setFieldValue('heardFrom', dayOption.value);
                 }}
                 name="heardFrom"
                 id={dayOption.value}
               />
-              <label
-                className="ms-2 form-check-label"
-                htmlFor={dayOption.value}
-              >
+              <label className="ms-2 form-check-label" htmlFor={dayOption.value}>
                 {dayOption.label}
               </label>
             </div>
@@ -1168,11 +1027,7 @@ const Booking = () => {
   const UserData = ({ isBusiness = false }) => {
     return (
       <>
-        <h4 className="txt-bold mt-3">
-          {isBusiness
-            ? "Name and address for the recipient of the service*"
-            : "Your Details*"}
-        </h4>
+        <h4 className="txt-bold mt-3">{isBusiness ? 'Name and address for the recipient of the service*' : 'Your Details*'}</h4>
         <div className="row p-2 me-5 pe-5">
           <div className="row mt-3">
             <div className="col">
@@ -1229,10 +1084,8 @@ const Booking = () => {
                 label="Street 1"
                 placeholder="Enter street 1"
                 name="userData.address.street1"
-                helperComponent={
-                  <ErrorMessage name="userData.address.street1" />
-                }
-                value={formik.values.userData.address?.street1 || ""}
+                helperComponent={<ErrorMessage name="userData.address.street1" />}
+                value={formik.values.userData.address?.street1 || ''}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
               />
@@ -1242,10 +1095,8 @@ const Booking = () => {
                 label="Street 2"
                 placeholder="Enter street 2"
                 name="userData.address.street2"
-                helperComponent={
-                  <ErrorMessage name="userData.address.street2" />
-                }
-                value={formik.values.userData?.address?.street2 || ""}
+                helperComponent={<ErrorMessage name="userData.address.street2" />}
+                value={formik.values.userData?.address?.street2 || ''}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
               />
@@ -1267,17 +1118,11 @@ const Booking = () => {
               <SelectField
                 label="State"
                 name="userData.address.state"
-                options={statesOption}
+                options={STATES_OPTIONS}
                 helperComponent={<ErrorMessage name="userData.address.state" />}
-                value={statesOption.find(
-                  (option) =>
-                    option.value === formik.values.userData?.address?.state
-                )}
+                value={STATES_OPTIONS.find((option) => option.value === formik.values.userData?.address?.state)}
                 handleChange={(selectedOption: IOption) => {
-                  formik.setFieldValue(
-                    "userData.address.state",
-                    selectedOption.value
-                  );
+                  formik.setFieldValue('userData.address.state', selectedOption.value);
                 }}
                 onBlur={formik.handleBlur}
               />
@@ -1289,10 +1134,8 @@ const Booking = () => {
                 label="Post code"
                 placeholder="Enter post code"
                 name="userData.address.postalCode"
-                value={formik.values.userData?.address?.postalCode || ""}
-                helperComponent={
-                  <ErrorMessage name="userData.address.postalCode" />
-                }
+                value={formik.values.userData?.address?.postalCode || ''}
+                helperComponent={<ErrorMessage name="userData.address.postalCode" />}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
               />
@@ -1301,19 +1144,11 @@ const Booking = () => {
               <SelectField
                 label="Country"
                 name="userData.address.country"
-                options={countriesOption}
-                helperComponent={
-                  <ErrorMessage name="userData.address.country" />
-                }
-                value={countriesOption.find(
-                  (option) =>
-                    option.value === formik.values.userData?.address?.country
-                )}
+                options={COUNTRIES_OPTIONS}
+                helperComponent={<ErrorMessage name="userData.address.country" />}
+                value={COUNTRIES_OPTIONS.find((option) => option.value === formik.values.userData?.address?.country)}
                 handleChange={(selectedOption: IOption) => {
-                  formik.setFieldValue(
-                    "userData.address.country",
-                    selectedOption.value
-                  );
+                  formik.setFieldValue('userData.address.country', selectedOption.value);
                 }}
                 onBlur={formik.handleBlur}
               />
@@ -1330,9 +1165,7 @@ const Booking = () => {
 
     return (
       <div className="card bg-light-grey p-5">
-        <h4 className="txt-bold text-center">
-          Ready to book or just need a quote?
-        </h4>
+        <h4 className="txt-bold text-center">Ready to book or just need a quote?</h4>
         <div className="row p-4 ms-5 me-5">
           <div
             className={`col bg-light-blue text-center card hover-card m-2 ms-5`}
@@ -1366,9 +1199,7 @@ const Booking = () => {
               <SelfBooking />
 
               <div className="hr-orange mb-4 mt-2"></div>
-              <UserData
-                isBusiness={formik.values.bestDescribedAs !== "INDIVIDUAL"}
-              />
+              <UserData isBusiness={formik.values.bestDescribedAs !== 'INDIVIDUAL'} />
 
               {formik.values.selfBooking ? <ServiceManagedBy /> : null}
 
@@ -1385,18 +1216,11 @@ const Booking = () => {
             </>
           ) : null}
 
-          <Modal
-            isOpen={sendMeEmailOpen}
-            onRequestClose={() => setSendMeEmailOpen(false)}
-          >
+          <Modal isOpen={sendMeEmailOpen} onRequestClose={() => setSendMeEmailOpen(false)}>
             <div className="p-2">
               <div className="p-5 m-5">
-                <div className="txt-light-grey text-center ms-5 me-5">
-                  Please enter your name and email below
-                </div>
-                <div className="txt-light-grey text-center ms-5 me-5">
-                  so we can can email you a copy of the quote
-                </div>
+                <div className="txt-light-grey text-center ms-5 me-5">Please enter your name and email below</div>
+                <div className="txt-light-grey text-center ms-5 me-5">so we can can email you a copy of the quote</div>
                 <div className="ms-5 me-5">
                   <InputField label="" placeholder="First Name" />
                   <InputField label="" placeholder="Last Name" />
@@ -1484,7 +1308,7 @@ const Booking = () => {
 
   const AgedCareDisabilityServiceDetails = () => {
     switch (formik.values.agedCareDisabilityCleaningService) {
-      case "Weekly/Fortnightly":
+      case 'Weekly/Fortnightly':
         return (
           <>
             <div className="hr-orange mb-4 mt-2"></div>
@@ -1507,9 +1331,7 @@ const Booking = () => {
             <ServicesApprovedFor />
 
             <div className="hr-orange mb-4 mt-2"></div>
-            <UserData
-              isBusiness={formik.values.bestDescribedAs !== "INDIVIDUAL"}
-            />
+            <UserData isBusiness={formik.values.bestDescribedAs !== 'INDIVIDUAL'} />
 
             <ServicePaidBy />
 
@@ -1524,7 +1346,7 @@ const Booking = () => {
             </div>
           </>
         );
-      case "Moving Out/Spring Clean":
+      case 'Moving Out/Spring Clean':
         return (
           <>
             <div className="hr-orange mb-4 mt-2"></div>
@@ -1547,19 +1369,17 @@ const Booking = () => {
   const AgedCareDisabilityServiceType = () => {
     const agedCareDisabilityServices = [
       {
-        name: "Weekly/Fortnightly",
-        description:
-          "Book an ongoing weekly or fortnightly clean and never worry about the general chores again!",
+        name: 'Weekly/Fortnightly',
+        description: 'Book an ongoing weekly or fortnightly clean and never worry about the general chores again!',
         hourlyRate: 130,
-        offer: { rate: 110, hours: 2 },
+        offer: { rate: 110, hours: 2 }
       },
       {
-        name: "Moving Out/Spring Clean",
-        description:
-          "Our spring clean takes the hard work out of a big cleaning job by using our expert one-off cleaners.",
+        name: 'Moving Out/Spring Clean',
+        description: 'Our spring clean takes the hard work out of a big cleaning job by using our expert one-off cleaners.',
         hourlyRate: 160,
-        offer: { rate: 235, hours: 3 },
-      },
+        offer: { rate: 235, hours: 3 }
+      }
     ];
 
     return (
@@ -1569,17 +1389,10 @@ const Booking = () => {
           {agedCareDisabilityServices.map((service: IService) => (
             <div
               onClick={() => {
-                formik.setFieldValue(
-                  "agedCareDisabilityCleaningService",
-                  service.name
-                );
+                formik.setFieldValue('agedCareDisabilityCleaningService', service.name);
               }}
               key={service.name}
-              className={`card hover-card m-2 col text-center ${
-                formik.values.agedCareDisabilityCleaningService === service.name
-                  ? "border-orange-color"
-                  : ""
-              }`}
+              className={`card hover-card m-2 col text-center ${formik.values.agedCareDisabilityCleaningService === service.name ? 'border-orange-color' : ''}`}
             >
               <h5 className="txt-bold p-4">{service.name}</h5>
               <div className="hr-orange mb-5 mt-3"></div>
@@ -1587,46 +1400,30 @@ const Booking = () => {
               <div className="mt-3">
                 {service.offer ? (
                   <>
-                    <span className="txt-orange txt-l txt-bold">
-                      {`$${service.offer.rate} `}
-                    </span>
+                    <span className="txt-orange txt-l txt-bold">{`$${service.offer.rate} `}</span>
                     <label className="float-left">
                       for
-                      <span className="txt-bold">
-                        {` ${service.offer.hours || 1} `}
-                      </span>
+                      <span className="txt-bold">{` ${service.offer.hours || 1} `}</span>
                       hours
                     </label>
                   </>
                 ) : (
-                  ""
+                  ''
                 )}
                 <div>
                   {service.hourlyRate ? (
-                    `$${service.hourlyRate}/hour${
-                      service.offer ? " thereafter" : ""
-                    }`
+                    `$${service.hourlyRate}/hour${service.offer ? ' thereafter' : ''}`
                   ) : (
-                    <div className="txt-orange m-3 p-1">
-                      Specific rates apply
-                    </div>
+                    <div className="txt-orange m-3 p-1">Specific rates apply</div>
                   )}
                 </div>
               </div>
               <div className="m-3">
                 <button
                   type="button"
-                  className={`btn btn-full p-2 txt-bold ${
-                    formik.values.agedCareDisabilityCleaningService ===
-                    service.name
-                      ? "btn-primary"
-                      : "bg-grey"
-                  }`}
+                  className={`btn btn-full p-2 txt-bold ${formik.values.agedCareDisabilityCleaningService === service.name ? 'btn-primary' : 'bg-grey'}`}
                 >
-                  {formik.values.agedCareDisabilityCleaningService ===
-                  service.name
-                    ? "UNSELECT"
-                    : "SELECT"}
+                  {formik.values.agedCareDisabilityCleaningService === service.name ? 'UNSELECT' : 'SELECT'}
                 </button>
               </div>
             </div>
@@ -1664,9 +1461,7 @@ const Booking = () => {
             <EndDate />
 
             <div className="hr-orange mb-4 mt-2"></div>
-            <UserData
-              isBusiness={formik.values.bestDescribedAs !== "INDIVIDUAL"}
-            />
+            <UserData isBusiness={formik.values.bestDescribedAs !== 'INDIVIDUAL'} />
             <PaidBy />
 
             <div className="hr-orange mb-4 mt-2"></div>
@@ -1692,11 +1487,11 @@ const Booking = () => {
 
   const ServiceDetails = () => {
     switch (selectedService?.name) {
-      case "Weekly/Fortnightly":
+      case 'Weekly/Fortnightly':
         return <WeeklyFortnightly />;
-      case "Moving Out/Spring Clean":
+      case 'Moving Out/Spring Clean':
         return <MovingOutSpringClean />;
-      case "Aged Care/Disability":
+      case 'Aged Care/Disability':
         return <AgedCareDisability />;
       default:
         return null;
@@ -1714,26 +1509,12 @@ const Booking = () => {
                 <SelectField
                   options={postalCodeOptions}
                   handleChange={(selectedOption: IOption) => {
-                    setSelectedServiceArea(
-                      serviceAreas.find(
-                        (serviceArea) =>
-                          serviceArea.area.postalCode === selectedOption.value
-                      )
-                    );
+                    setSelectedServiceArea(serviceAreas.find((serviceArea) => serviceArea.area.postalCode === selectedOption.value));
                     setSelectedService(undefined);
-                    formik.setFieldValue(
-                      "postalCode",
-                      selectedOption.value.toString()
-                    );
+                    formik.setFieldValue('postalCode', selectedOption.value.toString());
 
-                    formik.setFieldValue(
-                      "userData.address.postalCode",
-                      selectedOption.value.toString()
-                    );
-                    formik.setFieldValue(
-                      "userData.address.city",
-                      selectedOption.label.toString()
-                    );
+                    formik.setFieldValue('userData.address.postalCode', selectedOption.value.toString());
+                    formik.setFieldValue('userData.address.city', selectedOption.label.toString());
                   }}
                   name="postalCode"
                   handleBlur={formik.handleBlur}
@@ -1776,16 +1557,9 @@ const Booking = () => {
                     <div className="float-end">
                       <div className="txt-bold text-end">YOUR TOTAL</div>
                       <h2 className="txt-orange txt-bold text-end">
-                        $
-                        {formik.values?.cleaningHour &&
-                        selectedService?.hourlyRate
-                          ? formik.values?.cleaningHour *
-                            selectedService?.hourlyRate
-                          : 0}
+                        ${formik.values?.cleaningHour && selectedService?.hourlyRate ? formik.values?.cleaningHour * selectedService?.hourlyRate : 0}
                       </h2>
-                      <div className="txt-orange">
-                        * Weekend rates will apply
-                      </div>
+                      <div className="txt-orange">* Weekend rates will apply</div>
                     </div>
                   </div>
                 </div>

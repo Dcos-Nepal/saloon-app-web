@@ -13,6 +13,7 @@ import { Loader } from 'common/components/atoms/Loader';
 import SelectField from 'common/components/form/Select';
 import * as clientsActions from 'store/actions/clients.actions';
 import * as propertiesActions from 'store/actions/properties.actions';
+import { COUNTRIES_OPTIONS, DEFAULT_COUNTRY, STATES_OPTIONS } from 'common/constants';
 
 const PropertyForm = React.lazy(() => import('./PropertyForm'));
 
@@ -33,23 +34,6 @@ interface IProps {
   properties: any[];
 }
 
-const statesOption = [
-  { label: 'New South Wales', value: 'New South Wales' },
-  { label: 'New South', value: 'New South' },
-  { label: 'New Wales', value: 'New Wales' }
-];
-
-const countriesOption = [
-  {
-    label: 'AUS',
-    value: 'AUS'
-  },
-  {
-    label: 'USA',
-    value: 'USA'
-  }
-];
-
 const ClientDetailForm: FC<IProps> = ({ id, actions, currentClient, properties, currentProperty, isPropertiesLoading }) => {
   const navigate = useNavigate();
 
@@ -67,7 +51,7 @@ const ClientDetailForm: FC<IProps> = ({ id, actions, currentClient, properties, 
       city: '',
       state: '',
       postalCode: undefined,
-      country: ''
+      country: DEFAULT_COUNTRY.value
     },
     userData: {
       type: 'CLIENT',
@@ -100,7 +84,7 @@ const ClientDetailForm: FC<IProps> = ({ id, actions, currentClient, properties, 
     phoneNumber: Yup.string().label('Phone Number').required(`Phone number is required`).length(10),
     address: Yup.object().shape({
       street1: Yup.string().required(`Street 1 is required`),
-      street2: Yup.string().required(`Street 2 is required`),
+      street2: Yup.string(),
       city: Yup.string().required(`City is required`),
       state: Yup.string().required(`State is required`),
       postalCode: Yup.number().required(`Postal Code is required`),
@@ -288,9 +272,9 @@ const ClientDetailForm: FC<IProps> = ({ id, actions, currentClient, properties, 
                       <SelectField
                         label="State"
                         name="address.state"
-                        options={statesOption}
+                        options={STATES_OPTIONS}
                         helperComponent={<ErrorMessage name="address.state" />}
-                        value={statesOption.find((option) => option.value === formik.values.address?.state) || null}
+                        value={STATES_OPTIONS.find((option) => option.value === formik.values.address?.state) || null}
                         handleChange={(selectedOption: IOption) => {
                           formik.setFieldValue('address.state', selectedOption.value);
                         }}
@@ -316,9 +300,9 @@ const ClientDetailForm: FC<IProps> = ({ id, actions, currentClient, properties, 
                       <SelectField
                         label="Country"
                         name="address.country"
-                        options={countriesOption}
+                        options={COUNTRIES_OPTIONS}
                         helperComponent={<ErrorMessage name="address.country" />}
-                        value={countriesOption.find((option) => option.value === formik.values.address?.country)}
+                        value={COUNTRIES_OPTIONS.find((option) => option.value === formik.values.address?.country)}
                         handleChange={(selectedOption: IOption) => {
                           formik.setFieldValue('address.country', selectedOption.value);
                         }}

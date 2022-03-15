@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { FC, useEffect, useState } from 'react';
 
 import { IOption } from 'common/types/form';
-import { DAYS_OF_WEEK } from 'common/constants';
+import { COUNTRIES_OPTIONS, DAYS_OF_WEEK, DEFAULT_COUNTRY, STATES_OPTIONS } from 'common/constants';
 import InputField from 'common/components/form/Input';
 import SelectField from 'common/components/form/Select';
 import * as workersActions from 'store/actions/workers.actions';
@@ -46,8 +46,7 @@ const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker, isWorkersLoa
     cleaningCert: null,
     policeCert: null
   });
-  const statesOption = [{ label: 'LA', value: 'LA' }];
-  const countriesOption = [{ label: 'Aus', value: 'AUS' }];
+
   const tagOptions = [
     { label: 'Window', value: 'Window' },
     { label: 'Garden', value: 'Garden' },
@@ -74,7 +73,7 @@ const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker, isWorkersLoa
             city: '',
             state: '',
             postalCode: undefined,
-            country: ''
+            country: DEFAULT_COUNTRY.value
           },
           userData: {
             type: 'WORKER',
@@ -82,24 +81,24 @@ const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker, isWorkersLoa
             workingDays: [],
             documents: {
               idCard: {
-                url: "",
-                key: "",
-                type: "ID_CARD",
+                url: '',
+                key: '',
+                type: 'ID_CARD'
               },
               cleaningCert: {
-                url: "",
-                key: "",
-                type: "CLEANING_CERTIFICATE",
+                url: '',
+                key: '',
+                type: 'CLEANING_CERTIFICATE'
               },
               policeCert: {
-                url: "",
-                key: "",
-                type: "POLICE_CERTIFICATE",
-              },
+                url: '',
+                key: '',
+                type: 'POLICE_CERTIFICATE'
+              }
             },
             services: []
           },
-          avatar: ""
+          avatar: ''
         };
 
   const WorkerSchema = Yup.object().shape({
@@ -113,11 +112,8 @@ const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker, isWorkersLoa
       postalCode: Yup.number().required(`Postal Code is required`),
       country: Yup.string().required(`Country is required`)
     }),
-    email: Yup.string().required(`Email is required`).email("Invalid email"),
-    phoneNumber: Yup.string()
-      .label("Phone Number")
-      .required(`Phone number is required`)
-      .length(10),
+    email: Yup.string().required(`Email is required`).email('Invalid email'),
+    phoneNumber: Yup.string().label('Phone Number').required(`Phone number is required`).length(10),
     userData: Yup.object().shape({
       type: Yup.string(),
       documents: Yup.object().shape({
@@ -253,7 +249,7 @@ const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker, isWorkersLoa
 
   /**
    *  Display DOC Select Section
-   * 
+   *
    * @param label
    * @param name
    * @param id
@@ -261,53 +257,50 @@ const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker, isWorkersLoa
    * @returns JSX
    */
   const generateDocSelect = (label: string, name: string, id: string, dropText: string, type: string) => {
-    const documents = (formik.values.userData?.documents as any);
-    return (<div className="mb-3">
-      <label className="form-label txt-dark-grey">{label}</label>
-      {(documents && documents[id]?.key) || (getDocument as any)[id]?.name  ? (
-        <div className="row">
-          <div className="col-9">
-            <span className="mt-1 btn btn-secondary btn-sm">
-              {(documents ? documents[id]?.key : (getDocument as any)[id]?.name)}
-            </span>
+    const documents = formik.values.userData?.documents as any;
+    return (
+      <div className="mb-3">
+        <label className="form-label txt-dark-grey">{label}</label>
+        {(documents && documents[id]?.key) || (getDocument as any)[id]?.name ? (
+          <div className="row">
+            <div className="col-9">
+              <span className="mt-1 btn btn-secondary btn-sm">{documents ? documents[id]?.key : (getDocument as any)[id]?.name}</span>
+            </div>
+            <div className="col-3">
+              <button
+                type="button"
+                title="Upload"
+                className="btn btn-warning btn-sm"
+                onClick={() => {
+                  handleFileUpload(id, type);
+                }}
+              >
+                {(isUploading as any)[id] ? 'loading...' : <UploadIcon size={16} />}
+              </button>
+              &nbsp;
+              <button
+                type="button"
+                title="Delete"
+                className="btn btn-danger btn-sm"
+                onClick={() => {
+                  handleFileDelete(id);
+                }}
+              >
+                {(isDeleting as any)[id] ? 'loading...' : <XCircleIcon size={16} />}
+              </button>
+            </div>
           </div>
-          <div className="col-3">
-            <button
-              type="button"
-              title="Upload"
-              className="btn btn-warning btn-sm"
-              onClick={() => {handleFileUpload(id, type)}}
-            >
-              {(isUploading as any)[id] ? 'loading...' : <UploadIcon size={16} />}
-            </button>
-            &nbsp;
-            <button
-              type="button"
-              title="Delete"
-              className="btn btn-danger btn-sm"
-              onClick={() => {
-                handleFileDelete(id);
-              }}
-            >
-              {(isDeleting as any)[id] ? 'loading...' : <XCircleIcon size={16} />}
-            </button>
-          </div>
-        </div>
-      ) : null}
+        ) : null}
 
-      <input
-        className="form-control hidden"
-        type="file"
-        id={id}
-        name={name}
-        onChange={(event) => handleFileSelect(event, id)}
-        onBlur={formik.handleBlur}
-      />
-      {!(getDocument as any)[id] && !(documents && documents[id]?.key) ? (
-        <label htmlFor={id} className="txt-orange dashed-file"><UploadIcon /> {dropText}</label>
-      ) : null}
-    </div>);
-  }
+        <input className="form-control hidden" type="file" id={id} name={name} onChange={(event) => handleFileSelect(event, id)} onBlur={formik.handleBlur} />
+        {!(getDocument as any)[id] && !(documents && documents[id]?.key) ? (
+          <label htmlFor={id} className="txt-orange dashed-file">
+            <UploadIcon /> {dropText}
+          </label>
+        ) : null}
+      </div>
+    );
+  };
 
   return (
     <form noValidate onSubmit={formik.handleSubmit}>
@@ -376,7 +369,9 @@ const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker, isWorkersLoa
                   <li
                     key={day}
                     className={`${
-                      formik.values.userData?.workingDays?.length && formik.values.userData?.workingDays.find((selectedDay: string) => selectedDay === day) ? 'selected' : null
+                      formik.values.userData?.workingDays?.length && formik.values.userData?.workingDays.find((selectedDay: string) => selectedDay === day)
+                        ? 'selected'
+                        : null
                     }`}
                     onClick={() => onWorkingDaysChange(day)}
                   >
@@ -441,9 +436,9 @@ const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker, isWorkersLoa
                 <SelectField
                   label="State"
                   name="address.state"
-                  options={statesOption}
+                  options={STATES_OPTIONS}
                   helperComponent={<ErrorMessage name="address.state" />}
-                  value={statesOption.find((option) => option.value === formik.values.address?.state)}
+                  value={STATES_OPTIONS.find((option) => option.value === formik.values.address?.state)}
                   handleChange={(selectedOption: IOption) => {
                     formik.setFieldValue('address.state', selectedOption.value);
                   }}
@@ -467,9 +462,9 @@ const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker, isWorkersLoa
                 <SelectField
                   label="Country"
                   name="address.country"
-                  options={countriesOption}
+                  options={COUNTRIES_OPTIONS}
                   helperComponent={<ErrorMessage name="address.country" />}
-                  value={countriesOption.find((option) => option.value === formik.values.address?.country)}
+                  value={COUNTRIES_OPTIONS.find((option) => option.value === formik.values.address?.country)}
                   handleChange={(selectedOption: IOption) => {
                     formik.setFieldValue('address.country', selectedOption.value);
                   }}
@@ -481,11 +476,31 @@ const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker, isWorkersLoa
         </div>
         <div className="col card ms-3">
           <h5>Upload documents</h5>
-          <div className="text-success"><StopIcon size={16} /> Make sure to upload  each document before saving.</div>
-          <div className='mt-5'/>
-          {generateDocSelect("1. ID CARD/DRIVING LICENSE:", "userData.documents['idCard'].url", 'idCard', 'Click to browse or drag and drop your file to upload ID card.', 'ID_CARD')}
-          {generateDocSelect("2. CLEANING CERTIFICATE:", "userData.documents['cleaningCert'].url", 'cleaningCert', 'Click to browse or drag and drop your file to upload clinic certificate.', 'CLEANING_CERTIFICATE')}
-          {generateDocSelect("3. POLICE CERTIFICATE:", "userData.documents['policeCert'].url", 'policeCert', 'Click to browse or drag and drop your file to upload police check.', 'POLICE_CERTIFICATE')}
+          <div className="text-success">
+            <StopIcon size={16} /> Make sure to upload each document before saving.
+          </div>
+          <div className="mt-5" />
+          {generateDocSelect(
+            '1. ID CARD/DRIVING LICENSE:',
+            "userData.documents['idCard'].url",
+            'idCard',
+            'Click to browse or drag and drop your file to upload ID card.',
+            'ID_CARD'
+          )}
+          {generateDocSelect(
+            '2. CLEANING CERTIFICATE:',
+            "userData.documents['cleaningCert'].url",
+            'cleaningCert',
+            'Click to browse or drag and drop your file to upload clinic certificate.',
+            'CLEANING_CERTIFICATE'
+          )}
+          {generateDocSelect(
+            '3. POLICE CERTIFICATE:',
+            "userData.documents['policeCert'].url",
+            'policeCert',
+            'Click to browse or drag and drop your file to upload police check.',
+            'POLICE_CERTIFICATE'
+          )}
         </div>
       </div>
       <div className="mb-3 mt-3">

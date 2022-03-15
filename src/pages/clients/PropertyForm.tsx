@@ -6,6 +6,7 @@ import { StopIcon } from '@primer/octicons-react';
 import InputField from 'common/components/form/Input';
 import SelectField from 'common/components/form/Select';
 import { IOption } from 'common/types/form';
+import { COUNTRIES_OPTIONS, DEFAULT_COUNTRY, STATES_OPTIONS } from 'common/constants';
 
 interface IProps {
   currentProperty?: any;
@@ -18,14 +19,14 @@ const PropertyForm: FC<IProps> = ({ cleanForm, currentProperty, saveProperty, up
   const initialValues = currentProperty
     ? currentProperty
     : {
-      name: '',
-      street1: '',
-      street2: '',
-      city: '',
-      state: '',
-      postalCode: '',
-      country: ''
-    };
+        name: '',
+        street1: '',
+        street2: '',
+        city: '',
+        state: '',
+        postalCode: '',
+        country: DEFAULT_COUNTRY.value
+      };
 
   const PropertySchema = Yup.object().shape({
     name: Yup.string().required(`Name is required`).min(2, 'Too Short!').max(20, 'Too Long!'),
@@ -69,23 +70,6 @@ const PropertyForm: FC<IProps> = ({ cleanForm, currentProperty, saveProperty, up
       </div>
     ) : null;
   };
-
-  const statesOption = [
-    { label: 'New South Wales', value: 'New South Wales' },
-    { label: 'New South', value: 'New South' },
-    { label: 'New Wales', value: 'New Wales' }
-  ];
-
-  const countriesOption = [
-    {
-      label: 'AUS',
-      value: 'AUS'
-    },
-    {
-      label: 'USA',
-      value: 'USA'
-    }
-  ];
 
   return (
     <form noValidate onSubmit={formik.handleSubmit}>
@@ -137,13 +121,9 @@ const PropertyForm: FC<IProps> = ({ cleanForm, currentProperty, saveProperty, up
               <SelectField
                 label="State"
                 name="state"
-                options={[
-                  { label: 'New South Wales', value: 'New South Wales' },
-                  { label: 'New South', value: 'New South' },
-                  { label: 'New Wales', value: 'New Wales' }
-                ]}
+                options={STATES_OPTIONS}
                 helperComponent={<ErrorMessage name="state" />}
-                value={statesOption.find((option) => option.value === formik.values.state) || null}
+                value={STATES_OPTIONS.find((option) => option.value === formik.values.state) || null}
                 handleChange={(selectedOption: IOption) => {
                   formik.setFieldValue('state', selectedOption.value);
                 }}
@@ -167,9 +147,9 @@ const PropertyForm: FC<IProps> = ({ cleanForm, currentProperty, saveProperty, up
               <SelectField
                 label="Country"
                 name="country"
-                options={countriesOption}
+                options={COUNTRIES_OPTIONS}
                 helperComponent={<ErrorMessage name="country" />}
-                value={countriesOption.find((option) => option.value === formik.values.country) || null}
+                value={COUNTRIES_OPTIONS.find((option) => option.value === formik.values.country) || null}
                 handleChange={(selectedOption: IOption) => {
                   formik.setFieldValue('country', selectedOption.value);
                 }}
@@ -184,11 +164,11 @@ const PropertyForm: FC<IProps> = ({ cleanForm, currentProperty, saveProperty, up
           {currentProperty ? 'Update Property' : 'Save Property'}
         </button>
         &nbsp;&nbsp;
-        <button onClick={cleanForm} type="button" className="btn btn-danger">
+        <button onClick={cleanForm} type="button" className="btn btn-secondary">
           Cancel
         </button>
         &nbsp;&nbsp;
-        <button onClick={() => formik.resetForm()} type="button" className="btn btn-warning">
+        <button onClick={() => formik.resetForm()} type="button" className="btn bg-light-red">
           Reset Form
         </button>
       </div>

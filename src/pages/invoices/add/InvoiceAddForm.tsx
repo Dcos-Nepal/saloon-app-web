@@ -165,7 +165,7 @@ const InvoiceAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => 
 
       setClientDetails(currentItem?.invoiceFor);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, currentItem]);
 
   /**
@@ -212,7 +212,7 @@ const InvoiceAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => 
 
   /**
    * Handles Line items selection by visit
-   * @param visitId 
+   * @param visitId
    */
   const handleLineItemsByVisits = (visitId: string) => {
     const jobVisit = jobVisits.find((visit: any) => visit?._id === visitId);
@@ -256,9 +256,7 @@ const InvoiceAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => 
 
   return (
     <>
-      <div className="txt-orange">
-        Ref. #{currentItem?.refCode || 'XXXXX'}
-      </div>
+      {id ? <div className="txt-orange">Ref. #{currentItem?.refCode || 'XXXXX'}</div> : null}
       <form onSubmit={formik.handleSubmit} style={{ position: 'relative' }}>
         <Loader isLoading={isLoading} />
         <FormikProvider value={formik}>
@@ -340,7 +338,13 @@ const InvoiceAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => 
                   </div>
 
                   <div className="col ps-3">
-                    <SelectField name={`refVisit`} label="Select Job's Visit" options={visits} value={formik.values.refVisit} handleChange={handleVisitSelection} />
+                    <SelectField
+                      name={`refVisit`}
+                      label="Select Job's Visit"
+                      options={visits}
+                      value={formik.values.refVisit}
+                      handleChange={handleVisitSelection}
+                    />
                     <ErrorMessage name={`refVisit.value`} />
                   </div>
                 </div>
@@ -458,7 +462,8 @@ const InvoiceAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => 
               <div className="col txt-bold mt-3">
                 <div className="d-flex float-end">
                   <h5 className="txt-bold mt-2">
-                    $ {formik.values?.lineItems?.length ? formik.values?.lineItems.reduce((current, next) => (current += next.quantity * next.unitPrice), 0) : 0}
+                    ${' '}
+                    {formik.values?.lineItems?.length ? formik.values?.lineItems.reduce((current, next) => (current += next.quantity * next.unitPrice), 0) : 0}
                   </h5>
                 </div>
               </div>

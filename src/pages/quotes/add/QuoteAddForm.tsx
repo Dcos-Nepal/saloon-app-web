@@ -1,18 +1,18 @@
-import * as Yup from "yup";
-import * as quotesActions from "store/actions/quotes.actions";
+import * as Yup from 'yup';
+import * as quotesActions from 'store/actions/quotes.actions';
 
-import { FC, Fragment, useEffect, useState } from "react";
-import { FieldArray, FormikProvider, useFormik, getIn } from "formik";
-import { PlusCircleIcon, StopIcon, XCircleIcon } from "@primer/octicons-react";
+import { FC, Fragment, useEffect, useState } from 'react';
+import { FieldArray, FormikProvider, useFormik, getIn } from 'formik';
+import { PlusCircleIcon, StopIcon, XCircleIcon } from '@primer/octicons-react';
 
-import { connect } from "react-redux";
-import { useNavigate} from "react-router-dom";
-import { Loader } from "common/components/atoms/Loader";
-import { fetchUserProperties } from "services/common.service";
+import { connect } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { Loader } from 'common/components/atoms/Loader';
+import { fetchUserProperties } from 'services/common.service';
 
-import InputField from "common/components/form/Input";
-import SelectAsync from "common/components/form/AsyncSelect";
-import TextArea from "common/components/form/TextArea";
+import InputField from 'common/components/form/Input';
+import SelectAsync from 'common/components/form/AsyncSelect';
+import TextArea from 'common/components/form/TextArea';
 
 interface IProps {
   id: string;
@@ -25,7 +25,7 @@ interface IProps {
   currentItem: any;
 }
 
-const QuoteAddForm: FC<IProps> = ({id, isLoading, currentItem, actions}) => {
+const QuoteAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => {
   const navigate = useNavigate();
 
   const [clientDetails, setClientDetails] = useState(null);
@@ -41,22 +41,22 @@ const QuoteAddForm: FC<IProps> = ({id, isLoading, currentItem, actions}) => {
     },
     property: '',
     jobRequest: '',
-    lineItems: [{
-      name: {
-        label: 'Search for Services',
-        value: ''
-      },
-      description: '',
-      quantity: 0,
-      unitPrice: 0,
-      total: 0
-    }]
+    lineItems: [
+      {
+        name: {
+          label: 'Search for Services',
+          value: ''
+        },
+        description: '',
+        quantity: 0,
+        unitPrice: 0,
+        total: 0
+      }
+    ]
   });
 
   const QuoteSchema = Yup.object().shape({
-    title: Yup.string()
-      .required('Quote title is required')
-      .min(3, 'Quote title seems to be too short'),
+    title: Yup.string().required('Quote title is required').min(3, 'Quote title seems to be too short'),
     description: Yup.string(),
     note: Yup.string().notRequired(),
     quoteFor: Yup.object().shape({
@@ -65,19 +65,18 @@ const QuoteAddForm: FC<IProps> = ({id, isLoading, currentItem, actions}) => {
     }),
     property: Yup.string().notRequired(),
     jobRequest: Yup.string().notRequired(),
-    lineItems: Yup.array()
-      .of(
-        Yup.object().shape({
-          name: Yup.object().shape({
-            value: Yup.string(),
-            label: Yup.string().required('Please select a line item.')
-          }),
-          description: Yup.string(),
-          quantity: Yup.number(),
-          unitPrice: Yup.number(),
-          total: Yup.number().notRequired()
-        })
-      )
+    lineItems: Yup.array().of(
+      Yup.object().shape({
+        name: Yup.object().shape({
+          value: Yup.string(),
+          label: Yup.string().required('Please select a line item.')
+        }),
+        description: Yup.string(),
+        quantity: Yup.number(),
+        unitPrice: Yup.number(),
+        total: Yup.number().notRequired()
+      })
+    )
   });
 
   const formik = useFormik({
@@ -87,7 +86,7 @@ const QuoteAddForm: FC<IProps> = ({id, isLoading, currentItem, actions}) => {
     validateOnChange: true,
     onSubmit: async (data: any) => {
       // Preparing the Object for saving
-      const quotePayload = {...data};
+      const quotePayload = { ...data };
 
       // Making properties compliant to Request payload
       quotePayload.title = data.title;
@@ -100,16 +99,16 @@ const QuoteAddForm: FC<IProps> = ({id, isLoading, currentItem, actions}) => {
           quantity: li.quantity,
           unitPrice: li.unitPrice,
           total: li.quantity * li.unitPrice
-        }
+        };
       });
 
       if (!quotePayload.jobRequest) {
         delete quotePayload.jobRequest;
       }
-      
+
       // Dispatch action to create Job Quote
-      await id ? actions.updateQuote(id, quotePayload) : actions.addQuote(quotePayload);
-    },
+      (await id) ? actions.updateQuote(id, quotePayload) : actions.addQuote(quotePayload);
+    }
   });
 
   useEffect(() => {
@@ -125,16 +124,16 @@ const QuoteAddForm: FC<IProps> = ({id, isLoading, currentItem, actions}) => {
         property: currentItem?.property?._id,
         quoteFor: {
           label: currentItem?.quoteFor?.firstName,
-          value: currentItem?.quoteFor?._id,
+          value: currentItem?.quoteFor?._id
         },
-        lineItems: currentItem?.lineItems?.map((item: { name: any; ref: any; }) => {
+        lineItems: currentItem?.lineItems?.map((item: { name: any; ref: any }) => {
           return {
             ...item,
             name: {
               label: item.name,
               value: item.ref
             }
-          }
+          };
         })
       });
 
@@ -143,58 +142,61 @@ const QuoteAddForm: FC<IProps> = ({id, isLoading, currentItem, actions}) => {
         setProperties(response.data?.data?.data?.rows || []);
       });
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, currentItem]);
 
   /**
    * Handles Line Item selection
-   * @param key 
-   * @param selected 
+   * @param key
+   * @param selected
    */
-  const handleLineItemSelection = (key: string, {label, value, meta}: any) => {
-    formik.setFieldValue(`${key}.name`, {label, value });
+  const handleLineItemSelection = (key: string, { label, value, meta }: any) => {
+    formik.setFieldValue(`${key}.name`, { label, value });
     formik.setFieldValue(`${key}.description`, meta?.description || 'Enter your notes here...');
-  }
+  };
 
   /**
    * Handles Client selection
    */
-  const handleClientSelection = async ({label, value, meta}: any) => {
-    formik.setFieldValue(`quoteFor`, {label, value});
+  const handleClientSelection = async ({ label, value, meta }: any) => {
+    formik.setFieldValue(`quoteFor`, { label, value });
     setClientDetails(meta);
 
     const response = await fetchUserProperties(value);
     setProperties(response.data?.data?.data?.rows || []);
-  }
+  };
 
   /**
    * Custom Error Message
-   * 
+   *
    * @param param Props Object
    * @returns JSX
    */
   const ErrorMessage = ({ name }: any) => {
-    if (!name) return (<></>);
-    
+    if (!name) return <></>;
+
     const error = getIn(formik.errors, name);
     const touch = getIn(formik.touched, name);
 
-    return ((touch && error) || error) ? (<div className="row text-danger mt-1 mb-2">
-      <div className="col-1" style={{width: '20px'}}><StopIcon size={14} /></div><div className="col">{error}</div>
-    </div>) : null;
+    return (touch && error) || error ? (
+      <div className="row text-danger mt-1 mb-2">
+        <div className="col-1" style={{ width: '20px' }}>
+          <StopIcon size={14} />
+        </div>
+        <div className="col">{error}</div>
+      </div>
+    ) : null;
   };
 
   return (
     <>
-      <div className="txt-orange">
-          Ref. #{currentItem?.refCode || 'XXXXX'}
-      </div>
-      <form onSubmit={formik.handleSubmit} style={{position: 'relative'}}>
+      {id ? <div className="txt-orange">Ref. #{currentItem?.refCode || 'XXXXX'}</div> : null}
+      <form onSubmit={formik.handleSubmit} style={{ position: 'relative' }}>
         <Loader isLoading={isLoading} />
         <FormikProvider value={formik}>
           <div className="row mb-3">
             <div className="col pb-3">
-              <div className="card" style={{"height": "100%"}}>
+              <div className="card" style={{ height: '100%' }}>
                 <h6 className="txt-bold">Quote Details</h6>
                 <div className="col">
                   <div className="row">
@@ -206,11 +208,7 @@ const QuoteAddForm: FC<IProps> = ({id, isLoading, currentItem, actions}) => {
                         name={`title`}
                         value={formik.values.title}
                         onChange={formik.handleChange}
-                        helperComponent={
-                          formik.errors.title && formik.touched.title ? (
-                            <div className="txt-red">{formik.errors.title}</div>
-                          ) : null
-                        }
+                        helperComponent={formik.errors.title && formik.touched.title ? <div className="txt-red">{formik.errors.title}</div> : null}
                       />
                     </div>
                     <div className="col-12">
@@ -220,7 +218,8 @@ const QuoteAddForm: FC<IProps> = ({id, isLoading, currentItem, actions}) => {
                         rows={4}
                         value={formik.values.description}
                         onChange={formik.handleChange}
-                        className={`form-control`} placeholder={"Quote's description..."}
+                        className={`form-control`}
+                        placeholder={"Quote's description..."}
                       />
                     </div>
                   </div>
@@ -228,7 +227,7 @@ const QuoteAddForm: FC<IProps> = ({id, isLoading, currentItem, actions}) => {
               </div>
             </div>
             <div className="col pb-3">
-              <div className="card" style={{"height": "100%"}}>
+              <div className="card" style={{ height: '100%' }}>
                 <h6 className="txt-bold">Client Details</h6>
                 <SelectAsync
                   name={`quoteFor`}
@@ -242,23 +241,42 @@ const QuoteAddForm: FC<IProps> = ({id, isLoading, currentItem, actions}) => {
                   <div className="row bg-grey m-0">
                     <div className="col p-2 ps-4">
                       <div className="txt-orange">{(clientDetails as any)?.fullName}</div>
-                      <div className="txt-bold">{(clientDetails as any)?.email} / {(clientDetails as any)?.phoneNumber}</div>
-                      <div className="txt-grey">{(clientDetails as any)?.address?.street1}, {(clientDetails as any)?.address?.city}, {(clientDetails as any)?.address?.country}</div>
+                      <div className="txt-bold">
+                        {(clientDetails as any)?.email} / {(clientDetails as any)?.phoneNumber}
+                      </div>
+                      <div className="txt-grey">
+                        {(clientDetails as any)?.address?.street1}, {(clientDetails as any)?.address?.city}, {(clientDetails as any)?.address?.country}
+                      </div>
                     </div>
-                  </div>) : null }
+                  </div>
+                ) : null}
                 <div className="txt-bold mt-3 txt-grey">Client's Properties</div>
-                {!properties.length ? <div className="txt-orange"><StopIcon size={16} /> There are no properties assigned to the client.</div> : null}
+                {!properties.length ? (
+                  <div className="txt-orange">
+                    <StopIcon size={16} /> There are no properties assigned to the client.
+                  </div>
+                ) : null}
                 {properties.map((property: any) => {
-                  return (<div key={property._id} className="row mb-2 border-bottom">
-                  <div className="col-1 p-2 pt-3 ps-4">
-                    <input name="property" type="radio" value={property._id} onChange={formik.handleChange} checked={property._id === formik.values.property}/>
-                  </div>
-                  <div className="col p-2 ps-4">
-                    <div className="txt-grey">{property.name}</div>
-                    <div className="">{property?.street1}, {property?.postalCode}, {property?.city}, {property?.state}, {property?.country}</div>
-                  </div>
-                </div>)
-              })}
+                  return (
+                    <div key={property._id} className="row mb-2 border-bottom">
+                      <div className="col-1 p-2 pt-3 ps-4">
+                        <input
+                          name="property"
+                          type="radio"
+                          value={property._id}
+                          onChange={formik.handleChange}
+                          checked={property._id === formik.values.property}
+                        />
+                      </div>
+                      <div className="col p-2 ps-4">
+                        <div className="txt-grey">{property.name}</div>
+                        <div className="">
+                          {property?.street1}, {property?.postalCode}, {property?.city}, {property?.state}, {property?.country}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -267,17 +285,13 @@ const QuoteAddForm: FC<IProps> = ({id, isLoading, currentItem, actions}) => {
             <h6 className="txt-bold">Line items</h6>
             <div className="row">
               <div className="col-5 p-2 ps-3">
-                <div className="bg-light-grey txt-grey p-2 txt-bold">
-                  PRODUCT / SERVICE
-                </div>
+                <div className="bg-light-grey txt-grey p-2 txt-bold">PRODUCT / SERVICE</div>
               </div>
               <div className="col p-2 ps-3">
                 <div className="bg-light-grey txt-grey p-2 txt-bold">QTY.</div>
               </div>
               <div className="col p-2 ps-3">
-                <div className="bg-light-grey txt-grey p-2 txt-bold">
-                  UNIT PRICE
-                </div>
+                <div className="bg-light-grey txt-grey p-2 txt-bold">UNIT PRICE</div>
               </div>
               <div className="col p-2 ps-3">
                 <div className="bg-light-grey txt-grey p-2 txt-bold">TOTAL</div>
@@ -308,7 +322,8 @@ const QuoteAddForm: FC<IProps> = ({id, isLoading, currentItem, actions}) => {
                               name={`lineItems[${index}].description`}
                               value={formik.values.lineItems[index].description}
                               onChange={formik.handleChange}
-                              className={`form-control mb-3`} placeholder={"Line item's description..."}
+                              className={`form-control mb-3`}
+                              placeholder={"Line item's description..."}
                             />
                           </div>
                           <div className="col">
@@ -333,26 +348,33 @@ const QuoteAddForm: FC<IProps> = ({id, isLoading, currentItem, actions}) => {
                             <strong>{`$ ${formik.values.lineItems[index].quantity * formik.values.lineItems[index].unitPrice}`}</strong>
                           </div>
                           <div className="col-1 mt-3 ps-1 pointer text-center">
-                            <span className="mr-2" onClick={() => arrayHelpers.push({
-                              name: {
-                                label: '',
-                                value: ''
-                              },
-                              description: '',
-                              quantity: 0,
-                              unitPrice: 0,
-                              total: 0
-                            })}>
+                            <span
+                              className="mr-2"
+                              onClick={() =>
+                                arrayHelpers.push({
+                                  name: {
+                                    label: '',
+                                    value: ''
+                                  },
+                                  description: '',
+                                  quantity: 0,
+                                  unitPrice: 0,
+                                  total: 0
+                                })
+                              }
+                            >
                               <PlusCircleIcon size={20} />
                             </span>
                             &nbsp;&nbsp;
-                            {(index !== 0) ? (<span onClick={() => arrayHelpers.remove(index)}>
-                              <XCircleIcon size={20} />
-                            </span>) : null}
+                            {index !== 0 ? (
+                              <span onClick={() => arrayHelpers.remove(index)}>
+                                <XCircleIcon size={20} />
+                              </span>
+                            ) : null}
                           </div>
                         </div>
-                      </Fragment>)
-                    )}
+                      </Fragment>
+                    ))}
                   </div>
                 )}
               />
@@ -364,7 +386,10 @@ const QuoteAddForm: FC<IProps> = ({id, isLoading, currentItem, actions}) => {
               </div>
               <div className="col txt-bold mt-3">
                 <div className="d-flex float-end">
-                  <h5 className="txt-bold mt-2">$ {formik.values?.lineItems?.length ? (formik.values?.lineItems.reduce((current, next) => (current += next.quantity * next.unitPrice), 0)) : 0}</h5>
+                  <h5 className="txt-bold mt-2">
+                    ${' '}
+                    {formik.values?.lineItems?.length ? formik.values?.lineItems.reduce((current, next) => (current += next.quantity * next.unitPrice), 0) : 0}
+                  </h5>
                 </div>
               </div>
             </div>
@@ -402,7 +427,7 @@ const mapDispatchToProps = (dispatch: any) => ({
     fetchQuote: (id: string) => {
       dispatch(quotesActions.fetchQuote(id, {}));
     }
-  },
+  }
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(QuoteAddForm);

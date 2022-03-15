@@ -30,14 +30,14 @@ const TopNavbar: FC<IProps> = ({ loggedIn = true }) => {
         {loggedIn && (
           <>
             <form className="ms-4 form-inline navbar-nav me-auto">
-              <div className="input-group">
+              {/* <div className="input-group">
                 <input type="text" className="form-control search-input bg-light-grey" placeholder="Search" />
-              </div>
+              </div> */}
             </form>
             <ul className="d-flex navbar-nav">
-              <li className="nav-item me-3 mt-1">
+              {/* <li className="nav-item me-3 mt-1">
                 <box-icon name="bell"></box-icon>
-              </li>
+              </li> */}
               <li className="nav-item">
                 <div className="dropdown dropstart">
                   <span role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">

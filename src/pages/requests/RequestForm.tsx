@@ -134,9 +134,7 @@ const RequestAddForm: FC<IProps> = ({ id, actions, clients, isJobRequestsLoading
 
   return (
     <>
-      <div className="txt-orange">
-        Ref. #{currentJobRequest?.reqCode || 'XXXXX'}
-      </div>
+      {id ? <div className="txt-orange">Ref. #{currentJobRequest?.reqCode || 'XXXXX'}</div> : null}
       <form noValidate onSubmit={formik.handleSubmit}>
         <Loader isLoading={isJobRequestsLoading} />
         <div className="row mb-3">
@@ -213,7 +211,13 @@ const RequestAddForm: FC<IProps> = ({ id, actions, clients, isJobRequestsLoading
                 return (
                   <div key={property._id} className="row mb-2 border-bottom">
                     <div className="col-1 p-2 pt-3 ps-4">
-                      <input name="property" type="radio" value={property._id} onChange={formik.handleChange} checked={property._id === formik.values.property} />
+                      <input
+                        name="property"
+                        type="radio"
+                        value={property._id}
+                        onChange={formik.handleChange}
+                        checked={property._id === formik.values.property}
+                      />
                     </div>
                     <div className="col p-2 ps-4">
                       <div className="txt-grey">{property.name}</div>

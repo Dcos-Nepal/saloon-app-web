@@ -68,7 +68,7 @@ const InvoicesList = (props: any) => {
   };
 
   useEffect(() => {
-    const clientQuery: { invoiceFor?: string; } = {}
+    const clientQuery: { invoiceFor?: string } = {};
 
     if (currentUser.role === 'CLIENT') clientQuery.invoiceFor = currentUser.id;
 
@@ -215,14 +215,14 @@ const InvoicesList = (props: any) => {
                   <EyeIcon /> View Detail
                 </span>
               </li>
-              {(currentUser.role === 'ADMIN') ? (
+              {currentUser.role === 'ADMIN' ? (
                 <>
                   <li className="pointer" onClick={() => navigate('/dashboard/invoices/' + row.id + '/edit')}>
                     <span className="dropdown-item cursor-pointer">
                       <PencilIcon /> Edit
                     </span>
                   </li>
-                  <li className="pointer" onClick={() => setDeleteInProgress('/dashboard/invoices/' + row.id)}>
+                  <li className="pointer" onClick={() => setDeleteInProgress(row.id)}>
                     <span className="dropdown-item cursor-pointer">
                       <TrashIcon /> Delete
                     </span>
@@ -248,7 +248,8 @@ const InvoicesList = (props: any) => {
         </div>
         <div className="col">
           <button onClick={() => navigate('/dashboard/invoices/' + endpoints.admin.invoices.add)} type="button" className="btn btn-primary d-flex float-end">
-            <ReportIcon className='mt-1' />&nbsp;New Invoice
+            <ReportIcon className="mt-1" />
+            &nbsp;New Invoice
           </button>
         </div>
         <label className="txt-grey">{invoices.length} invoices</label>

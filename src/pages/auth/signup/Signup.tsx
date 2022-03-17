@@ -4,14 +4,14 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 import { endpoints } from 'common/config';
 import LogoFull from 'assets/images/LogoFull.svg';
-import { useEffect, useState } from 'react';
 import { Loader } from 'common/components/atoms/Loader';
 import InputField from 'common/components/form/Input';
 import { registerUserApi } from 'services/auth.service';
 import { toast } from 'react-toastify';
 import { AlertFillIcon } from '@primer/octicons-react';
+import { useState } from 'react';
 
-const SignUp = (props: any) => {
+const SignUp = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -73,12 +73,6 @@ const SignUp = (props: any) => {
     },
     validationSchema: SignUpSchema
   });
-
-  useEffect(() => {
-    if (props.isSuccess && props.isFailed === false) {
-      navigate(endpoints.auth.signIn);
-    }
-  }, [props.isSuccess, props.isFailed, navigate]);
 
   return (
     <div className="container-fluid txt-grey">

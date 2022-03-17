@@ -63,8 +63,12 @@ const SignUp = (props: any) => {
         toast.success('Success! Verification email sent.');
         return navigate(endpoints.auth.signIn);
       } else {
+        if (response.data.message === 'REGISTRATION.USER_ALREADY_REGISTERED') {
+          toast.error('The email is already used.');
+        } else {
+          toast.error('Error while registering user.');
+        }
         setIsLoading(false);
-        toast.error('Error while registering user.');
       }
     },
     validationSchema: SignUpSchema

@@ -11,6 +11,7 @@ import { signInUserApi } from 'services/auth.service';
 import LogoFull from 'assets/images/LogoFull.svg';
 import { Loader } from 'common/components/atoms/Loader';
 import InputField from 'common/components/form/Input';
+import { toast } from 'react-toastify';
 
 const Signin = () => {
   const navigate = useNavigate();
@@ -52,8 +53,12 @@ const Signin = () => {
         setData('accessToken', accessToken);
         setData('refreshToken', refreshToken);
 
+        // Display success message
+        toast.success('Welcome! Login success.');
+
         setIsLoading(false);
       } else {
+        toast.error('Invalid credentials provided.');
         setIsLoading(false);
       }
     },

@@ -60,11 +60,11 @@ const SignUp = (props: any) => {
 
       if (response.data.success === true) {
         setIsLoading(false);
-        toast.success('Success!! Check your email for verification.');
+        toast.success('Success! Verification email sent.');
         return navigate(endpoints.auth.signIn);
       } else {
         setIsLoading(false);
-        toast.error('Error! Error while registering user.');
+        toast.error('Error while registering user.');
       }
     },
     validationSchema: SignUpSchema

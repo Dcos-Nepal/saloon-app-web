@@ -138,7 +138,7 @@ const Signin = () => {
                 </small>
               </div>
               <div className="d-flex justify-content-center mt-3">
-                <button type="submit" className="btn btn-primary btn-full">
+                <button type="submit" className="btn btn-primary btn-full" disabled={isLoading}>
                   Login
                 </button>
               </div>

@@ -51,9 +51,6 @@ const SignUp = () => {
         };
       }
 
-      // Remove the userType attribute.
-      delete formData.userType;
-
       // Making a User Registration Request
       setIsLoading(true);
       const response: any = await registerUserApi(formData);
@@ -178,7 +175,7 @@ const SignUp = () => {
               </div>
 
               <div className="d-flex justify-content-center mt-2">
-                <button type="submit" className="btn btn-primary btn-long">
+                <button type="submit" className="btn btn-primary btn-long" disabled={isLoading}>
                   Sign up
                 </button>
               </div>

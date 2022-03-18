@@ -72,7 +72,7 @@ const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker, isWorkersLoa
             street2: '',
             city: '',
             state: '',
-            postalCode: undefined,
+            postalCode: '',
             country: DEFAULT_COUNTRY.value
           },
           userData: {
@@ -109,7 +109,7 @@ const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker, isWorkersLoa
       street2: Yup.string().notRequired(),
       city: Yup.string().required(`City is required`),
       state: Yup.string().required(`State is required`),
-      postalCode: Yup.number().required(`Postal Code is required`),
+      postalCode: Yup.string().required(`Postal Code is required`),
       country: Yup.string().required(`Country is required`)
     }),
     email: Yup.string().required(`Email is required`).email('Invalid email'),
@@ -154,7 +154,7 @@ const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker, isWorkersLoa
       // For creating worker
       else await actions.addWorker(data);
       // Redirect to previous page
-      navigate(-1);
+      // navigate(-1);
     }
   });
 
@@ -449,13 +449,14 @@ const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker, isWorkersLoa
             <div className="mb-3 row">
               <div className="col">
                 <InputField
+                  type="text"
                   label="Post code"
                   placeholder="Enter post code"
                   name="address.postalCode"
                   helperComponent={<ErrorMessage name="address.postalCode" />}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
-                  value={formik.values.address?.postalCode}
+                  value={formik.values.address?.postalCode.toString()}
                 />
               </div>
               <div className="col">
@@ -505,10 +506,9 @@ const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker, isWorkersLoa
       </div>
       <div className="mb-3 mt-3">
         <button
-          type="button"
           onClick={async () => {
             await formik.handleSubmit();
-            // navigate(-1);
+            navigate(-1);
           }}
           className="btn btn-primary"
         >
@@ -519,7 +519,7 @@ const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker, isWorkersLoa
             type="button"
             onClick={async () => {
               await formik.handleSubmit();
-              // formik.resetForm();
+              window.location.reload();
             }}
             className="btn btn-secondary ms-3"
           >

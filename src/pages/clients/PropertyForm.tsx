@@ -164,11 +164,25 @@ const PropertyForm: FC<IProps> = ({ cleanForm, currentProperty, saveProperty, up
           {currentProperty ? 'Update Property' : 'Save Property'}
         </button>
         &nbsp;&nbsp;
-        <button onClick={cleanForm} type="button" className="btn btn-secondary">
+        <button
+          onClick={() => {
+            cleanForm();
+            formik.resetForm();
+          }}
+          type="button"
+          className="btn btn-secondary"
+        >
           Cancel
         </button>
         &nbsp;&nbsp;
-        <button onClick={() => formik.resetForm()} type="button" className="btn bg-light-red">
+        <button
+          onClick={() => {
+            cleanForm();
+            formik.resetForm();
+          }}
+          type="button"
+          className="btn bg-light-red"
+        >
           Reset Form
         </button>
       </div>

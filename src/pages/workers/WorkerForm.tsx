@@ -375,7 +375,7 @@ const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker, isWorkersLoa
                     }`}
                     onClick={() => onWorkingDaysChange(day)}
                   >
-                    <span className="item">{day[0].toString().toUpperCase()}</span>
+                    <span className="item">{day[0]?.toString().toUpperCase()}</span>
                   </li>
                 ))}
               </ul>
@@ -456,7 +456,7 @@ const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker, isWorkersLoa
                   helperComponent={<ErrorMessage name="address.postalCode" />}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
-                  value={formik.values.address?.postalCode.toString()}
+                  value={formik.values.address?.postalCode?.toString()}
                 />
               </div>
               <div className="col">

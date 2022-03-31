@@ -5,6 +5,7 @@ import { endpoints } from 'common/config';
 import avatar from 'assets/images/Avatar.svg';
 import Footer from 'common/components/layouts/footer';
 import SideNavbar from 'common/components/layouts/sidebar';
+import { PencilIcon } from '@primer/octicons-react';
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -23,8 +24,15 @@ const Profile = () => {
             <span className="col">Back to previous</span>
           </div>
           <div>
-            <div className="d-flex flex-row mt-2">
-              <h3 className="txt-bold extra">{currentUser.fullName || `${currentUser.firstName} ${currentUser.lastName}`}</h3>
+            <div className="d-flex flex-row row mt-2">
+              <div className="col d-flex flex-row">
+                <h3 className="txt-bold extra">{currentUser.fullName || `${currentUser.firstName} ${currentUser.lastName}`}</h3>
+              </div>
+              <div className="col">
+                <div onClick={() => navigate('/dashboard/' + endpoints.setting)} className="btn btn-primary d-flex float-end">
+                  <PencilIcon className="mt-1" />
+                </div>
+              </div>
             </div>
             <div className="row m-1">
               <div className="col card">
@@ -141,17 +149,23 @@ const Profile = () => {
                       </div>
                       <div className="col p-2 ps-4">
                         <div className="txt-grey">Working Days</div>
-                        <div className="">
-                          {currentUser.userData?.workingDays ? currentUser.userData?.workingDays : 'No working days set.'}
-                        </div>
+                        <div className="">{currentUser.userData?.workingDays ? currentUser.userData?.workingDays : 'No working days set.'}</div>
                       </div>
                     </div>
                     <div className="row mt-2">
                       <div className="col p-2 ps-4">
                         <div className="txt-grey">Services</div>
-                        <div className="">{currentUser?.userData?.services.length
-                          ? currentUser?.userData?.services.map((service: string) => (<><span key={service} className="badge rounded-pill bg-secondary p-1">{service}</span>&nbsp;</>))
-                          : 'No services added yet.'}
+                        <div className="">
+                          {currentUser?.userData?.services.length
+                            ? currentUser?.userData?.services.map((service: string) => (
+                                <>
+                                  <span key={service} className="badge rounded-pill bg-secondary p-1">
+                                    {service}
+                                  </span>
+                                  &nbsp;
+                                </>
+                              ))
+                            : 'No services added yet.'}
                         </div>
                       </div>
                     </div>

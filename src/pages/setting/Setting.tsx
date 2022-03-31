@@ -1,17 +1,30 @@
 import * as Yup from 'yup';
 import { useState } from 'react';
-import { useFormik } from 'formik';
+import { getIn, useFormik } from 'formik';
+import { connect } from 'react-redux';
+import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router';
 
-import { clearData, getData } from 'utils/storage';
+import { clearData, getData, setData } from 'utils/storage';
 import Footer from 'common/components/layouts/footer';
 import { Loader } from 'common/components/atoms/Loader';
 import SideNavbar from 'common/components/layouts/sidebar';
 import InputField from 'common/components/form/Input';
 import { changePasswordApi } from 'services/auth.service';
-import { toast } from 'react-toastify';
+import * as workersActions from 'store/actions/workers.actions';
+import { StopIcon } from '@primer/octicons-react';
+import SelectField from 'common/components/form/Select';
+import { COUNTRIES_OPTIONS, STATES_OPTIONS } from 'common/constants';
+import { IOption } from 'common/types/form';
+import { updateUserApi } from 'services/users.service';
 
-const Setting = () => {
+const Setting = ({
+  actions
+}: {
+  actions: {
+    updateWorker: (data: any) => void;
+  };
+}) => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -23,6 +36,8 @@ const Setting = () => {
     newPassword: '',
     confirmPassword: ''
   };
+
+  const profileInitialValues = currentUser;
 
   const ChangePasswordSchema = Yup.object().shape({
     email: Yup.string().required('Please provide an email.').email('Invalid email provided'),
@@ -38,6 +53,21 @@ const Setting = () => {
       .min(8, 'Password must be at least 8 characters')
       .max(24, 'Password can be maximum 24 characters')
       .required('Confirm Password is required')
+  });
+
+  const ProfileUpdateSchema = Yup.object().shape({
+    firstName: Yup.string().required(`First name is required`).min(2, 'Too Short!').max(20, 'Too Long!'),
+    lastName: Yup.string().required(`Last name is required`).min(2, 'Too Short!').max(20, 'Too Long!'),
+    address: Yup.object().shape({
+      street1: Yup.string().required(`Street 1 is required`),
+      street2: Yup.string().notRequired(),
+      city: Yup.string().required(`City is required`),
+      state: Yup.string().required(`State is required`),
+      postalCode: Yup.string().required(`Postal Code is required`),
+      country: Yup.string().required(`Country is required`)
+    }),
+    email: Yup.string().required(`Email is required`).email('Invalid email'),
+    phoneNumber: Yup.string().label('Phone Number').required(`Phone number is required`).length(10)
   });
 
   const formik = useFormik({
@@ -66,6 +96,48 @@ const Setting = () => {
     validationSchema: ChangePasswordSchema
   });
 
+  const profileFormik = useFormik({
+    enableReinitialize: true,
+    initialValues: profileInitialValues,
+    onSubmit: async (userData: any) => {
+      setIsLoading(true);
+      const { data: response }: any = await updateUserApi(userData);
+
+      if (response.data.success === true) {
+        setIsLoading(false);
+        toast.success('Profile updated successfully!');
+        setData('user', response.data?.data || currentUser);
+
+        return navigate('/dashboard/profile');
+      } else {
+        setIsLoading(false);
+        toast.error('Failed to update profile');
+      }
+    },
+    validationSchema: ProfileUpdateSchema
+  });
+
+  /**
+   * Custom Error Message
+   * @param param0 Props Object
+   * @returns JSX
+   */
+  const ErrorMessage = ({ formik, name }: any) => {
+    if (!name) return <></>;
+
+    const error = getIn(formik.errors, name);
+    const touch = getIn(formik.touched, name);
+
+    return (touch && error) || error ? (
+      <div className="row txt-red">
+        <div className="col-1" style={{ width: '20px' }}>
+          <StopIcon size={14} />
+        </div>
+        <div className="col">{error}</div>
+      </div>
+    ) : null;
+  };
+
   return (
     <>
       <SideNavbar active="Setting" />
@@ -84,6 +156,137 @@ const Setting = () => {
 
             <div className="row m-1">
               <div className="card col">
+                <Loader isLoading={isLoading} />
+                <div className="mb-2">
+                  <h4>Update Profile</h4>
+                  <label>Edit the values and save to update profile</label>
+                </div>
+                <form noValidate onSubmit={profileFormik.handleSubmit}>
+                  <div className="row">
+                    <div className="col">
+                      <InputField
+                        label="First name"
+                        placeholder="Enter first name"
+                        name="firstName"
+                        helperComponent={<ErrorMessage formik={profileFormik} name="firstName" />}
+                        onChange={profileFormik.handleChange}
+                        onBlur={profileFormik.handleBlur}
+                        value={profileFormik.values.firstName}
+                      />
+                    </div>
+                    <div className="col">
+                      <InputField
+                        label="Last name"
+                        placeholder="Enter last name"
+                        name="lastName"
+                        helperComponent={<ErrorMessage formik={profileFormik} name="lastName" />}
+                        onChange={profileFormik.handleChange}
+                        onBlur={profileFormik.handleBlur}
+                        value={profileFormik.values.lastName}
+                      />
+                    </div>
+                  </div>
+                  <InputField
+                    label="Email address"
+                    placeholder="Enter email address"
+                    type="email"
+                    name="email"
+                    helperComponent={<ErrorMessage formik={profileFormik} name="email" />}
+                    onChange={profileFormik.handleChange}
+                    onBlur={profileFormik.handleBlur}
+                    value={profileFormik.values.email}
+                  />
+                  <InputField
+                    label="Phone number"
+                    placeholder="Enter phone number"
+                    name="phoneNumber"
+                    helperComponent={<ErrorMessage formik={profileFormik} name="phoneNumber" />}
+                    onChange={profileFormik.handleChange}
+                    onBlur={profileFormik.handleBlur}
+                    value={profileFormik.values.phoneNumber}
+                  />
+                  <div className="mb-3">
+                    <label className="txt-bold mt-2 mb-2">Address</label>
+                    <InputField
+                      label="Street 1"
+                      placeholder="Enter street 1"
+                      name="address.street1"
+                      helperComponent={<ErrorMessage formik={profileFormik} name="address.street1" />}
+                      onChange={profileFormik.handleChange}
+                      onBlur={profileFormik.handleBlur}
+                      value={profileFormik.values.address?.street1}
+                    />
+                    <InputField
+                      label="Street 2"
+                      placeholder="Enter street 2"
+                      name="address.street2"
+                      helperComponent={<ErrorMessage formik={profileFormik} name="address.street2" />}
+                      onChange={profileFormik.handleChange}
+                      onBlur={profileFormik.handleBlur}
+                      value={profileFormik.values.address?.street2}
+                    />
+                    <div className="mb-3 row">
+                      <div className="col">
+                        <InputField
+                          label="City"
+                          placeholder="Enter city"
+                          name="address.city"
+                          helperComponent={<ErrorMessage formik={profileFormik} name="address.city" />}
+                          onChange={profileFormik.handleChange}
+                          onBlur={profileFormik.handleBlur}
+                          value={profileFormik.values.address?.city}
+                        />
+                      </div>
+                      <div className="col">
+                        <SelectField
+                          label="State"
+                          name="address.state"
+                          options={STATES_OPTIONS}
+                          helperComponent={<ErrorMessage formik={profileFormik} name="address.state" />}
+                          value={STATES_OPTIONS.find((option) => option.value === profileFormik.values.address?.state)}
+                          handleChange={(selectedOption: IOption) => {
+                            profileFormik.setFieldValue('address.state', selectedOption.value);
+                          }}
+                          onBlur={profileFormik.handleBlur}
+                        />
+                      </div>
+                    </div>
+                    <div className="mb-3 row">
+                      <div className="col">
+                        <InputField
+                          type="text"
+                          label="Post code"
+                          placeholder="Enter post code"
+                          name="address.postalCode"
+                          helperComponent={<ErrorMessage formik={profileFormik} name="address.postalCode" />}
+                          onChange={profileFormik.handleChange}
+                          onBlur={profileFormik.handleBlur}
+                          value={profileFormik.values.address?.postalCode?.toString()}
+                        />
+                      </div>
+                      <div className="col">
+                        <SelectField
+                          label="Country"
+                          name="address.country"
+                          options={COUNTRIES_OPTIONS}
+                          helperComponent={<ErrorMessage formik={profileFormik} name="address.country" />}
+                          value={COUNTRIES_OPTIONS.find((option) => option.value === profileFormik.values.address?.country)}
+                          handleChange={(selectedOption: IOption) => {
+                            profileFormik.setFieldValue('address.country', selectedOption.value);
+                          }}
+                          onBlur={profileFormik.handleBlur}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="d-flex justify-content-center mt-2">
+                    <button type="submit" className="btn btn-primary btn-full">
+                      Update Profile
+                    </button>
+                  </div>
+                </form>
+              </div>
+              <div className="card ms-3 col-5">
                 <Loader isLoading={isLoading} />
                 <div className="mb-2">
                   <h4>Change password</h4>
@@ -131,12 +334,11 @@ const Setting = () => {
                   </div>
                   <div className="d-flex justify-content-center mt-2">
                     <button type="submit" className="btn btn-primary btn-full">
-                      Submit
+                      Change Password
                     </button>
                   </div>
                 </form>
               </div>
-              <div className="col"></div>
             </div>
           </div>
         </div>
@@ -146,4 +348,19 @@ const Setting = () => {
   );
 };
 
-export default Setting;
+const mapStateToProps = (state: any) => {
+  return {
+    isWorkersLoading: state.workers.isLoading,
+    currentWorker: state.workers.currentUser
+  };
+};
+
+const mapDispatchToProps = (dispatch: any) => ({
+  actions: {
+    updateWorker: (data: any) => {
+      dispatch(workersActions.updateWorker(data));
+    }
+  }
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Setting);

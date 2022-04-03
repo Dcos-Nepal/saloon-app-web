@@ -429,7 +429,7 @@ const Setting = ({
                     <div className="mb-3 row">
                       <div className="col">
                         <InputField
-                          label="City"
+                          label="Suburb"
                           placeholder="Enter city"
                           name="address.city"
                           helperComponent={<ErrorMessage formik={profileFormik} name="address.city" />}

@@ -5,7 +5,7 @@ import { endpoints } from 'common/config';
 import avatar from 'assets/images/Avatar.svg';
 import Footer from 'common/components/layouts/footer';
 import SideNavbar from 'common/components/layouts/sidebar';
-import { PencilIcon } from '@primer/octicons-react';
+import { KeyIcon, PencilIcon } from '@primer/octicons-react';
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -25,12 +25,21 @@ const Profile = () => {
           </div>
           <div>
             <div className="d-flex flex-row row mt-2">
-              <div className="col d-flex flex-row">
+              <div className="col-7 d-flex flex-row">
                 <h3 className="txt-bold extra">{currentUser.fullName || `${currentUser.firstName} ${currentUser.lastName}`}</h3>
               </div>
-              <div className="col">
-                <div onClick={() => navigate('/dashboard/' + endpoints.setting)} className="btn btn-primary d-flex float-end">
-                  <PencilIcon className="mt-1" />
+              <div className="col-5">
+                <div className='row'>
+                  <div className='col'>
+                    <div className="btn btn-primary d-flex flex-end" onClick={() => navigate('/dashboard/' + endpoints.setting)}>
+                      <PencilIcon className="mt-1" />&nbsp; Edit Profile
+                    </div>
+                  </div>
+                  <div className='col'>
+                    <div className="btn btn-primary d-flex" onClick={() => navigate('/dashboard/' + endpoints.setting)}>
+                      <KeyIcon className="mt-1" />&nbsp; Change Password
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -183,20 +192,6 @@ const Profile = () => {
                     </div>
                   </div>
                 ) : null}
-              </div>
-            </div>
-            <div className="row m-1 mt-4">
-              <div className="col ms-3">
-                <div className="row">
-                  <div className="col d-flex flex-row">
-                    <h5 className="txt-bold">Change Password</h5>
-                  </div>
-                </div>
-                <div className="mt-2">
-                  <button type="button" className="btn btn-primary" onClick={() => navigate('/dashboard/' + endpoints.setting)}>
-                    Change Password
-                  </button>
-                </div>
               </div>
             </div>
           </div>

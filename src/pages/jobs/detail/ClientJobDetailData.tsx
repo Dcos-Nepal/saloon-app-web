@@ -35,6 +35,7 @@ import VisitCompletedActions from './VisitCompletedActions';
 import { Loader } from 'common/components/atoms/Loader';
 import VisitDetail from './VisitDetail';
 import DeleteConfirm from 'common/components/DeleteConfirm';
+import { useNavigate } from 'react-router-dom';
 
 interface IVisitList {
   overdue: any;
@@ -43,6 +44,7 @@ interface IVisitList {
 }
 
 const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisitLoading }: any) => {
+  const navigate = useNavigate();
   const [visits, setVisits] = useState<IVisitList>({ overdue: [], completed: [] });
   const [editVisitMode, setEditVisitMode] = useState(false);
   const [completeVisitMode, setCompleteVisitMode] = useState(false);
@@ -314,6 +316,13 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
 
   return (
     <div>
+      <div className="d-flex flex-row mt-2">
+        <div className="col">
+          <button onClick={() => id && navigate(`edit`)} type="button" className="btn btn-primary d-flex float-end me-2">
+            <PencilIcon className='mt-1'/>&nbsp; Edit Job Details
+          </button>
+        </div>
+      </div>
       <div className="row mt-1 pb-3">
         <Loader isLoading={isJobLoading} />
         <div className="col-12 mb-4">

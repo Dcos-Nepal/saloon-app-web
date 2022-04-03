@@ -77,7 +77,10 @@ const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker, isWorkersLoa
           },
           userData: {
             type: 'WORKER',
-            workingHours: '',
+            workingHours: {
+              start: '',
+              end: ''
+            },
             workingDays: [],
             documents: {
               idCard: {
@@ -133,7 +136,10 @@ const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker, isWorkersLoa
           type: Yup.string()
         })
       }),
-      workingHours: Yup.string().required(`Working hours is required`).max(20, 'Too Long!'),
+      workingHours: Yup.object().shape({
+        start: Yup.string().required(`Start Time is required`),
+        end: Yup.string().required(`End Time is required`)
+      }),
       workingDays: Yup.array(Yup.string()).min(1, `Working days is required`),
       services: Yup.array(Yup.string())
     })
@@ -354,10 +360,21 @@ const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker, isWorkersLoa
             <div className="col-5">
               <InputField
                 label="Working hours"
-                placeholder="Enter working hours"
-                name="userData.workingHours"
-                value={formik.values.userData?.workingHours}
-                helperComponent={<ErrorMessage name={'userData.workingHours'} />}
+                placeholder="Start Hours"
+                type="time"
+                name="userData.workingHours.start"
+                value={formik.values.userData?.workingHours?.start}
+                helperComponent={<ErrorMessage name={'userData.workingHours.start'} />}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+              />
+              <InputField
+                label=""
+                placeholder="End Hours"
+                type="time"
+                name="userData.workingHours.end"
+                value={formik.values.userData?.workingHours?.end}
+                helperComponent={<ErrorMessage name={'userData.workingHours.end'} />}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
               />
@@ -423,8 +440,8 @@ const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker, isWorkersLoa
             <div className="mb-3 row">
               <div className="col">
                 <InputField
-                  label="City"
-                  placeholder="Enter city"
+                  label="Suburb"
+                  placeholder="Enter Suburb"
                   name="address.city"
                   helperComponent={<ErrorMessage name="address.city" />}
                   onChange={formik.handleChange}

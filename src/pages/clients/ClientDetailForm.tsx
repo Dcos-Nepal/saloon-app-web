@@ -60,7 +60,8 @@ const ClientDetailForm: FC<IProps> = ({ id, actions, currentClient, properties, 
       type: 'CLIENT',
       company: ''
     },
-    avatar: ''
+    avatar: '',
+    isCompanyNamePrimary: false
   });
 
   useEffect(() => {
@@ -88,7 +89,7 @@ const ClientDetailForm: FC<IProps> = ({ id, actions, currentClient, properties, 
     address: Yup.object().shape({
       street1: Yup.string().required(`Street 1 is required`),
       street2: Yup.string(),
-      city: Yup.string().required(`City is required`),
+      city: Yup.string().required(`Suburb is required`),
       state: Yup.string().required(`State is required`),
       postalCode: Yup.number().required(`Postal Code is required`),
       country: Yup.string().required(`Country is required`)
@@ -97,7 +98,8 @@ const ClientDetailForm: FC<IProps> = ({ id, actions, currentClient, properties, 
       type: Yup.string(),
       preferredTime: Yup.array(Yup.string()).notRequired(),
       companyName: Yup.string()
-    })
+    }),
+    isCompanyNamePrimary: Yup.boolean().notRequired()
   });
 
   const formik = useFormik({
@@ -216,7 +218,7 @@ const ClientDetailForm: FC<IProps> = ({ id, actions, currentClient, properties, 
                 onBlur={formik.handleBlur}
               />
               <div className="mb-3">
-                <input className="form-check-input" type="checkbox" value="" id="flexCheckDefault" />
+                <input className="form-check-input" type="checkbox" value={formik.values?.userData?.company || ''}id="flexCheckDefault" name="isCompanyNamePrimary" onChange={formik.handleChange}/>
                 <label className="ms-2 form-check-label" htmlFor="flexCheckDefault">
                   Use company name as the primary name
                 </label>
@@ -264,8 +266,8 @@ const ClientDetailForm: FC<IProps> = ({ id, actions, currentClient, properties, 
                   <div className="mb-3 row">
                     <div className="col">
                       <InputField
-                        label="City"
-                        placeholder="Enter city"
+                        label="Suburb"
+                        placeholder="Enter suburb"
                         name="address.city"
                         value={formik.values.address?.city}
                         helperComponent={<ErrorMessage name="address.city" />}

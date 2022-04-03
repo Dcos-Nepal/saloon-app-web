@@ -46,3 +46,16 @@ export const excludeById = (array: any[], id: string) => {
 export const getTodayStr = () => {
   return new Date().toISOString().replace(/T.*$/, '')
 }
+
+/**
+ * Generates sample UUID
+ * @returns string
+ */
+ export const getUuid = (): string => {
+  const s4 = () => {
+    return Math.floor((1 + Math.random()) * 0x10000)
+      .toString(16)
+      .substring(1);
+  };
+  return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+}

@@ -21,4 +21,5 @@ export interface IClient {
   roles: string[];
   password?: string;
   avatar?: string;
+  isCompanyNamePrimary?: boolean
 }

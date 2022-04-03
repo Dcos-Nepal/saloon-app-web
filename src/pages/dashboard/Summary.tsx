@@ -1,15 +1,18 @@
 import { useEffect, useState } from 'react';
-import { getJobsSummaryApi } from 'services/jobs.service';
 import { useNavigate } from 'react-router-dom';
-import { getJobRequestsSummaryApi } from 'services/job-requests.service';
+
+import { getCurrentUser } from 'utils';
+
+import { getJobsSummaryApi } from 'services/jobs.service';
 import { getQuotesSummaryApi } from 'services/quotes.service';
+import { getVisitsSummaryApi } from 'services/visits.service';
+import { getUsersSummaryApi } from 'services/users.service';
+import { getJobRequestsSummaryApi } from 'services/job-requests.service';
+
+import { Loader } from 'common/components/atoms/Loader';
 import InvoicesList from 'pages/invoices/InvoiceList';
 import Footer from 'common/components/layouts/footer';
 import SideNavbar from 'common/components/layouts/sidebar';
-import { getVisitsSummaryApi } from 'services/visits.service';
-import { Loader } from 'common/components/atoms/Loader';
-import { getCurrentUser } from 'utils';
-import { getUsersSummaryApi } from 'services/users.service';
 
 const Summary = () => {
   const navigate = useNavigate();
@@ -45,6 +48,10 @@ const Summary = () => {
     pendingCount: 0
   });
 
+  const isClientOrAdmin = () => {
+    return (currUser.role === 'CLIENT' || currUser.role === 'ADMIN');
+  }
+
   useEffect(() => {
     const jobQuery: { createdBy?: string; team?: string; jobFor?: string } = {};
     const visitQuery: { team?: string; visitFor?: string } = {};
@@ -63,14 +70,17 @@ const Summary = () => {
       quotesQuery.quoteFor = currUser.id;
     }
 
+    /**
+     * Fetch and set data for summary
+     */
     const fetchAndSetData = async () => {
       setIsLoading(true);
 
       const jobsSummaryDataPromise = getJobsSummaryApi({ ...jobQuery }).then((response) => response.data);
       const quotesSummaryDataPromise =
-        (currUser.role === 'CLIENT' || currUser.role === 'ADMIN')  ? getQuotesSummaryApi({ ...quotesQuery }).then((response) => response.data) : Promise.resolve(null);
+        isClientOrAdmin()  ? getQuotesSummaryApi({ ...quotesQuery }).then((response) => response.data) : Promise.resolve(null);
       const requestsSummaryDataPromise =
-        (currUser.role === 'CLIENT' || currUser.role === 'ADMIN') ? getJobRequestsSummaryApi({ ...jobReqQuery }).then((response) => response.data) : Promise.resolve(null);
+        isClientOrAdmin() ? getJobRequestsSummaryApi({ ...jobReqQuery }).then((response) => response.data) : Promise.resolve(null);
       const visitsSummaryDataPromise = getVisitsSummaryApi({
         ...visitQuery,
         startDate: new Date(new Date().setHours(0, 0, 0, 0)).toISOString(),
@@ -153,7 +163,7 @@ const Summary = () => {
           </div>
         </div>
         <div className="row mt-3 pb-3">
-          {currUser.role === 'ADMIN' || currUser.role === 'CLIENT' ? (
+          {isClientOrAdmin() ? (
             <div className="col">
               <div className="card full-height">
                 <div className="row d-flex flex-row">
@@ -207,7 +217,7 @@ const Summary = () => {
             </div>
           ) : null}
 
-          {currUser.role === 'ADMIN' || currUser.role === 'CLIENT' ? (
+          {isClientOrAdmin() ? (
             <div className="col">
               <div className="card full-height">
                 <div className="row d-flex flex-row">
@@ -324,7 +334,7 @@ const Summary = () => {
           </div>
         ) : null}
 
-        {currUser.role === 'ADMIN' || currUser.role === 'CLIENT' ? (
+        {isClientOrAdmin() ? (
           <div className="card">
             <InvoicesList />
           </div>

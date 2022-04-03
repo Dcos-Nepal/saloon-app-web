@@ -13,6 +13,7 @@ import { fetchUserProperties } from 'services/common.service';
 import InputField from 'common/components/form/Input';
 import SelectAsync from 'common/components/form/AsyncSelect';
 import TextArea from 'common/components/form/TextArea';
+import AsyncInputDataList from 'common/components/form/AsyncInputDataList';
 
 interface IProps {
   id: string;
@@ -43,10 +44,7 @@ const QuoteAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => {
     jobRequest: '',
     lineItems: [
       {
-        name: {
-          label: 'Search for Services',
-          value: ''
-        },
+        name: '',
         description: '',
         quantity: 0,
         unitPrice: 0,
@@ -129,10 +127,7 @@ const QuoteAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => {
         lineItems: currentItem?.lineItems?.map((item: { name: any; ref: any }) => {
           return {
             ...item,
-            name: {
-              label: item.name,
-              value: item.ref
-            }
+            name: item.name
           };
         })
       });
@@ -310,9 +305,9 @@ const QuoteAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => {
                       <Fragment key={`~${index}`}>
                         <div className="row ps-1">
                           <div className="col-5">
-                            <SelectAsync
+                            <AsyncInputDataList
                               name={`lineItems[${index}].name`}
-                              placeholder="Search line items"
+                              placeholder="Search services"
                               value={formik.values.lineItems[index].name}
                               resource={{ name: 'line-items', labelProp: 'name', valueProp: '_id' }}
                               onChange={(selected: any) => handleLineItemSelection(`lineItems[${index}]`, selected)}

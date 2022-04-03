@@ -24,6 +24,9 @@ export const http = axios.create({
 // Is connection error is notified?
 let isConnectionErrorNotified = false;
 
+// Is expired?
+let isSessionExpired = false;
+
 /**
  * Adds request interceptor
  * This interceptor adds Authorization header in each request if the access token is available.
@@ -79,11 +82,15 @@ http.interceptors.response.use(
           // Call previous failed API call
           return http(originalConfig);
         } catch (_error) {
-          toast.error("Your session expired!", {position: 'bottom-center'});
-          clearData();
+          if (!isSessionExpired) {
+            toast.error("Your session expired!", {position: 'bottom-center'});
+            clearData();
+            isSessionExpired = true;
+          }
 
           // Redirect to the signin in URL
           window.location.href = '/signIn?redirect=' + encodeURI(window.location.href);
+
           // Or reject he promise with error
           return Promise.reject(_error);
         }

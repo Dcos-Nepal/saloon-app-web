@@ -15,6 +15,7 @@ import { Loader } from 'common/components/atoms/Loader';
 import { CreateSchema } from './validations/create.schema';
 import SelectAsync from 'common/components/form/AsyncSelect';
 import { fetchUserProperties } from 'services/common.service';
+import AsyncInputDataList from 'common/components/form/AsyncInputDataList';
 
 interface IProps {
   actions: {
@@ -215,12 +216,26 @@ const ClientJobAddForm = ({ actions, isLoading }: IProps) => {
                       {(clientDetails as any)?.email} / {(clientDetails as any)?.phoneNumber}
                     </div>
                     <div className="txt-grey">
-                      {(clientDetails as any)?.address?.street1}, {(clientDetails as any)?.address?.city}, {(clientDetails as any)?.address?.country}
+                      {(clientDetails as any)?.address ? `${(clientDetails as any)?.address?.street1}, ${(clientDetails as any)?.address?.city}, ${(clientDetails as any)?.address?.country}` : 'No primary address added.'}
                     </div>
                   </div>
                 </div>
               ) : null}
               <div className="txt-bold mt-3 txt-grey">Client's Properties</div>
+              {(clientDetails as any)?.address ? (
+                <div className="row mb-2 border-bottom">
+                  <div className="col-1 p-2 pt-3 ps-4">
+                    <input name="property" type="radio" value="" onChange={formik.handleChange} checked={!(!!formik.values.property)}/>
+                  </div>
+                  <div className="col p-2 ps-4">
+                    <div className="txt-grey">Clients Primary Address</div>
+                    <div className="">
+                      {(clientDetails as any)?.address ? `${(clientDetails as any)?.address?.street1}, ${(clientDetails as any)?.address?.city}, ${(clientDetails as any)?.address?.country}` : 'No primary address added.'}
+                    </div>
+                  </div>
+                </div>
+              ) : null}
+              
               {!properties.length ? (
                 <div className="txt-orange">
                   <StopIcon size={16} /> There are no properties assigned to the client.
@@ -402,10 +417,10 @@ const ClientJobAddForm = ({ actions, isLoading }: IProps) => {
                     <Fragment key={`~${index}`}>
                       <div className="row ps-1">
                         <div className="col-5">
-                          <SelectAsync
+                          <AsyncInputDataList
                             name={`lineItems[${index}].name`}
                             placeholder="Search line items"
-                            // value={{ label: formik.values.lineItems[index].name, value: formik.values.lineItems[index].value }}
+                            value={formik.values.lineItems[index].name}
                             resource={{ name: 'line-items', labelProp: 'name', valueProp: '_id' }}
                             onChange={(selected: any) => handleLineItemSelection(`lineItems[${index}]`, selected)}
                           />

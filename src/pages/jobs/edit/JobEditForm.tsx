@@ -13,6 +13,7 @@ import SelectAsync from 'common/components/form/AsyncSelect';
 import InputField from 'common/components/form/Input';
 import TextArea from 'common/components/form/TextArea';
 import ReactRRuleGenerator, { translations } from 'common/components/rrule-form';
+import AsyncInputDataList from 'common/components/form/AsyncInputDataList';
 
 interface IProps {
   isLoading: boolean;
@@ -66,6 +67,7 @@ const EditJobForm = (props: IProps) => {
   const handleRecurringChange = (newRRule: any) => {
     const startDateTime = DateTime.fromFormat(newRRule.data.start.onDate.date, 'yyyy-MM-dd HH:mm');
     const endDateTime = DateTime.fromFormat(newRRule.data.end.onDate.date, 'yyyy-MM-dd HH:mm');
+
     formik.setFieldValue('schedule', {
       startDate: startDateTime.toFormat('yyyy-MM-dd'),
       startTime: startDateTime.toFormat('HH:mm'),
@@ -350,7 +352,7 @@ const EditJobForm = (props: IProps) => {
                     <Fragment key={`~${index}`}>
                       <div className="row ps-1">
                         <div className="col-5">
-                          <SelectAsync
+                          <AsyncInputDataList
                             name={`lineItems[${index}].name`}
                             placeholder="Search line items"
                             value={formik.values.lineItems[index].name}

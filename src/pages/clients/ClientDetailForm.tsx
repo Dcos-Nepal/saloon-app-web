@@ -14,6 +14,7 @@ import SelectField from 'common/components/form/Select';
 import * as clientsActions from 'store/actions/clients.actions';
 import * as propertiesActions from 'store/actions/properties.actions';
 import { COUNTRIES_OPTIONS, DEFAULT_COUNTRY, STATES_OPTIONS } from 'common/constants';
+import Modal from 'common/components/atoms/Modal';
 
 const PropertyForm = React.lazy(() => import('./PropertyForm'));
 
@@ -37,7 +38,9 @@ interface IProps {
 const ClientDetailForm: FC<IProps> = ({ id, actions, currentClient, properties, currentProperty, isPropertiesLoading }) => {
   const navigate = useNavigate();
 
+  const [addProperty, setAddProperty] = useState(false);
   const [editPropertyFor, setEditPropertyFor] = useState<any>(null);
+
   const [initialValues, setInitialValues] = useState<IClient>({
     firstName: '',
     lastName: '',
@@ -124,6 +127,7 @@ const ClientDetailForm: FC<IProps> = ({ id, actions, currentClient, properties, 
       await actions.addProperty({ ...data, user: currentClient._id });
 
       actions.fetchProperties({ user: currentClient._id });
+      setAddProperty(false);
     }
   };
 
@@ -136,6 +140,7 @@ const ClientDetailForm: FC<IProps> = ({ id, actions, currentClient, properties, 
       await actions.updateProperty({ ...data, user: currentClient._id });
 
       actions.fetchProperties({ user: currentClient._id });
+      setEditPropertyFor(null);
     }
   };
 
@@ -344,27 +349,73 @@ const ClientDetailForm: FC<IProps> = ({ id, actions, currentClient, properties, 
       {currentClient && currentClient._id && id ? (
         <div className="col pt-3">
           <div className="row">
-            <div className="col-12">
-              {properties.length ? <h5>Listed Properties</h5> : null}
+            <div className="col card ms-3">
+              <h5>{properties.length ? 'Listed Properties' : 'Properties'}</h5>
               {properties.length ? properties.map((property) => <PropertyDetail setEditPropertyFor={setEditPropertyFor} property={property} />) : null}
-            </div>
-            <div className="col-12">
-              {currentClient && currentClient._id ? (
-                <>
-                  <hr />
-                  <h5>Property Form</h5>
-                  <Suspense fallback={<Loader isLoading={true} />}>
-                    <PropertyForm
-                      currentProperty={editPropertyFor}
-                      saveProperty={savePropertyHandler}
-                      updateProperty={updatePropertyHandler}
-                      cleanForm={() => setEditPropertyFor(null)}
-                    />
-                  </Suspense>
-                </>
-              ) : null}
+
+              <div
+                onClick={() => {
+                  if (currentClient && currentClient._id) setAddProperty(true);
+                }}
+                className="dashed bold txt-orange pointer mt-2"
+              >
+                + {properties.length ? 'Additional' : 'Add'} property details
+              </div>
             </div>
           </div>
+          <Modal isOpen={addProperty} onRequestClose={() => setAddProperty(false)}>
+            <div className={`modal fade show mt-5`} role="dialog" style={{ display: 'block' }}>
+              <div className="modal-dialog mt-5">
+                <div className="modal-content">
+                  <div className="modal-header row border-bottom">
+                    <h5 className="col">Property details</h5>
+                    <div className="col">
+                      <span onClick={() => setAddProperty(false)} className="pointer d-flex float-end">
+                        <box-icon name="x" />
+                      </span>
+                    </div>
+                  </div>
+                  <div className="p-3">
+                    <Suspense fallback={<Loader isLoading={true} />}>
+                      <PropertyForm
+                        cleanForm={() => setAddProperty(false)}
+                        saveProperty={savePropertyHandler}
+                        updateProperty={updatePropertyHandler}
+                        closeModal={() => setAddProperty(false)}
+                      />
+                    </Suspense>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Modal>
+          <Modal isOpen={editPropertyFor} onRequestClose={() => setEditPropertyFor(null)}>
+            <div className={`modal fade show mt-5`} role="dialog" style={{ display: 'block' }}>
+              <div className="modal-dialog mt-5">
+                <div className="modal-content">
+                  <div className="modal-header row border-bottom">
+                    <h5 className="col">Property details</h5>
+                    <div className="col">
+                      <span onClick={() => setEditPropertyFor(null)} className="pointer d-flex float-end">
+                        <box-icon name="x" />
+                      </span>{' '}
+                    </div>
+                  </div>
+                  <div className="p-3">
+                    <Suspense fallback={<Loader isLoading={true} />}>
+                      <PropertyForm
+                        currentProperty={editPropertyFor}
+                        saveProperty={savePropertyHandler}
+                        updateProperty={updatePropertyHandler}
+                        cleanForm={() => setEditPropertyFor(null)}
+                        closeModal={() => setEditPropertyFor(null)}
+                      />
+                    </Suspense>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Modal>
         </div>
       ) : null}
     </div>

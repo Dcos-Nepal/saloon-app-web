@@ -13,9 +13,10 @@ interface IProps {
   cleanForm: () => void;
   saveProperty: (data: any) => any;
   updateProperty: (data: any) => any;
+  closeModal: () => void;
 }
 
-const PropertyForm: FC<IProps> = ({ cleanForm, currentProperty, saveProperty, updateProperty }) => {
+const PropertyForm: FC<IProps> = ({ closeModal, cleanForm, currentProperty, saveProperty, updateProperty }) => {
   const initialValues = currentProperty
     ? currentProperty
     : {
@@ -168,6 +169,7 @@ const PropertyForm: FC<IProps> = ({ cleanForm, currentProperty, saveProperty, up
           onClick={() => {
             cleanForm();
             formik.resetForm();
+            closeModal();
           }}
           type="button"
           className="btn btn-secondary"
@@ -177,7 +179,6 @@ const PropertyForm: FC<IProps> = ({ cleanForm, currentProperty, saveProperty, up
         &nbsp;&nbsp;
         <button
           onClick={() => {
-            cleanForm();
             formik.resetForm();
           }}
           type="button"

@@ -1,5 +1,5 @@
 import * as Yup from 'yup';
-import { useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { getIn, useFormik } from 'formik';
 import { connect } from 'react-redux';
 import { toast } from 'react-toastify';
@@ -12,23 +12,205 @@ import SideNavbar from 'common/components/layouts/sidebar';
 import InputField from 'common/components/form/Input';
 import { changePasswordApi } from 'services/auth.service';
 import * as workersActions from 'store/actions/workers.actions';
-import { StopIcon } from '@primer/octicons-react';
+import { StopIcon, UploadIcon, XCircleIcon } from '@primer/octicons-react';
 import SelectField from 'common/components/form/Select';
 import { COUNTRIES_OPTIONS, STATES_OPTIONS } from 'common/constants';
 import { IOption } from 'common/types/form';
 import { updateUserApi } from 'services/users.service';
+import PropertyForm from 'pages/clients/PropertyForm';
+import Modal from 'common/components/atoms/Modal';
+import PropertyDetail from 'pages/clients/PropertyDetail';
+import * as propertiesActions from 'store/actions/properties.actions';
+import { deletePublicFile, uploadPublicFile } from 'services/files.service';
 
 const Setting = ({
-  actions
+  actions,
+  properties
 }: {
   actions: {
     updateWorker: (data: any) => void;
+    addProperty: (data: any) => void;
+    fetchProperties: (filter: any) => void;
+    updateProperty: (data: any) => void;
   };
+  properties: any[];
 }) => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [addProperty, setAddProperty] = useState(false);
+  const [editPropertyFor, setEditPropertyFor] = useState<any>(null);
+
+  const [isUploading, setIsUploading] = useState({
+    idCard: false,
+    cleaningCert: false,
+    policeCert: false
+  });
+  const [isDeleting, setIsDeleting] = useState({
+    idCard: false,
+    cleaningCert: false,
+    policeCert: false
+  });
+
+  const [getDocument, setDocument] = useState<{
+    idCard: File | null;
+    cleaningCert: File | null;
+    policeCert: File | null;
+  }>({
+    idCard: null,
+    cleaningCert: null,
+    policeCert: null
+  });
 
   const currentUser = getData('user');
+
+  /**
+   * Save Property
+   * @param data
+   */
+  const savePropertyHandler = async (data: any) => {
+    if (currentUser?._id) {
+      await actions.addProperty({ ...data, user: currentUser._id });
+
+      actions.fetchProperties({ user: currentUser._id });
+      setAddProperty(false);
+    }
+  };
+
+  /**
+   * Update Property
+   * @param data
+   */
+  const updatePropertyHandler = async (data: any) => {
+    if (currentUser?._id) {
+      await actions.updateProperty({ ...data, user: currentUser._id });
+
+      actions.fetchProperties({ user: currentUser._id });
+      setEditPropertyFor(null);
+    }
+  };
+
+  /**
+   * Handle File Select
+   * @param event
+   * @param key
+   */
+  const handleFileSelect = async (event: any, key: string) => {
+    const file = event.target.files[0];
+    setDocument({ ...getDocument, [key]: file });
+  };
+
+  /**
+   * Handle File Upload
+   * @param docKey
+   */
+  const handleFileUpload = async (docKey: string, type: string) => {
+    const formData = new FormData();
+    formData.append('file', (getDocument as any)[docKey], (getDocument as any)[docKey].name);
+
+    setIsUploading({ ...isUploading, [docKey]: true });
+
+    try {
+      const uploadedFile = await uploadPublicFile(formData);
+
+      // Setting Formik form document properties
+      profileFormik.setFieldValue(`userData.documents[${docKey}].key`, uploadedFile.data.data.key);
+      profileFormik.setFieldValue(`userData.documents[${docKey}].url`, uploadedFile.data.data.url);
+      profileFormik.setFieldValue(`userData.documents[${docKey}].type`, type);
+
+      setIsUploading({ ...isUploading, [docKey]: false });
+    } catch (error) {
+      setIsUploading({ ...isUploading, [docKey]: false });
+    }
+  };
+
+  /**
+   * Handles file delete
+   * @param docKey
+   */
+  const handleFileDelete = async (docKey: string) => {
+    if ((profileFormik.values.userData.documents as any)[docKey].key) {
+      setIsDeleting({ ...isDeleting, [docKey]: true });
+      try {
+        await deletePublicFile((profileFormik.values.userData.documents as any)[docKey].key);
+
+        // Setting Formik form document properties
+        profileFormik.setFieldValue(`userData.documents[${docKey}].key`, '');
+        profileFormik.setFieldValue(`userData.documents[${docKey}].url`, '');
+
+        setIsDeleting({ ...isDeleting, [docKey]: false });
+      } catch (error) {
+        console.log('Error: ', error);
+        setIsDeleting({ ...isDeleting, [docKey]: false });
+      }
+    }
+    setDocument({ ...getDocument, [docKey]: null });
+  };
+
+  /**
+   *  Display DOC Select Section
+   *
+   * @param label
+   * @param name
+   * @param id
+   * @param dropText
+   * @returns JSX
+   */
+  const generateDocSelect = (label: string, name: string, id: string, dropText: string, type: string) => {
+    const documents = profileFormik.values.userData?.documents as any;
+    return (
+      <div className="mb-3">
+        <label className="form-label txt-dark-grey">{label}</label>
+        {(documents && documents[id]?.key) || (getDocument as any)[id]?.name ? (
+          <div className="row">
+            <div className="col-9">
+              <span className="mt-1 btn btn-secondary btn-sm">{documents ? documents[id]?.key : (getDocument as any)[id]?.name}</span>
+            </div>
+            <div className="col-3">
+              <button
+                type="button"
+                title="Upload"
+                className="btn btn-warning btn-sm"
+                onClick={() => {
+                  handleFileUpload(id, type);
+                }}
+              >
+                {(isUploading as any)[id] ? 'loading...' : <UploadIcon size={16} />}
+              </button>
+              &nbsp;
+              <button
+                type="button"
+                title="Delete"
+                className="btn btn-danger btn-sm"
+                onClick={() => {
+                  handleFileDelete(id);
+                }}
+              >
+                {(isDeleting as any)[id] ? 'loading...' : <XCircleIcon size={16} />}
+              </button>
+            </div>
+          </div>
+        ) : null}
+
+        <input
+          className="form-control hidden"
+          type="file"
+          id={id}
+          name={name}
+          onChange={(event) => handleFileSelect(event, id)}
+          onBlur={profileFormik.handleBlur}
+        />
+        {!(getDocument as any)[id] && !(documents && documents[id]?.key) ? (
+          <label htmlFor={id} className="txt-orange dashed-file">
+            <UploadIcon /> {dropText}
+          </label>
+        ) : null}
+      </div>
+    );
+  };
+
+  useEffect(() => {
+    if (currentUser?._id && currentUser.userData?.type === 'CLIENT') actions.fetchProperties({ user: currentUser._id });
+  }, [currentUser?._id, currentUser.userData?.type, actions]);
 
   const initialValues = {
     email: currentUser?.email,
@@ -52,7 +234,26 @@ const Setting = ({
     confirmPassword: Yup.string()
       .min(8, 'Password must be at least 8 characters')
       .max(24, 'Password can be maximum 24 characters')
-      .required('Confirm Password is required')
+      .required('Confirm Password is required'),
+    userData: Yup.object().shape({
+      documents: Yup.object().shape({
+        idCard: Yup.object().shape({
+          key: Yup.string(),
+          url: Yup.string(),
+          type: Yup.string()
+        }),
+        cleaningCert: Yup.object().shape({
+          key: Yup.string(),
+          url: Yup.string(),
+          type: Yup.string()
+        }),
+        policeCert: Yup.object().shape({
+          key: Yup.string(),
+          url: Yup.string(),
+          type: Yup.string()
+        })
+      })
+    })
   });
 
   const ProfileUpdateSchema = Yup.object().shape({
@@ -279,6 +480,113 @@ const Setting = ({
                       </div>
                     </div>
                   </div>
+
+                  {currentUser.userData?.type === 'CLIENT' ? (
+                    <div className="col">
+                      <div className="row">
+                        <div className="col">
+                          <h5>{properties.length ? 'Listed Properties' : 'Properties'}</h5>
+                          {properties.length
+                            ? properties.map((property) => <PropertyDetail setEditPropertyFor={setEditPropertyFor} property={property} />)
+                            : null}
+
+                          <div
+                            onClick={() => {
+                              if (currentUser && currentUser._id) setAddProperty(true);
+                            }}
+                            className="dashed bold txt-orange pointer mt-2"
+                          >
+                            + {properties.length ? 'Additional' : 'Add'} property details
+                          </div>
+                        </div>
+                      </div>
+                      <Modal isOpen={addProperty} onRequestClose={() => setAddProperty(false)}>
+                        <div className={`modal fade show mt-5`} role="dialog" style={{ display: 'block' }}>
+                          <div className="modal-dialog mt-5">
+                            <div className="modal-content">
+                              <div className="modal-header row border-bottom">
+                                <h5 className="col">Property details</h5>
+                                <div className="col">
+                                  <span onClick={() => setAddProperty(false)} className="pointer d-flex float-end">
+                                    <box-icon name="x" />
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="p-3">
+                                <Suspense fallback={<Loader isLoading={true} />}>
+                                  <PropertyForm
+                                    cleanForm={() => setAddProperty(false)}
+                                    saveProperty={savePropertyHandler}
+                                    updateProperty={updatePropertyHandler}
+                                    closeModal={() => setAddProperty(false)}
+                                  />
+                                </Suspense>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </Modal>
+                      <Modal isOpen={editPropertyFor} onRequestClose={() => setEditPropertyFor(null)}>
+                        <div className={`modal fade show mt-5`} role="dialog" style={{ display: 'block' }}>
+                          <div className="modal-dialog mt-5">
+                            <div className="modal-content">
+                              <div className="modal-header row border-bottom">
+                                <h5 className="col">Property details</h5>
+                                <div className="col">
+                                  <span onClick={() => setEditPropertyFor(null)} className="pointer d-flex float-end">
+                                    <box-icon name="x" />
+                                  </span>{' '}
+                                </div>
+                              </div>
+                              <div className="p-3">
+                                <Suspense fallback={<Loader isLoading={true} />}>
+                                  <PropertyForm
+                                    currentProperty={editPropertyFor}
+                                    saveProperty={savePropertyHandler}
+                                    updateProperty={updatePropertyHandler}
+                                    cleanForm={() => setEditPropertyFor(null)}
+                                    closeModal={() => setEditPropertyFor(null)}
+                                  />
+                                </Suspense>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </Modal>
+                    </div>
+                  ) : null}
+
+                  {currentUser.userData?.type === 'WORKER' ? (
+                    <div className="col">
+                      <h5>Documents</h5>
+                      <div className="text-success">
+                        <StopIcon size={16} /> Make sure to upload each document before saving.
+                      </div>
+                      <div className="mt-3" />
+                      {generateDocSelect(
+                        '1. ID CARD/DRIVING LICENSE:',
+                        "userData.documents['idCard'].url",
+                        'idCard',
+                        'Click to browse or drag and drop your file to upload ID card.',
+                        'ID_CARD'
+                      )}
+                      {generateDocSelect(
+                        '2. CLEANING CERTIFICATE:',
+                        "userData.documents['cleaningCert'].url",
+                        'cleaningCert',
+                        'Click to browse or drag and drop your file to upload clinic certificate.',
+                        'CLEANING_CERTIFICATE'
+                      )}
+                      {generateDocSelect(
+                        '3. POLICE CERTIFICATE:',
+                        "userData.documents['policeCert'].url",
+                        'policeCert',
+                        'Click to browse or drag and drop your file to upload police check.',
+                        'POLICE_CERTIFICATE'
+                      )}
+                    </div>
+                  ) : null}
+
                   <div className="d-flex justify-content-center mt-2">
                     <button type="submit" className="btn btn-primary btn-full">
                       Update Profile
@@ -351,6 +659,7 @@ const Setting = ({
 const mapStateToProps = (state: any) => {
   return {
     isWorkersLoading: state.workers.isLoading,
+    properties: state.properties.properties,
     currentWorker: state.workers.currentUser
   };
 };
@@ -359,6 +668,15 @@ const mapDispatchToProps = (dispatch: any) => ({
   actions: {
     updateWorker: (data: any) => {
       dispatch(workersActions.updateWorker(data));
+    },
+    addProperty: (data: any) => {
+      dispatch(propertiesActions.addProperty(data));
+    },
+    fetchProperties: (filter: any) => {
+      dispatch(propertiesActions.fetchProperties(filter));
+    },
+    updateProperty: (data: any) => {
+      dispatch(propertiesActions.updateProperty(data));
     }
   }
 });

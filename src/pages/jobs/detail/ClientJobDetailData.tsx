@@ -23,7 +23,7 @@ import * as jobsActions from 'store/actions/job.actions';
 import * as visitsActions from 'store/actions/visit.actions';
 
 import { getData } from 'utils/storage';
-import { addVisitApi, updateStatus, updateVisitApi, deleteVisitApi } from 'services/visits.service';
+import { addVisitApi, updateStatus, updateVisitApi, deleteVisitApi, completeVisitApi } from 'services/visits.service';
 
 import Modal from 'common/components/atoms/Modal';
 import InputField from 'common/components/form/Input';
@@ -36,6 +36,7 @@ import { Loader } from 'common/components/atoms/Loader';
 import VisitDetail from './VisitDetail';
 import DeleteConfirm from 'common/components/DeleteConfirm';
 import { useNavigate } from 'react-router-dom';
+import CompleteVisit from 'pages/schedules/CompleteVisit';
 
 interface IVisitList {
   overdue: any;
@@ -134,6 +135,20 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
     if (visitCompleted) {
       setAskVisitInvoiceGeneration(true);
       setCompletedVisit(visit);
+    }
+  };
+
+  const completeVisitHandler = async (data: any) => {
+    try {
+      await completeVisitApi(selectedVisit?._id, data);
+      toast.success('Visit completed successfully');
+
+      setAskVisitInvoiceGeneration(true);
+      setCompletedVisit(selectedVisit);
+      setCompleteVisitMode(false);
+      setSelectedVisit(null);
+    } catch (ex) {
+      toast.error('Failed to complete visit');
     }
   };
 
@@ -319,7 +334,8 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
       <div className="d-flex flex-row mt-2">
         <div className="col">
           <button onClick={() => id && navigate(`edit`)} type="button" className="btn btn-primary d-flex float-end me-2">
-            <PencilIcon className='mt-1'/>&nbsp; Edit Job Details
+            <PencilIcon className="mt-1" />
+            &nbsp; Edit Job Details
           </button>
         </div>
       </div>
@@ -874,21 +890,13 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
           setCompleteVisitMode(false);
         }}
       >
-        <ConfirmMessage
-          onSubmit={async () => {
-            if (selectedVisit) {
-              await handleMarkAsCompleted(selectedVisit?.status?.status !== 'COMPLETED', selectedVisit);
-
-              setSelectedVisit(null);
-              setCompleteVisitMode(false);
-            }
-          }}
+        <CompleteVisit
+          completeVisit={completeVisitHandler}
           closeModal={() => {
             setSelectedVisit(null);
             setCompleteVisitMode(false);
           }}
-          title={`Update visit`}
-          message={`Mark visit as ${selectedVisit?.status?.status === 'COMPLETED' ? 'Incomplete' : 'Complete'}?`}
+          visit={selectedVisit}
         />
       </Modal>
 

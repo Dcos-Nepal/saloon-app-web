@@ -1,6 +1,11 @@
-import { PersonIcon } from '@primer/octicons-react';
-import { FC } from 'react';
+import { FC, useState } from 'react';
+import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import { PersonIcon } from '@primer/octicons-react';
+
+import CompleteVisit from './CompleteVisit';
+import Modal from 'common/components/atoms/Modal';
+import { completeVisitApi } from 'services/visits.service';
 
 interface IProps {
   event: any;
@@ -9,7 +14,21 @@ interface IProps {
 
 const EditEvent: FC<IProps> = ({ closeModal, event }) => {
   const navigate = useNavigate();
+
+  const [completeVisitFor, setCompleteVisitFor] = useState<any | null>(null);
+
   const property = event.extendedProps?.meta?.job?.property;
+
+  const completeVisitHandler = async (data: any) => {
+    try {
+      await completeVisitApi(completeVisitFor?._id, data);
+      toast.success('Visit completed successfully');
+      setCompleteVisitFor(null);
+      closeModal();
+    } catch (ex) {
+      toast.error('Failed to complete visit');
+    }
+  };
 
   return (
     <div className={`modal fade show mt-5`} role="dialog" style={{ display: 'block' }}>
@@ -21,7 +40,11 @@ const EditEvent: FC<IProps> = ({ closeModal, event }) => {
           </div>
           <div className="modal-body">
             <div className="row">
-              <div>
+              <div
+                onClick={() => {
+                  event.extendedProps?.meta?.status?.status !== 'COMPLETED' && setCompleteVisitFor(event.extendedProps?.meta);
+                }}
+              >
                 <input
                   className="form-check-input"
                   type="checkbox"
@@ -113,6 +136,15 @@ const EditEvent: FC<IProps> = ({ closeModal, event }) => {
           </div>
         </div>
       </div>
+      <Modal isOpen={completeVisitFor} onRequestClose={() => setCompleteVisitFor(null)}>
+        <CompleteVisit
+          completeVisit={completeVisitHandler}
+          closeModal={() => {
+            setCompleteVisitFor(null);
+          }}
+          visit={completeVisitFor}
+        />
+      </Modal>
     </div>
   );
 };

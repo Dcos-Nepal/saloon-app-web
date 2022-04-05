@@ -37,3 +37,10 @@ export const deleteVisitApi = async (id: string) => {
   const url = '/v1.0.0/visits/' + id;
   return await http.delete(url);
 };
+
+export const completeVisitApi = async (id: string, data: any) => {
+  const url = `/v1.0.0/visits/${id}/complete`;
+  return await http.put(url, data, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  });
+};

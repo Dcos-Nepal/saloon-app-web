@@ -14,7 +14,7 @@ import { changePasswordApi } from 'services/auth.service';
 import * as workersActions from 'store/actions/workers.actions';
 import { StopIcon, UploadIcon, XCircleIcon } from '@primer/octicons-react';
 import SelectField from 'common/components/form/Select';
-import { COUNTRIES_OPTIONS, STATES_OPTIONS } from 'common/constants';
+import { COUNTRIES_OPTIONS, DAYS_OF_WEEK, STATES_OPTIONS } from 'common/constants';
 import { IOption } from 'common/types/form';
 import { updateUserApi } from 'services/users.service';
 import PropertyForm from 'pages/clients/PropertyForm';
@@ -268,7 +268,15 @@ const Setting = ({
       country: Yup.string().required(`Country is required`)
     }),
     email: Yup.string().required(`Email is required`).email('Invalid email'),
-    phoneNumber: Yup.string().label('Phone Number').required(`Phone number is required`).length(10)
+    phoneNumber: Yup.string().label('Phone Number').required(`Phone number is required`).length(10),
+    userData: Yup.object().shape({
+      workingHours: Yup.object().shape({
+        start: Yup.string(),
+        end: Yup.string()
+      }),
+      workingDays: Yup.array(Yup.string()),
+      services: Yup.array(Yup.string())
+    })
   });
 
   const formik = useFormik({
@@ -317,6 +325,27 @@ const Setting = ({
     },
     validationSchema: ProfileUpdateSchema
   });
+
+  const onWorkingDaysChange = (day: string) => {
+    if (profileFormik.values.userData?.workingDays?.length && profileFormik.values.userData?.workingDays.find((selectedDay: string) => selectedDay === day)) {
+      profileFormik.setFieldValue(
+        'userData.workingDays',
+        profileFormik.values.userData?.workingDays.filter((selectedDay: string) => selectedDay !== day)
+      );
+    } else {
+      profileFormik.setFieldValue(
+        'userData.workingDays',
+        profileFormik.values.userData?.workingDays ? [...profileFormik.values.userData?.workingDays, day] : [day]
+      );
+    }
+  };
+
+  const tagOptions = [
+    { label: 'Window', value: 'Window' },
+    { label: 'Garden', value: 'Garden' },
+    { label: 'Kitchen', value: 'Kitchen' },
+    { label: 'Other', value: 'Other' }
+  ];
 
   /**
    * Custom Error Message
@@ -406,8 +435,8 @@ const Setting = ({
                     onBlur={profileFormik.handleBlur}
                     value={profileFormik.values.phoneNumber}
                   />
-                  <div className="mb-3">
-                    <label className="txt-bold mt-2 mb-2">Address</label>
+                  <div className="mb-2">
+                    <label className="txt-bold mt-2">Address</label>
                     <InputField
                       label="Street 1"
                       placeholder="Enter street 1"
@@ -426,7 +455,7 @@ const Setting = ({
                       onBlur={profileFormik.handleBlur}
                       value={profileFormik.values.address?.street2}
                     />
-                    <div className="mb-3 row">
+                    <div className="mb-2 row">
                       <div className="col">
                         <InputField
                           label="Suburb"
@@ -452,7 +481,7 @@ const Setting = ({
                         />
                       </div>
                     </div>
-                    <div className="mb-3 row">
+                    <div className="mb-2 row">
                       <div className="col">
                         <InputField
                           type="text"
@@ -557,34 +586,95 @@ const Setting = ({
                   ) : null}
 
                   {currentUser.userData?.type === 'WORKER' ? (
-                    <div className="col">
-                      <h5>Documents</h5>
-                      <div className="text-success">
-                        <StopIcon size={16} /> Make sure to upload each document before saving.
+                    <>
+                      <div className="mb-2 row">
+                        <div className="col-5">
+                          <InputField
+                            label="Working hours"
+                            placeholder="Start Hours"
+                            type="time"
+                            name="userData.workingHours.start"
+                            value={profileFormik.values.userData?.workingHours?.start}
+                            onChange={profileFormik.handleChange}
+                            onBlur={profileFormik.handleBlur}
+                          />
+                          <InputField
+                            label=""
+                            placeholder="End Hours"
+                            type="time"
+                            name="userData.workingHours.end"
+                            value={profileFormik.values.userData?.workingHours?.end}
+                            onChange={profileFormik.handleChange}
+                            onBlur={profileFormik.handleBlur}
+                          />
+                        </div>
+                        <div className="col week-list">
+                          <label className="form-label txt-dark-grey">Available working days and time</label>
+                          <ul>
+                            {DAYS_OF_WEEK.map((day) => (
+                              <li
+                                key={day}
+                                className={`${
+                                  profileFormik.values.userData?.workingDays?.length &&
+                                  profileFormik.values.userData?.workingDays.find((selectedDay: string) => selectedDay === day)
+                                    ? 'selected'
+                                    : null
+                                }`}
+                                onClick={() => onWorkingDaysChange(day)}
+                              >
+                                <span className="item">{day[0]?.toString().toUpperCase()}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
                       </div>
-                      <div className="mt-3" />
-                      {generateDocSelect(
-                        '1. ID CARD/DRIVING LICENSE:',
-                        "userData.documents['idCard'].url",
-                        'idCard',
-                        'Click to browse or drag and drop your file to upload ID card.',
-                        'ID_CARD'
-                      )}
-                      {generateDocSelect(
-                        '2. CLEANING CERTIFICATE:',
-                        "userData.documents['cleaningCert'].url",
-                        'cleaningCert',
-                        'Click to browse or drag and drop your file to upload clinic certificate.',
-                        'CLEANING_CERTIFICATE'
-                      )}
-                      {generateDocSelect(
-                        '3. POLICE CERTIFICATE:',
-                        "userData.documents['policeCert'].url",
-                        'policeCert',
-                        'Click to browse or drag and drop your file to upload police check.',
-                        'POLICE_CERTIFICATE'
-                      )}
-                    </div>
+
+                      <SelectField
+                        label="Services"
+                        name="userData.services"
+                        isMulti={true}
+                        placeholder="Search available services..."
+                        value={tagOptions.filter((tagOption) =>
+                          profileFormik.values.userData?.services?.find((service: string) => service === tagOption.value)
+                        )}
+                        options={tagOptions}
+                        handleChange={(selectedTags: IOption[]) => {
+                          profileFormik.setFieldValue(
+                            'userData.services',
+                            selectedTags.map((tagOption) => tagOption.value)
+                          );
+                        }}
+                        onBlur={profileFormik.handleBlur}
+                      />
+                      <div className="col">
+                        <h5>Documents</h5>
+                        <div className="text-success">
+                          <StopIcon size={16} /> Make sure to upload each document before saving.
+                        </div>
+                        <div className="mt-3" />
+                        {generateDocSelect(
+                          '1. ID CARD/DRIVING LICENSE:',
+                          "userData.documents['idCard'].url",
+                          'idCard',
+                          'Click to browse or drag and drop your file to upload ID card.',
+                          'ID_CARD'
+                        )}
+                        {generateDocSelect(
+                          '2. CLEANING CERTIFICATE:',
+                          "userData.documents['cleaningCert'].url",
+                          'cleaningCert',
+                          'Click to browse or drag and drop your file to upload clinic certificate.',
+                          'CLEANING_CERTIFICATE'
+                        )}
+                        {generateDocSelect(
+                          '3. POLICE CERTIFICATE:',
+                          "userData.documents['policeCert'].url",
+                          'policeCert',
+                          'Click to browse or drag and drop your file to upload police check.',
+                          'POLICE_CERTIFICATE'
+                        )}
+                      </div>
+                    </>
                   ) : null}
 
                   <div className="d-flex justify-content-center mt-2">

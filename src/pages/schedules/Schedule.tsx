@@ -32,9 +32,9 @@ const WorkSchedule = (props: any) => {
         const exRules = event.excRrule?.map((rule: string) => ({ ...rrulestr(rule).origOptions })) || [];
 
         return {
-          title: event.inheritJob ? event.job.title : event.title,
-          start: event.inheritJob && event.job.startDate ? event.job.startDate : event.startDate,
-          end: event.inheritJob && event.job.endDate ? event.job.endDate : event.endDate,
+          title: event.inheritJob ? event.job?.title : event?.title,
+          start: event.inheritJob && event.job?.startDate ? event.job?.startDate : event?.startDate,
+          end: event.inheritJob && event.job?.endDate ? event.job?.endDate : event?.endDate,
           rrule: event.rruleSet,
           exrule: exRules,
           meta: event

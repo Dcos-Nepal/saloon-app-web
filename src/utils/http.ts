@@ -68,7 +68,7 @@ http.interceptors.response.use(
         originalConfig._retry = true;
 
         try {
-          const rs = await http.put("/v1.0.0/auth/refresh", {
+          const rs = await http.put("/v1/auth/refresh", {
             refreshToken: await getRefreshToken(),
           });
 

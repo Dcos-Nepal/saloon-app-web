@@ -45,6 +45,7 @@ const Setting = ({
     cleaningCert: false,
     policeCert: false
   });
+
   const [isDeleting, setIsDeleting] = useState({
     idCard: false,
     cleaningCert: false,
@@ -219,6 +220,13 @@ const Setting = ({
     confirmPassword: ''
   };
 
+  const tagOptions = [
+    { label: 'Window', value: 'Window' },
+    { label: 'Garden', value: 'Garden' },
+    { label: 'Kitchen', value: 'Kitchen' },
+    { label: 'Other', value: 'Other' }
+  ];
+
   const profileInitialValues = currentUser;
 
   const ChangePasswordSchema = Yup.object().shape({
@@ -339,13 +347,6 @@ const Setting = ({
       );
     }
   };
-
-  const tagOptions = [
-    { label: 'Window', value: 'Window' },
-    { label: 'Garden', value: 'Garden' },
-    { label: 'Kitchen', value: 'Kitchen' },
-    { label: 'Other', value: 'Other' }
-  ];
 
   /**
    * Custom Error Message

@@ -5,12 +5,73 @@ import { endpoints } from 'common/config';
 import avatar from 'assets/images/Avatar.svg';
 import Footer from 'common/components/layouts/footer';
 import SideNavbar from 'common/components/layouts/sidebar';
-import { KeyIcon, PencilIcon } from '@primer/octicons-react';
+import { KeyIcon, PencilIcon, StopIcon } from '@primer/octicons-react';
+import { useState } from 'react';
+import { getIn, useFormik } from 'formik';
+import * as Yup from 'yup';
+import InputField from 'common/components/form/Input';
+import Modal from 'common/components/atoms/Modal';
+import { sendOtpApi, verifyOtpApi } from 'services/users.service';
 
 const Profile = () => {
   const navigate = useNavigate();
-
   const currentUser = getData('user');
+  const [showOtpModal, setShowOtpModal] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const initialValues = {
+    otpCode: ''
+  };
+
+  const VerifyPhoneSchema = Yup.object().shape({
+    otpCode: Yup.string().required('Please provide an OTP.')
+  });
+
+  const formik = useFormik({
+    enableReinitialize: true,
+    initialValues: initialValues,
+    onSubmit: async (userData: any) => {
+      console.log(userData);
+      setIsLoading(true);
+      const response: any = await verifyOtpApi(userData);
+
+      if (response.data.success === true) {
+        console.log("Success!!");
+        setIsLoading(false);
+      }
+    },
+    validationSchema: VerifyPhoneSchema
+  });
+
+  const handleSendOtp = async (phoneNumber: string) => {
+    const response: any = await sendOtpApi(phoneNumber);
+
+    if (response.data.success === true) {
+      console.log("Success!!");
+      setShowOtpModal(true);
+    }
+  }
+
+  /**
+   * Custom Error Message
+   * @param param0 Props Object
+   * @returns JSX
+   */
+  const ErrorMessage = ({ formik, name }: any) => {
+    if (!name) return <></>;
+
+    const error = getIn(formik.errors, name);
+    const touch = getIn(formik.touched, name);
+
+    return (touch && error) || error ? (
+      <div className="row txt-red">
+        <div className="col-1" style={{ width: '20px' }}>
+          <StopIcon size={14} />
+        </div>
+        <div className="col">{error}</div>
+      </div>
+    ) : null;
+  };
 
   return (
     <>
@@ -80,6 +141,7 @@ const Profile = () => {
                           <div className="col p-2 ps-4">
                             <div className="txt-grey">Phone</div>
                             <div className="">{currentUser.phoneNumber}</div>
+                            <button onClick={() => handleSendOtp(currentUser.phoneNumber)}>Verify</button>
                           </div>
                         </div>
                       </div>
@@ -200,6 +262,43 @@ const Profile = () => {
             </div>
           </div>
         </div>
+        <Modal isOpen={showOtpModal} onRequestClose={() => setShowOtpModal(false)}>
+          <div className={`modal fade show mt-5`} role="dialog" style={{ display: 'block' }}>
+            <div className="modal-dialog mt-5">
+              <div className="modal-content">
+                <div className="modal-header row border-bottom">
+                  <h5 className="col">Verify Phone Number</h5>
+                  <div className="col">
+                    <span onClick={() => setShowOtpModal(false)} className="pointer d-flex float-end">
+                      <box-icon name="x" />
+                    </span>
+                  </div>
+                </div>
+                <div className="p-3">
+                  <form noValidate onSubmit={formik.handleSubmit}>
+                    <div className="col">
+                      <InputField
+                        label=""
+                        placeholder="Enter OTP code sent to your phone number"
+                        name="otpCode"
+                        helperComponent={<ErrorMessage formik={formik} name="lastName" />}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        value={formik.values.otpCode}
+                      />
+                    </div>
+                    <div className="d-flex justify-content-center mt-2">
+                      <button type="submit" disabled={isLoading} className="btn btn-primary btn-full">
+                        {isLoading ? <span className="spinner-border spinner-border-sm mt-1" role="status" /> : null}
+                        &nbsp;Verify
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </Modal>
         <Footer />
       </div>
     </>

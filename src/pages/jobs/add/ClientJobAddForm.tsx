@@ -167,7 +167,6 @@ const ClientJobAddForm = ({ actions, isLoading }: IProps) => {
               value: recommendation._id
             };
           });
-          console.log(team);
           setRecommendedTeam(team);
           setSelectedTeam(team);
         } catch (ex) {

@@ -42,6 +42,13 @@ export const getUsersSummaryApi = async () => {
   });
 };
 
+export const getWorkerRecommendations = async (query: Record<string, any>) => {
+  const url = '/v1/users/recommendations' + (query ? `?${generateQueryParams(query)}` : '');
+  return await http.get(url, {
+    headers: { Accept: 'application/json' }
+  });
+};
+
 export const sendOtpApi = async (payload: any) => {
   const url = '/v1/users/otp/send';
   return await http.post(url, payload);

@@ -12,6 +12,7 @@ import * as Yup from 'yup';
 import InputField from 'common/components/form/Input';
 import Modal from 'common/components/atoms/Modal';
 import { sendOtpApi, verifyOtpApi } from 'services/users.service';
+import { toast } from 'react-toastify';
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -20,11 +21,11 @@ const Profile = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const initialValues = {
-    otpCode: ''
+    code: ''
   };
 
   const VerifyPhoneSchema = Yup.object().shape({
-    otpCode: Yup.string().required('Please provide an OTP.')
+    code: Yup.string().required('Please provide an OTP.')
   });
 
   const formik = useFormik({
@@ -33,10 +34,17 @@ const Profile = () => {
     onSubmit: async (userData: any) => {
       console.log(userData);
       setIsLoading(true);
-      const response: any = await verifyOtpApi(userData);
-
-      if (response.data.success === true) {
-        console.log("Success!!");
+      try {
+        const { data: response } = await verifyOtpApi(userData);
+        debugger;
+        if (response.data.success === true) {
+          toast.success('Verified OTP!');
+          setShowOtpModal(false);
+        }
+      } catch (ex) {
+        console.log(ex);
+        toast.error('Failed to verify OTP');
+      } finally {
         setIsLoading(false);
       }
     },
@@ -44,13 +52,12 @@ const Profile = () => {
   });
 
   const handleSendOtp = async (phoneNumber: string) => {
-    const response: any = await sendOtpApi(phoneNumber);
+    const { data: response } = await sendOtpApi({ phoneNumber });
 
     if (response.data.success === true) {
-      console.log("Success!!");
       setShowOtpModal(true);
     }
-  }
+  };
 
   /**
    * Custom Error Message
@@ -141,7 +148,11 @@ const Profile = () => {
                           <div className="col p-2 ps-4">
                             <div className="txt-grey">Phone</div>
                             <div className="">{currentUser.phoneNumber}</div>
-                            <button onClick={() => handleSendOtp(currentUser.phoneNumber)}>Verify</button>
+                            {currentUser.auth?.phoneNumber?.verified ? (
+                              `(Verified)`
+                            ) : (
+                              <button onClick={() => handleSendOtp(currentUser.phoneNumber)}>Verify</button>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -280,11 +291,11 @@ const Profile = () => {
                       <InputField
                         label=""
                         placeholder="Enter OTP code sent to your phone number"
-                        name="otpCode"
+                        name="code"
                         helperComponent={<ErrorMessage formik={formik} name="lastName" />}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
-                        value={formik.values.otpCode}
+                        value={formik.values.code}
                       />
                     </div>
                     <div className="d-flex justify-content-center mt-2">

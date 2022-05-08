@@ -6,7 +6,7 @@ import { http } from "utils/http";
  * @returns Promise
  */
 export const uploadPublicFile = async (data: any) => {
-  return await http.post("/v1.0.0/files/public", data, {
+  return await http.post("/v1/files/public", data, {
     headers: { "Accept": "application/json" }
   });
 }
@@ -17,5 +17,5 @@ export const uploadPublicFile = async (data: any) => {
  * @returns Promise
  */
 export const deletePublicFile = async (key: string) => {
-  return await http.delete(`/v1.0.0/files/public/${key}`);
+  return await http.delete(`/v1/files/public/${key}`);
 }

@@ -2,7 +2,7 @@ import 'boxicons';
 import { FC } from 'react';
 
 import logo from 'assets/images/LogoLong.svg';
-import { clearData } from 'utils/storage';
+import { clearData, getData } from 'utils/storage';
 import avatar from 'assets/images/Avatar.svg';
 import { GearIcon, LockIcon, PersonIcon } from '@primer/octicons-react';
 import { useNavigate } from 'react-router-dom';
@@ -14,11 +14,22 @@ interface IProps {
 
 const TopNavbar: FC<IProps> = ({ loggedIn = true }) => {
   const navigate = useNavigate();
+  const currentUser = getData('user');
 
+  /**
+   * Logs out user
+   */
   const logout = async () => {
     await clearData();
     navigate(endpoints.auth.signIn);
   };
+
+  /**
+   * Gets Current logged in user name
+   */
+  const getUserName = () => {
+    return currentUser ? `${currentUser?.firstName} ${currentUser?.lastName}` : 'Guest';
+  }
 
   return (
     <nav className="navbar navbar-expand-lg sticky-top">
@@ -38,7 +49,10 @@ const TopNavbar: FC<IProps> = ({ loggedIn = true }) => {
               {/* <li className="nav-item me-3 mt-1">
                 <box-icon name="bell"></box-icon>
               </li> */}
-              <li className="nav-item">
+              <li className="nav-item d-flex align-items-center">
+                <span className="text-secondary">
+                  {getUserName()} [{currentUser.roles.toString()}]
+                </span>&nbsp;&nbsp;
                 <div className="dropdown dropstart">
                   <span role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
                     <img src={avatar} height="34px" alt="Orange" />

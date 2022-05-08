@@ -156,25 +156,10 @@ const QuotesList = (props: any) => {
   const columns: Column<IQuote>[] = useMemo(
     () => [
       {
-        Header: 'CLIENT NAME',
-        accessor: (row: IQuote) => {
-          return (
-            <div>
-              <div>
-                {row.quoteFor?.firstName} {row.quoteFor?.lastName}
-              </div>
-              <div>
-                {row.quoteFor?.phoneNumber} / {row.quoteFor?.email}
-              </div>
-            </div>
-          );
-        }
-      },
-      {
         Header: 'QUOTE INFO',
         accessor: (row: IQuote) => {
           return (
-            <div className="Pointer" onClick={() => navigate(`/dashboard/quotes/${row.id}`)}>
+            <div className="cursor-pointer" onClick={() => navigate(`/dashboard/quotes/${row.id}`)}>
               <div>
                 <strong>{row.title}</strong>
               </div>
@@ -187,6 +172,21 @@ const QuotesList = (props: any) => {
               </div>
               <div>
                 <span className="badge rounded-pill bg-secondary">Total Line Items ({row.lineItems.length})</span>
+              </div>
+            </div>
+          );
+        }
+      },
+      {
+        Header: 'CLIENT NAME',
+        accessor: (row: IQuote) => {
+          return (
+            <div>
+              <div>
+                {row.quoteFor?.firstName} {row.quoteFor?.lastName}
+              </div>
+              <div>
+                {row.quoteFor?.phoneNumber} / {row.quoteFor?.email}
               </div>
             </div>
           );

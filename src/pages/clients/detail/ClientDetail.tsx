@@ -135,8 +135,7 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient, quotes, properties, 
           </>
         ) : (
           <div className="col p-2 ps-4">
-            <div className="txt-grey">No quotes</div>
-            <div className="">No active jobs, invoices or quotes for this client yet</div>
+            <div className="txt-grey">There are no Job Quotes to this client.</div>
           </div>
         )}
       </div>
@@ -166,8 +165,7 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient, quotes, properties, 
           </>
         ) : (
           <div className="col p-2 ps-4">
-            <div className="txt-grey">No requests</div>
-            <div className="">No active jobs, invoices or quotes for this client yet</div>
+            <div className="txt-grey">There are no Job Requests to this client.</div>
           </div>
         )}
       </div>
@@ -201,8 +199,7 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient, quotes, properties, 
           </>
         ) : (
           <div className="col p-2 ps-4">
-            <div className="txt-grey">No invoices</div>
-            <div className="">No active jobs, invoices or quotes for this client yet</div>
+            <div className="txt-grey">There are no Invoices assigned to this client.</div>
           </div>
         )}
       </div>
@@ -241,8 +238,7 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient, quotes, properties, 
           </>
         ) : (
           <div className="col p-2 ps-4">
-            <div className="txt-grey">No jobs</div>
-            <div className="">No active jobs, invoices or quotes for this client yet</div>
+            <div className="txt-grey">There are no {activeOnly ? ' Active' : ''} Jobs assigned to this client.</div>
           </div>
         )}
       </div>

@@ -94,7 +94,19 @@ const RequestsList = (props: any) => {
     () => [
       {
         Header: 'REQUEST TITLE',
-        accessor: 'title'
+        accessor: (row: any) => {
+          return (
+            <div className="cursor-pointer" onClick={() =>
+              navigate(
+                pinterpolate(endpoints.admin.requests.detail, {
+                  id: row._id
+                })
+              )
+            }>
+            {row.title}
+            </div>
+          );
+        }
       },
       {
         Header: 'CLIENT NAME',

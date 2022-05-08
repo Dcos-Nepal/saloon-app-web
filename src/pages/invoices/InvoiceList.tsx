@@ -128,22 +128,7 @@ const InvoicesList = (props: any) => {
   const columns: Column<IInvoice>[] = useMemo(
     () => [
       {
-        Header: 'CLIENT NAME',
-        accessor: (row: IInvoice) => {
-          return (
-            <div>
-              <div>
-                {row.invoiceFor?.firstName} {row.invoiceFor?.lastName}
-              </div>
-              <div>
-                {row.invoiceFor?.phoneNumber} / {row.invoiceFor?.email}
-              </div>
-            </div>
-          );
-        }
-      },
-      {
-        Header: 'QUOTE INFO',
+        Header: 'INVOICE INFO',
         accessor: (row: IInvoice) => {
           return (
             <div className="cursor-pointer" onClick={() => navigate(`/dashboard/invoices/${row.id}`)}>
@@ -159,6 +144,21 @@ const InvoicesList = (props: any) => {
               </div>
               <div>
                 <span className="badge rounded-pill bg-secondary">Total Line Items ({row.lineItems.length})</span>
+              </div>
+            </div>
+          );
+        }
+      },
+      {
+        Header: 'CLIENT NAME',
+        accessor: (row: IInvoice) => {
+          return (
+            <div>
+              <div>
+                {row.invoiceFor?.firstName} {row.invoiceFor?.lastName}
+              </div>
+              <div>
+                {row.invoiceFor?.phoneNumber} / {row.invoiceFor?.email}
               </div>
             </div>
           );

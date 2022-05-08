@@ -158,10 +158,12 @@ const WorkerDetail: FC<IProps> = ({ actions, currentWorker }) => {
                   Object.keys(currentWorker?.userData?.documents).map((key) => (
                     <div className="row mt-3">
                       <div className="col p-1 ps-4">
-                        <div className="txt-grey">{currentWorker.userData.documents[key]?.type.split('_').join(' ')}:</div>
-                        {currentWorker.userData.documents[key]?.key ? (<a className="mt-2 txt-orange text-decoration-none" href={currentWorker.userData.documents[key]?.url}>
-                          {currentWorker.userData.documents[key]?.key}
-                        </a>) : <div className="txt-grey pt-2"><StopIcon size={16} /> Not document added yet!.</div>}
+                        <div className="txt-grey mb-2">{currentWorker.userData.documents[key]?.type?.split('_').join(' ')}:</div>
+                        {currentWorker.userData.documents[key]?.key
+                          ? (<a className="mt-3 txt-orange text-decoration-none" target="_blank" href={currentWorker.userData.documents[key]?.url} rel="noreferrer">
+                              <img height="200" src={currentWorker.userData.documents[key]?.url} className="rounded float-start" alt="" />
+                            </a>)
+                          : <div className="txt-grey pt-2"><StopIcon size={16} /> Not document added yet!.</div>}
                       </div>
                     </div>
                   ))

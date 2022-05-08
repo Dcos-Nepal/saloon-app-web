@@ -33,7 +33,7 @@ const SignUp = () => {
     lastName: Yup.string().min(2, 'Too Short!').max(20, 'Too Long!').required('Last Name is required'),
     email: Yup.string().required('Email is required').email('Invalid email'),
     password: Yup.string().min(6, 'Password must be at least 6 characters').max(24, 'Password can be maximum 24 characters').required('Password is required'),
-    phoneNumber: Yup.string().length(10).label('Phone Number')
+    phoneNumber: Yup.string().label('Phone Number')
       .required('Phone Number is required')
       .matches(
         /^\+(?:[0-9] ?){6,14}[0-9]$/,

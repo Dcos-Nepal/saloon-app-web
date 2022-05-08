@@ -583,8 +583,8 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
 
                 <tbody className="rt-tbody">
                   {visits[visitKey].map((v: any, index: number) => (
-                    <tr key={index} className="rt-tr-group">
-                      <td>
+                    <tr key={index} className="rt-tr-group cursor-pointer" onClick={() => setShowEventDetail(v)}>
+                      <td onClick={(e) => e.stopPropagation()}>
                         <input
                           type="checkbox"
                           id={v.visitMapId}

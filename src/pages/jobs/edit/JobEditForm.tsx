@@ -189,6 +189,21 @@ const EditJobForm = (props: IProps) => {
                   </div>) : null}
                 <div className="txt-bold mt-3 txt-grey">Client's Properties</div>
                 {!properties.length ? <div className="txt-orange"><StopIcon size={16} /> There are no properties assigned to the client.</div> : null}
+                {(clientDetails as any)?.address ? (
+                  <div className="row mb-2 border-bottom">
+                    <div className="col-1 p-2 pt-3 ps-4">
+                      <input name="property" type="radio" value="" onChange={formik.handleChange} checked={!!!formik.values.property} />
+                    </div>
+                    <div className="col p-2 ps-4">
+                      <div className="txt-grey">Clients Primary Address</div>
+                      <div className="">
+                        {(clientDetails as any)?.address
+                          ? `${(clientDetails as any)?.address?.street1}, ${(clientDetails as any)?.address?.city}, ${(clientDetails as any)?.address?.country}`
+                          : 'No primary address added.'}
+                      </div>
+                    </div>
+                  </div>
+                ) : null}
                 {properties.map((property: any) => {
                   return (<div key={property._id} className="row mb-2 border-bottom">
                     <div className="col-1 p-2 pt-3 ps-4">

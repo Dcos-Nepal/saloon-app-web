@@ -63,7 +63,7 @@ const ReferralProgram = () => {
             </div>
           </div>
         </div>
-        <div className="card p-5">
+        {/* <div className="card p-5">
           <h4 className="m-auto txt-bold">Your Referrals</h4>
           <div className="row m-auto">
             <div className="col m-5">
@@ -75,7 +75,7 @@ const ReferralProgram = () => {
               <label className="txt-bold pt-3 text-center">Reward(s) received</label>
             </div>
           </div>
-        </div>
+        </div> */}
         <Footer />
       </div>
     </>

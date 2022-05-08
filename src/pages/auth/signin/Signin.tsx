@@ -90,7 +90,7 @@ const Signin = () => {
             <Loader isLoading={isLoading} />
             <div>
               <h4>Welcome</h4>
-              <label>Fill your details or continue with google account</label>
+              <label>Fill your details or continue with Orange Cleaning</label>
             </div>
 
             <form noValidate onSubmit={formik.handleSubmit}>

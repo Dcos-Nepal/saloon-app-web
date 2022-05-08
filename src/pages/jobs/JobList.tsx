@@ -95,7 +95,7 @@ const JobsList = (props: IProps) => {
         Header: 'TITLE/INSTRUCTION',
         accessor: (row: any) => {
           return (
-            <div>
+            <div className='cursor-pointer' onClick={() => navigate(pinterpolate(endpoints.admin.worker.detail, { id: row._id }))}>
               <div className="txt-bold">{row.title}</div>
               <div className="txt-grey">
                 <Truncate lines={1} ellipsis={<span>...</span>}>

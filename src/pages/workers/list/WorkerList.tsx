@@ -101,7 +101,13 @@ const WorkerList = (props: any) => {
         Header: 'WORKER NAME',
         accessor: (row: any) => {
           return (
-            <div>
+            <div className="cursor-pointer" onClick={() =>
+              navigate(
+                pinterpolate(endpoints.admin.worker.detail, {
+                  id: row._id
+                })
+              )
+            }>
               <div>
                 <b>{row.name}</b>
               </div>

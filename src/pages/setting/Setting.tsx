@@ -276,7 +276,12 @@ const Setting = ({
       country: Yup.string().required(`Country is required`)
     }),
     email: Yup.string().required(`Email is required`).email('Invalid email'),
-    phoneNumber: Yup.string().label('Phone Number').required(`Phone number is required`).length(10),
+    phoneNumber: Yup.string().label('Phone Number')
+      .required(`Phone number is required`)
+      .matches(
+        /^\+(?:[0-9] ?){6,14}[0-9]$/,
+        "Phone number must be at least 6 numbers to 14 numbers starting with '+'"
+      ),
     userData: Yup.object().shape({
       workingHours: Yup.object().shape({
         start: Yup.string(),
@@ -426,9 +431,10 @@ const Setting = ({
                     onChange={profileFormik.handleChange}
                     onBlur={profileFormik.handleBlur}
                     value={profileFormik.values.email}
+                    disabled={true}
                   />
                   <InputField
-                    label="Phone number"
+                    label="Phone number: [+xxx xxxxxxxxxx]"
                     placeholder="Enter phone number"
                     name="phoneNumber"
                     helperComponent={<ErrorMessage formik={profileFormik} name="phoneNumber" />}

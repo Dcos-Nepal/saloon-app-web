@@ -85,7 +85,12 @@ const ClientDetailForm: FC<IProps> = ({ id, actions, currentClient, properties, 
     firstName: Yup.string().required(`First name is required`).min(2, 'Too Short!').max(20, 'Too Long!'),
     lastName: Yup.string().required(`Last name is required`).min(2, 'Too Short!').max(20, 'Too Long!'),
     email: Yup.string().required(`Email is required`).email('Invalid email'),
-    phoneNumber: Yup.string().label('Phone Number').required(`Phone number is required`).length(10),
+    phoneNumber: Yup.string().label('Phone Number')
+      .required(`Phone number is required`)
+      .matches(
+        /^\+(?:[0-9] ?){6,14}[0-9]$/,
+        "Phone number must be at least 6 numbers to 14 numbers starting with '+'"
+      ),
     address: Yup.object().shape({
       street1: Yup.string().required(`Street 1 is required`),
       street2: Yup.string(),

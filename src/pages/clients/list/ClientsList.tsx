@@ -108,7 +108,7 @@ const ClientsList = (props: any) => {
         Header: 'CLIENT NAME',
         accessor: (row: any) => {
           return (
-            <div>
+            <div className="cursor-pointer" onClick={() => navigate(pinterpolate(endpoints.admin.client.detail, { id: row._id }))}>
               <div>
                 <b>{row.name}</b>
               </div>

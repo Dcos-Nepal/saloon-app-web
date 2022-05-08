@@ -116,7 +116,12 @@ const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker, isWorkersLoa
       country: Yup.string().required(`Country is required`)
     }),
     email: Yup.string().required(`Email is required`).email('Invalid email'),
-    phoneNumber: Yup.string().label('Phone Number').required(`Phone number is required`).length(10),
+    phoneNumber: Yup.string().label('Phone Number')
+      .required(`Phone number is required`)
+      .matches(
+        /^\+(?:[0-9] ?){6,14}[0-9]$/,
+        "Phone number must be at least 6 numbers to 14 numbers starting with '+'"
+      ),
     userData: Yup.object().shape({
       type: Yup.string(),
       documents: Yup.object().shape({

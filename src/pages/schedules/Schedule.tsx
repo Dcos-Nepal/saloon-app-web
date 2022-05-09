@@ -26,26 +26,6 @@ const WorkSchedule = (props: any) => {
   const [showEventDetail, setShowEventDetail] = useState<IEvent | null>();
   const [events, setEvents] = useState([]);
 
-  useEffect(() => {
-    if (props.schedules?.rows) {
-      const mappedEvents = props.schedules.rows.map((event: any) => {
-        const exRules = event.excRrule?.map((rule: string) => ({ ...rrulestr(rule).origOptions })) || [];
-
-        return {
-          title: event.inheritJob ? event.job?.title : event?.title,
-          start: event.inheritJob && event.job?.startDate ? event.job?.startDate : event?.startDate,
-          end: event.inheritJob && event.job?.endDate ? event.job?.endDate : event?.endDate,
-          rrule: event.rruleSet,
-          exrule: exRules,
-          meta: event
-        };
-      });
-
-      setEvents(mappedEvents);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.isLoading]);
-
   /**
    * Handles event click
    * ------------------------------------------------------------------------------------------
@@ -72,6 +52,26 @@ const WorkSchedule = (props: any) => {
 
     props.fetchJobSchedule({ ...scheduleFor, startDate: rangeInfo.start.toISOString(), endDate: rangeInfo.end.toISOString() });
   };
+
+  useEffect(() => {
+    if (props.schedules?.rows) {
+      const mappedEvents = props.schedules.rows.map((event: any) => {
+        const exRules = event.excRrule?.map((rule: string) => ({ ...rrulestr(rule).origOptions })) || [];
+
+        return {
+          title: event.inheritJob ? event.job?.title : event?.title,
+          start: event.inheritJob && event.job?.startDate ? event.job?.startDate : event?.startDate,
+          end: event.inheritJob && event.job?.endDate ? event.job?.endDate : event?.endDate,
+          rrule: event.rruleSet,
+          exrule: exRules,
+          meta: event
+        };
+      });
+
+      setEvents(mappedEvents);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.isLoading]);
 
   return (
     <>

@@ -36,7 +36,6 @@ const Profile = () => {
       setIsLoading(true);
       try {
         const { data: response } = await verifyOtpApi(userData);
-        debugger;
         if (response.data.success === true) {
           toast.success('Verified OTP!');
           setShowOtpModal(false);

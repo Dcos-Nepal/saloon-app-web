@@ -8,7 +8,10 @@ interface IProps {
 const VisitCompletedActions = (props: IProps) => {
   const { visit, onClose } = props;
 
-  const generateInvoice = () => {
+  /**
+   * Generates Invoice for completed visit
+   */
+  const generateInvoice = async () => {
     const invoicePayload = {
       subject: `${visit.title} - Invoice`,
       message: 'This invoice was generated at the time of visit completion.',
@@ -18,7 +21,7 @@ const VisitCompletedActions = (props: IProps) => {
       lineItems: visit.lineItems,
       refJob: visit.job._id
     };
-    createInvoiceApi(invoicePayload);
+    await createInvoiceApi(invoicePayload);
     onClose();
   };
 
@@ -31,6 +34,9 @@ const VisitCompletedActions = (props: IProps) => {
             <button onClick={() => onClose()} type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div className="modal-body">
+            <div className='row p-3'>
+              Visit has been completed now. You can now generate Invoice for the visit or you can always generate invoice later.
+            </div>
             <div className='row mt-3 mb-3'>
               <div className='col'>
                 <button type="button" className="btn btn-primary" onClick={generateInvoice}>

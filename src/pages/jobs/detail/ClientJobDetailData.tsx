@@ -30,7 +30,6 @@ import InputField from 'common/components/form/Input';
 import TextArea from 'common/components/form/TextArea';
 import SelectAsync from 'common/components/form/AsyncSelect';
 import StarRating from 'common/components/StarRating';
-import ConfirmMessage from 'common/components/ConfirmMessage';
 import VisitCompletedActions from './VisitCompletedActions';
 import { Loader } from 'common/components/atoms/Loader';
 import VisitDetail from './VisitDetail';
@@ -99,13 +98,18 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
    * @returns Void
    */
   const handleMarkAsCompleted = async (visitCompleted: boolean, visit: IVisitList) => {
+    let newlyCreatedVisit: any;
+  
+    // If the visit has multiple visits
     if (visit.hasMultiVisit) {
+      // Create One-Off rrule for to-complete visit
       const rrule = createOneOffRule({ ...visit, startDate: DateTime.fromJSDate(visit?.startDate).toFormat('yyyy-MM-dd') });
 
       let newVisit = { ...visit };
       delete newVisit._id;
 
-      await addVisitApi({
+      // Creating the visit with completed status
+      newlyCreatedVisit = await addVisitApi({
         ...newVisit,
         job: newVisit.job._id,
         inheritJob: false,
@@ -120,7 +124,8 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
         hasMultiVisit: false
       });
 
-      updateVisitApi(visit._id, {
+      // Update existing primary visit with newly created visit as exception
+      await updateVisitApi(visit._id, {
         excRrule: [...visit.excRrule, rrule]
       });
     } else {
@@ -130,14 +135,22 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
     const newVisits: any = _.cloneDeep(visits);
     const updatedVisit = newVisits[visit.group].find((v: any) => v.visitMapId === visit.visitMapId);
     updatedVisit.status = { status: visitCompleted ? 'COMPLETED' : 'NOT-COMPLETED', updatedBy: getData('user')._id };
+
+    // Updating the visit list updating the completed visit position.
     setVisits(newVisits);
 
-    if (visitCompleted) {
-      setAskVisitInvoiceGeneration(true);
-      setCompletedVisit(visit);
-    }
+    // Now if the visit complete step is complete, ask to fill the visit completion form.
+    setCompleteVisitMode(true);
+    setSelectedVisit({
+      ...newlyCreatedVisit?.data.data.data,
+      job: visit.job
+    });
   };
 
+  /**
+   * Visit complete handler
+   * @param data 
+   */
   const completeVisitHandler = async (data: any) => {
     try {
       await completeVisitApi(selectedVisit?._id, data);
@@ -589,10 +602,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
                           type="checkbox"
                           id={v.visitMapId}
                           checked={v.status.status === 'COMPLETED'}
-                          onChange={(e) => {
-                            setCompleteVisitMode(true);
-                            setSelectedVisit(v);
-                          }}
+                          onChange={(e) => { handleMarkAsCompleted(true, v)}}
                         />
                       </td>
                       <td>{DateTime.fromJSDate(v.startDate).toFormat('yyyy LLL dd')}</td>

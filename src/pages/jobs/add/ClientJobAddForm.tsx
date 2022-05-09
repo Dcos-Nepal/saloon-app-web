@@ -148,7 +148,12 @@ const ClientJobAddForm = ({ actions, isLoading }: IProps) => {
   }, [activeTab]);
 
   useEffect(() => {
-    if (formik.values.jobFor && formik.values.property && formik.values.oneOff?.startTime && formik.values.oneOff?.endTime && formik.values.jobType) {
+    if (
+      formik.values.jobFor &&
+      formik.values.property &&
+      ((formik.values.oneOff?.startTime && formik.values.oneOff?.endTime) || formik.values.schedule?.startTime) &&
+      formik.values.jobType
+    ) {
       (async () => {
         try {
           setIsRecommendationsLoading(true);
@@ -157,8 +162,8 @@ const ClientJobAddForm = ({ actions, isLoading }: IProps) => {
             data: { data: recommendationData }
           } = await getWorkerRecommendations({
             address: `${property?.city}, ${property?.state}, ${property?.country}`,
-            startTime: formik.values.oneOff?.startTime,
-            endTime: formik.values.oneOff?.endTime,
+            startTime: formik.values.oneOff?.startTime && formik.values.oneOff?.endTime ? formik.values.oneOff?.startTime : formik.values.schedule?.startTime,
+            endTime: formik.values.oneOff?.startTime && formik.values.oneOff?.endTime ? formik.values.oneOff?.endTime : formik.values.schedule?.endTime,
             jobType: formik.values.jobType
           });
           const team = recommendationData?.data?.map((recommendation: IUser) => {
@@ -176,7 +181,16 @@ const ClientJobAddForm = ({ actions, isLoading }: IProps) => {
         }
       })();
     }
-  }, [formik.values.jobFor, formik.values.property, formik.values.oneOff?.startTime, formik.values.oneOff?.endTime, formik.values.jobType, properties]);
+  }, [
+    properties,
+    formik.values.jobFor,
+    formik.values.jobType,
+    formik.values.property,
+    formik.values.oneOff?.endTime,
+    formik.values.oneOff?.startTime,
+    formik.values.schedule?.endTime,
+    formik.values.schedule?.startTime
+  ]);
 
   /**
    * Custom Error Message
@@ -330,7 +344,10 @@ const ClientJobAddForm = ({ actions, isLoading }: IProps) => {
             <div className="col">
               <div
                 className={`row pt-4 cursor-pointer ${activeTab === 'ONE-OFF' ? 'border-top-orange' : 'bg-light-grey border-top-grey'}`}
-                onClick={() => setActiveTab('ONE-OFF')}
+                onClick={() => {
+                  setActiveTab('ONE-OFF');
+                  formik.setFieldValue('schedule', {});
+                }}
               >
                 <div className="col-1">
                   <box-icon size="md" name="calendar-week"></box-icon>
@@ -344,7 +361,11 @@ const ClientJobAddForm = ({ actions, isLoading }: IProps) => {
             <div className="col">
               <div
                 className={`row pt-4 cursor-pointer ${activeTab === 'RECURRING' ? 'border-top-orange' : 'bg-light-grey border-top-grey'}`}
-                onClick={() => setActiveTab('RECURRING')}
+                onClick={() => {
+                  setActiveTab('RECURRING');
+                  formik.setFieldValue('oneOff.endTime', undefined);
+                  formik.setFieldValue('oneOff.startTime', undefined);
+                }}
               >
                 <div className="col-1">
                   <box-icon size="md" name="calendar"></box-icon>
@@ -423,7 +444,10 @@ const ClientJobAddForm = ({ actions, isLoading }: IProps) => {
                 </div>
               </div>
 
-              {formik.values.jobFor && formik.values.property && formik.values.oneOff?.endTime && formik.values.oneOff?.startTime && formik.values.jobType ? (
+              {formik.values.jobFor &&
+              formik.values.property &&
+              ((formik.values.oneOff?.startTime && formik.values.oneOff?.endTime) || formik.values.schedule?.startTime) &&
+              formik.values.jobType ? (
                 <>
                   <div className="row">
                     {isRecommendationsLoading ? (

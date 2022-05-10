@@ -256,7 +256,6 @@ const JobsList = (props: IProps) => {
               ))}
             </thead>
             <tbody {...getTableBodyProps()} className="rt-tbody">
-
               {props.isLoading ? (
                 <tr className='rt-tr-group'>
                   <td colSpan={rows.length}><Loader isLoading={props.isLoading} /></td>

@@ -80,8 +80,8 @@ const WorkerDetail: FC<IProps> = ({ actions, currentWorker }) => {
                 <div className="row mt-3">
                   <div className="col p-1 ps-4">
                     <div className="txt-grey">Working Hours</div>
-                    <div className="">Start: {currentWorker?.userData?.workingHours.start || '-'}</div>
-                    <div className="">End: {currentWorker?.userData?.workingHours.end || '-'}</div>
+                    <div className="">Start: {currentWorker?.userData?.workingHours?.start || '-'}</div>
+                    <div className="">End: {currentWorker?.userData?.workingHours?.end || '-'}</div>
                   </div>
                   <div className="col p-1 ps-4">
                     <div className="txt-grey">Working Days</div>
@@ -92,7 +92,7 @@ const WorkerDetail: FC<IProps> = ({ actions, currentWorker }) => {
                   <div className="col p-1 ps-4">
                     <div className="txt-grey">Services</div>
                     <div className="">{currentWorker?.userData?.services.length
-                      ? currentWorker?.userData?.services.map((service: string) => (<><span key={service} className="badge rounded-pill bg-secondary p-1">{service}</span>&nbsp;</>))
+                      ? currentWorker?.userData?.services.map((service: string) => (<div key={service}><span className="badge rounded-pill bg-secondary p-1">{service}</span>&nbsp;</div>))
                       : 'No services added yet.'}</div>
                   </div>
                 </div>

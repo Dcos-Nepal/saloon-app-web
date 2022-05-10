@@ -1,3 +1,4 @@
+import { CheckCircleIcon } from "@primer/octicons-react";
 import { FC } from "react";
 
 const Success: FC<{ msg: string; okMsg: string; okHandler: () => void }> = ({
@@ -7,7 +8,7 @@ const Success: FC<{ msg: string; okMsg: string; okHandler: () => void }> = ({
 }) => {
   return (
     <div className="text-center">
-      <box-icon name="check-circle" color="#39D300" size="lg" />
+      <CheckCircleIcon size={18} className="text-green"/>
       <div className="row mt-2">
         <b>{msg}</b>
       </div>

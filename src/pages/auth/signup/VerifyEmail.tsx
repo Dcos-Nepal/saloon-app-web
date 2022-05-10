@@ -32,13 +32,14 @@ const VerifyEmail = (props: any) => {
                 okHandler={() => navigate(endpoints.auth.signIn)}
               />) : <Loader isLoading={props.isLoading} />
             }
-            {(!props.isSuccess && props.isFailed === true) ? 
-              (<>
+            {(!props.isSuccess && props.isFailed === true)
+              ? (<>
                 <div className="text-center">Invalid Verification Token provided.</div>
                 <span className="text-center txt-orange pointer ms-2" onClick={() => navigate(endpoints.auth.signIn)}>
                   Sign In
                 </span>
-              </>) : ""
+              </>)
+              : null
             }
           </div>
           <div className='mb-5 mt-5 text-center pb-5'>

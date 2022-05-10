@@ -1,32 +1,16 @@
-import { FC, useState } from 'react';
-import { toast } from 'react-toastify';
+import { FC } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PersonIcon } from '@primer/octicons-react';
 
-import CompleteVisit from './CompleteVisit';
-import Modal from 'common/components/atoms/Modal';
-import { completeVisitApi } from 'services/visits.service';
-
 interface IProps {
   event: any;
+  markVisitCompleteHandler: (isComplete:boolean, data: any) => void;
   closeModal: () => void;
 }
 
-const EditEvent: FC<IProps> = ({ closeModal, event }) => {
+const ScheduleEventDetail: FC<IProps> = ({ closeModal, markVisitCompleteHandler, event }) => {
   const navigate = useNavigate();
-  const [completeVisitFor, setCompleteVisitFor] = useState<any | null>(null);
   const property = event.extendedProps?.meta?.job?.property;
-
-  const completeVisitHandler = async (data: any) => {
-    try {
-      await completeVisitApi(completeVisitFor?._id, data);
-      toast.success('Visit completed successfully');
-      setCompleteVisitFor(null);
-      closeModal();
-    } catch (ex) {
-      toast.error('Failed to complete visit');
-    }
-  };
 
   return (
     <div className={`modal fade show mt-5`} role="dialog" style={{ display: 'block' }}>
@@ -40,7 +24,13 @@ const EditEvent: FC<IProps> = ({ closeModal, event }) => {
             <div className="row">
               <div
                 onClick={() => {
-                  event.extendedProps?.meta?.status?.status !== 'COMPLETED' && setCompleteVisitFor(event.extendedProps?.meta);
+                  const visitObj = {
+                    ...event.extendedProps?.meta,
+                    title: event.title,
+                    startDate: event.start,
+                    endDate: event.end ? event.end : event.start,
+                  };
+                  event.extendedProps?.meta?.status?.status !== 'COMPLETED' && markVisitCompleteHandler(true, visitObj);
                 }}
               >
                 <input
@@ -134,19 +124,8 @@ const EditEvent: FC<IProps> = ({ closeModal, event }) => {
           </div>
         </div>
       </div>
-
-      {/* Modals Section */}
-      <Modal isOpen={!!completeVisitFor} onRequestClose={() => setCompleteVisitFor(null)}>
-        <CompleteVisit
-          completeVisit={completeVisitHandler}
-          closeModal={() => {
-            setCompleteVisitFor(null);
-          }}
-          visit={completeVisitFor}
-        />
-      </Modal>
     </div>
   );
 };
 
-export default EditEvent;
+export default ScheduleEventDetail;

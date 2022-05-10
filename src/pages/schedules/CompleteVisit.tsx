@@ -35,7 +35,9 @@ const CompleteVisit = ({ closeModal, completeVisit }: ICompleteVisit) => {
         const formData = new FormData();
 
         // Add all added docs to the Form Data
-        data.docs.forEach((doc: any) => formData.append('docs', doc));
+        if (Array.isArray(data.docs) && data.docs.length) {
+          data.docs.forEach((doc: any) => formData.append('docs', doc));
+        }
 
         // Add additional info to the Form Data
         formData.append('note', data.note);

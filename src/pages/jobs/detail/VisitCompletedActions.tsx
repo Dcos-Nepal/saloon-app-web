@@ -13,7 +13,6 @@ const VisitCompletedActions = (props: IProps) => {
    * Generates Invoice for completed visit
    */
   const generateInvoice = async () => {
-    debugger;
     const invoicePayload = {
       subject: `${visit.title} - Invoice`,
       message: 'This invoice was generated at the time of visit completion.',
@@ -50,15 +49,6 @@ const VisitCompletedActions = (props: IProps) => {
                 <button type="button" className="ms-2 btn btn-secondary" data-bs-dismiss="modal" onClick={() => onClose()}>
                   Generate Later
                 </button>
-              </div>
-            </div>
-            <div className='row mt-3 mb-3'>
-              <div className='col-12 text-center'>
-                {visit.job?.allVisitsCompleted && (
-                  <button type="button" className="ms-2 btn btn-secondary" data-bs-dismiss="modal" onClick={() => onClose()}>
-                    Close the Job
-                  </button>
-                )}
               </div>
             </div>
           </div>

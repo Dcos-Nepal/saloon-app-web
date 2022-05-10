@@ -37,7 +37,7 @@ import DeleteConfirm from 'common/components/DeleteConfirm';
 import { useNavigate } from 'react-router-dom';
 import CompleteVisit from 'pages/schedules/CompleteVisit';
 
-interface IVisitList {
+export interface IVisit {
   overdue: any;
   completed: any;
   [key: string]: any;
@@ -45,7 +45,7 @@ interface IVisitList {
 
 const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisitLoading }: any) => {
   const navigate = useNavigate();
-  const [visits, setVisits] = useState<IVisitList>({ overdue: [], completed: [] });
+  const [visits, setVisits] = useState<IVisit>({ overdue: [], completed: [] });
   const [editVisitMode, setEditVisitMode] = useState(false);
   const [completeVisitMode, setCompleteVisitMode] = useState(false);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
@@ -97,9 +97,9 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
    * @param visit IVisitList
    * @returns Void
    */
-  const handleMarkAsCompleted = async (visitCompleted: boolean, visit: IVisitList) => {
+  const markVisitCompleteHandler = async (visitCompleted: boolean, visit: IVisit) => {
     let newlyCreatedVisit: any;
-  
+
     // If the visit has multiple visits
     if (visit.hasMultiVisit) {
       // Create One-Off rrule for to-complete visit
@@ -142,7 +142,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
     // Now if the visit complete step is complete, ask to fill the visit completion form.
     setCompleteVisitMode(true);
     setSelectedVisit({
-      ...newlyCreatedVisit?.data.data.data,
+      ...(visit.hasMultiVisit ? newlyCreatedVisit?.data.data.data : visit),
       job: visit.job
     });
   };
@@ -593,7 +593,6 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
                     </th>
                   </tr>
                 </thead>
-
                 <tbody className="rt-tbody">
                   {visits[visitKey].map((v: any, index: number) => (
                     <tr key={index} className="rt-tr-group cursor-pointer" onClick={() => setShowEventDetail(v)}>
@@ -602,7 +601,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
                           type="checkbox"
                           id={v.visitMapId}
                           checked={v.status.status === 'COMPLETED'}
-                          onChange={(e) => { handleMarkAsCompleted(true, v)}}
+                          onChange={(e) => { markVisitCompleteHandler(true, v)}}
                         />
                       </td>
                       <td>{DateTime.fromJSDate(v.startDate).toFormat('yyyy LLL dd')}</td>
@@ -614,7 +613,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
                       </td>
                       <td>{v.team.map((t: any) => t.fullName).join(', ') || 'Not assigned yet'}</td>
                       <td className="d-flex float-end">
-                        <div className="dropdown me-2">
+                        <div className="dropdown me-2" onClick={(e) => e.stopPropagation()}>
                           <span role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
                             <box-icon name="dots-vertical-rounded"></box-icon>
                           </span>
@@ -624,11 +623,15 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
                                 <EyeIcon /> View Detail
                               </span>
                             </li>
-                            <li onClick={() => editVisit(v)}>
-                              <span className="dropdown-item pointer">
-                                <PencilIcon /> Edit
-                              </span>
-                            </li>
+
+                            {v.status.status !== 'COMPLETED' ? (
+                              <li onClick={() => editVisit(v)}>
+                                <span className="dropdown-item pointer">
+                                  <PencilIcon /> Edit
+                                </span>
+                              </li>
+                            ) : null}
+                            
                             <li onClick={() => handleDeleteVisitClick(v)}>
                               <span className="dropdown-item pointer">
                                 <TrashIcon /> Delete
@@ -646,6 +649,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
         </div>
       </div>
 
+      {/* Modals Section */}
       <Modal isOpen={!!editVisitMode} onRequestClose={() => setEditVisitMode(false)}>
         <div className={`modal fade show`} role="dialog" style={{ display: 'block' }}>
           <div className="modal-dialog modal-lg">
@@ -911,7 +915,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
       </Modal>
 
       <Modal isOpen={askVisitInvoiceGeneration && !!completedVisit ? true : false} onRequestClose={() => setAskVisitInvoiceGeneration(false)}>
-        <VisitCompletedActions visit={completedVisit} onClose={() => setAskVisitInvoiceGeneration(false)} />
+        <VisitCompletedActions visit={completedVisit} onClose={() => setAskVisitInvoiceGeneration(false)} cleanup={() => setCompletedVisit(null)}/>
       </Modal>
 
       <Modal isOpen={!!showEventDetail} onRequestClose={() => setShowEventDetail(null)}>

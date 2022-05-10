@@ -2,16 +2,18 @@ import { createInvoiceApi } from 'services/invoice.service';
 
 interface IProps {
   visit: any;
+  cleanup: () => void;
   onClose: () => void;
 }
 
 const VisitCompletedActions = (props: IProps) => {
-  const { visit, onClose } = props;
+  const { visit, onClose, cleanup } = props;
 
   /**
    * Generates Invoice for completed visit
    */
   const generateInvoice = async () => {
+    debugger;
     const invoicePayload = {
       subject: `${visit.title} - Invoice`,
       message: 'This invoice was generated at the time of visit completion.',
@@ -22,6 +24,7 @@ const VisitCompletedActions = (props: IProps) => {
       refJob: visit.job._id
     };
     await createInvoiceApi(invoicePayload);
+    cleanup();
     onClose();
   };
 

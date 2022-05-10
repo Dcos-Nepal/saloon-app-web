@@ -14,9 +14,7 @@ interface IProps {
 
 const EditEvent: FC<IProps> = ({ closeModal, event }) => {
   const navigate = useNavigate();
-
   const [completeVisitFor, setCompleteVisitFor] = useState<any | null>(null);
-
   const property = event.extendedProps?.meta?.job?.property;
 
   const completeVisitHandler = async (data: any) => {
@@ -49,7 +47,7 @@ const EditEvent: FC<IProps> = ({ closeModal, event }) => {
                   className="form-check-input"
                   type="checkbox"
                   value=""
-                  checked={event.extendedProps?.meta?.status?.status === 'COMPLETED'}
+                  defaultChecked={event.extendedProps?.meta?.status?.status === 'COMPLETED'}
                   id="flexCheckDefault"
                 />
                 <label className="ms-2 form-check-label" htmlFor="flexCheckDefault">
@@ -83,13 +81,13 @@ const EditEvent: FC<IProps> = ({ closeModal, event }) => {
               <h5>Team</h5>
               <div>
                 {event.extendedProps?.meta?.job?.team ? (
-                  event.extendedProps?.meta?.job?.team.map((mem: { fullName: string }) => (
-                    <>
+                  event.extendedProps?.meta?.job?.team.map((mem: { fullName: string }, index: number) => (
+                    <div key={mem.fullName + index}>
                       <span className="status status-blue p-2">
                         <PersonIcon /> {mem.fullName}
                       </span>{' '}
                       &nbsp;
-                    </>
+                    </div>
                   ))
                 ) : (
                   <div>No Team Assigned for this visit</div>
@@ -136,7 +134,9 @@ const EditEvent: FC<IProps> = ({ closeModal, event }) => {
           </div>
         </div>
       </div>
-      <Modal isOpen={completeVisitFor} onRequestClose={() => setCompleteVisitFor(null)}>
+
+      {/* Modals Section */}
+      <Modal isOpen={!!completeVisitFor} onRequestClose={() => setCompleteVisitFor(null)}>
         <CompleteVisit
           completeVisit={completeVisitHandler}
           closeModal={() => {

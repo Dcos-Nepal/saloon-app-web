@@ -894,7 +894,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
       </Modal>
 
       <Modal
-        isOpen={completeVisitMode && selectedVisit ? true : false}
+        isOpen={completeVisitMode && !!selectedVisit ? true : false}
         onRequestClose={() => {
           setSelectedVisit(null);
           setCompleteVisitMode(false);
@@ -910,7 +910,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
         />
       </Modal>
 
-      <Modal isOpen={askVisitInvoiceGeneration && completedVisit ? true : false} onRequestClose={() => setAskVisitInvoiceGeneration(false)}>
+      <Modal isOpen={askVisitInvoiceGeneration && !!completedVisit ? true : false} onRequestClose={() => setAskVisitInvoiceGeneration(false)}>
         <VisitCompletedActions visit={completedVisit} onClose={() => setAskVisitInvoiceGeneration(false)} />
       </Modal>
 

@@ -256,7 +256,13 @@ const JobsList = (props: IProps) => {
               ))}
             </thead>
             <tbody {...getTableBodyProps()} className="rt-tbody">
-              <Loader isLoading={props.isLoading} />
+
+              {props.isLoading ? (
+                <tr className='rt-tr-group'>
+                  <td colSpan={rows.length}><Loader isLoading={props.isLoading} /></td>
+                </tr>
+              ): null}
+              
               {rows.map((row, index) => {
                 prepareRow(row);
 
@@ -289,13 +295,15 @@ const JobsList = (props: IProps) => {
           </div>
         ) : null}
       </div>
-      <Modal isOpen={provideFeedbackFor} onRequestClose={() => setProvideFeedbackFor(null)}>
+      
+      {/* Modals section */}
+      <Modal isOpen={!!provideFeedbackFor} onRequestClose={() => setProvideFeedbackFor(null)}>
         <Feedback closeModal={() => setProvideFeedbackFor(null)} job={provideFeedbackFor} provideFeedback={feedbackHandler} />
       </Modal>
       <Modal isOpen={!!deleteInProgress} onRequestClose={() => setDeleteInProgress('')}>
         <DeleteConfirm onDelete={deleteJobHandler} closeModal={() => setDeleteInProgress('')} />
       </Modal>
-      <Modal isOpen={completeJobFor} onRequestClose={() => setCompleteJobFor(null)}>
+      <Modal isOpen={!!completeJobFor} onRequestClose={() => setCompleteJobFor(null)}>
         <CompleteJob completeJob={completeJobHandler} closeModal={() => setCompleteJobFor(null)} job={completeJobFor} />
       </Modal>
     </>

@@ -34,9 +34,7 @@ import VisitCompletedActions from './VisitCompletedActions';
 import { Loader } from 'common/components/atoms/Loader';
 import VisitDetail from './VisitDetail';
 import DeleteConfirm from 'common/components/DeleteConfirm';
-import { useNavigate } from 'react-router-dom';
 import CompleteVisit from 'pages/schedules/CompleteVisit';
-import ScheduleEventDetail from 'pages/schedules/EventDetail';
 
 export interface IVisit {
   overdue: any;
@@ -45,7 +43,6 @@ export interface IVisit {
 }
 
 const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisitLoading }: any) => {
-  const navigate = useNavigate();
   const [visits, setVisits] = useState<IVisit>({ overdue: [], completed: [] });
   const [editVisitMode, setEditVisitMode] = useState(false);
   const [completeVisitMode, setCompleteVisitMode] = useState(false);

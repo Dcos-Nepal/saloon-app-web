@@ -68,7 +68,7 @@ const QuoteAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => {
         name: Yup.object().shape({
           value: Yup.string(),
           label: Yup.string().required('Please select a line item.')
-        }),
+        }).nullable(),
         description: Yup.string(),
         quantity: Yup.number(),
         unitPrice: Yup.number(),
@@ -89,6 +89,7 @@ const QuoteAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => {
       // Making properties compliant to Request payload
       quotePayload.title = data.title;
       quotePayload.quoteFor = data.quoteFor.value;
+      quotePayload.property = data.property ? data.property : null;
       quotePayload.lineItems = data.lineItems.map((li: any) => {
         return {
           ref: li.name.value,
@@ -105,40 +106,18 @@ const QuoteAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => {
       }
 
       // Dispatch action to create Job Quote
-      (await id) ? actions.updateQuote(id, quotePayload) : actions.addQuote(quotePayload);
+      if (id) {
+        await actions.updateQuote(id, quotePayload);
+      } else {
+        await actions.addQuote(quotePayload);
+
+        // Reset form
+        formik.resetForm();
+        setProperties([]);
+        setClientDetails(null);
+      }
     }
   });
-
-  useEffect(() => {
-    if (id) return actions.fetchQuote(id);
-  }, [id, actions]);
-
-  useEffect(() => {
-    if (currentItem && id) {
-      setInitialValues({
-        ...initialValues,
-        title: currentItem?.title,
-        description: currentItem?.description,
-        property: currentItem?.property?._id,
-        quoteFor: {
-          label: currentItem?.quoteFor?.firstName,
-          value: currentItem?.quoteFor?._id
-        },
-        lineItems: currentItem?.lineItems?.map((item: { name: any; ref: any }) => {
-          return {
-            ...item,
-            name: item.name
-          };
-        })
-      });
-
-      setClientDetails(currentItem?.quoteFor);
-      fetchUserProperties(currentItem?.quoteFor._id).then((response) => {
-        setProperties(response.data?.data?.data?.rows || []);
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id, currentItem]);
 
   /**
    * Handles Line Item selection
@@ -182,6 +161,40 @@ const QuoteAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => {
       </div>
     ) : null;
   };
+
+  useEffect(() => {
+    if (id) return actions.fetchQuote(id);
+  }, [id, actions]);
+
+  useEffect(() => {
+    if (currentItem && id) {
+      setInitialValues({
+        ...initialValues,
+        title: currentItem?.title,
+        description: currentItem?.description,
+        property: currentItem?.property?._id,
+        quoteFor: {
+          label: currentItem?.quoteFor?.firstName,
+          value: currentItem?.quoteFor?._id
+        },
+        lineItems: currentItem?.lineItems?.map((item: { name: any; ref: any }) => {
+          return {
+            ...item,
+            name: {
+              value: item.name,
+              label: item.name
+            },
+          };
+        })
+      });
+
+      setClientDetails(currentItem?.quoteFor);
+      fetchUserProperties(currentItem?.quoteFor._id).then((response) => {
+        setProperties(response.data?.data?.data?.rows || []);
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, currentItem]);
 
   return (
     <>

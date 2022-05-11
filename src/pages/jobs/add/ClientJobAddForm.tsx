@@ -140,6 +140,10 @@ const ClientJobAddForm = ({ actions, isLoading }: IProps) => {
     });
   };
 
+  /**
+   * Handle One-Off Job Change
+   * @returns 
+   */
   const handleOneOffChange = () => {
     if (!formik.values.oneOff || !formik.values.oneOff?.startDate) return;
     let rule: any = {
@@ -167,15 +171,17 @@ const ClientJobAddForm = ({ actions, isLoading }: IProps) => {
 
   useEffect(() => {
     if (
+      formik.values.jobType &&
       formik.values.jobFor &&
-      formik.values.property &&
-      ((formik.values.oneOff?.startTime && formik.values.oneOff?.endTime) || formik.values.schedule?.startTime) &&
-      formik.values.jobType
+      formik.values.property !== undefined &&
+      ((formik.values.oneOff?.startTime && formik.values.oneOff?.endTime) || formik.values.schedule?.startTime)
     ) {
       (async () => {
         try {
           setIsRecommendationsLoading(true);
-          const property = properties.find((property) => property._id === formik.values.property);
+          const property = formik.values.property
+            ? properties.find((property) => property._id === formik.values.property)
+            : (clientDetails as any).address;
           const {
             data: { data: recommendationData }
           } = await getWorkerRecommendations({
@@ -199,6 +205,7 @@ const ClientJobAddForm = ({ actions, isLoading }: IProps) => {
         }
       })();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     properties,
     formik.values.jobFor,
@@ -463,7 +470,7 @@ const ClientJobAddForm = ({ actions, isLoading }: IProps) => {
               </div>
 
               {formik.values.jobFor &&
-              formik.values.property &&
+              formik.values.property !== undefined &&
               ((formik.values.oneOff?.startTime && formik.values.oneOff?.endTime) || formik.values.schedule?.startTime) &&
               formik.values.jobType ? (
                 <>

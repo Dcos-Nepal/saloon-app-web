@@ -36,6 +36,7 @@ import VisitDetail from './VisitDetail';
 import DeleteConfirm from 'common/components/DeleteConfirm';
 import { useNavigate } from 'react-router-dom';
 import CompleteVisit from 'pages/schedules/CompleteVisit';
+import ScheduleEventDetail from 'pages/schedules/EventDetail';
 
 export interface IVisit {
   overdue: any;
@@ -145,6 +146,8 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
       ...(visit.hasMultiVisit ? newlyCreatedVisit?.data.data.data : visit),
       job: visit.job
     });
+    // And hide the Event detail view
+    setShowEventDetail(false);
   };
 
   /**
@@ -344,14 +347,6 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
 
   return (
     <div>
-      <div className="d-flex flex-row mt-2">
-        <div className="col">
-          <button onClick={() => id && navigate(`edit`)} type="button" className="btn btn-primary d-flex float-end me-2">
-            <PencilIcon className="mt-1" />
-            &nbsp; Edit Job Details
-          </button>
-        </div>
-      </div>
       <div className="row mt-1 pb-3">
         <Loader isLoading={isJobLoading} />
         <div className="col-12 mb-4">
@@ -601,7 +596,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
                           type="checkbox"
                           id={v.visitMapId}
                           checked={v.status.status === 'COMPLETED'}
-                          onChange={(e) => { markVisitCompleteHandler(true, v)}}
+                          onChange={() => {}}
                         />
                       </td>
                       <td>{DateTime.fromJSDate(v.startDate).toFormat('yyyy LLL dd')}</td>
@@ -919,7 +914,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
       </Modal>
 
       <Modal isOpen={!!showEventDetail} onRequestClose={() => setShowEventDetail(null)}>
-        {!!showEventDetail ? <VisitDetail event={showEventDetail} closeModal={() => setShowEventDetail(null)} /> : <></>}
+        {!!showEventDetail ? <VisitDetail markVisitCompleteHandler={markVisitCompleteHandler} event={showEventDetail} closeModal={() => setShowEventDetail(null)} /> : <></>}
       </Modal>
     </div>
   );

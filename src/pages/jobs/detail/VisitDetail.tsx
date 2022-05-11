@@ -1,12 +1,13 @@
-import { PersonIcon } from '@primer/octicons-react';
+import { ChecklistIcon, PersonIcon } from '@primer/octicons-react';
 import { FC } from 'react';
 
 interface IProps {
   event: any;
   closeModal: () => void;
+  markVisitCompleteHandler: (isComplete:boolean, data: any) => void;
 }
 
-const VisitDetail: FC<IProps> = ({ closeModal, event }) => {
+const VisitDetail: FC<IProps> = ({ closeModal, markVisitCompleteHandler, event }) => {
   const property = event.job?.property;
 
   return (
@@ -14,28 +15,24 @@ const VisitDetail: FC<IProps> = ({ closeModal, event }) => {
       <div className="modal-dialog">
         <div className="modal-content">
           <div className="modal-header">
-            <h5 className="modal-title">Visit or {event.job?.jobFor?.fullName}</h5>
+            <h5 className="modal-title">Visit for {event.job?.jobFor?.fullName}</h5>
             <button type="button" className="btn-close" onClick={closeModal} data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div className="modal-body">
-            <div className="row">
-              <div>
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  value=""
-                  onChange={() => {}}
-                  checked={event.status?.status === 'COMPLETED'}
-                  id="flexCheckDefault"
-                />
-                <label className="ms-2 form-check-label" htmlFor="flexCheckDefault">
-                  Completed
-                </label>
-              </div>
-            </div>
-
-            <div className="hr mb-3"></div>
-
+            {event.status?.status !== 'COMPLETED' ? (
+              <>
+                <div className="row">
+                  <div>
+                    <button
+                      className="btn btn-primary"
+                      onClick={(e) => markVisitCompleteHandler(true, event)}
+                    > <ChecklistIcon /> Complete this Visit</button>
+                  </div>
+                </div>
+                <div className="hr mb-3"></div>
+              </>
+            ) : null}
+            
             <div className="row">
               <h5>Details</h5>
               <div>{event.title}</div>

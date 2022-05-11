@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { PersonIcon } from '@primer/octicons-react';
+import { ChecklistIcon, PersonIcon } from '@primer/octicons-react';
 
 interface IProps {
   event: any;
@@ -21,32 +21,27 @@ const ScheduleEventDetail: FC<IProps> = ({ closeModal, markVisitCompleteHandler,
             <button type="button" className="btn-close" onClick={closeModal} data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div className="modal-body">
-            <div className="row">
-              <div
-                onClick={() => {
-                  const visitObj = {
-                    ...event.extendedProps?.meta,
-                    title: event.title,
-                    startDate: event.start,
-                    endDate: event.end ? event.end : event.start,
-                  };
-                  event.extendedProps?.meta?.status?.status !== 'COMPLETED' && markVisitCompleteHandler(true, visitObj);
-                }}
-              >
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  value=""
-                  defaultChecked={event.extendedProps?.meta?.status?.status === 'COMPLETED'}
-                  id="flexCheckDefault"
-                />
-                <label className="ms-2 form-check-label" htmlFor="flexCheckDefault">
-                  Completed
-                </label>
-              </div>
-            </div>
-
-            <div className="hr mb-3"></div>
+          {event.status?.status !== 'COMPLETED' ? (
+              <>
+                <div className="row">
+                  <div>
+                    <button
+                      className="btn btn-primary"
+                      onClick={(e) => {
+                        const visitObj = {
+                          ...event.extendedProps?.meta,
+                          title: event.title,
+                          startDate: event.start,
+                          endDate: event.end ? event.end : event.start,
+                        };
+                        event.extendedProps?.meta?.status?.status !== 'COMPLETED' && markVisitCompleteHandler(true, visitObj);
+                      }}
+                    > <ChecklistIcon /> Complete this Visit</button>
+                  </div>
+                </div>
+                <div className="hr mb-3"></div>
+              </>
+            ) : null}
 
             <div className="row">
               <h5>Details</h5>

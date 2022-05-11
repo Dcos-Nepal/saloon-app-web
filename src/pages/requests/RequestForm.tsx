@@ -41,7 +41,7 @@ const RequestAddForm: FC<IProps> = ({ id, actions, clients, isJobRequestsLoading
       label: 'Search for Clients...',
       value: ''
     },
-    property: ''
+    property: null
   });
 
   useEffect(() => {
@@ -89,13 +89,18 @@ const RequestAddForm: FC<IProps> = ({ id, actions, clients, isJobRequestsLoading
     onSubmit: async (data: any) => {
       // Formatting Data
       data.client = data.client.value;
+      data.property = data.property ? data.property : null;
 
-      // For updating the job request
-      if (id) await actions.updateJobRequest(data);
-      // For Creating new job request
-      else await actions.addJobRequest(data);
+      if (id) {
+        // For updating the job request
+        await actions.updateJobRequest(data);
+      } else {
+        // For Creating new job request
+        await actions.addJobRequest(data);
+      }
 
-      navigate(-1);
+      // Reset the form
+      formik.resetForm();
     }
   });
 
@@ -252,27 +257,11 @@ const RequestAddForm: FC<IProps> = ({ id, actions, clients, isJobRequestsLoading
 
         <div className="mb-3 mt-3">
           <button
-            type="button"
-            onClick={async () => {
-              await formik.handleSubmit();
-              // navigate(-1);
-            }}
+            type="submit"
             className="btn btn-primary"
           >
             Save Request
           </button>
-          {!id ? (
-            <button
-              type="button"
-              onClick={async () => {
-                await formik.handleSubmit();
-                // formik.resetForm();
-              }}
-              className="btn btn-secondary ms-3"
-            >
-              Save and create another
-            </button>
-          ) : null}
           <button onClick={() => navigate(-1)} type="button" className="btn ms-3">
             Cancel
           </button>

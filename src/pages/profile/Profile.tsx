@@ -36,13 +36,14 @@ const Profile = () => {
       setIsLoading(true);
       try {
         const { data: response } = await verifyOtpApi(userData);
+
         if (response.data.success === true) {
           toast.success('Verified OTP!');
           setShowOtpModal(false);
         }
       } catch (ex) {
         console.log(ex);
-        toast.error('Failed to verify OTP');
+        toast.error('Failed to verify OTP code');
       } finally {
         setIsLoading(false);
       }
@@ -55,6 +56,9 @@ const Profile = () => {
 
     if (response.data.success === true) {
       setShowOtpModal(true);
+    } else {
+      console.log("Response:", response.data);
+      toast.error('Failed to send OTP Code');
     }
   };
 
@@ -150,7 +154,7 @@ const Profile = () => {
                             {currentUser.auth?.phoneNumber?.verified ? (
                               `(Verified)`
                             ) : (
-                              <button onClick={() => handleSendOtp(currentUser.phoneNumber)}>Verify</button>
+                              <button className="btn btn-sm btn-primary" onClick={() => handleSendOtp(currentUser.phoneNumber)}>Verify</button>
                             )}
                           </div>
                         </div>

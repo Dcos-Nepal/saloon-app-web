@@ -243,18 +243,20 @@ const WorkerList = (props: any) => {
             </tbody>
           </table>
         </div>
-        <div className="row pt-2 m-1 rounded-top">
-          <ReactPaginate
-            previousLabel={'Previous'}
-            nextLabel={'Next'}
-            breakLabel={'...'}
-            breakClassName={'break-me'}
-            pageCount={pageCount}
-            onPageChange={handlePageClick}
-            containerClassName={'pagination'}
-            activeClassName={'active'}
-          />
-        </div>
+        {workers.length ? (
+          <div className="row pt-2 m-1 rounded-top">
+            <ReactPaginate
+              previousLabel={'Previous'}
+              nextLabel={'Next'}
+              breakLabel={'...'}
+              breakClassName={'break-me'}
+              pageCount={pageCount}
+              onPageChange={handlePageClick}
+              containerClassName={'pagination'}
+              activeClassName={'active'}
+            />
+          </div>
+        ) : null }
       </div>
 
       <Modal isOpen={!!deleteInProgress} onRequestClose={() => setDeleteInProgress('')}>

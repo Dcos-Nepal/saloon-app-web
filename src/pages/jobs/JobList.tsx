@@ -21,6 +21,7 @@ import { Loader } from 'common/components/atoms/Loader';
 import { CheckIcon, EyeIcon, NoteIcon, PencilIcon, TasklistIcon, TrashIcon } from '@primer/octicons-react';
 import { getCurrentUser } from 'utils';
 import Truncate from 'react-truncate';
+import EmptyState from 'common/components/EmptyState';
 
 interface IProps {
   actions: { fetchJobs: (query: any) => any };
@@ -242,42 +243,46 @@ const JobsList = (props: IProps) => {
           <div className="col-12">
             <InputField label="Search" placeholder="Search jobs" className="search-input" onChange={handleJobsSearch} />
           </div>
-          <table {...getTableProps()} className="table txt-dark-grey">
-            <thead>
-              {headerGroups.map((headerGroup) => (
-                <tr {...headerGroup.getHeaderGroupProps()} className="rt-head">
-                  <th>#NO.</th>
-                  {headerGroup.headers.map((column) => (
-                    <th {...column.getHeaderProps()} scope="col">
-                      {column.render('Header')}
-                    </th>
-                  ))}
-                </tr>
-              ))}
-            </thead>
-            <tbody {...getTableBodyProps()} className="rt-tbody">
-              {props.isLoading ? (
-                <tr className='rt-tr-group'>
-                  <td colSpan={rows.length}><Loader isLoading={props.isLoading} /></td>
-                </tr>
-              ): null}
-              
-              {rows.map((row, index) => {
-                prepareRow(row);
-
-                return (
-                  <tr {...row.getRowProps()} className="rt-tr-group">
-                    <td>
-                      <strong>#{index + 1 + (page - 1) * itemsPerPage}</strong>
-                    </td>
-                    {row.cells.map((cell) => (
-                      <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+          {!jobs.length ? (
+            <EmptyState />
+          ) : (
+            <table {...getTableProps()} className="table txt-dark-grey">
+              <thead>
+                {headerGroups.map((headerGroup) => (
+                  <tr {...headerGroup.getHeaderGroupProps()} className="rt-head">
+                    <th>#NO.</th>
+                    {headerGroup.headers.map((column) => (
+                      <th {...column.getHeaderProps()} scope="col">
+                        {column.render('Header')}
+                      </th>
                     ))}
                   </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                ))}
+              </thead>
+              <tbody {...getTableBodyProps()} className="rt-tbody">
+                {props.isLoading ? (
+                  <tr className='rt-tr-group'>
+                    <td colSpan={rows.length}><Loader isLoading={props.isLoading} /></td>
+                  </tr>
+                ): null}
+                
+                {rows.map((row, index) => {
+                  prepareRow(row);
+
+                  return (
+                    <tr {...row.getRowProps()} className="rt-tr-group">
+                      <td>
+                        <strong>#{index + 1 + (page - 1) * itemsPerPage}</strong>
+                      </td>
+                      {row.cells.map((cell) => (
+                        <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+                      ))}
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          )}
         </div>
         {jobs.length ? (
           <div className="row pt-2 m-1 rounded-top">

@@ -6,7 +6,7 @@ export const CreateSchema = Yup.object().shape({
   jobFor: Yup.string().required('Please select a client'),
   jobType: Yup.string().required('Please select a service type'),
   jobRequest: Yup.string().notRequired(),
-  property: Yup.string().notRequired(),
+  property: Yup.string().notRequired().nullable(),
   lineItems: Yup.array().of(
     Yup.object().shape({
       name: Yup.string().required('Please select a line item.'),

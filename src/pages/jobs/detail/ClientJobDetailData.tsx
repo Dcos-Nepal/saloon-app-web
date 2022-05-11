@@ -452,7 +452,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
               </div>
               <div className="col p-2 ps-4">
                 <div className="txt-grey">Schedule</div>
-                {job && <div className="">{_.startCase(rrulestr(job?.primaryVisit.rruleSet).toText())}</div>}
+                {job && job?.primaryVisit?.rruleSet ? <div className="">{_.startCase(rrulestr(job?.primaryVisit?.rruleSet).toText())}</div> : 'N/A'}
               </div>
             </div>
           </div>
@@ -731,7 +731,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
                           </div>
                           <div className="col p-2 ps-4">
                             <div className="txt-grey">Schedule</div>
-                            {job && <div className="">{_.startCase(rrulestr(job?.primaryVisit.rruleSet).toText())}</div>}
+                            {job && job?.primaryVisit?.rruleSet ? <div className="">{_.startCase(rrulestr(job?.primaryVisit?.rruleSet)?.toText())}</div> : 'N/A'}
                           </div>
                         </div>
                       </div>

@@ -160,7 +160,7 @@ const EditJobForm = (props: IProps) => {
                       value={formik.values.instruction}
                       onChange={formik.handleChange}
                       className={`form-control`}
-                      placeholder={"Quote's description..."}
+                      placeholder={"Job's description..."}
                     />
                   </div>
                 </div>

@@ -37,6 +37,11 @@ const ClientJobAddForm = ({ actions, isLoading }: IProps) => {
   const [isRecommendationsLoading, setIsRecommendationsLoading] = useState(false);
   const [rruleStr, setRruleStr] = useState(new RRule({ dtstart: new Date(), interval: 1, freq: Frequency.DAILY }).toString());
   const [activeTab, setActiveTab] = useState('ONE-OFF');
+  
+  /**
+   * Get Translation for RRule
+   * @returns String
+   */
   const getTranslation = () => {
     switch ('en') {
       case 'en':
@@ -65,7 +70,10 @@ const ClientJobAddForm = ({ actions, isLoading }: IProps) => {
     initialValues: initialValues,
     validationSchema: CreateSchema,
     validateOnChange: true,
-    onSubmit: async (job) => {
+    onSubmit: async (job: any) => {
+      // Handle cases for not secondary properties
+      job.property = job.property ? job.property : null;
+
       await actions.addJob({
         ...job,
         schedule: {
@@ -74,6 +82,12 @@ const ClientJobAddForm = ({ actions, isLoading }: IProps) => {
           endDate: new Date(`${job.schedule.endDate} ${job.schedule.endTime}`).toISOString()
         }
       });
+
+      // Reset form
+      formik.resetForm();
+      setProperties([]);
+      setClientDetails(null);
+      setRecommendedTeam([]);
     }
   });
 
@@ -133,7 +147,11 @@ const ClientJobAddForm = ({ actions, isLoading }: IProps) => {
       interval: 1,
       freq: Frequency.DAILY
     };
-    if (formik.values.oneOff?.endDate) rule.until = new Date(`${formik.values.oneOff?.endDate} ${formik.values.oneOff?.endTime}`);
+  
+    if (formik.values.oneOff?.endDate) {
+      rule.until = new Date(`${formik.values.oneOff?.endDate} ${formik.values.oneOff?.endTime}`);
+    }
+
     const rrule = new RRule(rule);
     formik.setFieldValue('schedule', { ...formik.values.oneOff, rruleSet: rrule.toString() });
   };
@@ -268,7 +286,7 @@ const ClientJobAddForm = ({ actions, isLoading }: IProps) => {
                       value={formik.values.instruction}
                       onChange={formik.handleChange}
                       className={`form-control`}
-                      placeholder={"Quote's description..."}
+                      placeholder={"Job's description..."}
                     />
                   </div>
                 </div>
@@ -642,9 +660,6 @@ const ClientJobAddForm = ({ actions, isLoading }: IProps) => {
         <div className="mb-3 mt-3">
           <button type="submit" className="btn btn-primary">
             Save Job
-          </button>
-          <button onClick={() => {}} type="button" className="btn btn-secondary ms-3">
-            Save and create another
           </button>
           <button onClick={() => navigate(-1)} type="button" className="btn ms-3">
             Cancel

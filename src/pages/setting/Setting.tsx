@@ -37,6 +37,7 @@ const Setting = ({
 }) => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isPCLoading, setIsPCLoading] = useState<boolean>(false);
   const [addProperty, setAddProperty] = useState(false);
   const [editPropertyFor, setEditPropertyFor] = useState<any>(null);
 
@@ -239,6 +240,13 @@ const Setting = ({
     confirmPassword: Yup.string()
       .min(8, 'Password must be at least 8 characters')
       .max(24, 'Password can be maximum 24 characters')
+      .when("newPassword", {
+        is: (val: string) => (val && val.length > 0 ? true : false),
+        then: Yup.string().oneOf(
+          [Yup.ref("newPassword")],
+          "Both password need to be the same"
+        )
+      })
       .required('Confirm Password is required'),
     userData: Yup.object().shape({
       documents: Yup.object().shape({
@@ -299,16 +307,16 @@ const Setting = ({
       }
 
       // Making a Password Reset Request
-      setIsLoading(true);
+      setIsPCLoading(true);
       const response: any = await changePasswordApi(userData);
 
       if (response.data.success === true) {
         clearData();
-        setIsLoading(false);
+        setIsPCLoading(false);
         toast.success('Password changed successfully!');
         return navigate('/signin');
       } else {
-        setIsLoading(false);
+        setIsPCLoading(false);
         toast.error('Failed to change password');
       }
     },
@@ -695,7 +703,7 @@ const Setting = ({
                 </form>
               </div>
               <div className="card ms-3 col-5">
-                <Loader isLoading={isLoading} />
+                <Loader isLoading={isPCLoading} />
                 <div className="mb-2">
                   <h4>Change password</h4>
                   <label>Fill your new password to change</label>

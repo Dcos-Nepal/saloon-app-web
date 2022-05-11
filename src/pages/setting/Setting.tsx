@@ -62,7 +62,24 @@ const Setting = ({
     policeCert: null
   });
 
+  // Get Currently logged in user
   const currentUser = getData('user');
+
+  const initialValues = {
+    email: currentUser?.email,
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  };
+
+  const tagOptions = [
+    { label: 'Window', value: 'Window' },
+    { label: 'Garden', value: 'Garden' },
+    { label: 'Kitchen', value: 'Kitchen' },
+    { label: 'Other', value: 'Other' }
+  ];
+
+  const profileInitialValues = currentUser;
 
   /**
    * Save Property
@@ -209,26 +226,6 @@ const Setting = ({
     );
   };
 
-  useEffect(() => {
-    if (currentUser?._id && currentUser.userData?.type === 'CLIENT') actions.fetchProperties({ user: currentUser._id });
-  }, [currentUser?._id, currentUser.userData?.type, actions]);
-
-  const initialValues = {
-    email: currentUser?.email,
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: ''
-  };
-
-  const tagOptions = [
-    { label: 'Window', value: 'Window' },
-    { label: 'Garden', value: 'Garden' },
-    { label: 'Kitchen', value: 'Kitchen' },
-    { label: 'Other', value: 'Other' }
-  ];
-
-  const profileInitialValues = currentUser;
-
   const ChangePasswordSchema = Yup.object().shape({
     email: Yup.string().required('Please provide an email.').email('Invalid email provided'),
     currentPassword: Yup.string()
@@ -374,6 +371,12 @@ const Setting = ({
     ) : null;
   };
 
+  useEffect(() => {
+    if (currentUser?._id && currentUser?.userData?.type === 'CLIENT') {
+      actions.fetchProperties({ user: currentUser._id });
+    }
+  }, [currentUser?._id, currentUser?.userData?.type, actions]);
+
   return (
     <>
       <SideNavbar active="Setting" />
@@ -517,7 +520,7 @@ const Setting = ({
                     </div>
                   </div>
 
-                  {currentUser.userData?.type === 'CLIENT' ? (
+                  {currentUser?.userData?.type === 'CLIENT' ? (
                     <div className="col">
                       <div className="row">
                         <div className="col">
@@ -592,7 +595,7 @@ const Setting = ({
                     </div>
                   ) : null}
 
-                  {currentUser.userData?.type === 'WORKER' ? (
+                  {currentUser?.userData?.type === 'WORKER' ? (
                     <>
                       <div className="mb-2 row">
                         <div className="col-5">

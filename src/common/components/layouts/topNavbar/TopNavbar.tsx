@@ -40,19 +40,12 @@ const TopNavbar: FC<IProps> = ({ loggedIn = true }) => {
 
         {loggedIn && (
           <>
-            <form className="ms-4 form-inline navbar-nav me-auto">
-              {/* <div className="input-group">
-                <input type="text" className="form-control search-input bg-light-grey" placeholder="Search" />
-              </div> */}
-            </form>
             <ul className="d-flex navbar-nav">
-              {/* <li className="nav-item me-3 mt-1">
-                <box-icon name="bell"></box-icon>
-              </li> */}
               <li className="nav-item d-flex align-items-center">
-                <span className="text-secondary">
-                  {getUserName()} [{currentUser.roles.toString()}]
-                </span>&nbsp;&nbsp;
+                <div className="text-secondary">
+                  <div>{getUserName()}</div>
+                  <div className='text-sm'>Role: <strong style={{fontSize: '12px'}}>{currentUser.roles.toString()}</strong></div>
+                </div>&nbsp;&nbsp;&nbsp;&nbsp;
                 <div className="dropdown dropstart">
                   <span role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
                     <img src={avatar} height="34px" alt="Orange" />

@@ -42,10 +42,6 @@ const TopNavbar: FC<IProps> = ({ loggedIn = true }) => {
           <>
             <ul className="d-flex navbar-nav">
               <li className="nav-item d-flex align-items-center">
-                <div className="text-secondary">
-                  <div>{getUserName()}</div>
-                  <div className='text-sm'>Role: <strong style={{fontSize: '12px'}}>{currentUser.roles.toString()}</strong></div>
-                </div>&nbsp;&nbsp;&nbsp;&nbsp;
                 <div className="dropdown dropstart">
                   <span role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
                     <img src={avatar} height="34px" alt="Orange" />
@@ -67,6 +63,11 @@ const TopNavbar: FC<IProps> = ({ loggedIn = true }) => {
                       </span>
                     </li>
                   </ul>
+                </div>
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                <div className="text-secondary">
+                  <div>{getUserName()}</div>
+                  <div className='text-sm'>Role: <strong style={{fontSize: '12px'}}>{currentUser.roles.toString()}</strong></div>
                 </div>
               </li>
             </ul>

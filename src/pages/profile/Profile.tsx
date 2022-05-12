@@ -1,3 +1,4 @@
+import { connect } from 'react-redux';
 import { useNavigate } from 'react-router';
 
 import { getData } from 'utils/storage';
@@ -6,15 +7,23 @@ import avatar from 'assets/images/Avatar.svg';
 import Footer from 'common/components/layouts/footer';
 import SideNavbar from 'common/components/layouts/sidebar';
 import { KeyIcon, PencilIcon, StopIcon } from '@primer/octicons-react';
-import { useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { getIn, useFormik } from 'formik';
 import * as Yup from 'yup';
 import InputField from 'common/components/form/Input';
 import Modal from 'common/components/atoms/Modal';
 import { sendOtpApi, verifyOtpApi } from 'services/users.service';
 import { toast } from 'react-toastify';
+import * as propertiesActions from 'store/actions/properties.actions';
 
-const Profile = () => {
+interface IProps {
+  actions: {
+    fetchProperties: (filter: any) => void;
+  };
+  properties: any[];
+}
+
+const Profile: FC<IProps> = ({ actions, properties }) => {
   const navigate = useNavigate();
   const currentUser = getData('user');
   const [showOtpModal, setShowOtpModal] = useState(false);
@@ -27,6 +36,10 @@ const Profile = () => {
   const VerifyPhoneSchema = Yup.object().shape({
     code: Yup.string().required('Please provide an OTP.')
   });
+
+  useEffect(() => {
+    if (currentUser?._id) actions.fetchProperties({ user: currentUser._id });
+  }, [currentUser?._id, actions]);
 
   const formik = useFormik({
     enableReinitialize: true,
@@ -57,7 +70,7 @@ const Profile = () => {
     if (response.data.success === true) {
       setShowOtpModal(true);
     } else {
-      console.log("Response:", response.data);
+      console.log('Response:', response.data);
       toast.error('Failed to send OTP Code');
     }
   };
@@ -154,7 +167,9 @@ const Profile = () => {
                             {currentUser.auth?.phoneNumber?.verified ? (
                               `(Verified)`
                             ) : (
-                              <button className="btn btn-sm btn-primary" onClick={() => handleSendOtp(currentUser.phoneNumber)}>Verify</button>
+                              <button className="btn btn-sm btn-primary" onClick={() => handleSendOtp(currentUser.phoneNumber)}>
+                                Verify
+                              </button>
                             )}
                           </div>
                         </div>
@@ -206,10 +221,85 @@ const Profile = () => {
                     <div className="">{currentUser?.address?.country}</div>
                   </div>
                 </div>
+
+                {currentUser.userData?.type === 'CLIENT' ? (
+                  <>
+                    <div className="row mt-2">
+                      <div className="col d-flex flex-row">
+                        <h5 className="txt-bold">Properties</h5>
+                      </div>
+                    </div>
+                    {properties.length ? (
+                      properties.map((property: any, index) => (
+                        <div className={`row mt-1`}>
+                          <div className="col-2 mt-2">
+                            <button className="btn btn-secondary d-flex float-end">
+                              <box-icon name="map" color="#EC7100" />
+                            </button>
+                          </div>
+                          <div className="col p-2 ps-4">
+                            <div className="txt-grey">{property.name}</div>
+                            <div className="">
+                              {property.street1}, {property.city}, {property.country} {property.postalCode}
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="row mt-4">
+                        <div className="col p-2 ps-4">
+                          <div className="txt-grey">No property address</div>
+                        </div>
+                      </div>
+                    )}
+                  </>
+                ) : null}
               </div>
             </div>
             <div className="row m-1">
               <div className="col card">
+
+              {currentUser.userData?.type === 'WORKER' ? (
+                  <>
+                    <div className="row">
+                      <div className="col d-flex flex-row">
+                        <h5 className="txt-bold">Worker Documents</h5>
+                      </div>
+                      <div className="txt-info">
+                        <StopIcon size={16} /> Click on the each document to download/view the document.
+                      </div>
+                    </div>
+                    {currentUser.userData?.documents && Object.keys(currentUser?.userData?.documents).length ? (
+                      Object.keys(currentUser?.userData?.documents).map((key) => (
+                        <div className="row mt-3">
+                          <div className="col p-1 ps-4">
+                            <div className="txt-grey mb-2">{currentUser.userData.documents[key]?.type?.split('_').join(' ')}:</div>
+                            {currentUser.userData.documents[key]?.key ? (
+                              <a
+                                className="mt-3 txt-orange text-decoration-none"
+                                target="_blank"
+                                href={currentUser.userData.documents[key]?.url}
+                                rel="noreferrer"
+                              >
+                                <img height="200" src={currentUser.userData.documents[key]?.url} className="rounded float-start" alt="" />
+                              </a>
+                            ) : (
+                              <div className="txt-grey pt-2">
+                                <StopIcon size={16} /> Not document added yet!.
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="row border-bottom mb-3">
+                        <div className="col p-2 ps-4">
+                          <div className="txt-grey">No documents</div>
+                        </div>
+                      </div>
+                    )}
+                  </>
+                ) : null}
                 <div className="row">
                   <div className="col d-flex flex-row">
                     <h5 className="txt-bold">Other Information</h5>
@@ -319,4 +409,18 @@ const Profile = () => {
   );
 };
 
-export default Profile;
+const mapStateToProps = (state: any) => {
+  return {
+    properties: state.properties.properties || []
+  };
+};
+
+const mapDispatchToProps = (dispatch: any) => ({
+  actions: {
+    fetchProperties: (filter: any) => {
+      dispatch(propertiesActions.fetchProperties(filter));
+    }
+  }
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Profile);

@@ -142,14 +142,14 @@ const JobsList = (props: IProps) => {
               <box-icon name="dots-vertical-rounded"></box-icon>
             </span>
             <ul className="dropdown-menu" aria-labelledby="dropdownMenuLink">
-              {currentUser.role === 'CLIENT' ? (
+              {currentUser.role === 'WORKER' ? (
                 <li onClick={() => setCompleteJobFor(row)}>
                   <span className="dropdown-item pointer">
                     <CheckIcon /> Mark as Complete
                   </span>
                 </li>
               ) : null}
-              {currentUser.role === 'WORKER' ? (
+              {currentUser.role === 'CLIENT' ? (
                 <li onClick={() => setProvideFeedbackFor(row)}>
                   <span className="dropdown-item pointer">
                     <NoteIcon /> Provide Feedback
@@ -162,7 +162,7 @@ const JobsList = (props: IProps) => {
                 </span>
               </li>
 
-              {((currentUser.role === 'WORKER' || currentUser.role === 'CLIENT') && currentUser.id === row?.createdBy) || currentUser.role === 'ADMIN' ? (
+              {(currentUser.role === 'WORKER' && currentUser.id === row?.createdBy) || currentUser.role === 'ADMIN' ? (
                 <>
                   <li onClick={() => navigate(pinterpolate(endpoints.admin.jobs.edit, { id: row._id }))}>
                     <span className="dropdown-item pointer">

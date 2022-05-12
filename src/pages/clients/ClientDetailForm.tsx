@@ -331,6 +331,7 @@ const ClientDetailForm: FC<IProps> = ({ id, actions, currentClient, properties, 
               type="button"
               onClick={async () => {
                 await formik.handleSubmit();
+                navigate(-1);
               }}
               className="btn btn-primary"
             >
@@ -341,6 +342,7 @@ const ClientDetailForm: FC<IProps> = ({ id, actions, currentClient, properties, 
                 type="button"
                 onClick={async () => {
                   await formik.handleSubmit();
+                  window.location.reload();
                 }}
                 className="btn btn-secondary ms-3"
               >

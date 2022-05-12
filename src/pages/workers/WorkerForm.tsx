@@ -528,6 +528,7 @@ const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker, isWorkersLoa
       </div>
       <div className="mb-3 mt-3">
         <button
+          type="button"
           onClick={async () => {
             await formik.handleSubmit();
             navigate(-1);

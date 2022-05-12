@@ -1,6 +1,12 @@
 import * as actionType from '../constants';
 
-const initialState = {
+const initialState: {
+  properties: any[];
+  currentItem: any;
+  isFailed: boolean;
+  isSuccess: boolean;
+  isLoading: boolean;
+} = {
   properties: [],
   currentItem: null,
   isFailed: false,
@@ -38,6 +44,7 @@ const propertiesReducer = (state = initialState, action: any) => {
       state.isLoading = false;
       state.isFailed = false;
       state.isSuccess = true;
+      state.properties = [...state.properties, action.payload];
       return { ...state };
     }
 

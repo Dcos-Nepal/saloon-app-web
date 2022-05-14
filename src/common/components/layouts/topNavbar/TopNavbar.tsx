@@ -15,6 +15,7 @@ interface IProps {
 const TopNavbar: FC<IProps> = ({ loggedIn = true }) => {
   const navigate = useNavigate();
   const currentUser = getData('user');
+  const { version } = require('../../../../../package.json');
 
   /**
    * Logs out user
@@ -36,6 +37,7 @@ const TopNavbar: FC<IProps> = ({ loggedIn = true }) => {
       <div className="ms-3 me-3 container-fluid">
         <a href="/" className="navbar-brand">
           <img src={logo} height="34px" alt="Orange" />
+          <small style={{fontSize: '14px'}}>&nbsp; v{version} </small>
         </a>
 
         {loggedIn && (

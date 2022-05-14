@@ -3,6 +3,11 @@ const EventActions = {
     return {
       type: 'TOGGLE_WEEKENDS'
     }
+  },
+  toggleCompleted() {
+    return {
+      type: 'TOGGLE_COMPLETED'
+    }
   }
 }
 

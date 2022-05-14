@@ -87,7 +87,7 @@ const LineItemsList = (props: IProps) => {
           row?.tags?.length ? (
             <div className="">
               {row?.tags.map((tag: string) => (
-                <span className="status status-green me-1">{tag}</span>
+                <span key={`~${tag}`} className="status status-green me-1">{tag}</span>
               ))}
             </div>
           ) : (
@@ -188,7 +188,7 @@ const LineItemsList = (props: IProps) => {
               ))}
             </thead>
             <tbody {...getTableBodyProps()} className="rt-tbody">
-              <Loader isLoading={props.isLoading} />
+              {props.isLoading ? <tr><td colSpan={6}><Loader isLoading={props.isLoading} /></td></tr> : null}
               {rows.map((row, index) => {
                 prepareRow(row);
 
@@ -221,13 +221,13 @@ const LineItemsList = (props: IProps) => {
           </div>
         ) : null}
       </div>
-      <Modal isOpen={addLineItemOpen} onRequestClose={() => setAddLineItemOpen(false)}>
+      <Modal isOpen={!!addLineItemOpen} onRequestClose={() => setAddLineItemOpen(false)}>
         <LineItemAdd closeModal={() => setAddLineItemOpen(false)} saveHandler={addLineItemHandler} />
       </Modal>
       <Modal isOpen={!!deleteInProgress} onRequestClose={() => setDeleteInProgress('')}>
         <DeleteConfirm onDelete={deleteLineItemHandler} closeModal={() => setDeleteInProgress('')} />
       </Modal>
-      <Modal isOpen={editLineItemFor} onRequestClose={() => setEditLineItemFor(null)}>
+      <Modal isOpen={!!editLineItemFor} onRequestClose={() => setEditLineItemFor(null)}>
         <LineItemEdit saveHandler={editLineItemHandler} closeModal={() => setEditLineItemFor(null)} lineItem={editLineItemFor} />
       </Modal>
     </>

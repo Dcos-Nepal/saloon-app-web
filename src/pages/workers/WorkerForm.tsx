@@ -24,7 +24,7 @@ interface IProps {
   isWorkersLoading: boolean;
 }
 
-const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker, isWorkersLoading }) => {
+const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker }) => {
   const navigate = useNavigate();
 
   const [isUploading, setIsUploading] = useState({
@@ -32,6 +32,7 @@ const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker, isWorkersLoa
     cleaningCert: false,
     policeCert: false
   });
+
   const [isDeleting, setIsDeleting] = useState({
     idCard: false,
     cleaningCert: false,
@@ -165,7 +166,9 @@ const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker, isWorkersLoa
 
   /**
    * Handle File Upload
+   * @param event
    * @param docKey
+   * @param type
    */
   const handleFileUpload = async (event: any, docKey: string, type: string) => {
     const formData = new FormData();

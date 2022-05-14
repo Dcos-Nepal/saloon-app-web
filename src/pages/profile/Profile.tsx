@@ -258,8 +258,7 @@ const Profile: FC<IProps> = ({ actions, properties }) => {
             </div>
             <div className="row m-1">
               <div className="col card">
-
-              {currentUser.userData?.type === 'WORKER' ? (
+                {currentUser.userData?.type === 'WORKER' ? (
                   <>
                     <div className="row">
                       <div className="col d-flex flex-row">
@@ -270,9 +269,9 @@ const Profile: FC<IProps> = ({ actions, properties }) => {
                       </div>
                     </div>
                     {currentUser.userData?.documents && Object.keys(currentUser?.userData?.documents).length ? (
-                      Object.keys(currentUser?.userData?.documents).map((key) => (
-                        <div className="row mt-3">
-                          <div className="col p-1 ps-4">
+                      <div className="row mt-3" >
+                        {Object.keys(currentUser?.userData?.documents).map((key) => (
+                          <div className="col p-1 ps-4" key={currentUser?._id}>
                             <div className="txt-grey mb-2">{currentUser.userData.documents[key]?.type?.split('_').join(' ')}:</div>
                             {currentUser.userData.documents[key]?.key ? (
                               <a
@@ -281,7 +280,7 @@ const Profile: FC<IProps> = ({ actions, properties }) => {
                                 href={currentUser.userData.documents[key]?.url}
                                 rel="noreferrer"
                               >
-                                <img height="200" src={currentUser.userData.documents[key]?.url} className="rounded float-start" alt="" />
+                                <img height="200" width="200" src={currentUser.userData.documents[key]?.url} className="rounded float-start" alt="" />
                               </a>
                             ) : (
                               <div className="txt-grey pt-2">
@@ -289,8 +288,8 @@ const Profile: FC<IProps> = ({ actions, properties }) => {
                               </div>
                             )}
                           </div>
-                        </div>
-                      ))
+                        ))}
+                      </div>
                     ) : (
                       <div className="row border-bottom mb-3">
                         <div className="col p-2 ps-4">
@@ -300,7 +299,7 @@ const Profile: FC<IProps> = ({ actions, properties }) => {
                     )}
                   </>
                 ) : null}
-                <div className="row">
+                <div className="row mt-3">
                   <div className="col d-flex flex-row">
                     <h5 className="txt-bold">Other Information</h5>
                   </div>
@@ -328,7 +327,7 @@ const Profile: FC<IProps> = ({ actions, properties }) => {
                       </div>
                       <div className="col p-2 ps-4">
                         <div className="txt-grey">Working Days</div>
-                        <div className="">{currentUser.userData?.workingDays?.length ? currentUser.userData?.workingDays : 'No working days set.'}</div>
+                        <div className="">{currentUser.userData?.workingDays?.length ? currentUser.userData?.workingDays.join(', ') : 'No working days set.'}</div>
                       </div>
                     </div>
                     <div className="row mt-2">
@@ -366,6 +365,8 @@ const Profile: FC<IProps> = ({ actions, properties }) => {
             </div>
           </div>
         </div>
+
+        {/* Modals Section */}
         <Modal isOpen={showOtpModal} onRequestClose={() => setShowOtpModal(false)}>
           <div className={`modal fade show mt-5`} role="dialog" style={{ display: 'block' }}>
             <div className="modal-dialog mt-5">

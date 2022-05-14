@@ -109,23 +109,18 @@ const Setting = ({
   };
 
   /**
-   * Handle File Select
-   * @param event
-   * @param key
-   */
-  const handleFileSelect = async (event: any, key: string) => {
-    const file = event.target.files[0];
-    setDocument({ ...getDocument, [key]: file });
-  };
-
-  /**
    * Handle File Upload
+   * @param event
    * @param docKey
+   * @param type
    */
-  const handleFileUpload = async (docKey: string, type: string) => {
+  const handleFileUpload = async (event: any, docKey: string, type: string) => {
     const formData = new FormData();
-    formData.append('file', (getDocument as any)[docKey], (getDocument as any)[docKey].name);
+    const file = event.target.files[0];
 
+    formData.append('file', file, file.name);
+
+    setDocument({ ...getDocument, [docKey]: file });
     setIsUploading({ ...isUploading, [docKey]: true });
 
     try {
@@ -181,43 +176,35 @@ const Setting = ({
         <label className="form-label txt-dark-grey">{label}</label>
         {(documents && documents[id]?.key) || (getDocument as any)[id]?.name ? (
           <div className="row">
-            <div className="col-9">
-              <span className="mt-1 btn btn-secondary btn-sm">{documents ? documents[id]?.key : (getDocument as any)[id]?.name}</span>
-            </div>
             <div className="col-3">
-              <button
-                type="button"
-                title="Upload"
-                className="btn btn-warning btn-sm"
-                onClick={() => {
-                  handleFileUpload(id, type);
-                }}
-              >
-                {(isUploading as any)[id] ? 'loading...' : <UploadIcon size={16} />}
-              </button>
-              &nbsp;
-              <button
-                type="button"
-                title="Delete"
-                className="btn btn-danger btn-sm"
-                onClick={() => {
-                  handleFileDelete(id);
-                }}
-              >
-                {(isDeleting as any)[id] ? 'loading...' : <XCircleIcon size={16} />}
-              </button>
+              {(isUploading as any)[id] ? 
+                <div className="d-flex justify-content-center">
+                  <div className="spinner-border" role="status">
+                    <span className="visually-hidden">Loading...</span>
+                  </div>
+                </div>
+                : null
+              }
+              {documents && documents[id]?.url ? (<img src={documents[id]?.url} className="rounded float-start" alt="" style={{ width: '150px', height: '150px' }} />) : null}
             </div>
+            {!(isUploading as any)[id] ? (
+              <div className="col-9 d-flex align-items-center">
+                <button
+                  type="button"
+                  title="Delete"
+                  className="btn btn-danger btn-sm"
+                  onClick={() => {
+                    handleFileDelete(id);
+                  }}
+                >
+                  {(isDeleting as any)[id] ? 'Deleting...' : <XCircleIcon size={16} />}
+                </button>
+              </div>
+            ): null}
           </div>
         ) : null}
 
-        <input
-          className="form-control hidden"
-          type="file"
-          id={id}
-          name={name}
-          onChange={(event) => handleFileSelect(event, id)}
-          onBlur={profileFormik.handleBlur}
-        />
+        <input className="form-control hidden" type="file" id={id} name={name} onChange={(event) => handleFileUpload(event, id, type)} onBlur={formik.handleBlur} />
         {!(getDocument as any)[id] && !(documents && documents[id]?.key) ? (
           <label htmlFor={id} className="txt-orange dashed-file">
             <UploadIcon /> {dropText}

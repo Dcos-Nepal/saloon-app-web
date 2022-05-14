@@ -40,7 +40,7 @@ const Signin = () => {
     initialValues: InitSignIn,
     onSubmit: async (userData: any) => {
       // Set device token
-      userData.deviceToken = '12345';
+      userData.deviceToken = '0xr2ysf9a7sfdnk4537ndsakf7n7sdafn54x';
       // Making a User Login Request
       setIsLoading(true);
       const response: any = await signInUserApi(userData);

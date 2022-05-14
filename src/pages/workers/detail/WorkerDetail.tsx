@@ -161,7 +161,7 @@ const WorkerDetail: FC<IProps> = ({ actions, currentWorker }) => {
                         <div className="txt-grey mb-2">{currentWorker.userData.documents[key]?.type?.split('_').join(' ')}:</div>
                         {currentWorker.userData.documents[key]?.key
                           ? (<a className="mt-3 txt-orange text-decoration-none" target="_blank" href={currentWorker.userData.documents[key]?.url} rel="noreferrer">
-                              <img height="200" src={currentWorker.userData.documents[key]?.url} className="rounded float-start" alt="" />
+                              <img width="200" height="200" src={currentWorker.userData.documents[key]?.url} className="rounded float-start" alt="" />
                             </a>)
                           : <div className="txt-grey pt-2"><StopIcon size={16} /> Not document added yet!.</div>}
                       </div>

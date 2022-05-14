@@ -1,4 +1,5 @@
 import * as Yup from 'yup';
+import { useState } from 'react';
 import { getIn, useFormik } from 'formik';
 import { StopIcon } from '@primer/octicons-react';
 
@@ -6,6 +7,7 @@ import TextArea from 'common/components/form/TextArea';
 import InputField from 'common/components/form/Input';
 import SelectField from 'common/components/form/Select';
 import { IOption } from 'common/types/form';
+import { Loader } from 'common/components/atoms/Loader';
 
 const LineItemForm = ({ closeModal, lineItem, saveHandler }: { lineItem?: any; closeModal: () => void; saveHandler: (data: any) => any }) => {
   const initialValues = lineItem
@@ -16,6 +18,8 @@ const LineItemForm = ({ closeModal, lineItem, saveHandler }: { lineItem?: any; c
         description: '',
         refCost: 0
       };
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const LineItemFormSchema = Yup.object().shape({
     name: Yup.string().required('Name is required'),
@@ -30,7 +34,9 @@ const LineItemForm = ({ closeModal, lineItem, saveHandler }: { lineItem?: any; c
     validationSchema: LineItemFormSchema,
     validateOnChange: true,
     onSubmit: async (data: any) => {
+      setIsLoading(true);
       await saveHandler(data);
+      setIsLoading(false);
     }
   });
 
@@ -65,6 +71,7 @@ const LineItemForm = ({ closeModal, lineItem, saveHandler }: { lineItem?: any; c
   return (
     <form noValidate onSubmit={formik.handleSubmit}>
       <div className="modal-body">
+        <Loader isLoading={isLoading} />
         <InputField
           label="Name"
           type="text"
@@ -113,7 +120,7 @@ const LineItemForm = ({ closeModal, lineItem, saveHandler }: { lineItem?: any; c
         />
       </div>
       <div className="modal-footer">
-        <button type="submit" className="btn btn-primary">
+        <button disabled={isLoading} type="submit" className="btn btn-primary">
           Save
         </button>
         <button onClick={() => closeModal()} type="button" className="ms-2 btn btn-secondary" data-bs-dismiss="modal">

@@ -110,12 +110,10 @@ const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker, isWorkersLoa
       country: Yup.string().required(`Country is required`)
     }),
     email: Yup.string().required(`Email is required`).email('Invalid email'),
-    phoneNumber: Yup.string().label('Phone Number')
+    phoneNumber: Yup.string()
+      .label('Phone Number')
       .required(`Phone number is required`)
-      .matches(
-        /^\+(?:[0-9] ?){6,14}[0-9]$/,
-        "Phone number must be at least 6 numbers to 14 numbers starting with '+'"
-      ),
+      .matches(/^\+(?:[0-9] ?){6,14}[0-9]$/, "Phone number must be at least 6 numbers to 14 numbers starting with '+'"),
     userData: Yup.object().shape({
       type: Yup.string(),
       documents: Yup.object().shape({
@@ -262,15 +260,16 @@ const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker, isWorkersLoa
         {(documents && documents[id]?.key) || (getDocument as any)[id]?.name ? (
           <div className="row">
             <div className="col-3">
-              {(isUploading as any)[id] ? 
+              {(isUploading as any)[id] ? (
                 <div className="d-flex justify-content-center">
                   <div className="spinner-border" role="status">
                     <span className="visually-hidden">Loading...</span>
                   </div>
                 </div>
-                : null
-              }
-              {documents && documents[id]?.url ? (<img src={documents[id]?.url} className="rounded float-start" alt="" style={{ width: '150px', height: '150px' }} />) : null}
+              ) : null}
+              {documents && documents[id]?.url ? (
+                <img src={documents[id]?.url} className="rounded float-start" alt="" style={{ width: '150px', height: '150px' }} />
+              ) : null}
             </div>
             {!(isUploading as any)[id] ? (
               <div className="col-9 d-flex align-items-center">
@@ -285,11 +284,18 @@ const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker, isWorkersLoa
                   {(isDeleting as any)[id] ? 'Deleting...' : <XCircleIcon size={16} />}
                 </button>
               </div>
-            ): null}
+            ) : null}
           </div>
         ) : null}
 
-        <input className="form-control hidden" type="file" id={id} name={name} onChange={(event) => handleFileUpload(event, id, type)} onBlur={formik.handleBlur} />
+        <input
+          className="form-control hidden"
+          type="file"
+          id={id}
+          name={name}
+          onChange={(event) => handleFileUpload(event, id, type)}
+          onBlur={formik.handleBlur}
+        />
         {!(getDocument as any)[id] && !(documents && documents[id]?.key) ? (
           <label htmlFor={id} className="txt-orange dashed-file">
             <UploadIcon /> {dropText}
@@ -303,7 +309,7 @@ const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker, isWorkersLoa
     <form noValidate onSubmit={formik.handleSubmit}>
       <div className="row">
         <div className="col card">
-          <h5>Worker Details ({formik.values?.userCode})</h5>
+          <h5>Worker Details {formik.values?.userCode ? `(${formik.values?.userCode})` : ''}</h5>
           <div className="row">
             <div className="col">
               <InputField
@@ -339,7 +345,11 @@ const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker, isWorkersLoa
             value={formik.values.email}
           />
           <InputField
-            label={<span>Phone Number: <small className='text-primary'>[Note: This Phone Number will be default password for new workers]</small></span>}
+            label={
+              <span>
+                Phone Number: <small className="text-primary">[Note: This Phone Number will be default password for new workers]</small>
+              </span>
+            }
             placeholder="Enter phone number"
             name="phoneNumber"
             helperComponent={<ErrorMessage name="phoneNumber" />}

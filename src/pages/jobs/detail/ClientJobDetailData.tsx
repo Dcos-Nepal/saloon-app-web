@@ -73,10 +73,10 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
           group: visitMonth,
           visitMapId: `${visitSetting._id}_${visitMonth}_${index}`,
           startDate: visit,
-          title: visitSetting.inheritJob ? job.title : visitSetting.title,
-          instruction: visitSetting.inheritJob ? job.instruction : visitSetting.instruction,
-          team: visitSetting.inheritJob ? job.team : visitSetting.team,
-          lineItems: visitSetting.inheritJob ? job.lineItems : visitSetting.lineItems
+          title: visitSetting.inheritJob ? job?.title : visitSetting.title,
+          instruction: visitSetting.inheritJob ? job?.instruction : visitSetting.instruction,
+          team: visitSetting.inheritJob ? job?.team : visitSetting.team,
+          lineItems: visitSetting.inheritJob ? job?.lineItems : visitSetting.lineItems
         };
         if (acc[visitMonth]) acc[visitMonth].push(visitObj);
         else acc[visitMonth] = [visitObj];
@@ -109,7 +109,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
       // Creating the visit with completed status
       newlyCreatedVisit = await addVisitApi({
         ...newVisit,
-        job: newVisit.job._id,
+        job: newVisit.job?._id,
         inheritJob: false,
         rruleSet: rrule,
         visitFor: newVisit.job?.jobFor?._id,
@@ -149,7 +149,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
 
   /**
    * Visit complete handler
-   * @param data 
+   * @param data
    */
   const completeVisitHandler = async (data: any) => {
     try {
@@ -212,7 +212,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
       addVisitApi(
         {
           ...newVisit,
-          job: newVisit.job._id,
+          job: newVisit.job?._id,
           inheritJob: false,
           rruleSet: rrule,
           isPrimary: false,
@@ -236,7 +236,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
         visit._id,
         {
           ...visit,
-          job: visit.job._id,
+          job: visit.job?._id,
           rruleSet: rrule,
           team: visit.team.map((t: any) => t._id),
           startDate: new Date(`${visit.startDate} ${visit.startTime}`),
@@ -395,8 +395,12 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
               <div className="col p-2 ps-4">
                 <div className="txt-grey">Property address</div>
                 <div className="">
-                  <LocationIcon /> {job?.property?.street1}, {job?.property?.street2}, {job?.property?.city}, {job?.property?.state},{' '}
-                  {job?.property?.postalCode}, {job?.property?.country}
+                  <LocationIcon />{' '}
+                  {`${job?.property?.street1 ? `${job?.property?.street1}, ` : ''}${job?.property?.street2 ? `${job?.property?.street2}, ` : ''}${
+                    job?.property?.city ? `${job?.property?.city}, ` : ''
+                  }${job?.property?.state ? `${job?.property?.state}, ` : ''}${job?.property?.postalCode ? `${job?.property?.postalCode}, ` : ''}${
+                    job?.property?.country ? job?.property?.country : ''
+                  }` || '-'}
                 </div>
               </div>
             </div>
@@ -589,12 +593,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
                   {visits[visitKey].map((v: any, index: number) => (
                     <tr key={index} className="rt-tr-group cursor-pointer" onClick={() => setShowEventDetail(v)}>
                       <td onClick={(e) => e.stopPropagation()}>
-                        <input
-                          type="checkbox"
-                          id={v.visitMapId}
-                          checked={v.status.status === 'COMPLETED'}
-                          onChange={() => { }}
-                        />
+                        <input type="checkbox" id={v.visitMapId} checked={v.status.status === 'COMPLETED'} onChange={() => {}} />
                       </td>
                       <td>{DateTime.fromJSDate(v.startDate).toFormat('yyyy LLL dd')}</td>
                       <td>
@@ -648,7 +647,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
         </small>
         <div className="mb-3 mt-2">
           <label htmlFor="additional-doc" className="form-label">
-          <strong>Notes:</strong>
+            <strong>Notes:</strong>
           </label>
           <div>{job?.notes}</div>
         </div>
@@ -751,7 +750,11 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
                           </div>
                           <div className="col p-2 ps-4">
                             <div className="txt-grey">Schedule</div>
-                            {job && job?.primaryVisit?.rruleSet ? <div className="">{_.startCase(rrulestr(job?.primaryVisit?.rruleSet)?.toText())}</div> : 'N/A'}
+                            {job && job?.primaryVisit?.rruleSet ? (
+                              <div className="">{_.startCase(rrulestr(job?.primaryVisit?.rruleSet)?.toText())}</div>
+                            ) : (
+                              'N/A'
+                            )}
                           </div>
                         </div>
                       </div>
@@ -939,7 +942,11 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
       </Modal>
 
       <Modal isOpen={!!showEventDetail} onRequestClose={() => setShowEventDetail(null)}>
-        {!!showEventDetail ? <VisitDetail markVisitCompleteHandler={markVisitCompleteHandler} event={showEventDetail} closeModal={() => setShowEventDetail(null)} /> : <></>}
+        {!!showEventDetail ? (
+          <VisitDetail markVisitCompleteHandler={markVisitCompleteHandler} event={showEventDetail} closeModal={() => setShowEventDetail(null)} />
+        ) : (
+          <></>
+        )}
       </Modal>
     </div>
   );

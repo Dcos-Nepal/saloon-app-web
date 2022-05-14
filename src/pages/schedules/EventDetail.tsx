@@ -1,16 +1,25 @@
-import { FC } from 'react';
+import { FC, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChecklistIcon, PersonIcon } from '@primer/octicons-react';
+import { Loader } from 'common/components/atoms/Loader';
 
 interface IProps {
   event: any;
-  markVisitCompleteHandler: (isComplete:boolean, data: any) => void;
+  markVisitCompleteHandler: (isComplete: boolean, data: any) => void;
   closeModal: () => void;
 }
 
 const ScheduleEventDetail: FC<IProps> = ({ closeModal, markVisitCompleteHandler, event }) => {
   const navigate = useNavigate();
   const property = event.extendedProps?.meta?.job?.property;
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  const markVisitComplete = async (visitObj: any) => {
+    setIsLoading(true);
+    await markVisitCompleteHandler(true, visitObj);
+    setIsLoading(false);
+  };
 
   return (
     <div className={`modal fade show mt-5`} role="dialog" style={{ display: 'block' }}>
@@ -21,7 +30,8 @@ const ScheduleEventDetail: FC<IProps> = ({ closeModal, markVisitCompleteHandler,
             <button type="button" className="btn-close" onClick={closeModal} data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div className="modal-body">
-          {event.status?.status !== 'COMPLETED' ? (
+            <Loader isLoading={isLoading} />
+            {event.extendedProps?.meta?.status?.status !== 'COMPLETED' ? (
               <>
                 <div className="row">
                   <div>
@@ -32,11 +42,14 @@ const ScheduleEventDetail: FC<IProps> = ({ closeModal, markVisitCompleteHandler,
                           ...event.extendedProps?.meta,
                           title: event.title,
                           startDate: event.start,
-                          endDate: event.end ? event.end : event.start,
+                          endDate: event.end ? event.end : event.start
                         };
-                        event.extendedProps?.meta?.status?.status !== 'COMPLETED' && markVisitCompleteHandler(true, visitObj);
+                        event.extendedProps?.meta?.status?.status !== 'COMPLETED' && markVisitComplete(visitObj);
                       }}
-                    > <ChecklistIcon /> Complete this Visit</button>
+                    >
+                      {' '}
+                      <ChecklistIcon /> Complete this Visit
+                    </button>
                   </div>
                 </div>
                 <div className="hr mb-3"></div>

@@ -32,7 +32,7 @@ const VisitDetail: FC<IProps> = ({ closeModal, markVisitCompleteHandler, event }
                 <div className="hr mb-3"></div>
               </>
             ) : null}
-            
+
             <div className="row">
               <h5>Details</h5>
               <div>{event.title}</div>

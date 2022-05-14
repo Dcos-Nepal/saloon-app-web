@@ -60,7 +60,7 @@ const InvoicesList = (props: any) => {
         toast.success('Invoice deleted successfully');
         setDeleteInProgress('');
 
-        props.actions.fetchInvoices({ q: query, offset: offset, limit: itemsPerPage });
+        props.actions.fetchInvoices({ q: query, page: offset, limit: itemsPerPage });
       }
     } catch (ex) {
       toast.error('Failed to delete invoice');
@@ -70,9 +70,16 @@ const InvoicesList = (props: any) => {
   useEffect(() => {
     const clientQuery: { invoiceFor?: string } = {};
 
-    if (currentUser.role === 'CLIENT') clientQuery.invoiceFor = currentUser.id;
+    if (currentUser.role === 'CLIENT') {
+      clientQuery.invoiceFor = currentUser.id;
+    }
 
-    props.actions.fetchInvoices({ q: query, ...clientQuery, offset: offset, limit: itemsPerPage });
+    props.actions.fetchInvoices({
+      q: query,
+      ...clientQuery,
+      page: offset,
+      limit: itemsPerPage
+    });
   }, [offset, itemsPerPage, props.actions, query, currentUser.id, currentUser.role]);
 
   useEffect(() => {

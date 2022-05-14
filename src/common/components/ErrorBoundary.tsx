@@ -30,10 +30,10 @@ class ErrorBoundary extends React.Component<IPropsTypes, IStateTypes> {
     if (this.state.hasError){
       return (<div className="text-center mt-5">
         <h1 className="mt-5">
-          <span>500</span> <br />
-          Internal server error
+          <span>Error!</span> <br />
+          Ops Something Went Wrong!
         </h1>
-        <p>We are currently trying to fix the problem.</p>
+        <p>We've received the log, We'll try to fix the problem asap.</p>
         <p className="info">
           Error: {this.state.error?.toString()}
         </p>

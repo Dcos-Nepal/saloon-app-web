@@ -7,6 +7,7 @@ import avatar from 'assets/images/Avatar.svg';
 import { GearIcon, LockIcon, PersonIcon } from '@primer/octicons-react';
 import { useNavigate } from 'react-router-dom';
 import { endpoints } from 'common/config';
+import { getNameInitials } from 'utils/name';
 
 interface IProps {
   loggedIn?: boolean;
@@ -30,14 +31,14 @@ const TopNavbar: FC<IProps> = ({ loggedIn = true }) => {
    */
   const getUserName = () => {
     return currentUser ? `${currentUser?.firstName} ${currentUser?.lastName}` : 'Guest';
-  }
+  };
 
   return (
     <nav className="navbar navbar-expand-lg sticky-top">
       <div className="ms-3 me-3 container-fluid">
         <a href="/" className="navbar-brand">
           <img src={logo} height="34px" alt="Orange" />
-          <small style={{fontSize: '14px'}}>&nbsp; v{version} </small>
+          <small style={{ fontSize: '14px' }}>&nbsp; v{version} </small>
         </a>
 
         {loggedIn && (
@@ -46,7 +47,10 @@ const TopNavbar: FC<IProps> = ({ loggedIn = true }) => {
               <li className="nav-item d-flex align-items-center">
                 <div className="dropdown dropstart">
                   <span role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
-                    <img src={avatar} height="34px" alt="Orange" />
+                    {/* <img src={avatar} height="34px" alt="Orange" /> */}
+                    <div className="circle">
+                      <p className="text">{getNameInitials(currentUser)}</p>
+                    </div>
                   </span>
                   <ul className="dropdown-menu" aria-labelledby="dropdownMenuLink">
                     <li onClick={() => navigate('/dashboard/' + endpoints.profile)}>
@@ -69,7 +73,9 @@ const TopNavbar: FC<IProps> = ({ loggedIn = true }) => {
                 &nbsp;&nbsp;&nbsp;&nbsp;
                 <div className="text-secondary">
                   <div>{getUserName()}</div>
-                  <div className='text-sm'>Role: <strong style={{fontSize: '12px'}}>{currentUser.roles.toString()}</strong></div>
+                  <div className="text-sm">
+                    Role: <strong style={{ fontSize: '12px' }}>{currentUser.roles.toString()}</strong>
+                  </div>
                 </div>
               </li>
             </ul>

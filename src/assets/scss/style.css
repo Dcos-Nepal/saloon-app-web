@@ -91,6 +91,19 @@ a { color: #666666;}
     border-top: 0.25rem solid #a8a8a8;
 }
 
+.circle {
+    display: flex;
+    width: 34px;
+    height: 34px;
+    background-color: #f47321;
+    color: #FFFFFF;
+    border-radius: 50%;
+}
+
+.text {
+    margin: auto;
+}
+
 .sidebar {
     font-size: 16px;
     display: flex;

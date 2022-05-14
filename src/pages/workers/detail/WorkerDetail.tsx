@@ -1,10 +1,10 @@
-import { connect } from "react-redux";
-import { FC, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { connect } from 'react-redux';
+import { FC, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 
-import { Loader } from "common/components/atoms/Loader";
-import * as workersActions from "store/actions/workers.actions";
-import { PencilIcon, StopIcon } from "@primer/octicons-react";
+import { Loader } from 'common/components/atoms/Loader';
+import * as workersActions from 'store/actions/workers.actions';
+import { PencilIcon, StopIcon } from '@primer/octicons-react';
 
 interface IProps {
   actions: {
@@ -15,7 +15,7 @@ interface IProps {
   currentWorker?: any;
 }
 
-const WorkerDetail: FC<IProps> = ({ actions, currentWorker }) => {
+const WorkerDetail: FC<IProps> = ({ actions, currentWorker, isWorkersLoading }) => {
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -32,21 +32,17 @@ const WorkerDetail: FC<IProps> = ({ actions, currentWorker }) => {
           </span>
           <span className="col">Back to previous</span>
         </div>
+        <Loader isLoading={isWorkersLoading} />
         {currentWorker ? (
           <div>
             <div className="d-flex flex-row riw">
               <div className="col">
-                <h3 className="txt-bold extra mt-2">
-                  {currentWorker.fullName || `${currentWorker.firstName} ${currentWorker.lastName}`}
-                </h3>
+                <h3 className="txt-bold extra mt-2">{currentWorker.fullName || `${currentWorker.firstName} ${currentWorker.lastName}`}</h3>
               </div>
               <div className="col">
-                <button
-                  onClick={() => id && navigate(`edit`)}
-                  type="button"
-                  className="btn btn-primary d-flex float-end me-2"
-                >
-                  <PencilIcon className="mt-1" />&nbsp; Edit Worker
+                <button onClick={() => id && navigate(`edit`)} type="button" className="btn btn-primary d-flex float-end me-2">
+                  <PencilIcon className="mt-1" />
+                  &nbsp; Edit Worker
                 </button>
               </div>
             </div>
@@ -60,7 +56,9 @@ const WorkerDetail: FC<IProps> = ({ actions, currentWorker }) => {
                 <div className="row mt-3">
                   <div className="col p-1 ps-4">
                     <div className="txt-grey">Worker Code</div>
-                    <div className="txt-orange"><strong>{currentWorker?.userCode || '-'}</strong></div>
+                    <div className="txt-orange">
+                      <strong>{currentWorker?.userCode || '-'}</strong>
+                    </div>
                   </div>
                   <div className="col p-1 ps-4">
                     <div className="txt-grey">Full name</div>
@@ -91,9 +89,15 @@ const WorkerDetail: FC<IProps> = ({ actions, currentWorker }) => {
                 <div className="row mt-3">
                   <div className="col p-1 ps-4">
                     <div className="txt-grey">Services</div>
-                    <div className="">{currentWorker?.userData?.services.length
-                      ? currentWorker?.userData?.services.map((service: string) => (<div key={service}><span className="badge rounded-pill bg-secondary p-1">{service}</span>&nbsp;</div>))
-                      : 'No services added yet.'}</div>
+                    <div className="">
+                      {currentWorker?.userData?.services.length
+                        ? currentWorker?.userData?.services.map((service: string) => (
+                            <div key={service}>
+                              <span className="badge rounded-pill bg-secondary p-1">{service}</span>&nbsp;
+                            </div>
+                          ))
+                        : 'No services added yet.'}
+                    </div>
                   </div>
                 </div>
                 <div className="row mt-3">
@@ -128,9 +132,7 @@ const WorkerDetail: FC<IProps> = ({ actions, currentWorker }) => {
                     <div className="row border-bottom mb-3">
                       <div className="col p-2 ps-4">
                         <div className="txt-grey">Post code</div>
-                        <div className="">
-                          {currentWorker.address.postalCode}
-                        </div>
+                        <div className="">{currentWorker.address.postalCode}</div>
                       </div>
                       <div className="col p-2 ps-4">
                         <div className="txt-grey">Country</div>
@@ -151,19 +153,29 @@ const WorkerDetail: FC<IProps> = ({ actions, currentWorker }) => {
                   <div className="col d-flex flex-row">
                     <h5 className="txt-bold">Worker Documents</h5>
                   </div>
-                  <div className="txt-info"><StopIcon size={16} /> Click on the each document to download/view the document.</div>
+                  <div className="txt-info">
+                    <StopIcon size={16} /> Click on the each document to download/view the document.
+                  </div>
                 </div>
-                {currentWorker.userData?.documents &&
-                Object.keys(currentWorker?.userData?.documents).length ? (
+                {currentWorker.userData?.documents && Object.keys(currentWorker?.userData?.documents).length ? (
                   Object.keys(currentWorker?.userData?.documents).map((key) => (
                     <div className="row mt-3">
                       <div className="col p-1 ps-4">
                         <div className="txt-grey mb-2">{currentWorker.userData.documents[key]?.type?.split('_').join(' ')}:</div>
-                        {currentWorker.userData.documents[key]?.key
-                          ? (<a className="mt-3 txt-orange text-decoration-none" target="_blank" href={currentWorker.userData.documents[key]?.url} rel="noreferrer">
-                              <img width="200" height="200" src={currentWorker.userData.documents[key]?.url} className="rounded float-start" alt="" />
-                            </a>)
-                          : <div className="txt-grey pt-2"><StopIcon size={16} /> Not document added yet!.</div>}
+                        {currentWorker.userData.documents[key]?.key ? (
+                          <a
+                            className="mt-3 txt-orange text-decoration-none"
+                            target="_blank"
+                            href={currentWorker.userData.documents[key]?.url}
+                            rel="noreferrer"
+                          >
+                            <img width="200" height="200" src={currentWorker.userData.documents[key]?.url} className="rounded float-start" alt="" />
+                          </a>
+                        ) : (
+                          <div className="txt-grey pt-2">
+                            <StopIcon size={16} /> Not document added yet!.
+                          </div>
+                        )}
                       </div>
                     </div>
                   ))
@@ -188,7 +200,7 @@ const WorkerDetail: FC<IProps> = ({ actions, currentWorker }) => {
 const mapStateToProps = (state: any) => {
   return {
     isWorkersLoading: state.workers.isLoading,
-    currentWorker: state.workers.currentUser,
+    currentWorker: state.workers.currentUser
   };
 };
 
@@ -196,8 +208,8 @@ const mapDispatchToProps = (dispatch: any) => ({
   actions: {
     fetchWorker: (id: string) => {
       dispatch(workersActions.fetchWorker(id));
-    },
-  },
+    }
+  }
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(WorkerDetail);

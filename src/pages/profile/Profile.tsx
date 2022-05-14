@@ -138,7 +138,12 @@ const Profile: FC<IProps> = ({ actions, properties }) => {
                 </div>
                 <div className="row">
                   <div className="col">
-                    <div className="row">
+                    <div className="row d-flex align-items-center">
+                      {/* <div className="col-4 p-2">
+                        <div className="">
+                          <img src={avatar} height="120px" alt="Orange" />
+                        </div>
+                      </div> */}
                       <div className="col p-2 ps-4">
                         <div className="txt-grey">User Ref Code</div>
                         <div className="">{<h5 className="txt-bold txt-orange">{currentUser?.userCode || 'XXXXX'}</h5>}</div>
@@ -163,20 +168,17 @@ const Profile: FC<IProps> = ({ actions, properties }) => {
                           </div>
                           <div className="col p-2 ps-4">
                             <div className="txt-grey">Phone</div>
-                            <div className="">{currentUser.phoneNumber}</div>
-                            {currentUser.auth?.phoneNumber?.verified ? (
-                              `(Verified)`
-                            ) : (
-                              <button className="btn btn-sm btn-primary" onClick={() => handleSendOtp(currentUser.phoneNumber)}>
-                                Verify
-                              </button>
-                            )}
+                            <div className="">
+                              {currentUser.phoneNumber} &nbsp;&nbsp;
+                              {currentUser.auth?.phoneNumber?.verified ? (
+                                `(Verified)`
+                              ) : (
+                                <button className="btn btn-sm btn-primary" onClick={() => handleSendOtp(currentUser.phoneNumber)}>
+                                  Verify
+                                </button>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                      </div>
-                      <div className="col-4 p-2">
-                        <div className="">
-                          <img src={avatar} height="120px" alt="Orange" />
                         </div>
                       </div>
                     </div>

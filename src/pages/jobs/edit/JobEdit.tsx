@@ -28,8 +28,9 @@ const EditJob = (props: IProps) => {
       title: job.title,
       instruction: job.instruction,
       jobFor: { value: job.jobFor._id, label: job.jobFor.fullName, meta: job.jobFor },
-      property: job.property._id,
+      property: job.property?._id || null,
       type: job.type,
+      jobType: job.jobType,
       team: job.team.map((t: any) => ({ value: t._id, label: t.fullName })),
       lineItems: job.lineItems.map((lineItem: any) => ({
         name: { label: lineItem.name, value: lineItem._id },
@@ -51,7 +52,9 @@ const EditJob = (props: IProps) => {
         startTime: job.primaryVisit?.startTime || '',
         endDate: job.primaryVisit?.endDate || '',
         endTime: job.primaryVisit?.endTime || ''
-      }
+      },
+      notes: job.notes,
+      docs: job.docs
     });
   }, [props.job]);
 

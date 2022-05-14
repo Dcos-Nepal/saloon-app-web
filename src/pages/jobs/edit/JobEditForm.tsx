@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { Fragment, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { FieldArray, FormikProvider, getIn, useFormik } from 'formik';
-import { InfoIcon, PlusCircleIcon, StopIcon, XCircleIcon } from '@primer/octicons-react';
+import { InfoIcon, PlusCircleIcon, StopIcon, UploadIcon, XCircleIcon } from '@primer/octicons-react';
 
 import { fetchUserProperties } from 'services/common.service';
 import * as jobsActions from '../../../store/actions/job.actions';
@@ -14,6 +14,10 @@ import InputField from 'common/components/form/Input';
 import TextArea from 'common/components/form/TextArea';
 import ReactRRuleGenerator, { translations } from 'common/components/rrule-form';
 import AsyncInputDataList from 'common/components/form/AsyncInputDataList';
+import SelectField from 'common/components/form/Select';
+import { getServices } from 'data';
+import { IOption } from 'common/types/form';
+import { deletePublicFile, uploadPublicFile } from 'services/files.service';
 
 interface IProps {
   isLoading: boolean;
@@ -110,6 +114,44 @@ const EditJobForm = (props: IProps) => {
   }
 
   /**
+   * Handle File Upload
+   * @param docKey
+   */
+  const handleFileUpload = async (event: any) => {
+    if (!event.target.files?.length) {
+      console.log('Error');
+    }
+
+    const file = event.target.files[0];
+    const formData = new FormData();
+    formData.append('file', file, file.name);
+
+    try {
+      const uploadedFile = await uploadPublicFile(formData);
+
+      // Setting Formik form document properties
+      formik.setFieldValue(`docs`, [...formik.values.docs, { key: uploadedFile.data.data.key, url: uploadedFile.data.data.url }]);
+    } catch (error) {
+      console.log('Error');
+    }
+  };
+
+  /**
+   * Handles file delete
+   * @param docKey
+   */
+  const handleFileDelete = async (docKey: string) => {
+    try {
+      await deletePublicFile(docKey);
+
+      // Setting Formik form document properties
+      formik.setFieldValue(`docs`, formik.values.docs.filter((doc: any) => doc.key !== docKey));
+    } catch (error) {
+      console.log('Error: ', error);
+    }
+  };
+
+  /**
    * Custom Error Message
    * 
    * @param param Props Object
@@ -150,6 +192,24 @@ const EditJobForm = (props: IProps) => {
                       value={formik.values.title}
                       onChange={formik.handleChange}
                       helperComponent={formik.errors.title && formik.touched.title ? <div className="txt-red">{formik.errors.title}</div> : null}
+                    />
+                  </div>
+                  <div className="col-12">
+                    <SelectField
+                      label="Services Type"
+                      name="jobType"
+                      placeholder="Search available services..."
+                      value={getServices().find((service) => service.value === formik.values.jobType)}
+                      options={getServices().filter((service) => service.isActive)}
+                      helperComponent={
+                        <div className="row text-danger mt-1 mb-2">
+                          <ErrorMessage name="jobType" />
+                        </div>
+                      }
+                      handleChange={(value: IOption) => {
+                        formik.setFieldValue('jobType', value.value);
+                      }}
+                      onBlur={formik.handleBlur}
                     />
                   </div>
                   <div className="col-12">
@@ -432,6 +492,60 @@ const EditJobForm = (props: IProps) => {
                 </div>
               )}
             />
+          </div>
+
+          <div className="card">
+            <h6 className="txt-bold">Other Information</h6>
+            <small className="text-warning">
+              <InfoIcon size={14} /> Add any other notes for this job or any relevant documents.
+            </small>
+            <div className="mb-3">
+              <TextArea
+                rows={8}
+                label={'Notes:'}
+                placeholder="Required notes or description ..."
+                name="note"
+                value={formik.values.notes || ''}
+                onChange={({ target }: { target: { value: string } }) => {
+                  if (target.value !== formik.values.notes) formik.setFieldValue('notes', target.value);
+                }}
+                helperComponent={<ErrorMessage name="note" />}
+                onBlur={formik.handleBlur}
+              />
+            </div>
+
+            <div className="mb-3">
+              <label htmlFor="additional-doc" className="form-label">
+                Files/Pictures:
+              </label>
+              <div className="mb-3 ps-1 d-flex flex-row justify-content-start">
+                {formik.values.docs.map((doc: any, index: number) => (
+                  <div key={`~${index}`} className="mr-2">
+                    <div className="">
+                      <img src={doc.url} className="rounded float-start" alt="" style={{ width: 'calc((150px - 5px)', height: '150px' }} />
+                    </div>
+                    <div className="col mt-2"></div>
+                    <div className="col-2 mt-2 pointer text-center">
+                      <span onClick={() => handleFileDelete(doc.key)}>
+                        <XCircleIcon size={20} />
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="">
+                <input
+                  className="form-control hidden"
+                  id="file"
+                  type="file"
+                  value={undefined}
+                  onChange={handleFileUpload}
+                />
+                <label htmlFor={'file'} className="txt-orange dashed mt-2">
+                  <UploadIcon /> Select documents/pictures related to this Job
+                </label>
+              </div>
+            </div>
           </div>
 
           <div className="row border-top">

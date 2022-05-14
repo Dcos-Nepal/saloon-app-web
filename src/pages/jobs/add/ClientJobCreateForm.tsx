@@ -6,7 +6,7 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FieldArray, FormikProvider, useFormik, getIn } from 'formik';
 import ReactRRuleGenerator, { translations } from 'common/components/rrule-form';
-import { InfoIcon, PlusCircleIcon, StopIcon, XCircleIcon } from '@primer/octicons-react';
+import { InfoIcon, PlusCircleIcon, StopIcon, UploadIcon, XCircleIcon } from '@primer/octicons-react';
 
 import { IUser } from 'common/types/user';
 import InputField from 'common/components/form/Input';
@@ -20,6 +20,8 @@ import { getWorkerRecommendations } from 'services/users.service';
 import AsyncInputDataList from 'common/components/form/AsyncInputDataList';
 import SelectField from 'common/components/form/Select';
 import { IOption } from 'common/types/form';
+import { getServices } from 'data';
+import { deletePublicFile, uploadPublicFile } from 'services/files.service';
 
 interface IProps {
   actions: {
@@ -28,7 +30,7 @@ interface IProps {
   isLoading: boolean;
 }
 
-const ClientJobAddForm = ({ actions, isLoading }: IProps) => {
+const ClientJobCreateForm = ({ actions, isLoading }: IProps) => {
   const navigate = useNavigate();
   const [properties, setProperties] = useState<any[]>([]);
   const [clientDetails, setClientDetails] = useState(null);
@@ -51,20 +53,36 @@ const ClientJobAddForm = ({ actions, isLoading }: IProps) => {
     }
   };
 
+  /**
+   * Initial values for Job Creation Form
+   */
   const initialValues = {
     title: '',
     instruction: '',
     jobFor: '',
-    property: '',
+    property: null,
     type: 'ONE-OFF',
     team: [],
     jobType: '',
-    lineItems: [{ name: { label: '', value: '' }, description: '', quantity: 0, unitPrice: 0, total: 0 }],
+    lineItems: [
+      {
+        name: { label: '', value: '' },
+        description: '',
+        quantity: 0,
+        unitPrice: 0,
+        total: 0
+      }
+    ],
     schedule: { rruleSet: '', startDate: '', startTime: '', endDate: '', endTime: '' },
     oneOff: { rruleSet: '', startDate: '', startTime: '', endDate: '', endTime: '' },
-    notifyTeam: false
+    notifyTeam: false,
+    notes: '',
+    docs: [],
   };
 
+  /**
+   * Initializing the Formik
+   */
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: initialValues,
@@ -72,7 +90,9 @@ const ClientJobAddForm = ({ actions, isLoading }: IProps) => {
     validateOnChange: true,
     onSubmit: async (job: any) => {
       // Handle cases for not secondary properties
-      job.property = job.property ? job.property : null;
+      if (!job.property) {
+        delete job.property;
+      }
 
       await actions.addJob({
         ...job,
@@ -160,15 +180,86 @@ const ClientJobAddForm = ({ actions, isLoading }: IProps) => {
     formik.setFieldValue('schedule', { ...formik.values.oneOff, rruleSet: rrule.toString() });
   };
 
+  /**
+   * Handle File Upload
+   * @param docKey
+   */
+  const handleFileUpload = async (event: any) => {
+    if (!event.target.files?.length) {
+      console.log('Error');
+    }
+
+    const file = event.target.files[0];
+    const formData = new FormData();
+    formData.append('file', file, file.name);
+
+    try {
+      const uploadedFile = await uploadPublicFile(formData);
+
+      // Setting Formik form document properties
+      formik.setFieldValue(`docs`, [...formik.values.docs, { key: uploadedFile.data.data.key, url: uploadedFile.data.data.url }]);
+    } catch (error) {
+      console.log('Error');
+    }
+  };
+
+  /**
+   * Handles file delete
+   * @param docKey
+   */
+  const handleFileDelete = async (docKey: string) => {
+    try {
+      await deletePublicFile(docKey);
+
+      // Setting Formik form document properties
+      formik.setFieldValue(`docs`, formik.values.docs.filter((doc: any) => doc.key !== docKey));
+    } catch (error) {
+      console.log('Error: ', error);
+    }
+  };
+
+  /**
+   * Custom Error Message
+   *
+   * @param param Props Object
+   * @returns JSX
+   */
+  const ErrorMessage = ({ name }: any) => {
+    if (!name) return <></>;
+
+    const error = getIn(formik.errors, name);
+    const touch = getIn(formik.touched, name);
+
+    return (touch && error) || error ? (
+      <>
+        <div className="col-1" style={{ width: '20px' }}>
+          <StopIcon size={14} />
+        </div>
+        <div className="col">{error}</div>
+      </>
+    ) : null;
+  };
+
+  /**
+   * Handles One-Off change
+   */
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(handleOneOffChange, [formik.values.oneOff]);
 
+  /**
+   * Handles One-Off Job change
+   */
   useEffect(() => {
     formik.setFieldValue('type', activeTab);
-    if (activeTab === 'ONE-OFF') handleOneOffChange();
+    if (activeTab === 'ONE-OFF') {
+      handleOneOffChange();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab]);
 
+  /**
+   * Handles Recommendation API call
+   */
   useEffect(() => {
     if (
       formik.values.jobType &&
@@ -217,35 +308,6 @@ const ClientJobAddForm = ({ actions, isLoading }: IProps) => {
     formik.values.schedule?.startTime
   ]);
 
-  /**
-   * Custom Error Message
-   *
-   * @param param Props Object
-   * @returns JSX
-   */
-  const ErrorMessage = ({ name }: any) => {
-    if (!name) return <></>;
-
-    const error = getIn(formik.errors, name);
-    const touch = getIn(formik.touched, name);
-
-    return (touch && error) || error ? (
-      <>
-        <div className="col-1" style={{ width: '20px' }}>
-          <StopIcon size={14} />
-        </div>
-        <div className="col">{error}</div>
-      </>
-    ) : null;
-  };
-
-  const tagOptions = [
-    { label: 'Window', value: 'Window' },
-    { label: 'Garden', value: 'Garden' },
-    { label: 'Kitchen', value: 'Kitchen' },
-    { label: 'Other', value: 'Other' }
-  ];
-
   return (
     <form onSubmit={formik.handleSubmit} style={{ position: 'relative' }}>
       <Loader isLoading={isLoading} />
@@ -272,8 +334,8 @@ const ClientJobAddForm = ({ actions, isLoading }: IProps) => {
                       label="Services Type"
                       name="jobType"
                       placeholder="Search available services..."
-                      value={tagOptions.find((tag) => tag.value === formik.values.jobType)}
-                      options={tagOptions}
+                      value={getServices().find((service) => service.value === formik.values.jobType)}
+                      options={getServices().filter((service) => service.isActive)}
                       helperComponent={
                         <div className="row text-danger mt-1 mb-2">
                           <ErrorMessage name="jobType" />
@@ -664,6 +726,60 @@ const ClientJobAddForm = ({ actions, isLoading }: IProps) => {
           </div>
         </div>
 
+        <div className="card">
+          <h6 className="txt-bold">Other Information</h6>
+          <small className="text-warning">
+            <InfoIcon size={14} /> Add any other notes for this job or any relevant documents.
+          </small>
+          <div className="mb-3">
+            <TextArea
+              rows={8}
+              label={'Notes:'}
+              placeholder="Required notes or description ..."
+              name="note"
+              value={formik.values.notes || ''}
+              onChange={({ target }: { target: { value: string } }) => {
+                if (target.value !== formik.values.notes) formik.setFieldValue('notes', target.value);
+              }}
+              helperComponent={<ErrorMessage name="note" />}
+              onBlur={formik.handleBlur}
+            />
+          </div>
+
+          <div className="mb-3">
+            <label htmlFor="additional-doc" className="form-label">
+              Files/Pictures:
+            </label>
+            <div className="mb-3 ps-1 d-flex flex-row justify-content-start">
+              {formik.values.docs.map((doc: any, index: number) => (
+                <div key={`~${index}`} className="mr-2">
+                  <div className="">
+                    <img src={doc.url} className="rounded float-start" alt="" style={{width: 'calc((150px - 5px)', height: '150px'}} />
+                  </div>
+                  <div className="col mt-2"></div>
+                  <div className="col-2 mt-2 pointer text-center">
+                    <span onClick={() => handleFileDelete(doc.key)}>
+                      <XCircleIcon size={20} />
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="">
+              <input
+                className="form-control hidden"
+                id="file"
+                type="file"
+                value={undefined}
+                onChange={handleFileUpload}
+              />
+              <label htmlFor={'file'} className="txt-orange dashed mt-2">
+                <UploadIcon /> Select documents/pictures related to this Job
+              </label>
+            </div>
+          </div>
+        </div>
+
         <div className="mb-3 mt-3">
           <button type="submit" className="btn btn-primary">
             Save Job
@@ -691,4 +807,4 @@ const mapDispatchToProps = (dispatch: any) => ({
   }
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(ClientJobAddForm);
+export default connect(mapStateToProps, mapDispatchToProps)(ClientJobCreateForm);

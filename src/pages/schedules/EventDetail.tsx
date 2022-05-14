@@ -32,7 +32,7 @@ const ScheduleEventDetail: FC<IProps> = ({ closeModal, markVisitCompleteHandler,
             <h5 className="modal-title">Visit Detail - {event.extendedProps?.meta?.job?.jobFor?.fullName}</h5>
             <button type="button" className="btn-close" onClick={closeModal} data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
-          <div className="modal-body">
+          <div className="modal-body" style={{maxHeight: '600px', overflowY: 'scroll'}}>
             <Loader isLoading={isLoading} />
             {event.extendedProps?.meta?.status?.status !== 'COMPLETED' ? (
               <>

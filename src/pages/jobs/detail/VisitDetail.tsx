@@ -17,7 +17,7 @@ const VisitDetail: FC<IProps> = ({ closeModal, markVisitCompleteHandler, event }
             <h5 className="modal-title">Visit for {event.job?.jobFor?.fullName}</h5>
             <button type="button" className="btn-close" onClick={closeModal} data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
-          <div className="modal-body">
+          <div className="modal-body" style={{maxHeight: '600px', overflowY: 'scroll'}}>
             {event.status?.status !== 'COMPLETED' ? (
               <>
                 <div className="row">

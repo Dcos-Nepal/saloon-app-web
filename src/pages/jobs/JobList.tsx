@@ -96,7 +96,7 @@ const JobsList = (props: IProps) => {
         Header: 'TITLE/INSTRUCTION',
         accessor: (row: any) => {
           return (
-            <div className='cursor-pointer' onClick={() => navigate(pinterpolate(endpoints.admin.worker.detail, { id: row._id }))}>
+            <div className="cursor-pointer" onClick={() => navigate(pinterpolate(endpoints.admin.worker.detail, { id: row._id }))}>
               <div className="txt-bold">{row.title}</div>
               <div className="txt-grey">
                 <Truncate lines={1} ellipsis={<span>...</span>}>
@@ -116,7 +116,11 @@ const JobsList = (props: IProps) => {
         accessor: (row: any) => {
           return (
             <div>
-              {row.property?.street1}, {row.property?.street2}, {row.property?.city}, {row.property?.state}, {row.property?.postalCode}, {row.property?.country}
+              {`${row.property?.street1 ? `${row.property?.street1}, ` : ''}${row.property?.street2 ? `${row.property?.street2}, ` : ''}${
+                row.property?.city ? `${row.property?.city}, ` : ''
+              }${row.property?.state ? `${row.property?.state}, ` : ''}${row.property?.postalCode ? `${row.property?.postalCode}, ` : ''}${
+                row.property?.country ? row.property?.country : ''
+              }` || '-'}
             </div>
           );
         }
@@ -261,11 +265,13 @@ const JobsList = (props: IProps) => {
               </thead>
               <tbody {...getTableBodyProps()} className="rt-tbody">
                 {props.isLoading ? (
-                  <tr className='rt-tr-group'>
-                    <td colSpan={rows.length}><Loader isLoading={props.isLoading} /></td>
+                  <tr className="rt-tr-group">
+                    <td colSpan={rows.length}>
+                      <Loader isLoading={props.isLoading} />
+                    </td>
                   </tr>
-                ): null}
-                
+                ) : null}
+
                 {rows.map((row, index) => {
                   prepareRow(row);
 
@@ -283,6 +289,8 @@ const JobsList = (props: IProps) => {
               </tbody>
             </table>
           )}
+
+          <Loader isLoading={props.isLoading} />
         </div>
         {jobs.length ? (
           <div className="row pt-2 m-1 rounded-top">
@@ -299,7 +307,7 @@ const JobsList = (props: IProps) => {
           </div>
         ) : null}
       </div>
-      
+
       {/* Modals section */}
       <Modal isOpen={!!provideFeedbackFor} onRequestClose={() => setProvideFeedbackFor(null)}>
         <Feedback closeModal={() => setProvideFeedbackFor(null)} job={provideFeedbackFor} provideFeedback={feedbackHandler} />

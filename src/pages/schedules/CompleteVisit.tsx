@@ -1,9 +1,11 @@
 import * as Yup from 'yup';
+import { useState } from 'react';
 import { getIn, useFormik } from 'formik';
 import { StopIcon, UploadIcon, XCircleIcon } from '@primer/octicons-react';
 
 import { getData } from 'utils/storage';
 import TextArea from 'common/components/form/TextArea';
+import { Loader } from 'common/components/atoms/Loader';
 
 interface ICompleteVisit {
   visit: any;
@@ -19,6 +21,8 @@ const CompleteVisit = ({ closeModal, completeVisit }: ICompleteVisit) => {
     date: null
   };
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const CompleteVisitSchema = Yup.object().shape({
     note: Yup.string().required('Note is required')
   });
@@ -29,6 +33,7 @@ const CompleteVisit = ({ closeModal, completeVisit }: ICompleteVisit) => {
     validationSchema: CompleteVisitSchema,
     validateOnChange: true,
     onSubmit: async (data: any) => {
+      setIsLoading(true);
       const currentUser = getData('user');
 
       if (currentUser?._id) {
@@ -46,6 +51,8 @@ const CompleteVisit = ({ closeModal, completeVisit }: ICompleteVisit) => {
 
         await completeVisit(formData);
       }
+
+      setIsLoading(false);
     }
   });
 
@@ -82,6 +89,7 @@ const CompleteVisit = ({ closeModal, completeVisit }: ICompleteVisit) => {
           </div>
           <form noValidate onSubmit={formik.handleSubmit}>
             <div className="modal-body">
+              <Loader isLoading={isLoading} />
               <div className="mb-3">
                 <TextArea
                   rows={8}
@@ -138,7 +146,7 @@ const CompleteVisit = ({ closeModal, completeVisit }: ICompleteVisit) => {
               </div>
             </div>
             <div className="modal-footer">
-              <button type="submit" className="btn btn-primary">
+              <button type="submit" disabled={isLoading} className="btn btn-primary">
                 Mark Visit as Complete
               </button>
               <button onClick={() => closeModal()} type="button" className="ms-2 btn btn-secondary" data-bs-dismiss="modal">

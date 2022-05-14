@@ -1,3 +1,5 @@
+import { Loader } from 'common/components/atoms/Loader';
+import { useState } from 'react';
 import { createInvoiceApi } from 'services/invoice.service';
 
 interface IProps {
@@ -9,10 +11,13 @@ interface IProps {
 const VisitCompletedActions = (props: IProps) => {
   const { visit, onClose, cleanup } = props;
 
+  const [isLoading, setIsLoading] = useState(false);
+
   /**
    * Generates Invoice for completed visit
    */
   const generateInvoice = async () => {
+    setIsLoading(true);
     const invoicePayload = {
       subject: `${visit.title} - Invoice`,
       message: 'This invoice was generated at the time of visit completion.',
@@ -24,6 +29,7 @@ const VisitCompletedActions = (props: IProps) => {
     };
     await createInvoiceApi(invoicePayload);
     cleanup();
+    setIsLoading(false);
     onClose();
   };
 
@@ -36,17 +42,16 @@ const VisitCompletedActions = (props: IProps) => {
             <button onClick={() => onClose()} type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div className="modal-body">
-            <div className='row p-3'>
-              Visit has been completed now. You can now generate Invoice for the visit or you can always generate invoice later.
-            </div>
-            <div className='row mt-3 mb-3'>
-              <div className='col'>
-                <button type="button" className="btn btn-primary" onClick={generateInvoice}>
+            <Loader isLoading={isLoading} />
+            <div className="row p-3">Visit has been completed now. You can now generate Invoice for the visit or you can always generate invoice later.</div>
+            <div className="row mt-3 mb-3">
+              <div className="col">
+                <button type="button" disabled={isLoading} className="btn btn-primary" onClick={generateInvoice}>
                   Generate Invoice
                 </button>
               </div>
-              <div className='col'>
-                <button type="button" className="ms-2 btn btn-secondary" data-bs-dismiss="modal" onClick={() => onClose()}>
+              <div className="col">
+                <button type="button" disabled={isLoading} className="ms-2 btn btn-secondary" data-bs-dismiss="modal" onClick={() => onClose()}>
                   Generate Later
                 </button>
               </div>

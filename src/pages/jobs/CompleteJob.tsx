@@ -4,6 +4,8 @@ import { StopIcon, UploadIcon, XCircleIcon } from '@primer/octicons-react';
 
 import { getData } from 'utils/storage';
 import TextArea from 'common/components/form/TextArea';
+import { useState } from 'react';
+import { Loader } from 'common/components/atoms/Loader';
 
 interface ICompleteJob {
   job: any;
@@ -19,6 +21,8 @@ const CompleteJob = ({ closeModal, completeJob }: ICompleteJob) => {
     date: null
   };
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const CompleteJobSchema = Yup.object().shape({
     note: Yup.string().required('Note is required')
   });
@@ -29,6 +33,7 @@ const CompleteJob = ({ closeModal, completeJob }: ICompleteJob) => {
     validationSchema: CompleteJobSchema,
     validateOnChange: true,
     onSubmit: async (data: any) => {
+      setIsLoading(true);
       const currentUser = getData('user');
 
       if (currentUser?._id) {
@@ -44,6 +49,7 @@ const CompleteJob = ({ closeModal, completeJob }: ICompleteJob) => {
 
         await completeJob(formData);
       }
+      setIsLoading(false);
     }
   });
 
@@ -80,6 +86,7 @@ const CompleteJob = ({ closeModal, completeJob }: ICompleteJob) => {
           </div>
           <form noValidate onSubmit={formik.handleSubmit}>
             <div className="modal-body">
+              <Loader isLoading={isLoading} />
               <div className="mb-3">
                 <TextArea
                   rows={8}
@@ -138,10 +145,10 @@ const CompleteJob = ({ closeModal, completeJob }: ICompleteJob) => {
               </div>
             </div>
             <div className="modal-footer">
-              <button type="submit" className="btn btn-primary">
+              <button disabled={isLoading} type="submit" className="btn btn-primary">
                 Mark Job as Complete
               </button>
-              <button onClick={() => closeModal()} type="button" className="ms-2 btn btn-secondary" data-bs-dismiss="modal">
+              <button disabled={isLoading} onClick={() => closeModal()} type="button" className="ms-2 btn btn-secondary" data-bs-dismiss="modal">
                 Cancel
               </button>
             </div>

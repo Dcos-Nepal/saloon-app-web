@@ -16,7 +16,6 @@ const clientsReducer = (state = initialState, action: any) => {
     }
 
     case actionType.FETCH_CLIENTS_SUCCESS: {
-      console.log(action.payload);
       state.isLoading = false;
       state.clients = action.payload;
       return { ...state };

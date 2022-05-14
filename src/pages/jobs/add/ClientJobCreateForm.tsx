@@ -39,7 +39,7 @@ const ClientJobCreateForm = ({ actions, isLoading }: IProps) => {
   const [isRecommendationsLoading, setIsRecommendationsLoading] = useState(false);
   const [rruleStr, setRruleStr] = useState(new RRule({ dtstart: new Date(), interval: 1, freq: Frequency.DAILY }).toString());
   const [activeTab, setActiveTab] = useState('ONE-OFF');
-  
+
   /**
    * Get Translation for RRule
    * @returns String
@@ -77,7 +77,7 @@ const ClientJobCreateForm = ({ actions, isLoading }: IProps) => {
     oneOff: { rruleSet: '', startDate: '', startTime: '', endDate: '', endTime: '' },
     notifyTeam: false,
     notes: '',
-    docs: [],
+    docs: []
   };
 
   /**
@@ -162,18 +162,22 @@ const ClientJobCreateForm = ({ actions, isLoading }: IProps) => {
 
   /**
    * Handle One-Off Job Change
-   * @returns 
+   * @returns
    */
   const handleOneOffChange = () => {
     if (!formik.values.oneOff || !formik.values.oneOff?.startDate) return;
     let rule: any = {
-      dtstart: new Date(`${formik.values.oneOff?.startDate} ${formik.values.oneOff?.startTime}`),
+      dtstart: formik.values.oneOff?.startTime
+        ? new Date(`${formik.values.oneOff?.startDate} ${formik.values.oneOff?.startTime}`)
+        : new Date(formik.values.oneOff?.startDate),
       interval: 1,
       freq: Frequency.DAILY
     };
-  
+
     if (formik.values.oneOff?.endDate) {
-      rule.until = new Date(`${formik.values.oneOff?.endDate} ${formik.values.oneOff?.endTime}`);
+      rule.until = formik.values.oneOff?.endTime
+        ? new Date(`${formik.values.oneOff?.endDate} ${formik.values.oneOff?.endTime}`)
+        : new Date(formik.values.oneOff?.endDate);
     }
 
     const rrule = new RRule(rule);
@@ -212,7 +216,10 @@ const ClientJobCreateForm = ({ actions, isLoading }: IProps) => {
       await deletePublicFile(docKey);
 
       // Setting Formik form document properties
-      formik.setFieldValue(`docs`, formik.values.docs.filter((doc: any) => doc.key !== docKey));
+      formik.setFieldValue(
+        `docs`,
+        formik.values.docs.filter((doc: any) => doc.key !== docKey)
+      );
     } catch (error) {
       console.log('Error: ', error);
     }
@@ -270,9 +277,7 @@ const ClientJobCreateForm = ({ actions, isLoading }: IProps) => {
       (async () => {
         try {
           setIsRecommendationsLoading(true);
-          const property = formik.values.property
-            ? properties.find((property) => property._id === formik.values.property)
-            : (clientDetails as any).address;
+          const property = formik.values.property ? properties.find((property) => property._id === formik.values.property) : (clientDetails as any).address;
           const {
             data: { data: recommendationData }
           } = await getWorkerRecommendations({
@@ -296,7 +301,7 @@ const ClientJobCreateForm = ({ actions, isLoading }: IProps) => {
         }
       })();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     properties,
     formik.values.jobFor,
@@ -752,19 +757,21 @@ const ClientJobCreateForm = ({ actions, isLoading }: IProps) => {
             </label>
             <div className="mb-3 ps-1 d-flex flex-row justify-content-start">
               {formik.values.docs.map((doc: any, index: number) => (
-                <div key={`~${index}`} className="mr-2 p-2" style={{position: 'relative'}}>
+                <div key={`~${index}`} className="mr-2 p-2" style={{ position: 'relative' }}>
                   <div className="">
                     <img src={doc.url} className="rounded float-start" alt="" style={{ width: '150px', height: '150px' }} />
                   </div>
                   <div className="col mt-2"></div>
-                  <div className="col-2 mt-2 pointer text-center"
+                  <div
+                    className="col-2 mt-2 pointer text-center"
                     style={{
                       position: 'absolute',
                       right: '10px',
                       top: '5px',
                       left: 'auto',
                       bottom: 'auto'
-                    }}>
+                    }}
+                  >
                     <span onClick={() => handleFileDelete(doc.key)}>
                       <XCircleIcon size={20} />
                     </span>
@@ -773,13 +780,7 @@ const ClientJobCreateForm = ({ actions, isLoading }: IProps) => {
               ))}
             </div>
             <div className="">
-              <input
-                className="form-control hidden"
-                id="file"
-                type="file"
-                value={undefined}
-                onChange={handleFileUpload}
-              />
+              <input className="form-control hidden" id="file" type="file" value={undefined} onChange={handleFileUpload} />
               <label htmlFor={'file'} className="txt-orange dashed mt-2">
                 <UploadIcon /> Select documents/pictures related to this Job
               </label>

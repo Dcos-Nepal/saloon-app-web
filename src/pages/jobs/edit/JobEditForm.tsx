@@ -1,4 +1,3 @@
-
 import { format } from 'date-fns';
 import { DateTime } from 'luxon';
 import { connect } from 'react-redux';
@@ -18,6 +17,7 @@ import SelectField from 'common/components/form/Select';
 import { getServices } from 'data';
 import { IOption } from 'common/types/form';
 import { deletePublicFile, uploadPublicFile } from 'services/files.service';
+import { Loader } from 'common/components/atoms/Loader';
 
 interface IProps {
   isLoading: boolean;
@@ -34,7 +34,7 @@ const EditJobForm = (props: IProps) => {
 
   /**
    * Get Translation for RRule
-   * @returns 
+   * @returns
    */
   const getTranslation = () => {
     switch ('en') {
@@ -83,7 +83,7 @@ const EditJobForm = (props: IProps) => {
 
   /**
    * Handles Worker Selection
-   * @param selected 
+   * @param selected
    */
   const handleWorkerSelection = (selected: any[]) => {
     formik.setFieldValue(
@@ -111,7 +111,7 @@ const EditJobForm = (props: IProps) => {
 
     const response = await fetchUserProperties(value);
     setProperties(response.data?.data?.data?.rows || []);
-  }
+  };
 
   /**
    * Handle File Upload
@@ -145,7 +145,10 @@ const EditJobForm = (props: IProps) => {
       await deletePublicFile(docKey);
 
       // Setting Formik form document properties
-      formik.setFieldValue(`docs`, formik.values.docs.filter((doc: any) => doc.key !== docKey));
+      formik.setFieldValue(
+        `docs`,
+        formik.values.docs.filter((doc: any) => doc.key !== docKey)
+      );
     } catch (error) {
       console.log('Error: ', error);
     }
@@ -153,19 +156,24 @@ const EditJobForm = (props: IProps) => {
 
   /**
    * Custom Error Message
-   * 
+   *
    * @param param Props Object
    * @returns JSX
    */
   const ErrorMessage = ({ name }: any) => {
-    if (!name) return (<></>);
+    if (!name) return <></>;
 
     const error = getIn(formik.errors, name);
     const touch = getIn(formik.touched, name);
 
-    return ((touch && error) || error) ? (<div className="row text-danger mt-1 mb-2">
-      <div className="col-1" style={{ width: '20px' }}><StopIcon size={14} /></div><div className="col">{error}</div>
-    </div>) : null;
+    return (touch && error) || error ? (
+      <div className="row text-danger mt-1 mb-2">
+        <div className="col-1" style={{ width: '20px' }}>
+          <StopIcon size={14} />
+        </div>
+        <div className="col">{error}</div>
+      </div>
+    ) : null;
   };
 
   useEffect(() => {
@@ -177,6 +185,7 @@ const EditJobForm = (props: IProps) => {
 
   return (
     <form onSubmit={formik.handleSubmit} style={{ position: 'relative' }}>
+      <Loader isLoading={formik.isSubmitting} />
       <FormikProvider value={formik}>
         <div className="row pb-3">
           <div className="col">
@@ -243,12 +252,21 @@ const EditJobForm = (props: IProps) => {
                   <div className="row bg-grey m-0">
                     <div className="col p-2 ps-4">
                       <div className="txt-orange">{(clientDetails as any)?.fullName}</div>
-                      <div className="txt-bold">{(clientDetails as any)?.email} / {(clientDetails as any)?.phoneNumber}</div>
-                      <div className="txt-grey">{(clientDetails as any)?.address?.street1}, {(clientDetails as any)?.address?.city}, {(clientDetails as any)?.address?.country}</div>
+                      <div className="txt-bold">
+                        {(clientDetails as any)?.email} / {(clientDetails as any)?.phoneNumber}
+                      </div>
+                      <div className="txt-grey">
+                        {(clientDetails as any)?.address?.street1}, {(clientDetails as any)?.address?.city}, {(clientDetails as any)?.address?.country}
+                      </div>
                     </div>
-                  </div>) : null}
+                  </div>
+                ) : null}
                 <div className="txt-bold mt-3 txt-grey">Client's Properties</div>
-                {!properties.length ? <div className="txt-orange"><StopIcon size={16} /> There are no properties assigned to the client.</div> : null}
+                {!properties.length ? (
+                  <div className="txt-orange">
+                    <StopIcon size={16} /> There are no properties assigned to the client.
+                  </div>
+                ) : null}
                 {(clientDetails as any)?.address ? (
                   <div className="row mb-2 border-bottom">
                     <div className="col-1 p-2 pt-3 ps-4">
@@ -265,15 +283,25 @@ const EditJobForm = (props: IProps) => {
                   </div>
                 ) : null}
                 {properties.map((property: any) => {
-                  return (<div key={property._id} className="row mb-2 border-bottom">
-                    <div className="col-1 p-2 pt-3 ps-4">
-                      <input name="property" type="radio" value={property._id} onChange={formik.handleChange} checked={property._id === formik.values.property} />
+                  return (
+                    <div key={property._id} className="row mb-2 border-bottom">
+                      <div className="col-1 p-2 pt-3 ps-4">
+                        <input
+                          name="property"
+                          type="radio"
+                          value={property._id}
+                          onChange={formik.handleChange}
+                          checked={property._id === formik.values.property}
+                        />
+                      </div>
+                      <div className="col p-2 ps-4">
+                        <div className="txt-grey">{property.name}</div>
+                        <div className="">
+                          {property?.street1}, {property?.postalCode}, {property?.city}, {property?.state}, {property?.country}
+                        </div>
+                      </div>
                     </div>
-                    <div className="col p-2 ps-4">
-                      <div className="txt-grey">{property.name}</div>
-                      <div className="">{property?.street1}, {property?.postalCode}, {property?.city}, {property?.state}, {property?.country}</div>
-                    </div>
-                  </div>)
+                  );
                 })}
               </div>
             </div>
@@ -538,14 +566,16 @@ const EditJobForm = (props: IProps) => {
                   <div className="">
                     <img src={doc.url} className="rounded float-start" alt="" style={{ width: '150px', height: '150px' }} />
                   </div>
-                  <div className="col-2 mt-2 pointer text-center"
+                  <div
+                    className="col-2 mt-2 pointer text-center"
                     style={{
                       position: 'absolute',
                       right: '10px',
                       top: '5px',
                       left: 'auto',
                       bottom: 'auto'
-                    }}>
+                    }}
+                  >
                     <span onClick={() => handleFileDelete(doc.key)}>
                       <XCircleIcon size={20} />
                     </span>
@@ -554,13 +584,7 @@ const EditJobForm = (props: IProps) => {
               ))}
             </div>
             <div className="">
-              <input
-                className="form-control hidden"
-                id="file"
-                type="file"
-                value={undefined}
-                onChange={handleFileUpload}
-              />
+              <input className="form-control hidden" id="file" type="file" value={undefined} onChange={handleFileUpload} />
               <label htmlFor={'file'} className="txt-orange dashed mt-2">
                 <UploadIcon /> Select documents/pictures related to this Job
               </label>
@@ -569,7 +593,7 @@ const EditJobForm = (props: IProps) => {
         </div>
 
         <div className="mb-3 mt-3">
-          <button type="submit" className="btn btn-primary">
+          <button disabled={formik.isSubmitting} type="submit" className="btn btn-primary">
             Update Job
           </button>
           <button onClick={() => navigate(-1)} type="button" className="btn ms-3">

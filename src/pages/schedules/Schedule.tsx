@@ -32,9 +32,24 @@ const WorkSchedule = (props: any) => {
   const [events, setEvents] = useState([]);
   const [selectedVisit, setSelectedVisit] = useState<any | null>(null);
   const [showEventDetail, setShowEventDetail] = useState<IEvent | null>();
-  const [askVisitInvoiceGeneration, setAskVisitInvoiceGeneration] = useState(false);
   const [showVisitCompleteForm, setShowVisitCompleteForm] = useState(false);
+  const [askVisitInvoiceGeneration, setAskVisitInvoiceGeneration] = useState(false);
   const [currentDateRange, setCurrentDateRange] = useState({ start: new Date(), end: new Date() });
+
+  /**
+   * Creates Rrule for one-time-off job visit
+   *
+   * @param visit any
+   * @returns String
+   */
+  const createOneOffRule = (visit: any) => {
+    return new RRule({
+      dtstart: new Date(`${visit.startDate} ${visit.startTime}`),
+      interval: 1,
+      count: 1,
+      freq: Frequency.DAILY
+    }).toString();
+  };
 
   /**
    * Handles the process of marking the visit as complete
@@ -105,30 +120,13 @@ const WorkSchedule = (props: any) => {
       if (currUser.role === 'WORKER') scheduleFor.team = currUser.id;
 
       setCurrentDateRange(currentDateRange);
-
       props.fetchJobSchedule({ ...scheduleFor, startDate: currentDateRange.start.toISOString(), endDate: currentDateRange.end.toISOString() });
 
-      toast.success('Visit completed successfully');
       setAskVisitInvoiceGeneration(true);
       setShowVisitCompleteForm(false);
     } catch (ex) {
       toast.error('Failed to complete visit');
     }
-  };
-
-  /**
-   * Creates Rrule for one-time-off job visit
-   *
-   * @param visit any
-   * @returns String
-   */
-  const createOneOffRule = (visit: any) => {
-    return new RRule({
-      dtstart: new Date(`${visit.startDate} ${visit.startTime}`),
-      interval: 1,
-      count: 1,
-      freq: Frequency.DAILY
-    }).toString();
   };
 
   /**
@@ -166,17 +164,27 @@ const WorkSchedule = (props: any) => {
    * @param eventInfo
    * @returns JSX
    */
-  function renderEventContent(eventInfo: any) {
-    eventInfo.textColor = eventInfo.event.extendedProps?.meta?.status?.status !== 'COMPLETED' ? 'grey' : 'white';
-    const backgroundClass =
-      eventInfo.event.extendedProps?.meta?.status?.status !== 'COMPLETED' ? 'cfc-event cfc-event-bg-blue' : ' cfc-event cfc-event-bg-green';
+  const renderEventContent = (eventInfo: any) => {
+    const meta = eventInfo.event.extendedProps?.meta;
+
+    // If we want to show completed visits
+    if (!props.completedVisible && meta?.status?.status === 'COMPLETED') {
+      return null;
+    }
+
+    // Else only show in-complete visits
+    const backgroundClass = meta?.status?.status !== 'COMPLETED'
+      ? 'cfc-event cfc-event-bg-blue'
+      : ' cfc-event cfc-event-bg-green';
+
     eventInfo.backgroundColor = '#edebe6';
+    eventInfo.textColor = meta?.status?.status !== 'COMPLETED' ? 'grey' : 'white';
 
     return (
       <div className={backgroundClass}>
-        <div title={eventInfo.event.title + ' - ' + eventInfo.event.extendedProps?.meta?.job?.jobFor?.fullName}>
+        <div title={eventInfo.event.title + ' - ' + meta?.job?.jobFor?.fullName}>
           <Truncate lines={1} ellipsis={<span>...</span>}>
-            {eventInfo.event.title} - {eventInfo.event.extendedProps?.meta?.job?.jobFor?.fullName}
+            {eventInfo.event.title} - {meta?.job?.jobFor?.fullName}
           </Truncate>
         </div>
         <div>
@@ -213,6 +221,12 @@ const WorkSchedule = (props: any) => {
         <div className="row d-flex flex-row mb-3">
           <div className="col d-flex flex-row">
             <h3 className="extra">Work Schedule</h3>
+          </div>
+          <div className="col">
+            <div className="form-group mt-3 d-flex float-end">
+              <input type="checkbox" className="mt-1" checked={props.completedVisible} onChange={props.toggleCompleted}></input>
+              <label>&nbsp;Toggle Completed</label>
+            </div>
           </div>
           <div className="col">
             <div className="form-group mt-3 d-flex float-end">
@@ -290,6 +304,7 @@ function mapStateToProps() {
     return {
       isLoading: state.schedules.isLoading,
       weekendsVisible: state.weekendsVisible,
+      completedVisible: state.completedVisible,
       schedules: state.schedules.schedules
     };
   };

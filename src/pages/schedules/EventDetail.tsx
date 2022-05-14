@@ -2,6 +2,7 @@ import { FC, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChecklistIcon, PersonIcon } from '@primer/octicons-react';
 import { Loader } from 'common/components/atoms/Loader';
+import { getJobPropertyAddress } from 'utils';
 
 interface IProps {
   event: any;
@@ -11,10 +12,12 @@ interface IProps {
 
 const ScheduleEventDetail: FC<IProps> = ({ closeModal, markVisitCompleteHandler, event }) => {
   const navigate = useNavigate();
-  const property = event.extendedProps?.meta?.job?.property;
-
   const [isLoading, setIsLoading] = useState(false);
 
+  /**
+   * Mark visit complete
+   * @param visitObj 
+   */
   const markVisitComplete = async (visitObj: any) => {
     setIsLoading(true);
     await markVisitCompleteHandler(true, visitObj);
@@ -97,9 +100,9 @@ const ScheduleEventDetail: FC<IProps> = ({ closeModal, markVisitCompleteHandler,
 
             <div className="row">
               <h5>Property Location</h5>
-              <div className="txt-grey">{property?.name || ''}</div>
+              <div className="txt-grey">{event.extendedProps?.meta?.job?.property ? event.extendedProps?.meta?.job?.property?.name : 'Primary Address'}</div>
               <div className="">
-                {property?.street1}, {property?.postalCode}, {property?.city}, {property?.state}, {property?.country}
+                {getJobPropertyAddress(event.extendedProps?.meta?.job)}
               </div>
             </div>
 

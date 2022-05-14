@@ -1,4 +1,3 @@
-import { AnyNode } from "postcss";
 import { getData } from "./storage";
 
 /**
@@ -60,4 +59,31 @@ export const getTodayStr = () => {
       .substring(1);
   };
   return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+}
+
+/**
+ * Get Property Address
+ * @param job 
+ * @returns 
+ */
+ export const getPropertyAddress = (property: any) => {
+  const addressStack = [];
+  
+  if (property?.street1) addressStack.push(property?.street1);
+  if (property?.street2) addressStack.push(property?.street2);
+  if (property?.city) addressStack.push(property?.city);
+  if (property?.postalCode) addressStack.push(property?.postalCode);
+  if (property?.country) addressStack.push(property?.country);
+
+  return addressStack.join(', ');
+}
+
+/**
+ * Get Job's Property
+ * @param job 
+ * @returns 
+ */
+export const getJobPropertyAddress = (job: any) => {
+  let property = (job?.property) ? job?.property : job?.jobFor?.address;
+  return getPropertyAddress(property);
 }

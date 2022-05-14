@@ -8,7 +8,7 @@ import quotesReducer from './quotes.reducer';
 import workersReducer from './workers.reducer';
 import lineItemsReducer from './lineItems.reducer';
 import invoicesReducer from './invoices.reducer';
-import { weekendsVisible } from './events.reducer';
+import { completedVisible, weekendsVisible } from './events.reducer';
 import scheduleReducer from './schedules.reducer';
 import visitsReducer from './visits.reducer';
 
@@ -24,5 +24,6 @@ export default combineReducers({
   quotes: quotesReducer,
   invoices: invoicesReducer,
   schedules: scheduleReducer,
-  weekendsVisible
+  weekendsVisible,
+  completedVisible
 });

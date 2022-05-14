@@ -1,5 +1,6 @@
 import { ChecklistIcon, PersonIcon } from '@primer/octicons-react';
 import { FC } from 'react';
+import { getJobPropertyAddress } from 'utils';
 
 interface IProps {
   event: any;
@@ -8,8 +9,6 @@ interface IProps {
 }
 
 const VisitDetail: FC<IProps> = ({ closeModal, markVisitCompleteHandler, event }) => {
-  const property = event.job?.property;
-
   return (
     <div className={`modal fade show mt-5`} role="dialog" style={{ display: 'block' }}>
       <div className="modal-dialog">
@@ -71,11 +70,9 @@ const VisitDetail: FC<IProps> = ({ closeModal, markVisitCompleteHandler, event }
 
             <div className="row">
               <h5>Property Location</h5>
-              <div className="txt-grey">{property?.name || ''}</div>
+              <div className="txt-grey">{event.job?.property ? event.job?.property?.name : 'Primary Address'}</div>
               <div className="">
-                {property?.street1}, {property?.postalCode},{' '}
-                {property?.city}, {property?.state},{' '}
-                {property?.country}
+                {getJobPropertyAddress(event.job)}
               </div>
             </div>
 

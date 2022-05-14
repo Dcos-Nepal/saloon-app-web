@@ -1,3 +1,4 @@
+import { ChecklistIcon, ClockIcon, ReportIcon } from '@primer/octicons-react';
 import { Loader } from 'common/components/atoms/Loader';
 import { useState } from 'react';
 import { createInvoiceApi } from 'services/invoice.service';
@@ -10,7 +11,6 @@ interface IProps {
 
 const VisitCompletedActions = (props: IProps) => {
   const { visit, onClose, cleanup } = props;
-
   const [isLoading, setIsLoading] = useState(false);
 
   /**
@@ -35,10 +35,10 @@ const VisitCompletedActions = (props: IProps) => {
 
   return (
     <div className={`modal fade show`} role="dialog" style={{ display: 'block' }}>
-      <div className="modal-dialog modal-sm">
+      <div className="modal-dialog modal-md">
         <div className="modal-content">
           <div className="modal-header">
-            <h5 className="modal-title">Visit Completed!</h5>
+            <h5 className="modal-title"><ChecklistIcon /> Visit Completed!</h5>
             <button onClick={() => onClose()} type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div className="modal-body">
@@ -47,12 +47,12 @@ const VisitCompletedActions = (props: IProps) => {
             <div className="row mt-3 mb-3">
               <div className="col">
                 <button type="button" disabled={isLoading} className="btn btn-primary" onClick={generateInvoice}>
-                  Generate Invoice
+                  <ReportIcon /> Generate Invoice Now
                 </button>
               </div>
               <div className="col">
                 <button type="button" disabled={isLoading} className="ms-2 btn btn-secondary" data-bs-dismiss="modal" onClick={() => onClose()}>
-                  Generate Later
+                  <ClockIcon /> Generate Later
                 </button>
               </div>
             </div>

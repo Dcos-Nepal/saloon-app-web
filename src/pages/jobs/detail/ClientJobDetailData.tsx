@@ -15,6 +15,7 @@ import {
   LocationIcon,
   PencilIcon,
   PlusCircleIcon,
+  StopIcon,
   TrashIcon,
   XCircleIcon
 } from '@primer/octicons-react';
@@ -35,6 +36,7 @@ import { Loader } from 'common/components/atoms/Loader';
 import VisitDetail from './VisitDetail';
 import DeleteConfirm from 'common/components/DeleteConfirm';
 import CompleteVisit from 'pages/schedules/CompleteVisit';
+import { getJobPropertyAddress } from 'utils';
 
 export interface IVisit {
   overdue: any;
@@ -154,7 +156,6 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
   const completeVisitHandler = async (data: any) => {
     try {
       await completeVisitApi(selectedVisit?._id, data);
-      toast.success('Visit completed successfully');
 
       setAskVisitInvoiceGeneration(true);
       setCompletedVisit(selectedVisit);
@@ -396,11 +397,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
                 <div className="txt-grey">Property address</div>
                 <div className="">
                   <LocationIcon />{' '}
-                  {`${job?.property?.street1 ? `${job?.property?.street1}, ` : ''}${job?.property?.street2 ? `${job?.property?.street2}, ` : ''}${
-                    job?.property?.city ? `${job?.property?.city}, ` : ''
-                  }${job?.property?.state ? `${job?.property?.state}, ` : ''}${job?.property?.postalCode ? `${job?.property?.postalCode}, ` : ''}${
-                    job?.property?.country ? job?.property?.country : ''
-                  }` || '-'}
+                  {getJobPropertyAddress(job)}
                 </div>
               </div>
             </div>
@@ -649,7 +646,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
           <label htmlFor="additional-doc" className="form-label">
             <strong>Notes:</strong>
           </label>
-          <div>{job?.notes}</div>
+          <div className="txt-grey pt-2">{job?.notes ? job?.notes : <><StopIcon size={16} /> Not notes added yet!.</>}</div>
         </div>
 
         <div className="mb-3">
@@ -664,6 +661,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
                 </a>
               </div>
             ))}
+            <div className="txt-grey pt-2">{job?.docs.length ? null : <><StopIcon size={16} /> Not document added yet!.</>}</div>
           </div>
         </div>
       </div>

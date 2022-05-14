@@ -1,7 +1,7 @@
 import * as actionType from '../constants';
 
-const initialState = {
-  jobs: null,
+const initialState: any = {
+  jobs: {data: {rows: [], totalCount: 0}},
   job: null,
   isFailed: false,
   isSuccess: false,
@@ -69,7 +69,14 @@ const jobsReducer = (state = initialState, action: any) => {
       state.isLoading = false;
       state.isFailed = false;
       state.isSuccess = true;
-      return { ...state };
+      state.jobs.data.rows = state.jobs.data.rows.map((job: any) => {
+        if (job._id === action.payload._id) {
+          return action.payload;
+        }
+        return job;
+      });
+  
+      return { ...state, jobs: {...state.jobs}};
     }
 
     case actionType.UPDATE_JOB_ERROR: {

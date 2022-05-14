@@ -1,7 +1,7 @@
 import * as actionType from '../constants';
 
-const initialState = {
-  visits: null,
+const initialState: any = {
+  visits: {data: {rows: [], totalCount: 0}},
   visit: null,
   isFailed: false,
   isSuccess: false,
@@ -69,7 +69,14 @@ const visitsReducer = (state = initialState, action: any) => {
       state.isLoading = false;
       state.isFailed = false;
       state.isSuccess = true;
-      return { ...state };
+      state.visits.data.rows = state.visits.data.rows.map((visit: any) => {
+        if (visit._id === action.payload._id) {
+          return action.payload;
+        }
+        return visit;
+      });
+  
+      return { ...state, visits: {...state.visits}};
     }
 
     case actionType.UPDATE_VISIT_ERROR: {

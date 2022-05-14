@@ -1,7 +1,7 @@
 import * as actionType from "../constants";
 
-const initialState = {
-  clients: null,
+const initialState: any = {
+  clients: {data: {rows: [], totalCount: 0}},
   currentUser: null,
   isFailed: false,
   isSuccess: false,
@@ -59,7 +59,14 @@ const clientsReducer = (state = initialState, action: any) => {
       state.isLoading = false;
       state.isFailed = false;
       state.isSuccess = true;
-      return { ...state };
+      state.clients.data.rows = state.clients.data.rows.map((client: any) => {
+        if (client._id === action.payload._id) {
+          return action.payload;
+        }
+        return client;
+      });
+  
+      return { ...state, clients: {...state.clients}};
     }
 
     case actionType.UPDATE_CLIENT_ERROR: {

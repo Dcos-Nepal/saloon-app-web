@@ -1,7 +1,7 @@
 import * as actionType from "../constants";
 
-const initialState = {
-  lineItems: null,
+const initialState: any = {
+  lineItems: {data: {rows: [], totalCount: 0}},
   currentItem: null,
   isFailed: false,
   isSuccess: false,
@@ -59,7 +59,14 @@ const lineItemsReducer = (state = initialState, action: any) => {
       state.isLoading = false;
       state.isFailed = false;
       state.isSuccess = true;
-      return { ...state };
+      state.lineItems.data.rows = state.lineItems.data.rows.map((lineItem: any) => {
+        if (lineItem._id === action.payload._id) {
+          return action.payload;
+        }
+        return lineItem;
+      });
+  
+      return { ...state, lineItems: {...state.lineItems}};
     }
 
     case actionType.UPDATE_LINE_ITEM_ERROR: {

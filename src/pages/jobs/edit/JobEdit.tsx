@@ -53,8 +53,8 @@ const EditJob = (props: IProps) => {
         endDate: job.primaryVisit?.endDate || '',
         endTime: job.primaryVisit?.endTime || ''
       },
-      notes: job.notes,
-      docs: job.docs
+      notes: job?.notes || '' ,
+      docs: job?.docs || []
     });
   }, [props.job]);
 

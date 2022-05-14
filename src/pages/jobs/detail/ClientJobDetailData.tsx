@@ -344,9 +344,9 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
 
   return (
     <div>
-      <div className="row mt-1 pb-3">
+      <div className="row mt-1 mb-4">
         <Loader isLoading={isJobLoading} />
-        <div className="col-12 mb-4">
+        <div className="col-12 mb-2">
           <div className="card">
             <div className="row">
               <div className="col">
@@ -593,7 +593,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
                           type="checkbox"
                           id={v.visitMapId}
                           checked={v.status.status === 'COMPLETED'}
-                          onChange={() => {}}
+                          onChange={() => { }}
                         />
                       </td>
                       <td>{DateTime.fromJSDate(v.startDate).toFormat('yyyy LLL dd')}</td>
@@ -623,7 +623,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
                                 </span>
                               </li>
                             ) : null}
-                            
+
                             <li onClick={() => handleDeleteVisitClick(v)}>
                               <span className="dropdown-item pointer">
                                 <TrashIcon /> Delete
@@ -642,35 +642,32 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
       </div>
 
       <div className="card">
-            <h6 className="txt-bold">Other Information</h6>
-            <small className="text-warning">
-              <InfoIcon size={14} /> Add any other notes for this job or any relevant documents.
-            </small>
-            <div className="mb-3">
-              {job.notes}
-            </div>
+        <h6 className="txt-bold">Other Information</h6>
+        <small className="text-warning">
+          <InfoIcon size={14} /> Add any other notes for this job or any relevant documents.
+        </small>
+        <div className="mb-3 mt-2">
+          <label htmlFor="additional-doc" className="form-label">
+          <strong>Notes:</strong>
+          </label>
+          <div>{job?.notes}</div>
+        </div>
 
-            <div className="mb-3">
-              <label htmlFor="additional-doc" className="form-label">
-                Files/Pictures:
-              </label>
-              <div className="mb-3 ps-1 d-flex flex-row justify-content-start">
-                {job.docs.map((doc: any, index: number) => (
-                  <div key={`~${index}`} className="mr-2">
-                    <div className="">
-                      <img src={doc.url} className="rounded float-start" alt="" style={{ width: 'calc((150px - 5px)', height: '150px' }} />
-                    </div>
-                    {/* <div className="col mt-2"></div>
-                    <div className="col-2 mt-2 pointer text-center">
-                      <span onClick={() => handleFileDelete(doc.key)}>
-                        <XCircleIcon size={20} />
-                      </span>
-                    </div> */}
-                  </div>
-                ))}
+        <div className="mb-3">
+          <label htmlFor="additional-doc" className="form-label">
+            <strong>Files/Pictures:</strong>
+          </label>
+          <div className="mb-3 ps-1 d-flex flex-row justify-content-start">
+            {job?.docs.map((doc: any, index: number) => (
+              <div key={`~${index}`} className="mr-2 p-2">
+                <a target="_blank" href={doc.url} rel="noreferrer">
+                  <img src={doc.url} className="rounded float-start" alt="" style={{ width: '150px', height: '150px' }} />
+                </a>
               </div>
-            </div>
+            ))}
           </div>
+        </div>
+      </div>
 
       {/* Modals Section */}
       <Modal isOpen={!!editVisitMode} onRequestClose={() => setEditVisitMode(false)}>
@@ -938,7 +935,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
       </Modal>
 
       <Modal isOpen={askVisitInvoiceGeneration && !!completedVisit ? true : false} onRequestClose={() => setAskVisitInvoiceGeneration(false)}>
-        <VisitCompletedActions visit={completedVisit} onClose={() => setAskVisitInvoiceGeneration(false)} cleanup={() => setCompletedVisit(null)}/>
+        <VisitCompletedActions visit={completedVisit} onClose={() => setAskVisitInvoiceGeneration(false)} cleanup={() => setCompletedVisit(null)} />
       </Modal>
 
       <Modal isOpen={!!showEventDetail} onRequestClose={() => setShowEventDetail(null)}>

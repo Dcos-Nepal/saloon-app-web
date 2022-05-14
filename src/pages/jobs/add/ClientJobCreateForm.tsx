@@ -726,7 +726,7 @@ const ClientJobCreateForm = ({ actions, isLoading }: IProps) => {
           </div>
         </div>
 
-        <div className="card">
+        <div className="card mb-3">
           <h6 className="txt-bold">Other Information</h6>
           <small className="text-warning">
             <InfoIcon size={14} /> Add any other notes for this job or any relevant documents.
@@ -752,12 +752,19 @@ const ClientJobCreateForm = ({ actions, isLoading }: IProps) => {
             </label>
             <div className="mb-3 ps-1 d-flex flex-row justify-content-start">
               {formik.values.docs.map((doc: any, index: number) => (
-                <div key={`~${index}`} className="mr-2">
+                <div key={`~${index}`} className="mr-2 p-2" style={{position: 'relative'}}>
                   <div className="">
-                    <img src={doc.url} className="rounded float-start" alt="" style={{width: 'calc((150px - 5px)', height: '150px'}} />
+                    <img src={doc.url} className="rounded float-start" alt="" style={{ width: '150px', height: '150px' }} />
                   </div>
                   <div className="col mt-2"></div>
-                  <div className="col-2 mt-2 pointer text-center">
+                  <div className="col-2 mt-2 pointer text-center"
+                    style={{
+                      position: 'absolute',
+                      right: '10px',
+                      top: '5px',
+                      left: 'auto',
+                      bottom: 'auto'
+                    }}>
                     <span onClick={() => handleFileDelete(doc.key)}>
                       <XCircleIcon size={20} />
                     </span>

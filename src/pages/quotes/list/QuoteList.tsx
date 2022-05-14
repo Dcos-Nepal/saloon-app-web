@@ -59,7 +59,7 @@ const QuotesList = (props: any) => {
         toast.success('Quote deleted successfully');
         setDeleteInProgress('');
 
-        props.actions.fetchQuotes({ q: query, offset: offset, limit: itemsPerPage });
+        props.actions.fetchQuotes({ q: query, page: offset, limit: itemsPerPage });
       }
     } catch (ex) {
       toast.error('Failed to delete quote');
@@ -71,7 +71,7 @@ const QuotesList = (props: any) => {
 
     if (currentUser.role === 'CLIENT') quoteQuery.quoteFor = currentUser.id;
 
-    props.actions.fetchQuotes({ q: query, ...quoteQuery, offset: offset, limit: itemsPerPage });
+    props.actions.fetchQuotes({ q: query, ...quoteQuery, page: offset, limit: itemsPerPage });
   }, [offset, itemsPerPage, props.actions, query, currentUser.id, currentUser.role]);
 
   useEffect(() => {
@@ -84,7 +84,7 @@ const QuotesList = (props: any) => {
           quoteFor: row.quoteFor,
           lineItems: row.lineItems,
           status: row.status,
-          total: '$123456',
+          total: '',
           createdAt: new Date(row.createdAt).toDateString(),
           updatedAt: new Date(row.updatedAt).toDateString()
         }))

@@ -34,6 +34,7 @@ const WorkSchedule = (props: any) => {
   const [showEventDetail, setShowEventDetail] = useState<IEvent | null>();
   const [askVisitInvoiceGeneration, setAskVisitInvoiceGeneration] = useState(false);
   const [showVisitCompleteForm, setShowVisitCompleteForm] = useState(false);
+  const [currentDateRange, setCurrentDateRange] = useState({ start: new Date(), end: new Date() });
 
   /**
    * Handles the process of marking the visit as complete
@@ -44,7 +45,7 @@ const WorkSchedule = (props: any) => {
    */
   const markVisitCompleteHandler = async (visitCompleted: boolean, visit: IVisit) => {
     let newlyCreatedVisit: any;
-  
+
     // If the visit has multiple visits
     if (visit.hasMultiVisit) {
       // Create One-Off rrule for to-complete visit
@@ -85,19 +86,31 @@ const WorkSchedule = (props: any) => {
 
     // Hide the event detail view and show Complete visit Form
     setShowEventDetail(null);
-    setShowVisitCompleteForm(true)
+    setShowVisitCompleteForm(true);
   };
 
   /**
    * Visit complete handler
-   * @param data 
+   * @param data
    */
   const completeVisitHandler = async (data: any) => {
     try {
       await completeVisitApi(selectedVisit?._id, data);
+
+      const currUser = getCurrentUser();
+      const scheduleFor: { visitFor?: string; team?: string } = {};
+
+      if (!currUser) return toast.error('No User Found!');
+      if (currUser.role === 'CLIENT') scheduleFor.visitFor = currUser.id;
+      if (currUser.role === 'WORKER') scheduleFor.team = currUser.id;
+
+      setCurrentDateRange(currentDateRange);
+
+      props.fetchJobSchedule({ ...scheduleFor, startDate: currentDateRange.start.toISOString(), endDate: currentDateRange.end.toISOString() });
+
       toast.success('Visit completed successfully');
       setAskVisitInvoiceGeneration(true);
-      setShowVisitCompleteForm(false)
+      setShowVisitCompleteForm(false);
     } catch (ex) {
       toast.error('Failed to complete visit');
     }
@@ -142,6 +155,8 @@ const WorkSchedule = (props: any) => {
     if (currUser.role === 'CLIENT') scheduleFor.visitFor = currUser.id;
     if (currUser.role === 'WORKER') scheduleFor.team = currUser.id;
 
+    setCurrentDateRange(rangeInfo);
+
     props.fetchJobSchedule({ ...scheduleFor, startDate: rangeInfo.start.toISOString(), endDate: rangeInfo.end.toISOString() });
   };
 
@@ -153,7 +168,8 @@ const WorkSchedule = (props: any) => {
    */
   function renderEventContent(eventInfo: any) {
     eventInfo.textColor = eventInfo.event.extendedProps?.meta?.status?.status !== 'COMPLETED' ? 'grey' : 'white';
-    const backgroundClass = eventInfo.event.extendedProps?.meta?.status?.status !== 'COMPLETED' ? 'cfc-event cfc-event-bg-blue' : ' cfc-event cfc-event-bg-green';
+    const backgroundClass =
+      eventInfo.event.extendedProps?.meta?.status?.status !== 'COMPLETED' ? 'cfc-event cfc-event-bg-blue' : ' cfc-event cfc-event-bg-green';
     eventInfo.backgroundColor = '#edebe6';
 
     return (
@@ -237,26 +253,25 @@ const WorkSchedule = (props: any) => {
 
         {/* Modals Section */}
         <Modal isOpen={!!showEventDetail} onRequestClose={() => setShowEventDetail(null)}>
-          {!!showEventDetail 
-            ? <ScheduleEventDetail 
-                markVisitCompleteHandler={markVisitCompleteHandler}
-                event={showEventDetail}
-                closeModal={() => setShowEventDetail(null)} 
-              />
-            : <></>
-          }
+          {!!showEventDetail ? (
+            <ScheduleEventDetail markVisitCompleteHandler={markVisitCompleteHandler} event={showEventDetail} closeModal={() => setShowEventDetail(null)} />
+          ) : (
+            <></>
+          )}
         </Modal>
 
         <Modal isOpen={showVisitCompleteForm} onRequestClose={() => setShowVisitCompleteForm(false)}>
           <CompleteVisit
             completeVisit={completeVisitHandler}
-            closeModal={() => { setShowVisitCompleteForm(false);}}
+            closeModal={() => {
+              setShowVisitCompleteForm(false);
+            }}
             visit={selectedVisit}
           />
         </Modal>
 
         <Modal isOpen={askVisitInvoiceGeneration && !!selectedVisit} onRequestClose={() => setAskVisitInvoiceGeneration(false)}>
-          <VisitCompletedActions visit={selectedVisit} onClose={() => setAskVisitInvoiceGeneration(false)} cleanup={() => setSelectedVisit(null)}/>
+          <VisitCompletedActions visit={selectedVisit} onClose={() => setAskVisitInvoiceGeneration(false)} cleanup={() => setSelectedVisit(null)} />
         </Modal>
 
         <Footer />

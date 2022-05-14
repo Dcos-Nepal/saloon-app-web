@@ -219,19 +219,19 @@ const WorkSchedule = (props: any) => {
       <SideNavbar active="Schedule" />
       <div className="col main-container" style={{ position: 'relative', minHeight: '700px' }}>
         <div className="row d-flex flex-row mb-3">
-          <div className="col d-flex flex-row">
+          <div className="col-8 d-flex flex-row">
             <h3 className="extra">Work Schedule</h3>
           </div>
-          <div className="col">
+          <div className="col-2">
             <div className="form-group mt-3 d-flex float-end">
-              <input type="checkbox" className="mt-1" checked={props.completedVisible} onChange={props.toggleCompleted}></input>
-              <label>&nbsp;Toggle Completed</label>
+              <input type="checkbox" className="mt-1" id="toggle-completed" checked={props.completedVisible} onChange={props.toggleCompleted}></input>
+              <label htmlFor="toggle-completed">&nbsp;Toggle Completed</label>
             </div>
           </div>
-          <div className="col">
+          <div className="col-2">
             <div className="form-group mt-3 d-flex float-end">
-              <input type="checkbox" className="mt-1" checked={props.weekendsVisible} onChange={props.toggleWeekends}></input>
-              <label>&nbsp;Toggle Weekends</label>
+              <input type="checkbox" className="mt-1" id="toggle-weekends" checked={props.weekendsVisible} onChange={props.toggleWeekends}></input>
+              <label htmlFor="toggle-weekends">&nbsp;Toggle Weekends</label>
             </div>
           </div>
           <label className="txt-grey">

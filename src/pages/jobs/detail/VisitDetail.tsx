@@ -1,4 +1,4 @@
-import { ChecklistIcon, PersonIcon } from '@primer/octicons-react';
+import { ChecklistIcon, PersonIcon, StopIcon } from '@primer/octicons-react';
 import { FC } from 'react';
 import { getJobPropertyAddress } from 'utils';
 
@@ -68,7 +68,7 @@ const VisitDetail: FC<IProps> = ({ closeModal, markVisitCompleteHandler, event }
 
             <div className="hr mb-3"></div>
 
-            <div className="row">
+            <div className="row mb-3">
               <h5>Property Location</h5>
               <div className="txt-grey">{event.job?.property ? event.job?.property?.name : 'Primary Address'}</div>
               <div className="">
@@ -78,19 +78,45 @@ const VisitDetail: FC<IProps> = ({ closeModal, markVisitCompleteHandler, event }
 
             <div className="hr mb-3"></div>
 
+            {event.status?.status === 'COMPLETED' ? (
+              <>
+                <div className='row'>
+                  <h5>Completion Information</h5>
+                  <div className="mb-3">
+                    <strong>Notes:</strong>
+                    <p>{event?.completion?.notes || <><StopIcon size={16} /> Not notes added yet!.</>}</p>
+                  </div>
+                  <div className="mb-3">
+                    <strong>Images/Pictures:</strong>
+                    <div className='d-flex flex-row justify-content-start'>
+                      {event?.completion?.docs.map((doc: any, index: number) => (
+                        <div key={`~${index}`} className="mr-2 p-2">
+                          <a target="_blank" href={doc.url} rel="noreferrer">
+                            <img src={doc.url} className="img-thumbnail float-start" alt="" style={{ width: '100px', height: '100px' }} />
+                          </a>
+                        </div>
+                      ))}
+                      <div className="txt-grey pt-2">{event?.completion?.docs.length ? null : <><StopIcon size={16} /> Not document added yet!.</>}</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="hr mb-3"></div>
+              </>)
+              : null
+            }
+
             <div className="row">
               {event.startDate ? (
                 <div className="col">
                   <h5>Start Date/Time</h5>
-                  <div>{new Date(event.startDate).toLocaleDateString()}</div>
-                  <div>{new Date(event.startDate).toLocaleTimeString()}</div>
+                  <div>{new Date(event.startDate).toLocaleDateString()}&nbsp;{new Date(event.startDate).toLocaleTimeString()}</div>
                 </div>
               ) : null}
               {event.endDate ? (
                 <div className="col">
                   <h5>End Date/Time</h5>
-                  <div>{new Date(event.endDate).toLocaleDateString()}</div>
-                  <div>{new Date(event.endDate).toLocaleTimeString()}</div>
+                  <div>{new Date(event.endDate).toLocaleDateString()}&nbsp;{new Date(event.endDate).toLocaleTimeString()}</div>
                 </div>
               ) : null}
             </div>

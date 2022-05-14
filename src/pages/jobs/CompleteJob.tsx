@@ -100,7 +100,7 @@ const CompleteJob = ({ closeModal, completeJob }: ICompleteJob) => {
                   Files/Pictures:
                 </label>
                 {formik.values.docs.map((doc: any, index: number) => (
-                  <div className="row mb-3 ps-1" key={index}>
+                  <div className="row mb-3 ps-1" key={`~${index}`}>
                     <div className="col-9">
                       <span className="mt-1 btn btn-secondary btn-sm">{doc.name}</span>
                     </div>
@@ -126,7 +126,9 @@ const CompleteJob = ({ closeModal, completeJob }: ICompleteJob) => {
                     type="file"
                     value={undefined}
                     onChange={(event) => {
-                      if (event.target.files?.length) formik.setFieldValue(`docs`, [...formik.values.docs, event.target.files[0]]);
+                      if (event.target.files?.length) {
+                        formik.setFieldValue(`docs`, [...formik.values.docs, event.target.files[0]]);
+                      }
                     }}
                   />
                   <label htmlFor={'file'} className="txt-orange dashed mt-2">

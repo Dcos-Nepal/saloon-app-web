@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 
-import ClientJobAddForm from "./ClientJobAddForm";
+import ClientJobCreateForm from "./ClientJobCreateForm";
 
 const ClientAdd = () => {
   const navigate = useNavigate();
@@ -19,7 +19,7 @@ const ClientAdd = () => {
         </div>
       </div>
       <div className="">
-        <ClientJobAddForm />
+        <ClientJobCreateForm />
       </div>
     </>
   );

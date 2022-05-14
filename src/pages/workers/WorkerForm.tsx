@@ -11,6 +11,7 @@ import SelectField from 'common/components/form/Select';
 import * as workersActions from 'store/actions/workers.actions';
 import { StopIcon, UploadIcon, XCircleIcon } from '@primer/octicons-react';
 import { deletePublicFile, uploadPublicFile } from 'services/files.service';
+import { getServices } from 'data';
 
 interface IProps {
   actions: {
@@ -46,13 +47,6 @@ const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker, isWorkersLoa
     cleaningCert: null,
     policeCert: null
   });
-
-  const tagOptions = [
-    { label: 'Window', value: 'Window' },
-    { label: 'Garden', value: 'Garden' },
-    { label: 'Kitchen', value: 'Kitchen' },
-    { label: 'Other', value: 'Other' }
-  ];
 
   useEffect(() => {
     if (id) actions.fetchWorker(id);
@@ -410,8 +404,8 @@ const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker, isWorkersLoa
             name="userData.services"
             isMulti={true}
             placeholder="Search available services..."
-            value={tagOptions.filter((tagOption) => formik.values.userData?.services?.find((service: string) => service === tagOption.value))}
-            options={tagOptions}
+            value={getServices().filter((tagOption) => formik.values.userData?.services?.find((service: string) => service === tagOption.value))}
+            options={getServices().filter((service) => service.isActive)}
             helperComponent={<ErrorMessage name="userData.services" />}
             handleChange={(selectedTags: IOption[]) => {
               formik.setFieldValue(

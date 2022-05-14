@@ -35,7 +35,7 @@ interface IProps {
   properties: any[];
 }
 
-const ClientDetailForm: FC<IProps> = ({ id, actions, currentClient, properties, currentProperty, isPropertiesLoading }) => {
+const ClientDetailForm: FC<IProps> = ({ id, actions, currentClient, properties }) => {
   const navigate = useNavigate();
 
   const [addProperty, setAddProperty] = useState(false);

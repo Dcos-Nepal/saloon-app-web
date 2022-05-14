@@ -1,3 +1,4 @@
+import { AnyNode } from "postcss";
 import { getData } from "./storage";
 
 /**
@@ -26,7 +27,8 @@ export const getCurrentUser = () => {
 }
 
 export const getHashValues = (hash: any) => {
-  return Object.values(hash) // needs modern browser
+  // Needs modern browser
+  return Object.values(hash);
 }
 
 export const hashById = (array: any[]) => {

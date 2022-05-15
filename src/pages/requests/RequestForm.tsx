@@ -28,7 +28,7 @@ interface IProps {
   isClientsLoading: boolean;
 }
 
-const RequestAddForm: FC<IProps> = ({ id, actions, clients, isJobRequestsLoading, currentJobRequest }) => {
+const RequestAddForm: FC<IProps> = ({ id, actions, isJobRequestsLoading, currentJobRequest }) => {
   const navigate = useNavigate();
 
   const [clientDetails, setClientDetails] = useState(null);

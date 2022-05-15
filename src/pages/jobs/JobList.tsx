@@ -40,6 +40,7 @@ const JobsList = (props: IProps) => {
   const [completeJobFor, setCompleteJobFor] = useState<any | null>(null);
   const [provideFeedbackFor, setProvideFeedbackFor] = useState<any | null>(null);
   const currentUser = getCurrentUser();
+  const currUser: { role: string; id: string } = getCurrentUser();
 
   const completeJobHandler = async (data: any) => {
     try {
@@ -153,6 +154,7 @@ const JobsList = (props: IProps) => {
                   </span>
                 </li>
               ) : null}
+
               {currentUser.role === 'CLIENT' ? (
                 <li onClick={() => setProvideFeedbackFor(row)}>
                   <span className="dropdown-item pointer">
@@ -160,6 +162,7 @@ const JobsList = (props: IProps) => {
                   </span>
                 </li>
               ) : null}
+              
               <li onClick={() => navigate(pinterpolate(endpoints.admin.worker.detail, { id: row._id }))}>
                 <span className="dropdown-item pointer">
                   <EyeIcon /> View Detail
@@ -234,12 +237,14 @@ const JobsList = (props: IProps) => {
         <div className="col ">
           <h3 className="extra">Jobs</h3>
         </div>
-        <div className="col d-flex flex-row align-items-center justify-content-end">
-          <button onClick={() => navigate(endpoints.admin.jobs.add)} type="button" className="btn btn-primary d-flex float-end">
-            <TasklistIcon className="mt-1" />
-            &nbsp;Create a Job
-          </button>
-        </div>
+        {currUser.role === 'ADMIN' || currUser.role === 'WORKER' ? (
+          <div className="col d-flex flex-row align-items-center justify-content-end">
+            <button onClick={() => navigate(endpoints.admin.jobs.add)} type="button" className="btn btn-primary d-flex float-end">
+              <TasklistIcon className="mt-1" />
+              &nbsp;Create a Job
+            </button>
+          </div>
+        ) : null}
         <label className="txt-grey">Total {props?.jobs?.data?.totalCount || 0} Jobs</label>
       </div>
       <div className="card">

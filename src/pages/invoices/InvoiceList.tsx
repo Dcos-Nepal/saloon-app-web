@@ -68,10 +68,14 @@ const InvoicesList = (props: any) => {
   };
 
   useEffect(() => {
-    const clientQuery: { invoiceFor?: string } = {};
+    const clientQuery: { invoiceFor?: string, createdBy?: string } = {};
 
     if (currentUser.role === 'CLIENT') {
       clientQuery.invoiceFor = currentUser.id;
+    }
+
+    if (currentUser.role === 'WORKER') {
+      clientQuery.createdBy = currentUser.id;
     }
 
     props.actions.fetchInvoices({

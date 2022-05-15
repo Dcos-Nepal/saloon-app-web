@@ -2,7 +2,7 @@ import * as Yup from 'yup';
 import { getIn, useFormik } from 'formik';
 import { connect } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { FC, useEffect, useState } from 'react';
+import { FC, useCallback, useEffect, useState } from 'react';
 
 import { IClient } from 'common/types/client';
 import InputField from 'common/components/form/Input';
@@ -13,6 +13,7 @@ import { Loader } from 'common/components/atoms/Loader';
 import SelectAsync from 'common/components/form/AsyncSelect';
 import { fetchUserProperties } from 'services/common.service';
 import { StopIcon } from '@primer/octicons-react';
+import { getData } from 'utils/storage';
 
 interface IProps {
   actions: {
@@ -31,7 +32,10 @@ interface IProps {
 const RequestAddForm: FC<IProps> = ({ id, actions, isJobRequestsLoading, currentJobRequest }) => {
   const navigate = useNavigate();
 
-  const [clientDetails, setClientDetails] = useState(null);
+  const currentUser = getData('user');
+  const isClient = currentUser?.userData?.type === 'CLIENT';
+
+  const [clientDetails, setClientDetails] = useState<any>(null);
   const [properties, setProperties] = useState([]);
   const [initialValues, setInitialValues] = useState({
     name: '',
@@ -110,13 +114,22 @@ const RequestAddForm: FC<IProps> = ({ id, actions, isJobRequestsLoading, current
   /**
    * Handles Client selection
    */
-  const handleClientSelection = async ({ label, value, meta }: any) => {
-    formik.setFieldValue(`client`, { label, value });
-    setClientDetails(meta);
+  const handleClientSelection = useCallback(
+    async ({ label, value, meta }: any) => {
+      formik.setFieldValue(`client`, { label, value });
+      setClientDetails(meta);
 
-    const response = await fetchUserProperties(value);
-    setProperties(response.data?.data?.data?.rows || []);
-  };
+      const response = await fetchUserProperties(value);
+      setProperties(response.data?.data?.data?.rows || []);
+    },
+    [formik]
+  );
+
+  useEffect(() => {
+    if (isClient && formik.values.client.value !== currentUser._id) {
+      handleClientSelection({ label: `${currentUser.firstName} ${currentUser.lastName}`, value: currentUser._id, meta: currentUser });
+    }
+  }, [isClient, currentUser, formik, handleClientSelection]);
 
   /**
    * Custom Error Message
@@ -191,6 +204,7 @@ const RequestAddForm: FC<IProps> = ({ id, actions, isJobRequestsLoading, current
               <SelectAsync
                 name={`quoteFor`}
                 label="Select Client"
+                isDisabled={isClient}
                 value={formik.values.client}
                 resource={{ name: 'users', labelProp: 'fullName', valueProp: '_id', params: { roles: 'CLIENT' } }}
                 onChange={handleClientSelection}
@@ -199,7 +213,7 @@ const RequestAddForm: FC<IProps> = ({ id, actions, isJobRequestsLoading, current
               {clientDetails ? (
                 <div className="row bg-grey m-0">
                   <div className="col p-2 ps-4">
-                    <div className="txt-orange">{(clientDetails as any)?.fullName}</div>
+                    <div className="txt-orange">{(clientDetails as any)?.fullName || `${clientDetails?.firstName} ${clientDetails?.lastName}`}</div>
                     <div className="txt-bold">
                       {(clientDetails as any)?.email} / {(clientDetails as any)?.phoneNumber}
                     </div>

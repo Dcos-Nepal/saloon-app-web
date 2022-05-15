@@ -155,7 +155,7 @@ const JobsList = (props: IProps) => {
                 </li>
               ) : null}
 
-              {currentUser.role === 'CLIENT' ? (
+              {currentUser.role === 'CLIENT' && row.isCompleted ? (
                 <li onClick={() => setProvideFeedbackFor(row)}>
                   <span className="dropdown-item pointer">
                     <NoteIcon /> Provide Feedback

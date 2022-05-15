@@ -539,7 +539,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
                         {i + 1}.{' '}
                         <a className="text-decoration-none" href={doc.url}>
                           {' '}
-                          <FileIcon /> Document {i + 1}
+                          <FileIcon /> Document/Image {i + 1}
                         </a>
                       </div>
                     ))}

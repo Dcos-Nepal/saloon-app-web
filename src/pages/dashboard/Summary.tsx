@@ -115,12 +115,12 @@ const Summary = () => {
     return visit.visitDate && new Date(visit.visitDate).getTime() > nowTime;
   });
 
-  const completeVisits = visitsSummary.filter((visit) => {
-    return visit.status && visit.status === 'COMPLETED';
+  const completeVisits = visitsSummary.filter((visit: any) => {
+    return visit.status && visit.status.status === 'COMPLETED';
   });
 
-  const activeVisits = visitsSummary.filter((visit) => {
-    return visit.status && visit.visitDate && new Date(visit.visitDate).getTime() < nowTime && visit.status !== 'COMPLETED';
+  const activeVisits = visitsSummary.filter((visit: any) => {
+    return visit.status && visit.visitDate && new Date(visit.visitDate).getTime() < nowTime && visit.status.status !== 'COMPLETED';
   });
 
   return (
@@ -134,7 +134,7 @@ const Summary = () => {
         </div>
         <Loader isLoading={isLoading} />
         <div className="card bg-white mt-4 p-4">
-          <b className="">Today’s appointments</b>
+          <b className="">Appointments Overview</b>
           <div className="row mt-4 mb-4">
             <div className="col row">
               <div className="col p-3-4 text-center dashboard-h1 rounded-radius bg-grey">{visitsSummary.length}</div>

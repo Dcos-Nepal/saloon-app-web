@@ -1,8 +1,9 @@
 export const getServices = () => {
   return [
-    { label: 'Window', value: 'Window', isActive: true },
-    { label: 'Garden', value: 'Garden', isActive: true },
-    { label: 'Kitchen', value: 'Kitchen', isActive: true },
-    { label: 'Other', value: 'Other', isActive: true }
+    { label: 'Regular Clean', value: 'regular-clean', isActive: true },
+    { label: 'Once off Clean', value: 'once-off-clean', isActive: true },
+    { label: 'Presell Clean', value: 'presell-clean', isActive: true },
+    { label: 'End of Lease Clean', value: 'end-of-lease-clean', isActive: true },
+    { label: 'Other', value: 'other', isActive: true }
   ]
 };

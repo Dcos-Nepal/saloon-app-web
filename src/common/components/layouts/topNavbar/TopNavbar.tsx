@@ -3,7 +3,6 @@ import { FC } from 'react';
 
 import logo from 'assets/images/LogoLong.svg';
 import { clearData, getData } from 'utils/storage';
-import avatar from 'assets/images/Avatar.svg';
 import { GearIcon, LockIcon, PersonIcon } from '@primer/octicons-react';
 import { useNavigate } from 'react-router-dom';
 import { endpoints } from 'common/config';

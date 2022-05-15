@@ -22,6 +22,7 @@ import Modal from 'common/components/atoms/Modal';
 import PropertyDetail from 'pages/clients/PropertyDetail';
 import * as propertiesActions from 'store/actions/properties.actions';
 import { deletePublicFile, uploadPublicFile } from 'services/files.service';
+import { getServices } from 'data';
 
 const Setting = ({
   actions,
@@ -72,13 +73,6 @@ const Setting = ({
     newPassword: '',
     confirmPassword: ''
   };
-
-  const tagOptions = [
-    { label: 'Window', value: 'Window' },
-    { label: 'Garden', value: 'Garden' },
-    { label: 'Kitchen', value: 'Kitchen' },
-    { label: 'Other', value: 'Other' }
-  ];
 
   const profileInitialValues = currentUser;
 
@@ -639,10 +633,10 @@ const Setting = ({
                         name="userData.services"
                         isMulti={true}
                         placeholder="Search available services..."
-                        value={tagOptions.filter((tagOption) =>
+                        options={getServices().filter((service) => service.isActive)}
+                        value={getServices().filter((tagOption) =>
                           profileFormik.values.userData?.services?.find((service: string) => service === tagOption.value)
                         )}
-                        options={tagOptions}
                         handleChange={(selectedTags: IOption[]) => {
                           profileFormik.setFieldValue(
                             'userData.services',

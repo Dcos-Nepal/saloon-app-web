@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router';
 
 import { getData } from 'utils/storage';
 import { endpoints } from 'common/config';
-import avatar from 'assets/images/Avatar.svg';
 import Footer from 'common/components/layouts/footer';
 import SideNavbar from 'common/components/layouts/sidebar';
 import { KeyIcon, PencilIcon, StopIcon } from '@primer/octicons-react';
@@ -334,7 +333,7 @@ const Profile: FC<IProps> = ({ actions, properties }) => {
                     </div>
                     <div className="row mt-2">
                       <div className="col p-2 ps-4">
-                        <div className="txt-grey">Services</div>
+                        <div className="txt-grey">Services Offered</div>
                         <div className="">
                           {currentUser?.userData?.services.length
                             ? currentUser?.userData?.services.map((service: string) => (

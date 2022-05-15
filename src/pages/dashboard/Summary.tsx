@@ -55,18 +55,20 @@ const Summary = () => {
   useEffect(() => {
     const jobQuery: { createdBy?: string; team?: string; jobFor?: string } = {};
     const visitQuery: { team?: string; visitFor?: string } = {};
-    const jobReqQuery: { CLIENT?: string } = {};
-    const quotesQuery: { quoteFor?: string } = {};
+    const jobReqQuery: { client?: string; createdBy?: string; } = {};
+    const quotesQuery: { quoteFor?: string; createdBy?: string; } = {};
 
     if (currUser.role === 'WORKER') {
       jobQuery.team = currUser.id;
       visitQuery.team = currUser.id;
+      jobReqQuery.createdBy = currUser.id;
+      quotesQuery.createdBy = currUser.id;
     }
 
     if (currUser.role === 'CLIENT') {
       jobQuery.jobFor = currUser.id;
       visitQuery.visitFor = currUser.id;
-      jobReqQuery.CLIENT = currUser.id;
+      jobReqQuery.client = currUser.id;
       quotesQuery.quoteFor = currUser.id;
     }
 

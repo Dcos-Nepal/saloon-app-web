@@ -17,7 +17,7 @@ interface IProps {
   currentRequest: IRequest;
 }
 
-const RequestDetail: FC<IProps> = ({ actions, currentRequest }) => {
+const RequestDetail: FC<IProps> = ({ actions, currentRequest, isRequestsLoading }) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const currentUser = getCurrentUser();
@@ -35,6 +35,7 @@ const RequestDetail: FC<IProps> = ({ actions, currentRequest }) => {
           </span>
           <span className="col">Back to previous</span>
         </div>
+        <Loader isLoading={isRequestsLoading} />
         {currentRequest ? (
           <div>
             <div className="d-flex flex-row row">

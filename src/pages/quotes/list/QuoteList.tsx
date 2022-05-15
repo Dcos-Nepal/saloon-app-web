@@ -67,9 +67,12 @@ const QuotesList = (props: any) => {
   };
 
   useEffect(() => {
-    const quoteQuery: { quoteFor?: string; } = {}
+    const quoteQuery: { quoteFor?: string; createdBy?: string;} = {}
 
     if (currentUser.role === 'CLIENT') quoteQuery.quoteFor = currentUser.id;
+    if (currentUser.role === 'WORKER') {
+      quoteQuery.createdBy = currentUser.id;
+    }
 
     props.actions.fetchQuotes({ q: query, ...quoteQuery, page: offset, limit: itemsPerPage });
   }, [offset, itemsPerPage, props.actions, query, currentUser.id, currentUser.role]);

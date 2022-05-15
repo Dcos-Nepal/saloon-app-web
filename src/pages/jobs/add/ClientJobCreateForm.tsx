@@ -22,6 +22,7 @@ import SelectField from 'common/components/form/Select';
 import { IOption } from 'common/types/form';
 import { getServices } from 'data';
 import { deletePublicFile, uploadPublicFile } from 'services/files.service';
+import { getCurrentUser } from 'utils';
 
 interface IProps {
   actions: {
@@ -39,6 +40,7 @@ const ClientJobCreateForm = ({ actions, isLoading }: IProps) => {
   const [isRecommendationsLoading, setIsRecommendationsLoading] = useState(false);
   const [rruleStr, setRruleStr] = useState(new RRule({ dtstart: new Date(), interval: 1, freq: Frequency.DAILY }).toString());
   const [activeTab, setActiveTab] = useState('ONE-OFF');
+  const currUser: { role: string; id: string } = getCurrentUser();
 
   /**
    * Get Translation for RRule
@@ -108,6 +110,9 @@ const ClientJobCreateForm = ({ actions, isLoading }: IProps) => {
       setProperties([]);
       setClientDetails(null);
       setRecommendedTeam([]);
+
+      // Navigate to the previous screen
+      navigate(-1);
     }
   });
 
@@ -268,38 +273,40 @@ const ClientJobCreateForm = ({ actions, isLoading }: IProps) => {
    * Handles Recommendation API call
    */
   useEffect(() => {
-    if (
-      formik.values.jobType &&
-      formik.values.jobFor &&
-      formik.values.property !== undefined &&
-      ((formik.values.oneOff?.startTime && formik.values.oneOff?.endTime) || formik.values.schedule?.startTime)
-    ) {
-      (async () => {
-        try {
-          setIsRecommendationsLoading(true);
-          const property = formik.values.property ? properties.find((property) => property._id === formik.values.property) : (clientDetails as any).address;
-          const {
-            data: { data: recommendationData }
-          } = await getWorkerRecommendations({
-            address: `${property?.city}, ${property?.state}, ${property?.country}`,
-            startTime: formik.values.oneOff?.startTime && formik.values.oneOff?.endTime ? formik.values.oneOff?.startTime : formik.values.schedule?.startTime,
-            endTime: formik.values.oneOff?.startTime && formik.values.oneOff?.endTime ? formik.values.oneOff?.endTime : formik.values.schedule?.endTime,
-            jobType: formik.values.jobType
-          });
-          const team = recommendationData?.data?.map((recommendation: IUser) => {
-            return {
-              label: recommendation.fullName,
-              value: recommendation._id
-            };
-          });
-          setRecommendedTeam(team);
-          setSelectedTeam(team);
-        } catch (ex) {
-          console.log(ex);
-        } finally {
-          setIsRecommendationsLoading(false);
-        }
-      })();
+    if (currUser.role === 'ADMIN') {
+      if (
+        formik.values.jobType &&
+        formik.values.jobFor &&
+        formik.values.property !== undefined &&
+        ((formik.values.oneOff?.startTime && formik.values.oneOff?.endTime) || formik.values.schedule?.startTime)
+      ) {
+        (async () => {
+          try {
+            setIsRecommendationsLoading(true);
+            const property = formik.values.property ? properties.find((property) => property._id === formik.values.property) : (clientDetails as any).address;
+            const {
+              data: { data: recommendationData }
+            } = await getWorkerRecommendations({
+              address: `${property?.city}, ${property?.state}, ${property?.country}`,
+              startTime: formik.values.oneOff?.startTime && formik.values.oneOff?.endTime ? formik.values.oneOff?.startTime : formik.values.schedule?.startTime,
+              endTime: formik.values.oneOff?.startTime && formik.values.oneOff?.endTime ? formik.values.oneOff?.endTime : formik.values.schedule?.endTime,
+              jobType: formik.values.jobType
+            });
+            const team = recommendationData?.data?.map((recommendation: IUser) => {
+              return {
+                label: recommendation.fullName,
+                value: recommendation._id
+              };
+            });
+            setRecommendedTeam(team);
+            setSelectedTeam(team);
+          } catch (ex) {
+            console.log(ex);
+          } finally {
+            setIsRecommendationsLoading(false);
+          }
+        })();
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
@@ -529,6 +536,7 @@ const ClientJobCreateForm = ({ actions, isLoading }: IProps) => {
                 />
               </div>
             ) : null}
+
             <div className="col card m-3">
               <div className="row mb-3">
                 <div className="col d-flex flex-row">
@@ -593,23 +601,44 @@ const ClientJobCreateForm = ({ actions, isLoading }: IProps) => {
                 </>
               ) : (
                 <div className="row">
-                  <SelectAsync
-                    isDisabled
-                    name={`team`}
-                    label="Select Workers"
-                    value={selectedTeam}
-                    resource={{ name: 'users/recommendation/', labelProp: 'fullName', valueProp: '_id', params: { roles: 'WORKER' } }}
-                    onChange={handleWorkerSelection}
-                    isMulti={true}
-                    closeOnSelect={true}
-                  />
+                  {(currUser.role === 'WORKER') ? (
+                    <>
+                      <SelectAsync
+                        name={`team`}
+                        label="Select Workers"
+                        value={selectedTeam}
+                        resource={{ name: 'users', labelProp: 'fullName', valueProp: '_id', params: { roles: 'WORKER' } }}
+                        onChange={handleWorkerSelection}
+                        isMulti={true}
+                        closeOnSelect={true}
+                      />
+                      <small className="text-warning">
+                        <InfoIcon size={14} /> Select the team member for this job.
+                      </small>
+                    </>
+                  ) : null}
+                  
+                  {(currUser.role !== 'WORKER') ? (
+                    <>
+                      <SelectAsync
+                        isDisabled
+                        name={`team`}
+                        label="Select Workers"
+                        value={selectedTeam}
+                        resource={{ name: 'users/recommendation/', labelProp: 'fullName', valueProp: '_id', params: { roles: 'WORKER' } }}
+                        onChange={handleWorkerSelection}
+                        isMulti={true}
+                        closeOnSelect={true}
+                      />
 
-                  <div className="row text-danger mt-1 mb-2">
-                    <div className="col-1" style={{ width: '20px' }}>
-                      <StopIcon size={14} />
-                    </div>
-                    <div className="col">Select client, property, service type and time to get worker recommendation</div>
-                  </div>
+                      <div className="row text-danger mt-1 mb-2">
+                        <div className="col-1" style={{ width: '20px' }}>
+                          <StopIcon size={14} />
+                        </div>
+                        <div className="col">Select client, property, service type and time to get worker recommendation</div>
+                      </div>
+                    </>
+                  ) : null}
                 </div>
               )}
             </div>

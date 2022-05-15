@@ -28,7 +28,7 @@ interface IProps {
   isClientsLoading: boolean;
 }
 
-const RequestAddForm: FC<IProps> = ({ id, actions, clients, isJobRequestsLoading, currentJobRequest }) => {
+const RequestAddForm: FC<IProps> = ({ id, actions, isJobRequestsLoading, currentJobRequest }) => {
   const navigate = useNavigate();
 
   const [clientDetails, setClientDetails] = useState(null);
@@ -101,6 +101,9 @@ const RequestAddForm: FC<IProps> = ({ id, actions, clients, isJobRequestsLoading
 
       // Reset the form
       formik.resetForm();
+
+      // Navigate to the previous screen
+      navigate(-1);
     }
   });
 
@@ -229,7 +232,7 @@ const RequestAddForm: FC<IProps> = ({ id, actions, clients, isJobRequestsLoading
                   </div>
                 </div>
               ) : null}
-              
+
               {properties.map((property: any) => {
                 return (
                   <div key={property._id} className="row mb-2 border-bottom">
@@ -256,10 +259,7 @@ const RequestAddForm: FC<IProps> = ({ id, actions, clients, isJobRequestsLoading
         </div>
 
         <div className="mb-3 mt-3">
-          <button
-            type="submit"
-            className="btn btn-primary"
-          >
+          <button type="submit" className="btn btn-primary">
             Save Request
           </button>
           <button onClick={() => navigate(-1)} type="button" className="btn ms-3">

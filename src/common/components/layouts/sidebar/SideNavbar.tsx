@@ -68,41 +68,45 @@ const SideNavbar: FC<IProps> = ({ active }) => {
           ) : null}
 
           {currUser.role === 'ADMIN' || currUser.role === 'CLIENT' ? (
-            <>
-              <li>
-                <span
-                  onClick={() => navigate('/dashboard/' + endpoints.admin.requests.list)}
-                  className={active === 'Requests' ? 'nav-link nav-link-active align-middle px-0' : 'nav-link align-middle px-0'}
-                >
-                  <span className="mt-2">
-                    <InboxIcon size={'small'} />
-                  </span>
-                  <span className="ms-2 d-none d-sm-inline">Requests</span>
+            <li>
+              <span
+                onClick={() => navigate('/dashboard/' + endpoints.admin.requests.list)}
+                className={active === 'Requests' ? 'nav-link nav-link-active align-middle px-0' : 'nav-link align-middle px-0'}
+              >
+                <span className="mt-2">
+                  <InboxIcon size={'small'} />
                 </span>
-              </li>
-              <li>
-                <span
-                  onClick={() => navigate('/dashboard/' + endpoints.admin.quotes.list)}
-                  className={active === 'Quotes' ? 'nav-link nav-link-active align-middle px-0' : 'nav-link align-middle px-0'}
-                >
-                  <span className="mt-2">
-                    <FileBadgeIcon size={'small'} />
-                  </span>
-                  <span className="ms-2 d-none d-sm-inline">Quotes</span>
+                <span className="ms-2 d-none d-sm-inline">Requests</span>
+              </span>
+            </li>
+          ) :  null}
+
+          {currUser.role === 'ADMIN' || currUser.role === 'WORKER' ? (
+            <li>
+              <span
+                onClick={() => navigate('/dashboard/' + endpoints.admin.quotes.list)}
+                className={active === 'Quotes' ? 'nav-link nav-link-active align-middle px-0' : 'nav-link align-middle px-0'}
+              >
+                <span className="mt-2">
+                  <FileBadgeIcon size={'small'} />
                 </span>
-              </li>
-              <li>
-                <span
-                  onClick={() => navigate('/dashboard/' + endpoints.admin.invoices.list)}
-                  className={active === 'Invoices' ? 'nav-link nav-link-active align-middle px-0' : 'nav-link align-middle px-0'}
-                >
-                  <span className="pt-2">
-                    <box-icon color={active === 'Invoices' ? '#f47321' : '#161C21'} size="15px" name="dollar-circle" />
-                  </span>
-                  <span className="ms-2 d-none d-sm-inline">Invoices</span>
+                <span className="ms-2 d-none d-sm-inline">Quotes</span>
+              </span>
+            </li>
+          ) : null}
+
+          {currUser.role === 'ADMIN' || currUser.role === 'WORKER' ? (
+            <li>
+              <span
+                onClick={() => navigate('/dashboard/' + endpoints.admin.invoices.list)}
+                className={active === 'Invoices' ? 'nav-link nav-link-active align-middle px-0' : 'nav-link align-middle px-0'}
+              >
+                <span className="pt-2">
+                  <box-icon color={active === 'Invoices' ? '#f47321' : '#161C21'} size="15px" name="dollar-circle" />
                 </span>
-              </li>
-            </>
+                <span className="ms-2 d-none d-sm-inline">Invoices</span>
+              </span>
+            </li>
           ) : null}
 
           <li>
@@ -118,30 +122,31 @@ const SideNavbar: FC<IProps> = ({ active }) => {
           </li>
 
           {currUser.role === 'ADMIN' ? (
-            <>
-              <li>
-                <span
-                  onClick={() => navigate('/dashboard/' + endpoints.admin.worker.list)}
-                  className={active === 'Workers' ? 'nav-link nav-link-active align-middle px-0' : 'nav-link align-middle px-0'}
-                >
-                  <span className="mt-2">
-                    <AccessibilityIcon size={'small'} />
-                  </span>
-                  <span className="ms-2 d-none d-sm-inline">Workers</span>
+            <li>
+              <span
+                onClick={() => navigate('/dashboard/' + endpoints.admin.worker.list)}
+                className={active === 'Workers' ? 'nav-link nav-link-active align-middle px-0' : 'nav-link align-middle px-0'}
+              >
+                <span className="mt-2">
+                  <AccessibilityIcon size={'small'} />
                 </span>
-              </li>
-              <li>
-                <span
-                  onClick={() => navigate('/dashboard/' + endpoints.admin.lineItems.list)}
-                  className={active === 'LineItems' ? 'nav-link nav-link-active align-middle px-0' : 'nav-link align-middle px-0'}
-                >
-                  <span className="mt-2">
-                    <LogIcon size={'small'} />
-                  </span>
-                  <span className="ms-2 d-none d-sm-inline">Line Items</span>
+                <span className="ms-2 d-none d-sm-inline">Workers</span>
+              </span>
+            </li>
+          ) : null}
+
+          {currUser.role === 'ADMIN' ? (
+            <li>
+              <span
+                onClick={() => navigate('/dashboard/' + endpoints.admin.lineItems.list)}
+                className={active === 'LineItems' ? 'nav-link nav-link-active align-middle px-0' : 'nav-link align-middle px-0'}
+              >
+                <span className="mt-2">
+                  <LogIcon size={'small'} />
                 </span>
-              </li>
-            </>
+                <span className="ms-2 d-none d-sm-inline">Line Items</span>
+              </span>
+            </li>
           ) : null}
 
           {!(currUser.role === 'ADMIN') ? (

@@ -1,11 +1,11 @@
-import * as actionType from "../constants";
+import * as actionType from '../constants';
 
 const initialState: any = {
-  clients: {data: {rows: [], totalCount: 0}},
+  clients: { data: { rows: [], totalCount: 0 } },
   currentUser: null,
   isFailed: false,
   isSuccess: false,
-  isLoading: false,
+  isLoading: false
 };
 
 const clientsReducer = (state = initialState, action: any) => {
@@ -38,7 +38,9 @@ const clientsReducer = (state = initialState, action: any) => {
       state.isLoading = false;
       state.isFailed = false;
       state.isSuccess = true;
-      return { ...state };
+      state.clients.data.rows = [action.payload, ...state.clients.data.rows];
+
+      return { ...state, clients: { ...state.clients } };
     }
 
     case actionType.ADD_CLIENT_ERROR: {
@@ -65,8 +67,8 @@ const clientsReducer = (state = initialState, action: any) => {
         }
         return client;
       });
-  
-      return { ...state, clients: {...state.clients}};
+
+      return { ...state, clients: { ...state.clients } };
     }
 
     case actionType.UPDATE_CLIENT_ERROR: {

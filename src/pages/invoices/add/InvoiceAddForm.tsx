@@ -72,7 +72,7 @@ const InvoiceAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => 
       value: Yup.string().required('Client is required for this invoice'),
       label: Yup.string()
     }),
-    property: Yup.string().notRequired(),
+    property: Yup.string().notRequired().nullable(),
     jobRequest: Yup.string().notRequired(),
     lineItems: Yup.array().of(
       Yup.object().shape({

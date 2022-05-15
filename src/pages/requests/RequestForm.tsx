@@ -14,6 +14,9 @@ import SelectAsync from 'common/components/form/AsyncSelect';
 import { fetchUserProperties } from 'services/common.service';
 import { StopIcon } from '@primer/octicons-react';
 import { getData } from 'utils/storage';
+import SelectField from 'common/components/form/Select';
+import { getServices } from 'data';
+import { IOption } from 'common/types/form';
 
 interface IProps {
   actions: {
@@ -82,7 +85,7 @@ const RequestAddForm: FC<IProps> = ({ id, actions, isJobRequestsLoading, current
       value: Yup.string().required('Client is required for this quote'),
       label: Yup.string()
     }),
-    property: Yup.string().notRequired(),
+    property: Yup.string().notRequired().nullable(),
     status: Yup.string()
   });
 
@@ -171,13 +174,22 @@ const RequestAddForm: FC<IProps> = ({ id, actions, isJobRequestsLoading, current
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
               />
-              <InputField
+              <SelectField
                 label="Job type"
-                placeholder="Enter job type"
                 name="type"
-                value={formik.values.type}
-                helperComponent={formik.errors.type && formik.touched.type ? <div className="txt-red">{formik.errors.type}</div> : null}
-                onChange={formik.handleChange}
+                placeholder="Select job type"
+                value={getServices().find((service) => service.value === formik.values.type)}
+                options={getServices().filter((service) => service.isActive)}
+                helperComponent={
+                  formik.errors.type && formik.touched.type ? (
+                    <div className="row text-danger mt-1 mb-2">
+                      <ErrorMessage name="type" />
+                    </div>
+                  ) : null
+                }
+                handleChange={(value: IOption) => {
+                  formik.setFieldValue('type', value.value);
+                }}
                 onBlur={formik.handleBlur}
               />
               <div className="mb-3">

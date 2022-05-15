@@ -108,6 +108,9 @@ const ClientJobCreateForm = ({ actions, isLoading }: IProps) => {
       setProperties([]);
       setClientDetails(null);
       setRecommendedTeam([]);
+
+      // Navigate to the previous screen
+      navigate(-1);
     }
   });
 

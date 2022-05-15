@@ -1,11 +1,11 @@
-import * as actionType from "../constants";
+import * as actionType from '../constants';
 
-const initialState = {
-  itemList: {data: {rows: [], totalCount: 0}},
+const initialState: any = {
+  itemList: { data: { rows: [], totalCount: 0 } },
   currentItem: null,
   isFailed: false,
   isSuccess: false,
-  isLoading: false,
+  isLoading: false
 };
 
 const quotesReducer = (state = initialState, action: any) => {
@@ -27,23 +27,26 @@ const quotesReducer = (state = initialState, action: any) => {
 
     case actionType.FETCH_QUOTES: {
       state.isLoading = true;
-      return {...state};
+      return { ...state };
     }
 
     case actionType.FETCH_QUOTE: {
       state.isLoading = true;
-      return {...state};
+      return { ...state };
     }
 
     case actionType.FETCH_QUOTE_SUCCESS: {
       state.isLoading = false;
       state.currentItem = action.payload;
-      return {...state};
+      return { ...state };
     }
 
     case actionType.ADD_QUOTE_SUCCESS: {
       state.isLoading = false;
-      return {...state};
+      state.currentItem = action.payload;
+      state.itemList.data.rows = [action.payload, ...state.itemList.data.rows];
+
+      return { ...state, itemList: { ...state.itemList } };
     }
 
     case actionType.UPDATE_QUOTE_SUCCESS: {
@@ -54,7 +57,7 @@ const quotesReducer = (state = initialState, action: any) => {
         }
         return item;
       });
-      return {...state};
+      return { ...state };
     }
 
     case actionType.UPDATE_QUOTE_STATUS_SUCCESS: {
@@ -65,32 +68,32 @@ const quotesReducer = (state = initialState, action: any) => {
         }
         return item;
       });
-      return {...state};
+      return { ...state };
     }
 
     case actionType.FETCH_QUOTES_SUCCESS: {
       state.isLoading = false;
       state.itemList = action.payload;
-      return {...state};
+      return { ...state };
     }
 
     case actionType.ADD_QUOTE_ERROR: {
       state.isLoading = false;
       state.isFailed = true;
-      return {...state};
+      return { ...state };
     }
-    
+
     case actionType.FETCH_QUOTES_ERROR: {
       state.isLoading = false;
       state.isFailed = true;
       state.itemList = action.payload;
-      return {...state};
+      return { ...state };
     }
 
     default: {
       return { ...state };
     }
   }
-}
+};
 
 export default quotesReducer;

@@ -116,6 +116,9 @@ const QuoteAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => {
         setProperties([]);
         setClientDetails(null);
       }
+
+      // Navigate to the previous screen
+      navigate(-1);
     }
   });
 
@@ -259,7 +262,7 @@ const QuoteAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => {
                   </div>
                 ) : null}
                 <div className="txt-bold mt-3 txt-grey">Client's Properties</div>
-                
+
                 {!properties.length ? (
                   <div className="txt-orange">
                     <StopIcon size={16} /> There are no properties assigned to the client.

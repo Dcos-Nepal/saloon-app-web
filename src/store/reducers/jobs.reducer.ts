@@ -1,7 +1,7 @@
 import * as actionType from '../constants';
 
 const initialState: any = {
-  jobs: {data: {rows: [], totalCount: 0}},
+  jobs: { data: { rows: [], totalCount: 0 } },
   job: null,
   isFailed: false,
   isSuccess: false,
@@ -49,7 +49,9 @@ const jobsReducer = (state = initialState, action: any) => {
       state.isLoading = false;
       state.isFailed = false;
       state.isSuccess = true;
-      return { ...state };
+      state.jobs.data.rows = [action.payload, ...state.jobs.data.rows];
+
+      return { ...state, jobs: { ...state.jobs } };
     }
 
     case actionType.ADD_JOB_ERROR: {
@@ -75,8 +77,8 @@ const jobsReducer = (state = initialState, action: any) => {
         }
         return job;
       });
-  
-      return { ...state, jobs: {...state.jobs}};
+
+      return { ...state, jobs: { ...state.jobs } };
     }
 
     case actionType.UPDATE_JOB_ERROR: {

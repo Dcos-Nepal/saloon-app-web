@@ -158,7 +158,7 @@ const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker }) => {
       // For creating worker
       else await actions.addWorker(data);
       // Redirect to previous page
-      // navigate(-1);
+      navigate(-1);
     }
   });
 

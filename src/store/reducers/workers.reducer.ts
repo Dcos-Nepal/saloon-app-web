@@ -38,7 +38,9 @@ const workersReducer = (state = initialState, action: any) => {
       state.isLoading = false;
       state.isFailed = false;
       state.isSuccess = true;
-      return { ...state };
+      state.workers.data.rows = [action.payload, ...state.workers.data.rows];
+
+      return { ...state, workers: { ...state.workers } };
     }
 
     case actionType.ADD_WORKER_ERROR: {
@@ -64,7 +66,7 @@ const workersReducer = (state = initialState, action: any) => {
         }
         return worker;
       });
-  
+
       return { ...state, workers: {...state.workers}};
     }
 

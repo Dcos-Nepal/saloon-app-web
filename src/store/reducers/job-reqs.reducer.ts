@@ -1,11 +1,11 @@
-import * as actionType from "../constants";
+import * as actionType from '../constants';
 
 const initialState: any = {
-  itemList: {data: {rows: [], totalCount: 0}},
+  itemList: { data: { rows: [], totalCount: 0 } },
   currentItem: null,
   isFailed: false,
   isSuccess: false,
-  isLoading: false,
+  isLoading: false
 };
 
 const jobRequestReducer = (state = initialState, action: any) => {
@@ -39,7 +39,9 @@ const jobRequestReducer = (state = initialState, action: any) => {
       state.isLoading = false;
       state.isFailed = false;
       state.isSuccess = true;
-      return { ...state };
+      state.itemList.data.rows = [action.payload, ...state.itemList.data.rows];
+
+      return { ...state, itemList: { ...state.itemList } };
     }
 
     case actionType.ADD_JOB_REQUEST_ERROR: {
@@ -66,8 +68,8 @@ const jobRequestReducer = (state = initialState, action: any) => {
         }
         return item;
       });
-  
-      return { ...state, itemList: {...state.itemList}};
+
+      return { ...state, itemList: { ...state.itemList } };
     }
 
     case actionType.UPDATE_JOB_REQUEST_ERROR: {

@@ -61,6 +61,9 @@ const EditJobForm = (props: IProps) => {
       delete updatePayload.jobFor;
       await props.actions.updateJob(id as string, updatePayload);
       props.jobUpdated();
+
+      // Navigate to the previous screen
+      navigate(-1);
     }
   });
 

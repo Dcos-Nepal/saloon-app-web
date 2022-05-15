@@ -83,7 +83,7 @@ const JobsList = (props: IProps) => {
           ...job,
           jobFor: job.jobFor.fullName,
           total: job.lineItems.reduce((total: number, val: any) => total + val.quantity * val.unitPrice, 0),
-          schedule: _.startCase(rrulestr(job.primaryVisit.rruleSet).toText())
+          schedule: job.primaryVisit.rruleSet ? _.startCase(rrulestr(job.primaryVisit.rruleSet).toText()) : ''
         }))
       );
       setPageCount(Math.ceil(props.jobs.data.totalCount / itemsPerPage));

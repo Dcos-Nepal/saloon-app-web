@@ -23,6 +23,7 @@ import PropertyDetail from 'pages/clients/PropertyDetail';
 import * as propertiesActions from 'store/actions/properties.actions';
 import { deletePublicFile, uploadPublicFile } from 'services/files.service';
 import { getServices } from 'data';
+import { usePlacesWidget } from 'react-google-autocomplete';
 
 const Setting = ({
   actions,
@@ -75,6 +76,49 @@ const Setting = ({
   };
 
   const profileInitialValues = currentUser;
+
+  const { ref }: any = usePlacesWidget({
+    apiKey: process.env.REACT_APP_MAP_KEY,
+    onPlaceSelected: (place) => {
+      let street = '';
+      let city = '';
+      let state = '';
+      let postalCode = '';
+      let country = '';
+
+      place.address_components.forEach((component: any) => {
+        if (component.types.includes('locality')) {
+          street = component.long_name;
+        }
+      
+        if (component.types.includes('administrative_area_level_2')) {
+          city = component.long_name;
+        }
+      
+        if (component.types.includes('administrative_area_level_1')) {
+          state = component.short_name;
+        }
+      
+        if (component.types.includes('postal_code')) {
+          postalCode = component.long_name;
+        }
+      
+        if (component.types.includes('country')) {
+          country = component.short_name;
+        }
+      });
+
+      profileFormik.setFieldValue('address.street1', street);
+      profileFormik.setFieldValue('address.city', city);
+      profileFormik.setFieldValue('address.state', state);
+      profileFormik.setFieldValue('address.postalCode', postalCode);
+      profileFormik.setFieldValue('address.country', country);
+    },
+    options: {
+      types: ["(regions)"],
+      componentRestrictions: { country: "AUS" },
+    },
+  });
 
   /**
    * Save Property
@@ -435,7 +479,11 @@ const Setting = ({
                     value={profileFormik.values.phoneNumber}
                   />
                   <div className="mb-2">
-                    <label className="txt-bold mt-2">Address</label>
+                    <label className="txt-bold mt-2 mb-2">Address Section</label>
+                    <div className="mb-3">
+                      <input ref={ref} className="form-control" placeholder="Type here to search address" />
+                    </div>
+
                     <InputField
                       label="Street 1"
                       placeholder="Enter street 1"

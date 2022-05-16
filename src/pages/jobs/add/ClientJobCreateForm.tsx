@@ -1,4 +1,4 @@
-import { Fragment, useState } from 'react';
+import { Fragment, useCallback, useState } from 'react';
 import { connect } from 'react-redux';
 import RRule, { Frequency } from 'rrule';
 import { DateTime } from 'luxon';
@@ -22,7 +22,8 @@ import SelectField from 'common/components/form/Select';
 import { IOption } from 'common/types/form';
 import { getServices } from 'data';
 import { deletePublicFile, uploadPublicFile } from 'services/files.service';
-import { getCurrentUser } from 'utils';
+import { getCurrentUser, getPropertyAddress } from 'utils';
+import { getData } from 'utils/storage';
 
 interface IProps {
   actions: {
@@ -41,6 +42,9 @@ const ClientJobCreateForm = ({ actions, isLoading }: IProps) => {
   const [rruleStr, setRruleStr] = useState(new RRule({ dtstart: new Date(), interval: 1, freq: Frequency.DAILY }).toString());
   const [activeTab, setActiveTab] = useState('ONE-OFF');
   const currUser: { role: string; id: string } = getCurrentUser();
+
+  const currentUser = getData('user');
+  const isWorker = currentUser?.userData?.type === 'WORKER';
 
   /**
    * Get Translation for RRule
@@ -140,13 +144,13 @@ const ClientJobCreateForm = ({ actions, isLoading }: IProps) => {
   /**
    * Handles Assignees selection
    */
-  const handleWorkerSelection = (selected: any[]) => {
+  const handleWorkerSelection = useCallback((selected: any[]) => {
     setSelectedTeam(selected);
     formik.setFieldValue(
       `team`,
       selected.map((worker) => worker.meta._id)
     );
-  };
+  }, []);
 
   /**
    * Handles RRule
@@ -320,6 +324,14 @@ const ClientJobCreateForm = ({ actions, isLoading }: IProps) => {
     formik.values.schedule?.startTime
   ]);
 
+  useEffect(() => {
+    if (isWorker) {
+      handleWorkerSelection([{ label: `${currentUser.firstName} ${currentUser.lastName}`, value: currentUser._id, meta: currentUser }]);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isWorker, handleWorkerSelection]);
+
+
   return (
     <form onSubmit={formik.handleSubmit} style={{ position: 'relative' }}>
       <Loader isLoading={isLoading} />
@@ -380,7 +392,7 @@ const ClientJobCreateForm = ({ actions, isLoading }: IProps) => {
               <SelectAsync
                 name={`jobFor`}
                 label="Select Client"
-                resource={{ name: 'users', labelProp: 'fullName', valueProp: '_id', params: { roles: 'CLIENT' } }}
+                resource={{ name: 'users', labelProp: 'fullName', valueProp: '_id', params: isWorker ? { roles: 'CLIENT', createdBy: currentUser._id } : { roles: 'CLIENT'} }}
                 onChange={handleClientSelection}
               />
               {formik.errors.jobFor && formik.touched.jobFor && <div className="txt-red">{formik.errors.jobFor}</div>}
@@ -409,7 +421,7 @@ const ClientJobCreateForm = ({ actions, isLoading }: IProps) => {
                     <div className="txt-grey">Clients Primary Address</div>
                     <div className="">
                       {(clientDetails as any)?.address
-                        ? `${(clientDetails as any)?.address?.street1}, ${(clientDetails as any)?.address?.city}, ${(clientDetails as any)?.address?.country}`
+                        ? getPropertyAddress((clientDetails as any)?.address)
                         : 'No primary address added.'}
                     </div>
                   </div>
@@ -429,7 +441,7 @@ const ClientJobCreateForm = ({ actions, isLoading }: IProps) => {
                   <div className="col p-2 ps-4">
                     <div className="txt-grey">{property.name}</div>
                     <div className="">
-                      {property?.street1}, {property?.postalCode}, {property?.city}, {property?.state}, {property?.country}
+                      {getPropertyAddress(property)}
                     </div>
                   </div>
                 </div>
@@ -609,11 +621,12 @@ const ClientJobCreateForm = ({ actions, isLoading }: IProps) => {
                         value={selectedTeam}
                         resource={{ name: 'users', labelProp: 'fullName', valueProp: '_id', params: { roles: 'WORKER' } }}
                         onChange={handleWorkerSelection}
-                        isMulti={true}
+                        isMulti={false}
+                        isDisabled={isWorker}
                         closeOnSelect={true}
                       />
                       <small className="text-warning">
-                        <InfoIcon size={14} /> Select the team member for this job.
+                        <InfoIcon size={14} /> {isWorker ? "You are assigned as worker by default for this job" : ''} 
                       </small>
                     </>
                   ) : null}

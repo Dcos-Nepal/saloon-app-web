@@ -18,6 +18,8 @@ import { getServices } from 'data';
 import { IOption } from 'common/types/form';
 import { deletePublicFile, uploadPublicFile } from 'services/files.service';
 import { Loader } from 'common/components/atoms/Loader';
+import { getData } from 'utils/storage';
+import { getPropertyAddress } from 'utils';
 
 interface IProps {
   isLoading: boolean;
@@ -31,6 +33,9 @@ const EditJobForm = (props: IProps) => {
   const navigate = useNavigate();
   const [clientDetails, setClientDetails] = useState(null);
   const [properties, setProperties] = useState([]);
+
+  const currentUser = getData('user');
+  const isWorker = currentUser?.userData?.type === 'WORKER';
 
   /**
    * Get Translation for RRule
@@ -247,7 +252,7 @@ const EditJobForm = (props: IProps) => {
                   name={`jobFor`}
                   label="Select Client"
                   value={formik.values.jobFor}
-                  resource={{ name: 'users', labelProp: 'fullName', valueProp: '_id', params: { roles: 'CLIENT' } }}
+                  resource={{ name: 'users', labelProp: 'fullName', valueProp: '_id', params: isWorker ? { roles: 'CLIENT', createdBy: currentUser._id } : { roles: 'CLIENT'} }}
                   onChange={handleClientSelection}
                 />
                 <ErrorMessage name={`jobFor.value`} />
@@ -259,7 +264,7 @@ const EditJobForm = (props: IProps) => {
                         {(clientDetails as any)?.email} / {(clientDetails as any)?.phoneNumber}
                       </div>
                       <div className="txt-grey">
-                        {(clientDetails as any)?.address?.street1}, {(clientDetails as any)?.address?.city}, {(clientDetails as any)?.address?.country}
+                        {getPropertyAddress((clientDetails as any)?.address)}
                       </div>
                     </div>
                   </div>
@@ -279,7 +284,7 @@ const EditJobForm = (props: IProps) => {
                       <div className="txt-grey">Clients Primary Address</div>
                       <div className="">
                         {(clientDetails as any)?.address
-                          ? `${(clientDetails as any)?.address?.street1}, ${(clientDetails as any)?.address?.city}, ${(clientDetails as any)?.address?.country}`
+                          ? getPropertyAddress((clientDetails as any)?.address)
                           : 'No primary address added.'}
                       </div>
                     </div>
@@ -300,7 +305,7 @@ const EditJobForm = (props: IProps) => {
                       <div className="col p-2 ps-4">
                         <div className="txt-grey">{property.name}</div>
                         <div className="">
-                          {property?.street1}, {property?.postalCode}, {property?.city}, {property?.state}, {property?.country}
+                          {getPropertyAddress(property)}
                         </div>
                       </div>
                     </div>
@@ -407,6 +412,7 @@ const EditJobForm = (props: IProps) => {
                   onChange={handleWorkerSelection}
                   isMulti={true}
                   closeOnSelect={true}
+                  isDisabled={isWorker}
                 />
                 <div className="row text-danger mt-1 mb-2">{/* <ErrorMessage name={`team`} /> */}</div>
               </div>

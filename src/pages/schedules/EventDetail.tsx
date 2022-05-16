@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ChecklistIcon, PersonIcon, StopIcon } from '@primer/octicons-react';
 import { Loader } from 'common/components/atoms/Loader';
 import { getJobPropertyAddress } from 'utils';
+import { DateTime } from 'luxon';
 
 interface IProps {
   event: any;
@@ -23,6 +24,18 @@ const ScheduleEventDetail: FC<IProps> = ({ closeModal, markVisitCompleteHandler,
     await markVisitCompleteHandler(true, visitObj);
     setIsLoading(false);
   };
+
+  /**
+   * Gets Event Date diff
+   */
+  const getDateDiff = () => {
+    const date1 = DateTime.fromJSDate(event.end)
+    const date2 = DateTime.fromJSDate(event.start)
+
+    const diff = date1.diff(date2, ["years", "months", "days", "hours"])
+
+    console.log(diff.toObject())
+  }
 
   return (
     <div className={`modal fade show mt-5`} role="dialog" style={{ display: 'block' }}>

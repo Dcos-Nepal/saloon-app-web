@@ -2,12 +2,11 @@ export const DAYS_OF_WEEK = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursd
 
 export const DEFAULT_COUNTRY = {
   label: 'Australia',
-  value: 'AUS'
+  value: 'AU'
 };
 
 export const COUNTRIES_OPTIONS = [
   DEFAULT_COUNTRY
-  // TODO: Add other countries here when need support
 ];
 
 export const STATES_OPTIONS = [
@@ -35,4 +34,15 @@ export const STATES_OPTIONS = [
     label: 'Western Australia',
     value: 'WA'
   }
+];
+
+export const PREFERRED_TIME_OPTIONS = [
+  {
+    label: 'Flexible',
+    value: 'flexible'
+  },
+  {
+    label: 'Exact time',
+    value: 'exact-time'
+  },
 ];

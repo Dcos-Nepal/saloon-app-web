@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import ClientDetailForm from "../ClientDetailForm";
+import ClientForm from "../ClientForm";
 
 const ClientAdd = () => {
   const navigate = useNavigate();
@@ -17,7 +17,7 @@ const ClientAdd = () => {
           <h3 className="extra">New Client</h3>
         </div>
       </div>
-      <ClientDetailForm />
+      <ClientForm />
     </>
   );
 };

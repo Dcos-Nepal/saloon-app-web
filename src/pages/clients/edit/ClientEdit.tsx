@@ -1,7 +1,7 @@
 import { FC } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-import ClientDetailForm from "../ClientDetailForm";
+import ClientForm from "../ClientForm";
 
 interface IProps {}
 
@@ -22,7 +22,7 @@ const ClientEdit: FC<IProps> = () => {
           <h3 className="extra">Edit Client's Details</h3>
         </div>
       </div>
-      <ClientDetailForm id={id} />
+      <ClientForm id={id} />
     </>
   );
 };

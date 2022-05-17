@@ -8,6 +8,7 @@ import InputField from 'common/components/form/Input';
 import SelectField from 'common/components/form/Select';
 import { IOption } from 'common/types/form';
 import { Loader } from 'common/components/atoms/Loader';
+import { getServices } from 'data';
 
 const LineItemForm = ({ closeModal, lineItem, saveHandler }: { lineItem?: any; closeModal: () => void; saveHandler: (data: any) => any }) => {
   const initialValues = lineItem
@@ -61,13 +62,6 @@ const LineItemForm = ({ closeModal, lineItem, saveHandler }: { lineItem?: any; c
     ) : null;
   };
 
-  const tagOptions = [
-    { label: 'Window', value: 'Window' },
-    { label: 'Garden', value: 'Garden' },
-    { label: 'Kitchen', value: 'Kitchen' },
-    { label: 'Other', value: 'Other' }
-  ];
-
   return (
     <form noValidate onSubmit={formik.handleSubmit}>
       <div className="modal-body">
@@ -95,11 +89,11 @@ const LineItemForm = ({ closeModal, lineItem, saveHandler }: { lineItem?: any; c
         />
 
         <SelectField
-          label="Tags"
+          label="Tags/Services"
           name="tags"
           isMulti={true}
-          value={tagOptions.filter((tagOption) => formik.values.tags?.find((tag: string) => tag === tagOption.value))}
-          options={tagOptions}
+          value={getServices().find((service) => formik.values.tags?.find((tag: string) => tag === service.value))}
+          options={getServices().filter((service) => service.isActive)}
           helperComponent={<ErrorMessage name="tags" />}
           handleChange={(selectedTags: IOption[]) => {
             formik.setFieldValue(

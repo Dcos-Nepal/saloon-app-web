@@ -25,6 +25,10 @@ export const getCurrentUser = () => {
   return { role: '', id: '' };
 }
 
+export const isDateBefore =(date1: Date | string, date2: Date | string) => {
+  return new Date(date1) < new Date(date2);
+}
+
 export const getHashValues = (hash: any) => {
   // Needs modern browser
   return Object.values(hash);
@@ -63,12 +67,12 @@ export const getTodayStr = () => {
 
 /**
  * Get Property Address
- * @param job 
- * @returns 
+ * @param job
+ * @returns
  */
  export const getPropertyAddress = (property: any) => {
   const addressStack = [];
-  
+
   if (property?.street1) addressStack.push(property?.street1);
   if (property?.street2) addressStack.push(property?.street2);
   if (property?.city) addressStack.push(property?.city);
@@ -80,8 +84,8 @@ export const getTodayStr = () => {
 
 /**
  * Get Job's Property
- * @param job 
- * @returns 
+ * @param job
+ * @returns
  */
 export const getJobPropertyAddress = (job: any) => {
   let property = (job?.property) ? job?.property : job?.jobFor?.address;

@@ -34,8 +34,7 @@ function* fetchQuotes(action: any): any {
     try {
         const response = yield call(fetchQuotesApi, action.payload);
         if (response.data?.data.success) {
-            yield put({ type: actionType.FETCH_QUOTES_SUCCESS, payload: response.data.data });
-            return toast.success(getMessage(response.data.message))
+            return yield put({ type: actionType.FETCH_QUOTES_SUCCESS, payload: response.data.data });
         }
 
         yield put({ type: actionType.FETCH_QUOTES_ERROR, payload: response.data });

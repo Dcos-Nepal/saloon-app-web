@@ -18,9 +18,9 @@ export interface IClient {
     company?: string;
     referredBy?: string;
     preferredTime?: string;
+    isCompanyNamePrimary?: boolean;
   },
   roles: string[];
   password?: string;
   avatar?: string;
-  isCompanyNamePrimary?: boolean
 }

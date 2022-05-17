@@ -23,11 +23,10 @@ function* fetchJobRequests(action: any): any {
   try {
     const response = yield call(fetchJobRequestsApi, action.payload);
     if (response.data?.data.success) {
-      yield put({
+      return yield put({
         type: actionType.FETCH_JOB_REQUESTS_SUCCESS,
         payload: response.data.data,
       });
-      return toast.success(getMessage(response.data.message));
     }
 
     yield put({
@@ -85,12 +84,10 @@ function* fetchJobRequest(action: any): any {
   try {
     const { data: newRequest } = yield call(fetchJobRequestApi, action.payload);
     if (newRequest?.data?.success) {
-      yield put({
+      return yield put({
         type: actionType.FETCH_JOB_REQUEST_SUCCESS,
         payload: newRequest?.data?.data,
       });
-
-      return toast.success(getMessage(newRequest?.data?.message));
     }
     yield put({
       type: actionType.FETCH_JOB_REQUEST_ERROR,

@@ -18,11 +18,10 @@ function* fetchWorkers(action: any): any {
   try {
     const response = yield call(fetchUsersApi, action.payload);
     if (response.data?.data.success) {
-      yield put({
+      return yield put({
         type: actionType.FETCH_WORKERS_SUCCESS,
         payload: response.data.data,
       });
-      return toast.success(getMessage(response.data.message));
     }
 
     yield put({ type: actionType.FETCH_WORKERS_ERROR, payload: response.data });
@@ -68,12 +67,10 @@ function* fetchWorker(action: any): any {
   try {
     const { data: newWorker } = yield call(fetchUserApi, action.payload);
     if (newWorker?.data?.success) {
-      yield put({
+      return yield put({
         type: actionType.FETCH_WORKER_SUCCESS,
         payload: newWorker?.data?.data,
       });
-
-      return toast.success(getMessage(newWorker?.data?.message));
     }
     yield put({
       type: actionType.FETCH_WORKER_ERROR,

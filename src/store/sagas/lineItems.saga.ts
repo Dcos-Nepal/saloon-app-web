@@ -18,11 +18,10 @@ function* fetchLineItems(action: any): any {
   try {
     const response = yield call(fetchLineItemsApi, action.payload);
     if (response.data?.data.success) {
-      yield put({
+      return yield put({
         type: actionType.FETCH_LINE_ITEMS_SUCCESS,
         payload: response.data.data
       });
-      return toast.success(getMessage(response.data.message));
     }
 
     yield put({ type: actionType.FETCH_LINE_ITEMS_ERROR, payload: response.data });
@@ -68,13 +67,12 @@ function* fetchLineItem(action: any): any {
   try {
     const { data: newLineItem } = yield call(fetchLineItemApi, action.payload);
     if (newLineItem?.data?.success) {
-      yield put({
+      return yield put({
         type: actionType.FETCH_LINE_ITEM_SUCCESS,
         payload: newLineItem?.data?.data
       });
-
-      return toast.success(getMessage(newLineItem?.data?.message));
     }
+
     yield put({
       type: actionType.FETCH_LINE_ITEM_ERROR,
       payload: newLineItem.data

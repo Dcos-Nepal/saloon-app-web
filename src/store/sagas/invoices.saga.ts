@@ -92,12 +92,10 @@ function* fetchInvoice(action: any): any {
                 payload: invoiceRequest.data,
             });
         }
-        yield put({
+        return yield put({
             type: actionType.FETCH_INVOICE_ERROR,
             payload: invoiceRequest.data,
         });
-
-        return toast.error(getMessage(invoiceRequest.data?.message));
     } catch (err: any) {
         if (err.exception) toast.error(err.exception.message);
         yield put({ type: actionType.FETCH_INVOICE_ERROR, payload: err });

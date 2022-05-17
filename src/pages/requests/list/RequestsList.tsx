@@ -39,6 +39,9 @@ const RequestsList = (props: any) => {
   const [requests, setRequests] = useState<IRequest[]>([]);
   const [deleteInProgress, setDeleteInProgress] = useState('');
 
+  /**
+   * Delete Job Request Handler
+   */
   const deleteJobRequestHandler = async () => {
     try {
       if (deleteInProgress) {
@@ -52,6 +55,19 @@ const RequestsList = (props: any) => {
       toast.error('Failed to delete job request');
     }
   };
+
+  const handleJobRequestSearch = (event: any) => {
+    const query = event.target.value;
+    setQuery(query);
+  };
+
+  const handlePageClick = (event: any) => {
+    const selectedPage = event.selected;
+    setOffset(selectedPage + 1);
+  };
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const handleSearch = useCallback(debounce(handleJobRequestSearch, 300), []);
 
   useEffect(() => {
     const reqQuery: { client?: string; } = {}
@@ -76,19 +92,6 @@ const RequestsList = (props: any) => {
       setPageCount(Math.ceil(props.itemList.data.totalCount / itemsPerPage));
     }
   }, [itemsPerPage, props.itemList]);
-
-  const handleJobRequestSearch = (event: any) => {
-    const query = event.target.value;
-    setQuery(query);
-  };
-
-  const handlePageClick = (event: any) => {
-    const selectedPage = event.selected;
-    setOffset(selectedPage + 1);
-  };
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const handleSearch = useCallback(debounce(handleJobRequestSearch, 300), []);
 
   const columns: Column<IRequest>[] = useMemo(
     () => [

@@ -60,10 +60,11 @@ const ClientForm: FC<IProps> = ({ id, actions, currentClient, properties }) => {
     userData: {
       type: 'CLIENT',
       company: '',
-      preferredTime: ''
+      preferredTime: '',
+      isCompanyNamePrimary: false
     },
     avatar: '',
-    isCompanyNamePrimary: false
+    
   });
 
   const { ref }: any = usePlacesWidget({
@@ -147,26 +148,26 @@ const ClientForm: FC<IProps> = ({ id, actions, currentClient, properties }) => {
     userData: Yup.object().shape({
       type: Yup.string(),
       preferredTime: Yup.string().notRequired(),
-      companyName: Yup.string()
+      companyName: Yup.string(),
+      isCompanyNamePrimary: Yup.boolean().notRequired()
     }),
-    isCompanyNamePrimary: Yup.boolean().notRequired()
   });
 
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: initialValues,
     validationSchema: ClientSchema,
-    onSubmit: async (data: any) => {
+    onSubmit: (data: any) => {
       // Set default password as phone number
       data.password = data.phoneNumber;
 
       // Update client
-      if (id) await actions.updateClient(data);
+      if (id) actions.updateClient(data);
       // Add new client
-      else await actions.addClient(data);
+      else actions.addClient(data);
 
-      // Navigate to the previous screen
-      navigate(-1);
+      // Redirect to previous page
+      setTimeout(() => navigate(-1), 600);
     }
   });
 
@@ -268,7 +269,7 @@ const ClientForm: FC<IProps> = ({ id, actions, currentClient, properties }) => {
                 onBlur={formik.handleBlur}
               />
               <div className="mb-3">
-                <input className="form-check-input" type="checkbox" value={formik.values?.userData?.company || ''}id="flexCheckDefault" name="isCompanyNamePrimary" onChange={formik.handleChange}/>
+                <input className="form-check-input" type="checkbox" checked={formik.values?.userData?.isCompanyNamePrimary} id="flexCheckDefault" name="userData.isCompanyNamePrimary" onChange={formik.handleChange}/>
                 <label className="ms-2 form-check-label" htmlFor="flexCheckDefault">
                   Use company name as the primary name
                 </label>
@@ -390,33 +391,18 @@ const ClientForm: FC<IProps> = ({ id, actions, currentClient, properties }) => {
           </div>
           <div className="mb-3 mt-2 m-1">
             <button
-              type="button"
-              onClick={async () => {
-                await formik.handleSubmit();
-                navigate(-1);
-              }}
+              type="submit"
               className="btn btn-primary"
             >
-              Save client
+              {(id ? "Update" : "Save")} Client Info
             </button>
-            {id ? null : (
-              <button
-                type="button"
-                onClick={async () => {
-                  await formik.handleSubmit();
-                  window.location.reload();
-                }}
-                className="btn btn-secondary ms-3"
-              >
-                Save and create another
-              </button>
-            )}
             <button onClick={() => navigate(-1)} type="button" className="btn ms-3">
               Cancel
             </button>
           </div>
         </form>
       </div>
+
       {currentClient && currentClient._id && id ? (
         <div className="col pt-3">
           <div className="row">

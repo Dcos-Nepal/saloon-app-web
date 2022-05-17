@@ -31,11 +31,10 @@ function* fetchJobs(action: any): any {
   try {
     const response = yield call(fetchJobsApi, action.payload);
     if (response.data?.data.success) {
-      yield put({
+      return yield put({
         type: actionType.FETCH_JOBS_SUCCESS,
         payload: response.data.data
       });
-      return toast.success(getMessage(response.data.message));
     }
 
     yield put({ type: actionType.FETCH_JOBS_ERROR, payload: response.data });

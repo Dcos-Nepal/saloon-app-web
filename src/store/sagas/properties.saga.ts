@@ -18,11 +18,10 @@ function* fetchProperties(action: any): any {
   try {
     const response = yield call(fetchPropertiesApi, action.payload);
     if (response.data?.data.success) {
-      yield put({
+      return yield put({
         type: actionType.FETCH_PROPERTIES_SUCCESS,
         payload: response.data.data?.data?.rows
       });
-      return toast.success(getMessage(response.data.message));
     }
 
     yield put({ type: actionType.FETCH_PROPERTIES_ERROR, payload: response.data });
@@ -68,12 +67,10 @@ function* fetchProperty(action: any): any {
   try {
     const { data: newProperty } = yield call(fetchPropertyApi, action.payload);
     if (newProperty?.data?.success) {
-      yield put({
+      return yield put({
         type: actionType.FETCH_PROPERTY_SUCCESS,
         payload: newProperty?.data?.data
       });
-
-      return toast.success(getMessage(newProperty?.data?.message));
     }
     yield put({
       type: actionType.FETCH_PROPERTY_ERROR,

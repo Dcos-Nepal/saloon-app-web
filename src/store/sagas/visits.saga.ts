@@ -30,11 +30,10 @@ function* fetchVisits(action: any): any {
   try {
     const response = yield call(fetchVisitsApi, action.payload);
     if (response.data?.data.success) {
-      yield put({
+      return yield put({
         type: actionType.FETCH_VISITS_SUCCESS,
         payload: response.data.data
       });
-      return toast.success(getMessage(response.data.message));
     }
 
     yield put({ type: actionType.FETCH_VISITS_ERROR, payload: response.data });

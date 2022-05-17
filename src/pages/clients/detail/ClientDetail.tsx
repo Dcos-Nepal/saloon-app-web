@@ -12,6 +12,7 @@ import * as clientsActions from 'store/actions/clients.actions';
 import * as invoicesActions from 'store/actions/invoices.actions';
 import * as jobReqActions from 'store/actions/job-requests.actions';
 import * as propertiesActions from 'store/actions/properties.actions';
+import { PencilIcon } from '@primer/octicons-react';
 
 interface IRequest {
   id: string;
@@ -284,12 +285,57 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient, quotes, properties, 
               <h3 className="txt-bold extra">{currentClient.fullName || `${currentClient.firstName} ${currentClient.lastName}`}</h3>
               <div className="col">
                 <button onClick={() => id && navigate(`edit`)} type="button" className="btn btn-primary d-flex float-end me-2">
-                  Edit Client
+                  <PencilIcon className='mt-1' /> &nbsp; Edit Client
                 </button>
               </div>
             </div>
             <div className="row m-1">
               <div className="col card">
+                <div className="row">
+                  <div className="col d-flex flex-row">
+                    <h5 className="txt-bold">Contact info</h5>
+                  </div>
+                </div>
+                <div className="row mt-2">
+                  {currentClient.userData.isCompanyNamePrimary ? (
+                    <div className="col p-2 ps-4">
+                      <div className="txt-grey">Company Name</div>
+                      <div className="">{currentClient.userData?.company || "-"}</div>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="col p-2 ps-4">
+                        <div className="txt-grey">First Name</div>
+                        <div className="">{currentClient.firstName}</div>
+                      </div>
+                      <div className="col p-2 ps-4">
+                        <div className="txt-grey">Last Name</div>
+                        <div className="">{currentClient.lastName}</div>
+                      </div>
+                    </>
+                  )}
+                  
+                </div>
+                <div className="row mt-2">
+                  <div className="col p-2 ps-4">
+                    <div className="txt-grey">Email</div>
+                    <div className="">{currentClient.email}</div>
+                  </div>
+                  <div className="col p-2 ps-4">
+                    <div className="txt-grey">Phone</div>
+                    <div className="">{currentClient.phoneNumber}</div>
+                  </div>
+                </div>
+                <div className="row mt-2">
+                  <div className="col p-2 ps-4">
+                    <div className="txt-grey">Client's Address</div>
+                    <div className="">
+                      {getPropertyAddress(currentClient.address)}
+                      </div>
+                  </div>
+                </div>
+              </div>
+              <div className="col card ms-3">
                 <div className="row">
                   <div className="col d-flex flex-row">
                     <h5 className="txt-bold">Properties</h5>
@@ -312,9 +358,14 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient, quotes, properties, 
                     </div>
                   ))
                 ) : (
-                  <div className="row mt-4">
+                  <div className="row d-flex mt-4 align-items-center">
+                    <div className="col-2 mt-2">
+                      <button className="btn btn-secondary d-flex float-end">
+                        <box-icon name="map" color="#EC7100" />
+                      </button>
+                    </div>
                     <div className="col p-2 ps-4">
-                      <div className="txt-grey">No property address</div>
+                      <div className="txt-grey">No additional properties added.</div>
                     </div>
                   </div>
                 )}
@@ -322,41 +373,6 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient, quotes, properties, 
                   <div className="col p-2 ps-4">
                     <div className="txt-grey"></div>
                     <div className="">Tax rate GST (10%) Default</div>
-                  </div>
-                </div>
-              </div>
-              <div className="col card ms-3">
-                <div className="row">
-                  <div className="col d-flex flex-row">
-                    <h5 className="txt-bold">Contact info</h5>
-                  </div>
-                </div>
-                <div className="row mt-2">
-                  <div className="col p-2 ps-4">
-                    <div className="txt-grey">First Name</div>
-                    <div className="">{currentClient.firstName}</div>
-                  </div>
-                  <div className="col p-2 ps-4">
-                    <div className="txt-grey">Last Name</div>
-                    <div className="">{currentClient.lastName}</div>
-                  </div>
-                </div>
-                <div className="row mt-2">
-                  <div className="col p-2 ps-4">
-                    <div className="txt-grey">Email</div>
-                    <div className="">{currentClient.email}</div>
-                  </div>
-                  <div className="col p-2 ps-4">
-                    <div className="txt-grey">Phone</div>
-                    <div className="">{currentClient.phoneNumber}</div>
-                  </div>
-                </div>
-                <div className="row mt-2">
-                  <div className="col p-2 ps-4">
-                    <div className="txt-grey">Client's Address</div>
-                    <div className="">
-                      {getPropertyAddress(currentClient.address)}
-                      </div>
                   </div>
                 </div>
               </div>

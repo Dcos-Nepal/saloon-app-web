@@ -322,10 +322,10 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
     const date2 = DateTime.fromISO(options?.startDate);
     const { years, months, days, hours } = date1.diff(date2, ['years', 'months', 'days', 'hours']);
 
-    if (years) foundDates.push(`${years} years`);
-    if (months) foundDates.push(`${months} months`);
-    if (days) foundDates.push(`${days} days`);
-    if (hours) foundDates.push(`${hours} hours`);
+    if (years) foundDates.push(`${years.toFixed(1)} years`);
+    if (months) foundDates.push(`${months.toFixed(1)} months`);
+    if (days) foundDates.push(`${days.toFixed(1)} days`);
+    if (hours) foundDates.push(`${hours.toFixed(1)} hours`);
 
     return foundDates.join(', ');
   };

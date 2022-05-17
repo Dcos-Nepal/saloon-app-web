@@ -762,3 +762,7 @@ input, textarea {
 .cursor-pointer {
     cursor: pointer;
 }
+
+.pac-container {
+    z-index: 9999;
+}

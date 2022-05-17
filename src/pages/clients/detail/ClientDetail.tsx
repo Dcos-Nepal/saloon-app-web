@@ -3,7 +3,7 @@ import pinterpolate from 'pinterpolate';
 import { FC, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { getCurrentUser } from 'utils';
+import { getCurrentUser, getPropertyAddress } from 'utils';
 import { IClient } from 'common/types/client';
 import { Loader } from 'common/components/atoms/Loader';
 import * as jobsActions from 'store/actions/job.actions';
@@ -255,7 +255,6 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient, quotes, properties, 
         return <Jobs />;
       case Tabs.Quotes:
         return <Quotes />;
-
       case Tabs.Requests:
         return <Requests />;
 
@@ -307,7 +306,7 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient, quotes, properties, 
                       <div className="col p-2 ps-4">
                         <div className="txt-grey">{property.name}</div>
                         <div className="">
-                          {property.street1}, {property.city}, {property.country} {property.postalCode}
+                          {getPropertyAddress(property)}
                         </div>
                       </div>
                     </div>
@@ -356,11 +355,8 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient, quotes, properties, 
                   <div className="col p-2 ps-4">
                     <div className="txt-grey">Client's Address</div>
                     <div className="">
-                      {currentClient.address?.street1}, {currentClient.address?.street2}, {currentClient.address?.postalCode}
-                    </div>
-                    <div className="">
-                      {currentClient.address?.city}, {currentClient.address?.state}, {currentClient.address?.country}
-                    </div>
+                      {getPropertyAddress(currentClient.address)}
+                      </div>
                   </div>
                 </div>
               </div>

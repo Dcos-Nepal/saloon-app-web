@@ -6,7 +6,7 @@ interface IProps {
   saveHandler: (data: any) => any;
 }
 
-const JobAdd: FC<IProps> = ({ closeModal, saveHandler }) => {
+const LineItemAdd: FC<IProps> = ({ closeModal, saveHandler }) => {
   return (
     <div className={`modal fade show mt-5`} role="dialog" style={{ display: 'block' }}>
       <div className="modal-dialog mt-5">
@@ -26,4 +26,4 @@ const JobAdd: FC<IProps> = ({ closeModal, saveHandler }) => {
   );
 };
 
-export default JobAdd;
+export default LineItemAdd;

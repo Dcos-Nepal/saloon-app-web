@@ -13,8 +13,9 @@ import { Loader } from 'common/components/atoms/Loader';
 import SelectField from 'common/components/form/Select';
 import * as clientsActions from 'store/actions/clients.actions';
 import * as propertiesActions from 'store/actions/properties.actions';
-import { COUNTRIES_OPTIONS, DEFAULT_COUNTRY, STATES_OPTIONS } from 'common/constants';
+import { COUNTRIES_OPTIONS, DEFAULT_COUNTRY, PREFERRED_TIME_OPTIONS, STATES_OPTIONS } from 'common/constants';
 import Modal from 'common/components/atoms/Modal';
+import { usePlacesWidget } from "react-google-autocomplete";
 
 const PropertyForm = React.lazy(() => import('./PropertyForm'));
 
@@ -35,7 +36,7 @@ interface IProps {
   properties: any[];
 }
 
-const ClientDetailForm: FC<IProps> = ({ id, actions, currentClient, properties }) => {
+const ClientForm: FC<IProps> = ({ id, actions, currentClient, properties }) => {
   const navigate = useNavigate();
 
   const [addProperty, setAddProperty] = useState(false);
@@ -58,10 +59,54 @@ const ClientDetailForm: FC<IProps> = ({ id, actions, currentClient, properties }
     },
     userData: {
       type: 'CLIENT',
-      company: ''
+      company: '',
+      preferredTime: ''
     },
     avatar: '',
     isCompanyNamePrimary: false
+  });
+
+  const { ref }: any = usePlacesWidget({
+    apiKey: process.env.REACT_APP_MAP_KEY,
+    onPlaceSelected: (place) => {
+      let street = '';
+      let city = '';
+      let state = '';
+      let postalCode = '';
+      let country = '';
+
+      place.address_components.forEach((component: any) => {
+        if (component.types.includes('locality')) {
+          street = component.long_name;
+        }
+      
+        if (component.types.includes('administrative_area_level_2')) {
+          city = component.long_name;
+        }
+      
+        if (component.types.includes('administrative_area_level_1')) {
+          state = component.short_name;
+        }
+      
+        if (component.types.includes('postal_code')) {
+          postalCode = component.long_name;
+        }
+      
+        if (component.types.includes('country')) {
+          country = component.short_name;
+        }
+      });
+
+      formik.setFieldValue('address.street1', street);
+      formik.setFieldValue('address.city', city);
+      formik.setFieldValue('address.state', state);
+      formik.setFieldValue('address.postalCode', postalCode);
+      formik.setFieldValue('address.country', country);
+    },
+    options: {
+      types: ["(regions)"],
+      componentRestrictions: { country: "AUS" },
+    },
   });
 
   useEffect(() => {
@@ -101,7 +146,7 @@ const ClientDetailForm: FC<IProps> = ({ id, actions, currentClient, properties }
     }),
     userData: Yup.object().shape({
       type: Yup.string(),
-      preferredTime: Yup.array(Yup.string()).notRequired(),
+      preferredTime: Yup.string().notRequired(),
       companyName: Yup.string()
     }),
     isCompanyNamePrimary: Yup.boolean().notRequired()
@@ -228,6 +273,19 @@ const ClientDetailForm: FC<IProps> = ({ id, actions, currentClient, properties }
                   Use company name as the primary name
                 </label>
               </div>
+              <div className="mb-3">
+                <SelectField
+                  label="Preferred Time"
+                  name="userData.preferredTime"
+                  options={PREFERRED_TIME_OPTIONS}
+                  helperComponent={<ErrorMessage name="userData.preferredTime" />}
+                  value={PREFERRED_TIME_OPTIONS.find((option) => option.value === formik.values.userData.preferredTime)}
+                  handleChange={(selectedOption: IOption) => {
+                    formik.setFieldValue('userData.preferredTime', selectedOption.value);
+                  }}
+                  onBlur={formik.handleBlur}
+                />
+              </div>
             </div>
             <div className={`${currentClient && currentClient._id && id ? '' : 'ms-2'} col card`}>
               <div className="mb-3">
@@ -249,7 +307,11 @@ const ClientDetailForm: FC<IProps> = ({ id, actions, currentClient, properties }
                 </div>
 
                 <div className="mb-3">
-                  <label className="txt-bold mt-2 mb-2">Address</label>
+                  <label className="txt-bold mt-2 mb-2">Address Section</label>
+                  <div className="mb-3">
+                    <input ref={ref} className="form-control" placeholder="Type here to search address" />
+                  </div>
+
                   <InputField
                     label="Street 1"
                     placeholder="Enter street 1"
@@ -372,8 +434,8 @@ const ClientDetailForm: FC<IProps> = ({ id, actions, currentClient, properties }
               </div>
             </div>
           </div>
-          <Modal isOpen={addProperty} onRequestClose={() => setAddProperty(false)}>
-            <div className={`modal fade show mt-5`} role="dialog" style={{ display: 'block' }}>
+          <Modal isOpen={!!addProperty} onRequestClose={() => setAddProperty(false)}>
+            <div className={`modal fade show mt-3 mb-3`} role="dialog" style={{ display: 'block' }}>
               <div className="modal-dialog mt-5">
                 <div className="modal-content">
                   <div className="modal-header row border-bottom">
@@ -398,7 +460,7 @@ const ClientDetailForm: FC<IProps> = ({ id, actions, currentClient, properties }
               </div>
             </div>
           </Modal>
-          <Modal isOpen={editPropertyFor} onRequestClose={() => setEditPropertyFor(null)}>
+          <Modal isOpen={!!editPropertyFor} onRequestClose={() => setEditPropertyFor(null)}>
             <div className={`modal fade show mt-5`} role="dialog" style={{ display: 'block' }}>
               <div className="modal-dialog mt-5">
                 <div className="modal-content">
@@ -464,4 +526,4 @@ const mapDispatchToProps = (dispatch: any) => ({
   }
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(ClientDetailForm);
+export default connect(mapStateToProps, mapDispatchToProps)(ClientForm);

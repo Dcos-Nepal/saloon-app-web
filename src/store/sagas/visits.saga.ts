@@ -12,7 +12,6 @@ export function* fetchVisitsSaga(): any {
 }
 
 export function* fetchVisitSaga(): any {
-  console.log('Fetch');
   yield takeEvery(actionType.FETCH_VISIT, fetchVisit);
 }
 

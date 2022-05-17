@@ -1,3 +1,5 @@
+import { getPropertyAddress } from "utils";
+
 const PropertyDetail = ({ setEditPropertyFor, property }: any) => {
   return (
     <div className="p-3 mb-2 card">
@@ -11,7 +13,7 @@ const PropertyDetail = ({ setEditPropertyFor, property }: any) => {
       </div>
       <div className="row">
         <div className="col-12">
-          <div className="">{property.street1}, {property.street2}, {property.city} {property.postalCode}, {property.state}, {property.country}</div>
+          <div className="">{getPropertyAddress(property)}</div>
         </div>
       </div>
     </div>

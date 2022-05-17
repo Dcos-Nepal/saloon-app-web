@@ -7,6 +7,7 @@ import InputField from 'common/components/form/Input';
 import SelectField from 'common/components/form/Select';
 import { IOption } from 'common/types/form';
 import { COUNTRIES_OPTIONS, DEFAULT_COUNTRY, STATES_OPTIONS } from 'common/constants';
+import { usePlacesWidget } from 'react-google-autocomplete';
 
 interface IProps {
   currentProperty?: any;
@@ -51,6 +52,49 @@ const PropertyForm: FC<IProps> = ({ closeModal, cleanForm, currentProperty, save
     }
   });
 
+  const { ref }: any = usePlacesWidget({
+    apiKey: process.env.REACT_APP_MAP_KEY,
+    onPlaceSelected: (place) => {
+      let street = '';
+      let city = '';
+      let state = '';
+      let postalCode = '';
+      let country = '';
+
+      place.address_components.forEach((component: any) => {
+        if (component.types.includes('locality')) {
+          street = component.long_name;
+        }
+      
+        if (component.types.includes('administrative_area_level_2')) {
+          city = component.long_name;
+        }
+      
+        if (component.types.includes('administrative_area_level_1')) {
+          state = component.short_name;
+        }
+      
+        if (component.types.includes('postal_code')) {
+          postalCode = component.long_name;
+        }
+      
+        if (component.types.includes('country')) {
+          country = component.short_name;
+        }
+      });
+
+      formik.setFieldValue('street1', street);
+      formik.setFieldValue('city', city);
+      formik.setFieldValue('state', state);
+      formik.setFieldValue('postalCode', postalCode);
+      formik.setFieldValue('country', country);
+    },
+    options: {
+      types: ["(regions)"],
+      componentRestrictions: { country: "AUS" },
+    },
+  });
+
   /**
    * Custom Error Message
    * @param param0 Props Object
@@ -85,6 +129,12 @@ const PropertyForm: FC<IProps> = ({ closeModal, cleanForm, currentProperty, save
             onBlur={formik.handleBlur}
             value={formik.values.name}
           />
+        </div>
+
+        <hr className='divider' />
+        <label className="txt-bold mt-2 mb-2">Property Address:</label>
+        <div className="mb-3">
+          <input ref={ref} className="form-control" placeholder="Type here to search address" />
         </div>
 
         <div className="mb-2">

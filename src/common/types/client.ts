@@ -14,9 +14,10 @@ export interface IClient {
     country?: string;
   };
   userData: {
-    type: string,
-    company?: string,
-    referredBy?: string
+    type: string;
+    company?: string;
+    referredBy?: string;
+    preferredTime?: string;
   },
   roles: string[];
   password?: string;

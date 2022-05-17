@@ -16,7 +16,6 @@ const jobRequestReducer = (state = initialState, action: any) => {
     }
 
     case actionType.FETCH_JOB_REQUESTS_SUCCESS: {
-      console.log(action.payload);
       state.isLoading = false;
       state.itemList = action.payload;
       return { ...state };

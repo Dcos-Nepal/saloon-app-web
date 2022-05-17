@@ -205,11 +205,16 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
    * @returns Void
    */
   const saveVisit = async (visit: any, updateFollowing = false) => {
+    // Creating One-Off RRule for a selected visit
     const rrule = createOneOffRule(visit);
+
     if (visit.hasMultiVisit) {
       let newVisit = { ...visit, rruleSet: rrule };
+
+      // If you don't want to update following visits
       if (!updateFollowing) delete newVisit._id;
 
+      // Make API Call to create a new Visit
       addVisitApi(
         {
           ...newVisit,
@@ -227,12 +232,15 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
         updateFollowing ? { updateFollowing } : null
       );
 
+      // If you want to update following visits
+      // Update the Primary visit with RRule Exception
       if (!updateFollowing) {
         updateVisitApi(visit._id, {
           excRrule: [...visit.excRrule, rrule]
         });
       }
     } else {
+      // Update a visit
       await updateVisitApi(
         visit._id,
         {

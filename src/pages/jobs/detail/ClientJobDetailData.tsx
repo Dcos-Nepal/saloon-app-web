@@ -248,7 +248,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
           ...visit,
           job: visit.job?._id,
           rruleSet: rrule,
-          team: visit.team.map((t: any) => t._id),
+          team: visit.team.map((t: any) => t._id || t),
           startDate: new Date(`${visit.startDate} ${visit.startTime}`),
           endDate: new Date(`${visit.endDate} ${visit.endTime}`)
         },

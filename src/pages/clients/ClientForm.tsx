@@ -15,7 +15,7 @@ import * as clientsActions from 'store/actions/clients.actions';
 import * as propertiesActions from 'store/actions/properties.actions';
 import { COUNTRIES_OPTIONS, DEFAULT_COUNTRY, PREFERRED_TIME_OPTIONS, STATES_OPTIONS } from 'common/constants';
 import Modal from 'common/components/atoms/Modal';
-import { usePlacesWidget } from "react-google-autocomplete";
+import SearchLocation from 'common/components/form/SearchLocation';
 
 const PropertyForm = React.lazy(() => import('./PropertyForm'));
 
@@ -65,49 +65,6 @@ const ClientForm: FC<IProps> = ({ id, actions, currentClient, properties }) => {
     },
     avatar: '',
     
-  });
-
-  const { ref }: any = usePlacesWidget({
-    apiKey: process.env.REACT_APP_MAP_KEY,
-    onPlaceSelected: (place) => {
-      let street = '';
-      let city = '';
-      let state = '';
-      let postalCode = '';
-      let country = '';
-
-      place.address_components.forEach((component: any) => {
-        if (component.types.includes('locality')) {
-          street = component.long_name;
-        }
-      
-        if (component.types.includes('administrative_area_level_2')) {
-          city = component.long_name;
-        }
-      
-        if (component.types.includes('administrative_area_level_1')) {
-          state = component.short_name;
-        }
-      
-        if (component.types.includes('postal_code')) {
-          postalCode = component.long_name;
-        }
-      
-        if (component.types.includes('country')) {
-          country = component.short_name;
-        }
-      });
-
-      formik.setFieldValue('address.street1', street);
-      formik.setFieldValue('address.city', city);
-      formik.setFieldValue('address.state', state);
-      formik.setFieldValue('address.postalCode', postalCode);
-      formik.setFieldValue('address.country', country);
-    },
-    options: {
-      types: ["(regions)"],
-      componentRestrictions: { country: "AUS" },
-    },
   });
 
   useEffect(() => {
@@ -310,7 +267,7 @@ const ClientForm: FC<IProps> = ({ id, actions, currentClient, properties }) => {
                 <div className="mb-3">
                   <label className="txt-bold mt-2 mb-2">Address Section</label>
                   <div className="mb-3">
-                    <input ref={ref} className="form-control" placeholder="Type here to search address" />
+                    <SearchLocation formikForm={formik} addressPath={"address"}/>
                   </div>
 
                   <InputField

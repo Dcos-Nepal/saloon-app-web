@@ -12,7 +12,7 @@ import * as workersActions from 'store/actions/workers.actions';
 import { StopIcon, UploadIcon, XCircleIcon } from '@primer/octicons-react';
 import { deletePublicFile, uploadPublicFile } from 'services/files.service';
 import { getServices } from 'data';
-import { usePlacesWidget } from 'react-google-autocomplete';
+import SearchLocation from 'common/components/form/SearchLocation';
 
 interface IProps {
   actions: {
@@ -48,49 +48,6 @@ const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker }) => {
     idCard: null,
     cleaningCert: null,
     policeCert: null
-  });
-
-  const { ref }: any = usePlacesWidget({
-    apiKey: process.env.REACT_APP_MAP_KEY,
-    onPlaceSelected: (place) => {
-      let street = '';
-      let city = '';
-      let state = '';
-      let postalCode = '';
-      let country = '';
-
-      place.address_components.forEach((component: any) => {
-        if (component.types.includes('locality')) {
-          street = component.long_name;
-        }
-      
-        if (component.types.includes('administrative_area_level_2')) {
-          city = component.long_name;
-        }
-      
-        if (component.types.includes('administrative_area_level_1')) {
-          state = component.short_name;
-        }
-      
-        if (component.types.includes('postal_code')) {
-          postalCode = component.long_name;
-        }
-      
-        if (component.types.includes('country')) {
-          country = component.short_name;
-        }
-      });
-
-      formik.setFieldValue('address.street1', street);
-      formik.setFieldValue('address.city', city);
-      formik.setFieldValue('address.state', state);
-      formik.setFieldValue('address.postalCode', postalCode);
-      formik.setFieldValue('address.country', country);
-    },
-    options: {
-      types: ["(regions)"],
-      componentRestrictions: { country: "AUS" },
-    },
   });
 
   useEffect(() => {
@@ -468,7 +425,7 @@ const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker }) => {
           <div className="mb-3">
             <label className="txt-bold mt-2 mb-2">Address Section</label>
             <div className="mb-3">
-              <input ref={ref} className="form-control" placeholder="Type here to search address" />
+              <SearchLocation formikForm={formik} addressPath={"address"}/>
             </div>
 
             <InputField

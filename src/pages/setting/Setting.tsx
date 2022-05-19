@@ -23,7 +23,7 @@ import PropertyDetail from 'pages/clients/PropertyDetail';
 import * as propertiesActions from 'store/actions/properties.actions';
 import { deletePublicFile, uploadPublicFile } from 'services/files.service';
 import { getServices } from 'data';
-import { usePlacesWidget } from 'react-google-autocomplete';
+import SearchLocation from 'common/components/form/SearchLocation';
 
 const Setting = ({
   actions,
@@ -76,49 +76,6 @@ const Setting = ({
   };
 
   const profileInitialValues = currentUser;
-
-  const { ref }: any = usePlacesWidget({
-    apiKey: process.env.REACT_APP_MAP_KEY,
-    onPlaceSelected: (place) => {
-      let street = '';
-      let city = '';
-      let state = '';
-      let postalCode = '';
-      let country = '';
-
-      place.address_components.forEach((component: any) => {
-        if (component.types.includes('locality')) {
-          street = component.long_name;
-        }
-      
-        if (component.types.includes('administrative_area_level_2')) {
-          city = component.long_name;
-        }
-      
-        if (component.types.includes('administrative_area_level_1')) {
-          state = component.short_name;
-        }
-      
-        if (component.types.includes('postal_code')) {
-          postalCode = component.long_name;
-        }
-      
-        if (component.types.includes('country')) {
-          country = component.short_name;
-        }
-      });
-
-      profileFormik.setFieldValue('address.street1', street);
-      profileFormik.setFieldValue('address.city', city);
-      profileFormik.setFieldValue('address.state', state);
-      profileFormik.setFieldValue('address.postalCode', postalCode);
-      profileFormik.setFieldValue('address.country', country);
-    },
-    options: {
-      types: ["(regions)"],
-      componentRestrictions: { country: "AUS" },
-    },
-  });
 
   /**
    * Save Property
@@ -215,7 +172,7 @@ const Setting = ({
         {(documents && documents[id]?.key) || (getDocument as any)[id]?.name ? (
           <div className="row">
             <div className="col-3">
-              {(isUploading as any)[id] ? 
+              {(isUploading as any)[id] ?
                 <div className="d-flex justify-content-center">
                   <div className="spinner-border" role="status">
                     <span className="visually-hidden">Loading...</span>
@@ -238,7 +195,7 @@ const Setting = ({
                   {(isDeleting as any)[id] ? 'Deleting...' : <XCircleIcon size={16} />}
                 </button>
               </div>
-            ): null}
+            ) : null}
           </div>
         ) : null}
 
@@ -481,9 +438,9 @@ const Setting = ({
                   <div className="mb-2">
                     <label className="txt-bold mt-2 mb-2">Address Section</label>
                     <div className="mb-3">
-                      <input ref={ref} className="form-control" placeholder="Type here to search address" />
+                      <SearchLocation formikForm={profileFormik} addressPath={"address"}/>
                     </div>
-
+                    
                     <InputField
                       label="Street 1"
                       placeholder="Enter street 1"
@@ -661,12 +618,11 @@ const Setting = ({
                             {DAYS_OF_WEEK.map((day) => (
                               <li
                                 key={day}
-                                className={`${
-                                  profileFormik.values.userData?.workingDays?.length &&
-                                  profileFormik.values.userData?.workingDays.find((selectedDay: string) => selectedDay === day)
+                                className={`${profileFormik.values.userData?.workingDays?.length &&
+                                    profileFormik.values.userData?.workingDays.find((selectedDay: string) => selectedDay === day)
                                     ? 'selected'
                                     : null
-                                }`}
+                                  }`}
                                 onClick={() => onWorkingDaysChange(day)}
                               >
                                 <span className="item">{day[0]?.toString().toUpperCase()}</span>
@@ -789,6 +745,10 @@ const Setting = ({
         </div>
         <Footer />
       </div>
+      <script
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB41DRUbKWJHPxaFjMAwdrzWzbVKartNGg&callback=initAutocomplete&libraries=places&v=weekly"
+        defer
+      ></script>
     </>
   );
 };

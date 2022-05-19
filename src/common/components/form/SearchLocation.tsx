@@ -1,9 +1,21 @@
-import { FC, useCallback, useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
+import { getUuid } from "utils";
 
-const SearchLocation: FC<any> = ({ formikForm, addressPath }) => {
-  const rand = Math.random();
+declare global {
+  interface Window { google: any; }
+}
+
+const SearchLocation: FC<any> = ({ label, formikForm, addressPath }) => {
+  const rand = getUuid();
   const [autocomplete, setAutocomplete] = useState<any>(null);
-  const preFillAddress = useCallback((place: any) => {
+
+  /**
+   * 
+   * @param place 
+   * @returns 
+   */
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const preFillAddress = (place: any) => {
     let street1 = '';
     let street2 = '';
     let city = '';
@@ -47,33 +59,44 @@ const SearchLocation: FC<any> = ({ formikForm, addressPath }) => {
     formikForm.setFieldValue(`${addressPath ? addressPath + '.' : ''}state`, state);
     formikForm.setFieldValue(`${addressPath ? addressPath + '.' : ''}postalCode`, postalCode);
     formikForm.setFieldValue(`${addressPath ? addressPath + '.' : ''}country`, country);
-  }, []);
+  };
 
   useEffect(() => {
-    const input = document.getElementById("location-search-field" + rand) as HTMLInputElement;
+    const input = document.getElementById(`location-search-field-${rand}`) as HTMLInputElement;
     const options = {
       componentRestrictions: { country: ["au"] },
       fields: ["address_components", "geometry"],
       types: ["address"],
     };
 
-    setAutocomplete(new google.maps.places.Autocomplete(input, options));
-  }, [])
+    try {
+      setAutocomplete(new window.google.maps.places.Autocomplete(input, options));
+    } catch (error) {
+      Console.log(error);
+    }
+  }, []);
 
   useEffect(() => {
     autocomplete && autocomplete.addListener("place_changed", () => {
-      const place = autocomplete.getPlace();
-      preFillAddress(place);
+      try {
+        const place = autocomplete.getPlace();
+        preFillAddress(place);
+      } catch(ex){
+        console.log('Error')
+      }
     });
+    return () => {
+      setAutocomplete(null);
+    }
   }, [autocomplete, preFillAddress]);
 
   return (
     <div className="mb-3">
-      <label htmlFor={"name"} className="form-label txt-dark-grey">Search Address</label>
+      {label ? <label htmlFor={"name"} className="form-label txt-dark-grey">{label}</label> : null}
       <input
         type={"text"}
         name={"name"}
-        id={"location-search-field" + rand}
+        id={`location-search-field-${rand}`}
         className={`form-control`}
         placeholder='Search address here'
       />

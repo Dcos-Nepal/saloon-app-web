@@ -72,7 +72,7 @@ const SearchLocation: FC<any> = ({ label, formikForm, addressPath }) => {
     try {
       setAutocomplete(new window.google.maps.places.Autocomplete(input, options));
     } catch (error) {
-      Console.log(error);
+      console.log(error);
     }
   }, []);
 

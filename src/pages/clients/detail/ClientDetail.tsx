@@ -282,10 +282,10 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient, quotes, properties, 
         {currentClient ? (
           <div>
             <div className="d-flex flex-row mt-2">
-              <h3 className="txt-bold extra">{currentClient.fullName || `${currentClient.firstName} ${currentClient.lastName}`}</h3>
+              <h3 className="txt-bold extra">{currentClient?.fullName || `${currentClient?.firstName} ${currentClient?.lastName}`}</h3>
               <div className="col">
                 <button onClick={() => id && navigate(`edit`)} type="button" className="btn btn-primary d-flex float-end me-2">
-                  <PencilIcon className='mt-1' /> &nbsp; Edit Client
+                  <PencilIcon className='mt-1' /> &nbsp; Edit Client Details
                 </button>
               </div>
             </div>
@@ -297,7 +297,7 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient, quotes, properties, 
                   </div>
                 </div>
                 <div className="row mt-2">
-                  {currentClient.userData.isCompanyNamePrimary ? (
+                  {currentClient.userData?.isCompanyNamePrimary ? (
                     <div className="col p-2 ps-4">
                       <div className="txt-grey">Company Name</div>
                       <div className="">{currentClient.userData?.company || "-"}</div>
@@ -343,7 +343,7 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient, quotes, properties, 
                 </div>
                 {properties.length ? (
                   properties.map((property: any, index) => (
-                    <div className={`row ${index === 0 ? 'mt-4' : 'mt-2'}`}>
+                    <div key={property._id + '~'} className={`row ${index === 0 ? 'mt-4' : 'mt-2'}`}>
                       <div className="col-2 mt-2">
                         <button className="btn btn-secondary d-flex float-end">
                           <box-icon name="map" color="#EC7100" />

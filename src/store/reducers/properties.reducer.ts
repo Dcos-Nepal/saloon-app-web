@@ -90,6 +90,16 @@ const propertiesReducer = (state = initialState, action: any) => {
       return { ...state };
     }
 
+    case actionType.DELETE_PROPERTY_SUCCESS: {
+      state.isLoading = false;
+      state.isFailed = false;
+      state.isSuccess = true;
+      state.currentItem = action.payload;
+      state.properties = state.properties.filter((p) => action.payload._id !== p._id);
+
+      return { ...state, properties: [...state.properties] };
+    }
+
     case actionType.FETCH_PROPERTY_ERROR: {
       state.isSuccess = false;
       state.isLoading = false;

@@ -172,6 +172,14 @@ export const FETCH_PROPERTY_LOADING = 'FETCH_PROPERTY_LOADING';
 export const FETCH_PROPERTY_ERROR = 'FETCH_PROPERTY_ERROR';
 
 /**
+ * Delete Property action types
+ */
+ export const DELETE_PROPERTY = 'DELETE_PROPERTY';
+ export const DELETE_PROPERTY_SUCCESS = 'DELETE_PROPERTY_SUCCESS';
+ export const DELETE_PROPERTY_LOADING = 'DELETE_PROPERTY_LOADING';
+ export const DELETE_PROPERTY_ERROR = 'DELETE_PROPERTY_ERROR';
+
+/**
  * Create Job Request action types
  */
 export const ADD_JOB_REQUEST = 'ADD_JOB_REQUEST';

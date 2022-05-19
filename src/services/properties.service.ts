@@ -1,6 +1,11 @@
 import { http } from 'utils/http';
 import { generateQueryParams } from 'utils';
 
+export const addPropertyApi = async (payload: any) => {
+  const url = '/v1/properties';
+  return await http.post(url, payload);
+};
+
 export const fetchPropertiesApi = async (query: Record<string, any>) => {
   const url = '/v1/properties' + (query ? `?${generateQueryParams(query)}` : '');
   return await http.get(url, {
@@ -18,7 +23,9 @@ export const updatePropertyApi = async (payload: any) => {
   return await http.put(url, payload);
 };
 
-export const addPropertyApi = async (payload: any) => {
-  const url = '/v1/properties';
-  return await http.post(url, payload);
+
+
+export const deletePropertyApi = async (payload: any) => {
+  const url = '/v1/properties/' + payload._id;
+  return await http.delete(url, payload);
 };

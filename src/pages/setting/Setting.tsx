@@ -24,6 +24,8 @@ import * as propertiesActions from 'store/actions/properties.actions';
 import { deletePublicFile, uploadPublicFile } from 'services/files.service';
 import { getServices } from 'data';
 import SearchLocation from 'common/components/form/SearchLocation';
+import DeleteConfirm from 'common/components/DeleteConfirm';
+import { deletePropertyApi } from 'services/properties.service';
 
 const Setting = ({
   actions,
@@ -34,6 +36,7 @@ const Setting = ({
     addProperty: (data: any) => void;
     fetchProperties: (filter: any) => void;
     updateProperty: (data: any) => void;
+    deleteProperty: (data: any) => void;
   };
   properties: any[];
 }) => {
@@ -42,6 +45,7 @@ const Setting = ({
   const [isPCLoading, setIsPCLoading] = useState<boolean>(false);
   const [addProperty, setAddProperty] = useState(false);
   const [editPropertyFor, setEditPropertyFor] = useState<any>(null);
+  const [deletePropertyFor, setDeletePropertyFor] = useState<any>(null);
 
   const [isUploading, setIsUploading] = useState({
     idCard: false,
@@ -153,6 +157,22 @@ const Setting = ({
       }
     }
     setDocument({ ...getDocument, [docKey]: null });
+  };
+
+  /**
+   * Deletes the selected property from the list.
+   */
+  const deletePropertyHandler = async () => {
+    try {
+      if (!!deletePropertyFor) {
+        await deletePropertyApi(deletePropertyFor);
+        toast.success('Property deleted successfully');
+        actions.deleteProperty(deletePropertyFor);
+        setDeletePropertyFor('');
+      }
+    } catch (ex) {
+      toast.error('Failed to delete property');
+    }
   };
 
   /**
@@ -520,7 +540,7 @@ const Setting = ({
                         <div className="col">
                           <h5>{properties.length ? 'Listed Properties' : 'Properties'}</h5>
                           {properties.length
-                            ? properties.map((property) => <PropertyDetail setEditPropertyFor={setEditPropertyFor} property={property} />)
+                            ? properties.map((property) => <PropertyDetail key={property._id} setEditPropertyFor={setEditPropertyFor} setDeletePropertyFor={setDeletePropertyFor} property={property} />)
                             : null}
 
                           <div
@@ -533,7 +553,7 @@ const Setting = ({
                           </div>
                         </div>
                       </div>
-                      <Modal isOpen={addProperty} onRequestClose={() => setAddProperty(false)}>
+                      <Modal isOpen={!!addProperty} onRequestClose={() => setAddProperty(false)}>
                         <div className={`modal fade show mt-5`} role="dialog" style={{ display: 'block' }}>
                           <div className="modal-dialog mt-5">
                             <div className="modal-content">
@@ -559,7 +579,7 @@ const Setting = ({
                           </div>
                         </div>
                       </Modal>
-                      <Modal isOpen={editPropertyFor} onRequestClose={() => setEditPropertyFor(null)}>
+                      <Modal isOpen={!!editPropertyFor} onRequestClose={() => setEditPropertyFor(null)}>
                         <div className={`modal fade show mt-5`} role="dialog" style={{ display: 'block' }}>
                           <div className="modal-dialog mt-5">
                             <div className="modal-content">
@@ -585,6 +605,9 @@ const Setting = ({
                             </div>
                           </div>
                         </div>
+                      </Modal>
+                      <Modal isOpen={!!deletePropertyFor} onRequestClose={() => setDeletePropertyFor('')}>
+                        <DeleteConfirm onDelete={deletePropertyHandler} closeModal={() => setDeletePropertyFor('')} />
                       </Modal>
                     </div>
                   ) : null}
@@ -774,6 +797,9 @@ const mapDispatchToProps = (dispatch: any) => ({
     },
     updateProperty: (data: any) => {
       dispatch(propertiesActions.updateProperty(data));
+    },
+    deleteProperty: (data: any) => {
+      dispatch(propertiesActions.deleteProperty(data));
     }
   }
 });

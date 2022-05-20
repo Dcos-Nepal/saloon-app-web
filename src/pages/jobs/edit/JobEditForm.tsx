@@ -63,6 +63,7 @@ const EditJobForm = (props: IProps) => {
         lineItems: job.lineItems.map((lineItem: any) => ({ ...lineItem, name: lineItem.name.label })),
         team: job.team.map((t: any) => t.value)
       };
+
       delete updatePayload.jobFor;
       await props.actions.updateJob(id as string, updatePayload);
       props.jobUpdated();

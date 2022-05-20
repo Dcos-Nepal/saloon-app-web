@@ -532,27 +532,11 @@ const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker }) => {
       </div>
       <div className="mb-3 mt-3">
         <button
-          type="button"
-          onClick={async () => {
-            await formik.handleSubmit();
-            navigate(-1);
-          }}
+          type="submit"
           className="btn btn-primary"
         >
           Save worker
         </button>
-        {id ? null : (
-          <button
-            type="button"
-            onClick={async () => {
-              await formik.handleSubmit();
-              window.location.reload();
-            }}
-            className="btn btn-secondary ms-3"
-          >
-            Save and create another
-          </button>
-        )}
         <button onClick={() => navigate(-1)} type="button" className="btn ms-3">
           Cancel
         </button>

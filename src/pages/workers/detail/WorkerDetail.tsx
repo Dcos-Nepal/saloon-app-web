@@ -159,7 +159,7 @@ const WorkerDetail: FC<IProps> = ({ actions, currentWorker, isWorkersLoading }) 
                 </div>
                 {currentWorker.userData?.documents && Object.keys(currentWorker?.userData?.documents).length ? (
                   Object.keys(currentWorker?.userData?.documents).map((key) => (
-                    <div className="row mt-3">
+                    <div key={key+'~'} className="row mt-3">
                       <div className="col p-1 ps-4">
                         <div className="txt-grey mb-2">{currentWorker.userData.documents[key]?.type?.split('_').join(' ')}:</div>
                         {currentWorker.userData.documents[key]?.key ? (

@@ -5,7 +5,7 @@ import { DateTime } from 'luxon';
 
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import RRule, { Frequency, RRuleSet, rrulestr } from 'rrule';
-import { FieldArray, FormikProvider, getIn, useFormik } from 'formik';
+import { FieldArray, FormikProvider, useFormik } from 'formik';
 import {
   AlertIcon,
   CheckCircleIcon,
@@ -81,7 +81,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
             startDate: visit,
             title: visitSetting.inheritJob ? job?.title : visitSetting.title,
             instruction: visitSetting.inheritJob ? job?.instruction : visitSetting.instruction,
-            team: visitSetting.inheritJob ? job?.team : visitSetting.team,
+            team: visitSetting.team,
             lineItems: visitSetting.inheritJob ? job?.lineItems : visitSetting.lineItems
           };
           if (acc[visitMonth]) acc[visitMonth].push(visitObj);
@@ -100,7 +100,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
           startDate: new Date(visitSetting.startDate),
           title: visitSetting.inheritJob ? job?.title : visitSetting.title,
           instruction: visitSetting.inheritJob ? job?.instruction : visitSetting.instruction,
-          team: visitSetting.inheritJob ? job?.team : visitSetting.team,
+          team: visitSetting.team,
           lineItems: visitSetting.inheritJob ? job?.lineItems : visitSetting.lineItems
         };
         if (acc[visitMonth]) acc[visitMonth].push(visitObj);

@@ -84,7 +84,9 @@ const JobsList = (props: IProps) => {
           ...job,
           jobFor: job.jobFor,
           total: job.lineItems.reduce((total: number, val: any) => total + val.quantity * val.unitPrice, 0),
-          schedule: job.primaryVisit.rruleSet ? _.startCase(rrulestr(job.primaryVisit.rruleSet).toText()) : ''
+          schedule: job.primaryVisit?.rruleSet
+            ? _.startCase(rrulestr(job.primaryVisit.rruleSet).toText())
+            : new Date(job.startDate).toLocaleDateString('en-US', { timeZone: 'Australia/Adelaide' })
         }))
       );
       setPageCount(Math.ceil(props.jobs.data.totalCount / itemsPerPage));
@@ -109,19 +111,12 @@ const JobsList = (props: IProps) => {
         }
       },
       {
-        Header: 'CLIENT',
+        Header: 'CLIENT/JOB ADDRESS',
         accessor: (row: any) => {
-          return (
-            <div>{row.jobFor?.fullName}</div>
-          );
-        }
-      },
-      {
-        Header: 'JOB ADDRESS',
-        accessor: (row: any) => {
-          return (
+          return (<>
+            <div><strong>{row.jobFor?.fullName}</strong></div>
             <div>{getJobPropertyAddress(row)}</div>
-          );
+          </>);
         }
       },
       {
@@ -129,8 +124,8 @@ const JobsList = (props: IProps) => {
         accessor: 'schedule'
       },
       {
-        Header: 'REQUIRE INVOICING?',
-        accessor: (row: any) => <div>{!row.isCompleted ? 'Yes' : 'No'}</div>
+        Header: 'STATUS',
+        accessor: (row: any) => <div className={row.isCompleted && row.status?.status ? 'text-success' : 'text-warning'}>{row.isCompleted && row.status?.status === 'COMPLETED' ? 'COMPLETED' : 'NOT COMPLETED'}</div>
       },
       {
         Header: 'Total',

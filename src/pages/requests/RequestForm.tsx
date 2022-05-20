@@ -17,6 +17,7 @@ import { getData } from 'utils/storage';
 import SelectField from 'common/components/form/Select';
 import { getServices } from 'data';
 import { IOption } from 'common/types/form';
+import { DAYS_OF_WEEK } from 'common/constants';
 
 interface IProps {
   actions: {
@@ -40,7 +41,16 @@ const RequestAddForm: FC<IProps> = ({ id, actions, isJobRequestsLoading, current
 
   const [clientDetails, setClientDetails] = useState<any>(null);
   const [properties, setProperties] = useState([]);
-  const [initialValues, setInitialValues] = useState({
+  const [initialValues] = useState<any>(currentJobRequest && id ? {
+    ...currentJobRequest,
+    client: {
+      label: currentJobRequest.client?.firstName,
+      value: currentJobRequest.client?._id
+    },
+    property: currentJobRequest?.property?.id || '',
+    workingHours: currentJobRequest.workingHours,
+    workingDays: currentJobRequest.workingDays,
+  } : {
     name: '',
     description: '',
     type: '',
@@ -48,34 +58,13 @@ const RequestAddForm: FC<IProps> = ({ id, actions, isJobRequestsLoading, current
       label: 'Search for Clients...',
       value: ''
     },
-    property: null
+    property: null,
+    workingHours: {
+      start: '',
+      end: ''
+    },
+    workingDays: [],
   });
-
-  useEffect(() => {
-    actions.fetchClients({ roles: 'CLIENT' });
-  }, [actions]);
-
-  useEffect(() => {
-    if (id) actions.fetchJobRequest(id);
-  }, [id, actions]);
-
-  useEffect(() => {
-    if (currentJobRequest && id) {
-      setInitialValues({
-        ...currentJobRequest,
-        client: {
-          label: currentJobRequest.client?.firstName,
-          value: currentJobRequest.client?._id
-        },
-        property: currentJobRequest?.property?.id || ''
-      });
-
-      setClientDetails(currentJobRequest?.client);
-      fetchUserProperties(currentJobRequest?.client._id).then((response) => {
-        setProperties(response.data?.data?.data?.rows || []);
-      });
-    }
-  }, [id, currentJobRequest]);
 
   const RequestSchema = Yup.object().shape({
     name: Yup.string().required(`Name is required`),
@@ -86,6 +75,11 @@ const RequestAddForm: FC<IProps> = ({ id, actions, isJobRequestsLoading, current
       label: Yup.string()
     }),
     property: Yup.string().notRequired().nullable(),
+    workingHours: Yup.object().shape({
+      start: Yup.string().required(`Start Time is required`),
+      end: Yup.string().required(`End Time is required`)
+    }),
+    workingDays: Yup.array(Yup.string()).min(1, `Working days is required`),
     status: Yup.string()
   });
 
@@ -127,6 +121,38 @@ const RequestAddForm: FC<IProps> = ({ id, actions, isJobRequestsLoading, current
     },
     [formik]
   );
+
+  /**
+   * Handle working days change
+   * @param day 
+   */
+  const onWorkingDaysChange = (day: string) => {
+    if (formik.values.workingDays?.length && formik.values.workingDays.find((selectedDay: string) => selectedDay === day)) {
+      formik.setFieldValue(
+        'workingDays',
+        formik.values.workingDays.filter((selectedDay: string) => selectedDay !== day)
+      );
+    } else {
+      formik.setFieldValue('workingDays', formik.values.workingDays ? [...formik.values.workingDays, day] : [day]);
+    }
+  };
+
+  useEffect(() => {
+    actions.fetchClients({ roles: 'CLIENT' });
+  }, [actions]);
+
+  useEffect(() => {
+    if (id) actions.fetchJobRequest(id);
+  }, [id, actions]);
+
+  useEffect(() => {
+    if (currentJobRequest && id) {
+      setClientDetails(currentJobRequest?.client);
+      fetchUserProperties(currentJobRequest?.client._id).then((response) => {
+        setProperties(response.data?.data?.data?.rows || []);
+      });
+    }
+  }, [id, currentJobRequest]);
 
   useEffect(() => {
     if (isClient && formik.values.client.value !== currentUser._id) {
@@ -208,6 +234,50 @@ const RequestAddForm: FC<IProps> = ({ id, actions, isJobRequestsLoading, current
                 />
                 {formik.errors.description && formik.touched.description ? <div className="txt-red">{formik.errors.description}</div> : null}
               </div>
+
+              <div className="mb-3 row">
+                <div className="col-5">
+                  <InputField
+                    label="Preferred working hours"
+                    placeholder="Start Hours"
+                    type="time"
+                    name="workingHours.start"
+                    value={formik.values.workingHours?.start}
+                    helperComponent={<ErrorMessage name={'workingHours.start'} />}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                  />
+                  <InputField
+                    label=""
+                    placeholder="End Hours"
+                    type="time"
+                    name="workingHours.end"
+                    value={formik.values.workingHours?.end}
+                    helperComponent={<ErrorMessage name={'workingHours.end'} />}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                  />
+                </div>
+                <div className="col week-list">
+                  <label className="form-label txt-dark-grey">Preferred working days and time</label>
+                  <ul>
+                    {DAYS_OF_WEEK.map((day: string) => (
+                      <li
+                        key={day}
+                        className={`${
+                          (formik.values.workingDays?.length && !!formik.values.workingDays.find((selectedDay: string) => selectedDay === day))
+                            ? 'selected'
+                            : ''
+                        }`}
+                        onClick={() => onWorkingDaysChange(day)}
+                      >
+                        <span className="item">{day[0]?.toString().toUpperCase()}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <ErrorMessage name="workingDays" />
+                </div>
+              </div>
             </div>
           </div>
           <div className="col">
@@ -283,7 +353,6 @@ const RequestAddForm: FC<IProps> = ({ id, actions, isJobRequestsLoading, current
             </div>
           </div>
         </div>
-
         <div className="mb-3 mt-3">
           <button type="submit" className="btn btn-primary">
             Save Request

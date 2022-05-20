@@ -64,18 +64,39 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
   const mapVisits = (visitSettings: any[]) => {
     const mappedVisits = visitSettings.reduce((acc: any, visitSetting) => {
       const rruleSet = new RRuleSet();
-      rruleSet.rrule(rrulestr(visitSetting.rruleSet));
-      visitSetting.excRrule.map((rule: string) => rruleSet.exrule(rrulestr(rule)));
-      rruleSet.all().map((visit, index: number) => {
-        let visitMonth = DateTime.fromJSDate(visit).toFormat('LLL');
+
+      if (visitSetting.job.type !== 'ONE-OFF') {
+        rruleSet.rrule(rrulestr(visitSetting.rruleSet));
+        visitSetting.excRrule.map((rule: string) => rruleSet.exrule(rrulestr(rule)));
+        rruleSet.all().map((visit, index: number) => {
+          let visitMonth = DateTime.fromJSDate(visit).toFormat('LLL');
+          if (visitSetting.status.status === 'COMPLETED') visitMonth = 'completed';
+          else if (new Date(visit).valueOf() < new Date().valueOf()) visitMonth = 'overdue';
+
+          let visitObj: any = {
+            ...visitSetting,
+            group: visitMonth,
+            visitMapId: `${visitSetting._id}_${visitMonth}_${index}`,
+            startDate: visit,
+            title: visitSetting.inheritJob ? job?.title : visitSetting.title,
+            instruction: visitSetting.inheritJob ? job?.instruction : visitSetting.instruction,
+            team: visitSetting.inheritJob ? job?.team : visitSetting.team,
+            lineItems: visitSetting.inheritJob ? job?.lineItems : visitSetting.lineItems
+          };
+          if (acc[visitMonth]) acc[visitMonth].push(visitObj);
+          else acc[visitMonth] = [visitObj];
+          return true;
+        });
+      } else {
+        let visitMonth = DateTime.fromJSDate(new Date(visitSetting.startDate)).toFormat('LLL');
         if (visitSetting.status.status === 'COMPLETED') visitMonth = 'completed';
-        else if (new Date(visit).valueOf() < new Date().valueOf()) visitMonth = 'overdue';
+        else if (new Date(visitSetting.startDate).valueOf() < new Date().valueOf()) visitMonth = 'overdue';
 
         let visitObj: any = {
           ...visitSetting,
           group: visitMonth,
-          visitMapId: `${visitSetting._id}_${visitMonth}_${index}`,
-          startDate: visit,
+          visitMapId: `${visitSetting._id}_${visitMonth}`,
+          startDate: new Date(visitSetting.startDate),
           title: visitSetting.inheritJob ? job?.title : visitSetting.title,
           instruction: visitSetting.inheritJob ? job?.instruction : visitSetting.instruction,
           team: visitSetting.inheritJob ? job?.team : visitSetting.team,
@@ -83,8 +104,8 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
         };
         if (acc[visitMonth]) acc[visitMonth].push(visitObj);
         else acc[visitMonth] = [visitObj];
-        return true;
-      });
+      }
+
       return acc;
     }, {});
 

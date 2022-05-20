@@ -1,5 +1,5 @@
 import { IUser } from 'common/types/user';
-import { ADD_PROPERTY, FETCH_PROPERTY, FETCH_PROPERTIES, UPDATE_PROPERTY } from 'store/constants';
+import { ADD_PROPERTY, FETCH_PROPERTY, FETCH_PROPERTIES, UPDATE_PROPERTY, DELETE_PROPERTY_SUCCESS } from 'store/constants';
 
 export const fetchProperties = (data: any) => {
   return {
@@ -22,9 +22,16 @@ export const fetchProperty = (id: string) => {
   };
 };
 
-export const updateProperty = (data: IUser) => {
+export const updateProperty = (data: any) => {
   return {
     type: UPDATE_PROPERTY,
     payload: data
+  };
+};
+
+export const deleteProperty = (payload: any) => {
+  return {
+    type: DELETE_PROPERTY_SUCCESS,
+    payload: payload
   };
 };

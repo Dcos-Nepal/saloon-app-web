@@ -45,11 +45,9 @@ const RequestDetail: FC<IProps> = ({ actions, currentRequest, isRequestsLoading 
               {((currentUser.role === 'WORKER' || currentUser.role === 'CLIENT') && currentUser.id === currentRequest?.createdBy) || currentUser.role === 'ADMIN' ? (
                 <div className="col">
                   <button
-                    onClick={() => id && navigate(`edit`)}
                     type="button"
                     className="btn btn-primary d-flex float-end me-2"
-                    data-bs-toggle="modal"
-                    data-bs-target="#job-request-form"
+                    onClick={() => id && navigate(`edit`)}
                   >
                     <PencilIcon className="mt-1"/>&nbsp; Edit Job Request
                   </button>
@@ -91,6 +89,16 @@ const RequestDetail: FC<IProps> = ({ actions, currentRequest, isRequestsLoading 
                   <div className="col p-2 ps-4">
                     <div className="txt-grey">Job description</div>
                     <div className="">{currentRequest.description}</div>
+                  </div>
+                </div>
+                <div className="row mt-3">
+                  <div className="col p-1 ps-4">
+                    <div className="txt-grey">Working Hours</div>
+                    <div className="">Start: {currentRequest.workingHours?.start || '-'} &nbsp;&nbsp;-&nbsp;&nbsp; End: {currentRequest.workingHours?.end || '-'}</div>
+                  </div>
+                  <div className="col p-1 ps-4">
+                    <div className="txt-grey">Working Days</div>
+                    <div className="">{currentRequest.workingDays?.join(', ') || '-'}</div>
                   </div>
                 </div>
               </div>

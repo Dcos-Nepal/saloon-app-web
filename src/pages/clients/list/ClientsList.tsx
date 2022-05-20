@@ -74,13 +74,13 @@ const ClientsList = (props: any) => {
     if (props.clients?.data?.rows) {
       setClients(
         props.clients.data?.rows.map((row: any) => ({
-          name: `${row.firstName} ${row.lastName}`,
+          name: row.userData?.isCompanyNamePrimary ? (row.userData?.company || "-") : `${row?.firstName} ${row?.lastName}`,
           email: row.email,
           address: row?.address
             ? `${row.address?.street1}, ${row.address?.street2}, ${row.address?.city}, ${row.address?.state}, ${row.address?.postalCode}, ${row.address?.country}`
             : 'Address not added!',
           contact: row.phoneNumber,
-          status: row.auth?.email?.valid,
+          status: row.auth?.email?.verified,
           updatedAt: row.updatedAt,
           _id: row._id
         }))

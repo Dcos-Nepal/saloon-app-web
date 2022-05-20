@@ -19,7 +19,7 @@ import * as jobsActions from '../../store/actions/job.actions';
 import { deleteJobApi, provideFeedbackApi } from 'services/jobs.service';
 import { Loader } from 'common/components/atoms/Loader';
 import { CheckIcon, EyeIcon, NoteIcon, PencilIcon, TasklistIcon, TrashIcon } from '@primer/octicons-react';
-import { getCurrentUser } from 'utils';
+import { getCurrentUser, getJobPropertyAddress } from 'utils';
 import Truncate from 'react-truncate';
 import EmptyState from 'common/components/EmptyState';
 
@@ -82,7 +82,7 @@ const JobsList = (props: IProps) => {
       setJobs(
         props.jobs.data?.rows.map((job: any) => ({
           ...job,
-          jobFor: job.jobFor.fullName,
+          jobFor: job.jobFor,
           total: job.lineItems.reduce((total: number, val: any) => total + val.quantity * val.unitPrice, 0),
           schedule: job.primaryVisit.rruleSet ? _.startCase(rrulestr(job.primaryVisit.rruleSet).toText()) : ''
         }))
@@ -110,19 +110,17 @@ const JobsList = (props: IProps) => {
       },
       {
         Header: 'CLIENT',
-        accessor: 'jobFor'
+        accessor: (row: any) => {
+          return (
+            <div>{row.jobFor?.fullName}</div>
+          );
+        }
       },
       {
         Header: 'JOB ADDRESS',
         accessor: (row: any) => {
           return (
-            <div>
-              {`${row.property?.street1 ? `${row.property?.street1}, ` : ''}${row.property?.street2 ? `${row.property?.street2}, ` : ''}${
-                row.property?.city ? `${row.property?.city}, ` : ''
-              }${row.property?.state ? `${row.property?.state}, ` : ''}${row.property?.postalCode ? `${row.property?.postalCode}, ` : ''}${
-                row.property?.country ? row.property?.country : ''
-              }` || '-'}
-            </div>
+            <div>{getJobPropertyAddress(row)}</div>
           );
         }
       },

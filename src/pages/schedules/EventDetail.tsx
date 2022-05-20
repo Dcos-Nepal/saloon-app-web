@@ -63,15 +63,25 @@ const ScheduleEventDetail: FC<IProps> = ({ closeModal, markVisitCompleteHandler,
               <h5>Details</h5>
               <div>{event.title}</div>
               <div className="mt-3">
-                <label>
-                  <strong>Visit Status</strong>
-                </label>
-                <div className="mt-1">
-                  {event.extendedProps?.meta?.status?.status === 'COMPLETED' ? (
-                    <span className="status status-green">{event.extendedProps?.meta?.status?.status}</span>
-                  ) : (
-                    <span className="status status-blue">{event.extendedProps?.meta?.status?.status}</span>
-                  )}
+                <div className='row mt-2 d-flex align-items-center'>
+                  <div className="col">
+                    <label>
+                      <strong>Visit Status</strong>
+                    </label>
+                    <div className="mt-1">
+                      <span className={`status status-${event.extendedProps?.meta?.status?.status === 'COMPLETED' ? 'green' : 'blue'}`}>
+                        {event.extendedProps?.meta?.status?.status}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="col">
+                    <label>
+                      <strong>Visit Type</strong>
+                    </label>
+                    <div className="mt-1">
+                      <span className="status status-blue">{event.extendedProps?.meta?.job?.type}</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

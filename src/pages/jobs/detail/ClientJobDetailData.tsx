@@ -3,9 +3,9 @@ import { connect } from 'react-redux';
 import { toast } from 'react-toastify';
 import { DateTime } from 'luxon';
 
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import RRule, { Frequency, RRuleSet, rrulestr } from 'rrule';
-import { FieldArray, FormikProvider, useFormik } from 'formik';
+import { FieldArray, FormikProvider, getIn, useFormik } from 'formik';
 import {
   AlertIcon,
   CheckCircleIcon,
@@ -53,6 +53,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
   const [selectedVisit, setSelectedVisit] = useState<any>();
   const [completedVisit, setCompletedVisit] = useState<any>();
   const [showEventDetail, setShowEventDetail] = useState<any | null>();
+  const [selectedTeam, setSelectedTeam] = useState<Array<any>>([]);
 
   /**
    * Maps visits in the respective grouping and prepare a list og groups
@@ -63,18 +64,39 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
   const mapVisits = (visitSettings: any[]) => {
     const mappedVisits = visitSettings.reduce((acc: any, visitSetting) => {
       const rruleSet = new RRuleSet();
-      rruleSet.rrule(rrulestr(visitSetting.rruleSet));
-      visitSetting.excRrule.map((rule: string) => rruleSet.exrule(rrulestr(rule)));
-      rruleSet.all().map((visit, index: number) => {
-        let visitMonth = DateTime.fromJSDate(visit).toFormat('LLL');
+
+      if (visitSetting.job.type !== 'ONE-OFF') {
+        rruleSet.rrule(rrulestr(visitSetting.rruleSet));
+        visitSetting.excRrule.map((rule: string) => rruleSet.exrule(rrulestr(rule)));
+        rruleSet.all().map((visit, index: number) => {
+          let visitMonth = DateTime.fromJSDate(visit).toFormat('LLL');
+          if (visitSetting.status.status === 'COMPLETED') visitMonth = 'completed';
+          else if (new Date(visit).valueOf() < new Date().valueOf()) visitMonth = 'overdue';
+
+          let visitObj: any = {
+            ...visitSetting,
+            group: visitMonth,
+            visitMapId: `${visitSetting._id}_${visitMonth}_${index}`,
+            startDate: visit,
+            title: visitSetting.inheritJob ? job?.title : visitSetting.title,
+            instruction: visitSetting.inheritJob ? job?.instruction : visitSetting.instruction,
+            team: visitSetting.inheritJob ? job?.team : visitSetting.team,
+            lineItems: visitSetting.inheritJob ? job?.lineItems : visitSetting.lineItems
+          };
+          if (acc[visitMonth]) acc[visitMonth].push(visitObj);
+          else acc[visitMonth] = [visitObj];
+          return true;
+        });
+      } else {
+        let visitMonth = DateTime.fromJSDate(new Date(visitSetting.startDate)).toFormat('LLL');
         if (visitSetting.status.status === 'COMPLETED') visitMonth = 'completed';
-        else if (new Date(visit).valueOf() < new Date().valueOf()) visitMonth = 'overdue';
+        else if (new Date(visitSetting.startDate).valueOf() < new Date().valueOf()) visitMonth = 'overdue';
 
         let visitObj: any = {
           ...visitSetting,
           group: visitMonth,
-          visitMapId: `${visitSetting._id}_${visitMonth}_${index}`,
-          startDate: visit,
+          visitMapId: `${visitSetting._id}_${visitMonth}`,
+          startDate: new Date(visitSetting.startDate),
           title: visitSetting.inheritJob ? job?.title : visitSetting.title,
           instruction: visitSetting.inheritJob ? job?.instruction : visitSetting.instruction,
           team: visitSetting.inheritJob ? job?.team : visitSetting.team,
@@ -82,8 +104,8 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
         };
         if (acc[visitMonth]) acc[visitMonth].push(visitObj);
         else acc[visitMonth] = [visitObj];
-        return true;
-      });
+      }
+
       return acc;
     }, {});
 
@@ -227,7 +249,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
           visitFor: newVisit.job?.jobFor?._id,
           startDate: new Date(`${newVisit.startDate} ${newVisit.startTime}`),
           endDate: new Date(`${newVisit.endDate} ${newVisit.endTime}`),
-          team: newVisit.team.map((t: { _id: string }) => t._id)
+          team: newVisit.team.map((t: any) => t._id || t)
         },
         updateFollowing ? { updateFollowing } : null
       );
@@ -247,7 +269,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
           ...visit,
           job: visit.job?._id,
           rruleSet: rrule,
-          team: visit.team.map((t: any) => t._id),
+          team: visit.team.map((t: any) => t._id || t),
           startDate: new Date(`${visit.startDate} ${visit.startTime}`),
           endDate: new Date(`${visit.endDate} ${visit.endTime}`)
         },
@@ -351,6 +373,30 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [jobVisits, job]);
 
+  useEffect(() => {
+    if (selectedVisit?.team?.length) {
+      setSelectedTeam(
+        selectedVisit?.team?.map((worker: any) => {
+          return { label: worker.fullName, value: worker._id };
+        })
+      );
+    }
+  }, [selectedVisit]);
+
+  /**
+   * Handles Assignees selection
+   */
+  const handleWorkerSelection = useCallback(
+    (selected: any[]) => {
+      setSelectedTeam(selected);
+      visitEditForm.setFieldValue(
+        `team`,
+        selected.map((worker) => worker.value)
+      );
+    },
+    [visitEditForm]
+  );
+
   return (
     <div>
       <div className="row mt-1 mb-4">
@@ -404,8 +450,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
               <div className="col p-2 ps-4">
                 <div className="txt-grey">Property address</div>
                 <div className="">
-                  <LocationIcon />{' '}
-                  {getJobPropertyAddress(job)}
+                  <LocationIcon /> {getJobPropertyAddress(job)}
                 </div>
               </div>
             </div>
@@ -654,7 +699,15 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
           <label htmlFor="additional-doc" className="form-label">
             <strong>Notes:</strong>
           </label>
-          <div className="txt-grey pt-2">{job?.notes ? job?.notes : <><StopIcon size={16} /> Not notes added yet!.</>}</div>
+          <div className="txt-grey pt-2">
+            {job?.notes ? (
+              job?.notes
+            ) : (
+              <>
+                <StopIcon size={16} /> Not notes added yet!.
+              </>
+            )}
+          </div>
         </div>
 
         <div className="mb-3">
@@ -669,7 +722,13 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
                 </a>
               </div>
             ))}
-            <div className="txt-grey pt-2">{job?.docs.length ? null : <><StopIcon size={16} /> Not document added yet!.</>}</div>
+            <div className="txt-grey pt-2">
+              {job?.docs.length ? null : (
+                <>
+                  <StopIcon size={16} /> Not document added yet!.
+                </>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -803,6 +862,24 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
                         <div className="col">
                           <InputField label="End time" name="endTime" type="time" onChange={visitEditForm.handleChange} value={visitEditForm.values?.endTime} />
                         </div>
+                      </div>
+                    </div>
+                    <div className="col card m-3">
+                      <div className="row mb-2">
+                        <div className="col d-flex flex-row">
+                          <h6 className="txt-bold mt-1">Team</h6>
+                        </div>
+                      </div>
+                      <div className="row">
+                        <SelectAsync
+                          name={`team`}
+                          label="Select Workers"
+                          value={selectedTeam}
+                          resource={{ name: 'users', labelProp: 'fullName', valueProp: '_id', params: { roles: 'WORKER' } }}
+                          onChange={handleWorkerSelection}
+                          isMulti={true}
+                          closeOnSelect={true}
+                        />
                       </div>
                     </div>
                   </div>

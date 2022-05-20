@@ -15,7 +15,10 @@ import * as clientsActions from 'store/actions/clients.actions';
 import * as propertiesActions from 'store/actions/properties.actions';
 import { COUNTRIES_OPTIONS, DEFAULT_COUNTRY, PREFERRED_TIME_OPTIONS, STATES_OPTIONS } from 'common/constants';
 import Modal from 'common/components/atoms/Modal';
+import DeleteConfirm from 'common/components/DeleteConfirm';
 import SearchLocation from 'common/components/form/SearchLocation';
+import { deletePropertyApi } from 'services/properties.service';
+import { toast } from 'react-toastify';
 
 const PropertyForm = React.lazy(() => import('./PropertyForm'));
 
@@ -27,6 +30,7 @@ interface IProps {
     addProperty: (data: any) => void;
     fetchProperties: (filter: any) => void;
     updateProperty: (data: any) => void;
+    deleteProperty: (data: any) => void;
   };
   id?: string;
   isClientsLoading: boolean;
@@ -38,9 +42,9 @@ interface IProps {
 
 const ClientForm: FC<IProps> = ({ id, actions, currentClient, properties }) => {
   const navigate = useNavigate();
-
   const [addProperty, setAddProperty] = useState(false);
   const [editPropertyFor, setEditPropertyFor] = useState<any>(null);
+  const [deletePropertyFor, setDeletePropertyFor] = useState<any>(null);
 
   const [initialValues, setInitialValues] = useState<IClient>({
     firstName: '',
@@ -66,23 +70,6 @@ const ClientForm: FC<IProps> = ({ id, actions, currentClient, properties }) => {
     avatar: '',
     
   });
-
-  useEffect(() => {
-    if (id) actions.fetchClient(id);
-  }, [id, actions]);
-
-  useEffect(() => {
-    if (currentClient && id) {
-      if (!currentClient.userData) {
-        currentClient.userData = { type: 'CLIENT' };
-      }
-      setInitialValues(currentClient);
-    }
-  }, [currentClient, id]);
-
-  useEffect(() => {
-    if (currentClient?._id && id) actions.fetchProperties({ user: currentClient._id });
-  }, [id, currentClient?._id, actions]);
 
   const ClientSchema = Yup.object().shape({
     firstName: Yup.string().required(`First name is required`).min(2, 'Too Short!').max(20, 'Too Long!'),
@@ -155,6 +142,22 @@ const ClientForm: FC<IProps> = ({ id, actions, currentClient, properties }) => {
   };
 
   /**
+   * Deletes the selected property from the list.
+   */
+  const deletePropertyHandler = async () => {
+    try {
+      if (!!deletePropertyFor) {
+        await deletePropertyApi(deletePropertyFor);
+        toast.success('Property deleted successfully');
+        actions.deleteProperty(deletePropertyFor);
+        setDeletePropertyFor('');
+      }
+    } catch (ex) {
+      toast.error('Failed to delete property');
+    }
+  };
+
+  /**
    * Custom Error Message
    *
    * @param param Props Object
@@ -175,6 +178,31 @@ const ClientForm: FC<IProps> = ({ id, actions, currentClient, properties }) => {
       </div>
     ) : null;
   };
+
+  useEffect(() => {
+    if (id) actions.fetchClient(id);
+
+    return () => {
+      actions.fetchClient = () => {};
+    }
+  }, [id, actions]);
+
+  useEffect(() => {
+    if (currentClient && id) {
+      if (!currentClient.userData) {
+        currentClient.userData = { type: 'CLIENT' };
+      }
+      setInitialValues(currentClient);
+    }
+  }, [currentClient, id]);
+
+  useEffect(() => {
+    if (currentClient?._id && id) actions.fetchProperties({ user: currentClient._id });
+
+    return () => {
+      actions.fetchProperties = () => {};
+    }
+  }, [id, currentClient?._id, actions]);
 
   return (
     <div className="row">
@@ -365,8 +393,10 @@ const ClientForm: FC<IProps> = ({ id, actions, currentClient, properties }) => {
           <div className="row">
             <div className="col card ms-3">
               <h5>{properties.length ? 'Listed Properties' : 'Properties'}</h5>
-              {properties.length ? properties.map((property) => <PropertyDetail setEditPropertyFor={setEditPropertyFor} property={property} />) : null}
-
+              {properties.length
+                ? properties.map((property) => <PropertyDetail key={property?._id} setEditPropertyFor={setEditPropertyFor} setDeletePropertyFor={setDeletePropertyFor} property={property} />)
+                : null
+              }
               <div
                 onClick={() => {
                   if (currentClient && currentClient._id) setAddProperty(true);
@@ -430,6 +460,9 @@ const ClientForm: FC<IProps> = ({ id, actions, currentClient, properties }) => {
               </div>
             </div>
           </Modal>
+          <Modal isOpen={!!deletePropertyFor} onRequestClose={() => setDeletePropertyFor('')}>
+            <DeleteConfirm onDelete={deletePropertyHandler} closeModal={() => setDeletePropertyFor('')} />
+          </Modal>
         </div>
       ) : null}
     </div>
@@ -465,6 +498,9 @@ const mapDispatchToProps = (dispatch: any) => ({
     },
     updateProperty: (data: any) => {
       dispatch(propertiesActions.updateProperty(data));
+    },
+    deleteProperty: (data: any) => {
+      dispatch(propertiesActions.deleteProperty(data));
     }
   }
 });

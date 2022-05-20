@@ -54,6 +54,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
   const [completedVisit, setCompletedVisit] = useState<any>();
   const [showEventDetail, setShowEventDetail] = useState<any | null>();
   const [selectedTeam, setSelectedTeam] = useState<Array<any>>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   /**
    * Maps visits in the respective grouping and prepare a list og groups
@@ -227,6 +228,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
    * @returns Void
    */
   const saveVisit = async (visit: any, updateFollowing = false) => {
+    setIsSubmitting(true);
     // Creating One-Off RRule for a selected visit
     const rrule = createOneOffRule(visit);
 
@@ -237,7 +239,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
       if (!updateFollowing) delete newVisit._id;
 
       // Make API Call to create a new Visit
-      addVisitApi(
+      await addVisitApi(
         {
           ...newVisit,
           job: newVisit.job?._id,
@@ -257,7 +259,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
       // If you want to update following visits
       // Update the Primary visit with RRule Exception
       if (!updateFollowing) {
-        updateVisitApi(visit._id, {
+        await updateVisitApi(visit._id, {
           excRrule: [...visit.excRrule, rrule]
         });
       }
@@ -277,7 +279,12 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
       );
     }
 
+    await actions.fetchVisits({ job: id });
+
     toast.success('Job Updated');
+
+    setIsSubmitting(false);
+    setEditVisitMode(false);
   };
 
   /**
@@ -983,10 +990,10 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
                   </div>
                 </div>
                 <div className="modal-footer">
-                  <button type="submit" className="btn btn-secondary" onClick={() => saveVisit(visitEditForm.values, true)}>
+                  <button disabled={isSubmitting} type="submit" className="btn btn-secondary" onClick={() => saveVisit(visitEditForm.values, true)}>
                     Save and Update Future Visit
                   </button>
-                  <button type="submit" className="btn btn-primary" onClick={() => saveVisit(visitEditForm.values)}>
+                  <button disabled={isSubmitting} type="submit" className="btn btn-primary" onClick={() => saveVisit(visitEditForm.values)}>
                     Update this Visit
                   </button>
                   <button type="button" className="btn btn-danger" onClick={() => setEditVisitMode(!editVisitMode)}>

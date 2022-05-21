@@ -8281,6 +8281,11 @@ react-select@^5.2.1:
     prop-types "^15.6.0"
     react-transition-group "^4.3.0"
 
+react-simple-wysiwyg@^2.0.2:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/react-simple-wysiwyg/-/react-simple-wysiwyg-2.0.2.tgz#3287f60fef2435e4ce09a59dbc3381a65d2d463a"
+  integrity sha512-aLjKJ5sT9hekaqTTYm10bAAFku76xmOA5TKQglT8VzXc95VcewiwgDO/kSYA2uU6ki1hlifFElVTIm60VPJLpg==
+
 react-table@^7.7.0:
   version "7.7.0"
   resolved "https://registry.yarnpkg.com/react-table/-/react-table-7.7.0.tgz#e2ce14d7fe3a559f7444e9ecfe8231ea8373f912"

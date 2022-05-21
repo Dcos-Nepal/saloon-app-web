@@ -1,4 +1,5 @@
 import { ChecklistIcon, PersonIcon, StopIcon } from '@primer/octicons-react';
+import Image from 'common/components/atoms/Image';
 import { FC } from 'react';
 import { getCurrentUser, getJobPropertyAddress, isDateBefore } from 'utils';
 
@@ -25,8 +26,7 @@ const VisitDetail: FC<IProps> = ({ closeModal, markVisitCompleteHandler, event }
                 <div className="row">
                   <div>
                     <button className="btn btn-primary" onClick={(e) => markVisitCompleteHandler(true, event)}>
-                      {' '}
-                      <ChecklistIcon /> Complete this Visit
+                      <ChecklistIcon /> &nbsp; Complete this Visit
                     </button>
                   </div>
                 </div>
@@ -109,15 +109,13 @@ const VisitDetail: FC<IProps> = ({ closeModal, markVisitCompleteHandler, event }
                       {event?.completion?.docs.map((doc: any, index: number) => (
                         <div key={`~${index}`} className="mr-2 p-2">
                           <a target="_blank" href={doc.url} rel="noreferrer">
-                            <img src={doc.url} className="img-thumbnail float-start" alt="" style={{ width: '100px', height: '100px' }} />
+                            <Image fileSrc={doc.url} className="img-thumbnail float-start" style={{ width: '100px', height: '100px' }} />
                           </a>
                         </div>
                       ))}
                       <div className="txt-grey pt-2">
                         {event?.completion?.docs.length ? null : (
-                          <>
-                            <StopIcon size={16} /> Not document added yet!.
-                          </>
+                          <><StopIcon size={16} /> Not document added yet!.</>
                         )}
                       </div>
                     </div>

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ChecklistIcon, PersonIcon, StopIcon } from '@primer/octicons-react';
 import { Loader } from 'common/components/atoms/Loader';
 import { getCurrentUser, getJobPropertyAddress, isDateBefore } from 'utils';
+import Image from 'common/components/atoms/Image';
 
 interface IProps {
   event: any;
@@ -137,7 +138,7 @@ const ScheduleEventDetail: FC<IProps> = ({ closeModal, markVisitCompleteHandler,
                       {event.extendedProps?.meta?.completion?.docs.map((doc: any, index: number) => (
                         <div key={`~${index}`} className="mr-2 p-2">
                           <a target="_blank" href={doc.url} rel="noreferrer">
-                            <img src={doc.url} className="img-thumbnail float-start" alt="" style={{ width: '100px', height: '100px' }} />
+                            <Image fileSrc={doc.url} className="img-thumbnail float-start" style={{ width: '100px', height: '100px' }} />
                           </a>
                         </div>
                       ))}

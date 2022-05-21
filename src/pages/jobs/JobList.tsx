@@ -125,7 +125,7 @@ const JobsList = (props: IProps) => {
       },
       {
         Header: 'STATUS',
-        accessor: (row: any) => <div className={row.isCompleted && row.status?.status ? 'text-success' : 'text-warning'}>{row.isCompleted && row.status?.status === 'COMPLETED' ? 'COMPLETED' : 'NOT COMPLETED'}</div>
+        accessor: (row: any) => <div className={row.isCompleted ? 'text-success' : 'text-warning'}>{row.isCompleted ? 'COMPLETED' : 'NOT COMPLETED'}</div>
       },
       {
         Header: 'Total',

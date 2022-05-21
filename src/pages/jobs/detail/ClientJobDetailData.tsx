@@ -36,7 +36,7 @@ import { Loader } from 'common/components/atoms/Loader';
 import VisitDetail from './VisitDetail';
 import DeleteConfirm from 'common/components/DeleteConfirm';
 import CompleteVisit from 'pages/schedules/CompleteVisit';
-import { getJobPropertyAddress } from 'utils';
+import { getCurrentUser, getJobPropertyAddress } from 'utils';
 
 export interface IVisit {
   overdue: any;
@@ -55,6 +55,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
   const [showEventDetail, setShowEventDetail] = useState<any | null>();
   const [selectedTeam, setSelectedTeam] = useState<Array<any>>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const currUser: { role: string; id: string } = getCurrentUser();
 
   /**
    * Maps visits in the respective grouping and prepare a list og groups
@@ -675,19 +676,20 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
                               </span>
                             </li>
 
-                            {v.status.status !== 'COMPLETED' ? (
-                              <li onClick={() => editVisit(v)}>
-                                <span className="dropdown-item pointer">
-                                  <PencilIcon /> Edit
-                                </span>
-                              </li>
+                            {v.status.status !== 'COMPLETED' && (currUser.role === 'ADMIN' || currUser.role === 'WORKER') ? (
+                              <>
+                                <li onClick={() => editVisit(v)}>
+                                  <span className="dropdown-item pointer">
+                                    <PencilIcon /> Edit
+                                  </span>
+                                </li>
+                                <li onClick={() => handleDeleteVisitClick(v)}>
+                                  <span className="dropdown-item pointer">
+                                    <TrashIcon /> Delete
+                                  </span>
+                                </li>
+                              </>
                             ) : null}
-
-                            <li onClick={() => handleDeleteVisitClick(v)}>
-                              <span className="dropdown-item pointer">
-                                <TrashIcon /> Delete
-                              </span>
-                            </li>
                           </ul>
                         </div>
                       </td>

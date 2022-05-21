@@ -1,4 +1,3 @@
-import { IUser } from 'common/types/user';
 import { ADD_PROPERTY, FETCH_PROPERTY, FETCH_PROPERTIES, UPDATE_PROPERTY, DELETE_PROPERTY_SUCCESS } from 'store/constants';
 
 export const fetchProperties = (data: any) => {

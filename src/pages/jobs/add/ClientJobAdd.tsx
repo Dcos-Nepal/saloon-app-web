@@ -1,3 +1,4 @@
+import { InfoIcon } from "@primer/octicons-react";
 import { useNavigate } from "react-router-dom";
 
 import ClientJobCreateForm from "./ClientJobCreateForm";
@@ -15,7 +16,10 @@ const ClientAdd = () => {
           <span className="col">Back to previous</span>
         </div>
         <div className="d-flex flex-row">
-          <h3 className="extra">Create Job for Client</h3>
+          <div className='mt-2'>
+            <h3 className="txt-bold extra">Create Job for Client</h3>
+            <p className="text-secondary"><InfoIcon /> This is the Job Creation form. Please add all the information for the Job.</p>
+          </div>
         </div>
       </div>
       <div className="">

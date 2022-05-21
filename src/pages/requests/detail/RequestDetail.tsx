@@ -5,7 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { IRequest } from "common/types/request";
 import { Loader } from "common/components/atoms/Loader";
 import * as requestsActions from "store/actions/job-requests.actions";
-import { PencilIcon } from "@primer/octicons-react";
+import { InfoIcon, PencilIcon } from "@primer/octicons-react";
 import { getCurrentUser } from "utils";
 
 interface IProps {
@@ -41,6 +41,7 @@ const RequestDetail: FC<IProps> = ({ actions, currentRequest, isRequestsLoading 
             <div className="d-flex flex-row row">
               <div className="col">
                 <h3 className="extra mt-2">Job Request details</h3>
+                <p className="text-secondary"><InfoIcon /> Job Request made by a client. This stores the information about type of job, and client's requirements. </p>
               </div>
               {((currentUser.role === 'WORKER' || currentUser.role === 'CLIENT') && currentUser.id === currentRequest?.createdBy) || currentUser.role === 'ADMIN' ? (
                 <div className="col">
@@ -88,7 +89,7 @@ const RequestDetail: FC<IProps> = ({ actions, currentRequest, isRequestsLoading 
                 <div className="row mb-3">
                   <div className="col p-2 ps-4">
                     <div className="txt-grey">Job description</div>
-                    <div className="">{currentRequest.description}</div>
+                    <div dangerouslySetInnerHTML={{__html: currentRequest.description}}/>
                   </div>
                 </div>
                 <div className="row mt-3">

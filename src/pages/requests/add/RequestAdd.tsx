@@ -1,3 +1,4 @@
+import { InfoIcon } from "@primer/octicons-react";
 import { useNavigate } from "react-router-dom";
 
 import RequestAddForm from "../RequestForm";
@@ -14,8 +15,9 @@ const RequestAdd = () => {
           </span>
           <span className="col">Back to previous</span>
         </div>
-        <div className="d-flex flex-row mt-2">
+        <div className="mt-2">
           <h3 className="extra">New Job Request</h3>
+          <p className="text-secondary"><InfoIcon /> Job Request made by a client. This stores the information about type of job, and client's requirements. </p>
         </div>
       </div>
       <div>

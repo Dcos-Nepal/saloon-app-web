@@ -432,24 +432,14 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
         <div className="col">
           <div className="card full-height">
             <div className="row">
-              <div className="col">
+              <div className="col p-2 ps-4">
+                <label className="txt-bold">Client Name</label>
                 <h5 className="txt-bold">{job?.jobFor.fullName}</h5>
-                <div>
-                  {job?.isCompleted === true ? (
-                    <span className={`status txt-green`}>
-                      <CheckCircleIcon /> Job Completed
-                    </span>
-                  ) : (
-                    <span className={`status txt-orange`}>
-                      <AlertIcon /> Requires Invoicing
-                    </span>
-                  )}
-                </div>
               </div>
               <div className="col">
                 <h4 className="txt-bold d-flex float-end mt-2">
                   ${job?.lineItems.reduce((current: number, next: { quantity: number; unitPrice: number }) => (current += next.quantity * next.unitPrice), 0)}{' '}
-                  cash
+                  Cash
                 </h4>
               </div>
             </div>
@@ -473,10 +463,23 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
         </div>
         <div className="col">
           <div className="card full-height">
-            <h6 className="txt-bold">Job Detail</h6>
+            <div className='d-flex flex-row justify-content-between'>
+              <h6 className="txt-bold">Job Detail</h6>
+              <>
+                {job?.isCompleted === true ? (
+                  <span className={`status txt-green`}>
+                    <CheckCircleIcon /> COMPLETED
+                  </span>
+                ) : (
+                  <span className={`status txt-orange`}>
+                    <AlertIcon /> Pending / In-Progress
+                  </span>
+                )}
+              </>
+            </div>
             <div className="row border-bottom">
               <div className="col p-2 ps-4">
-                <div className="txt-grey">Job number</div>
+                <div className="txt-grey">Job Number</div>
                 <div className="row">
                   <div className="col txt-orange">
                     <strong>#{job?.refCode || 'XXXXX'}</strong>

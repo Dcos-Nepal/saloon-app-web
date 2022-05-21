@@ -2,7 +2,7 @@ import { FC, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChecklistIcon, PersonIcon, StopIcon } from '@primer/octicons-react';
 import { Loader } from 'common/components/atoms/Loader';
-import { getJobPropertyAddress, isDateBefore } from 'utils';
+import { getCurrentUser, getJobPropertyAddress, isDateBefore } from 'utils';
 
 interface IProps {
   event: any;
@@ -13,6 +13,7 @@ interface IProps {
 const ScheduleEventDetail: FC<IProps> = ({ closeModal, markVisitCompleteHandler, event }) => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+  const currUser: { role: string; id: string } = getCurrentUser();
 
   /**
    * Mark visit complete
@@ -34,7 +35,7 @@ const ScheduleEventDetail: FC<IProps> = ({ closeModal, markVisitCompleteHandler,
           </div>
           <div className="modal-body" style={{ maxHeight: '600px', overflowY: 'scroll' }}>
             <Loader isLoading={isLoading} />
-            {event.extendedProps?.meta?.status?.status !== 'COMPLETED' && isDateBefore(event.start, new Date()) ? (
+            {(currUser.role === 'ADMIN' || currUser.role === 'WORKER') && event.extendedProps?.meta?.status?.status !== 'COMPLETED' && isDateBefore(event.start, new Date()) ? (
               <>
                 <div className="row">
                   <div>

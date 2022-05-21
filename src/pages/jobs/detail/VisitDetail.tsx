@@ -1,6 +1,6 @@
 import { ChecklistIcon, PersonIcon, StopIcon } from '@primer/octicons-react';
 import { FC } from 'react';
-import { getJobPropertyAddress, isDateBefore } from 'utils';
+import { getCurrentUser, getJobPropertyAddress, isDateBefore } from 'utils';
 
 interface IProps {
   event: any;
@@ -9,6 +9,8 @@ interface IProps {
 }
 
 const VisitDetail: FC<IProps> = ({ closeModal, markVisitCompleteHandler, event }) => {
+  const currUser: { role: string; id: string } = getCurrentUser();
+
   return (
     <div className={`modal fade show mt-5`} role="dialog" style={{ display: 'block' }}>
       <div className="modal-dialog">
@@ -18,7 +20,7 @@ const VisitDetail: FC<IProps> = ({ closeModal, markVisitCompleteHandler, event }
             <button type="button" className="btn-close" onClick={closeModal} data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div className="modal-body" style={{ maxHeight: '600px', overflowY: 'scroll' }}>
-            {event.status?.status !== 'COMPLETED' && isDateBefore(event.startDate, new Date()) ? (
+            {(currUser.role === 'ADMIN' || currUser.role === 'WORKER') && event.status?.status !== 'COMPLETED' && isDateBefore(event.startDate, new Date()) ? (
               <>
                 <div className="row">
                   <div>

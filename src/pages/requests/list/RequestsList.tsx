@@ -17,7 +17,7 @@ import { endpoints } from 'common/config';
 import debounce from 'lodash/debounce';
 import { deleteJobRequestApi } from 'services/job-requests.service';
 import Modal from 'common/components/atoms/Modal';
-import { EyeIcon, PencilIcon, TrashIcon } from '@primer/octicons-react';
+import { EyeIcon, InfoIcon, PencilIcon, TrashIcon } from '@primer/octicons-react';
 import EmptyState from 'common/components/EmptyState';
 import { getCurrentUser } from 'utils';
 
@@ -197,8 +197,9 @@ const RequestsList = (props: any) => {
   return (
     <>
       <div className="row">
-        <div className="col d-flex flex-row">
+        <div className="col">
           <h3 className="extra">Job Requests</h3>
+          <p className="text-secondary"><InfoIcon /> List of Job Requests. There are <strong>{requests.length}</strong> Job Requests </p>
         </div>
         <div className="col">
           <button
@@ -211,7 +212,6 @@ const RequestsList = (props: any) => {
             New request
           </button>
         </div>
-        <label className="txt-grey">{requests.length} Job Requests</label>
       </div>
       <div className="card">
         <div className="row pt-2 m-1 rounded-top bg-grey">

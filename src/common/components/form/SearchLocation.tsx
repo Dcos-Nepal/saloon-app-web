@@ -74,6 +74,7 @@ const SearchLocation: FC<any> = ({ label, formikForm, addressPath }) => {
     } catch (error) {
       console.log(error);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

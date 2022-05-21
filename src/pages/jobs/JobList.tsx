@@ -18,7 +18,7 @@ import DeleteConfirm from 'common/components/DeleteConfirm';
 import * as jobsActions from '../../store/actions/job.actions';
 import { deleteJobApi, provideFeedbackApi } from 'services/jobs.service';
 import { Loader } from 'common/components/atoms/Loader';
-import { CheckIcon, EyeIcon, NoteIcon, PencilIcon, TasklistIcon, TrashIcon } from '@primer/octicons-react';
+import { CheckIcon, EyeIcon, InfoIcon, NoteIcon, PencilIcon, TasklistIcon, TrashIcon } from '@primer/octicons-react';
 import { getCurrentUser, getJobPropertyAddress } from 'utils';
 import Truncate from 'react-truncate';
 import EmptyState from 'common/components/EmptyState';
@@ -228,17 +228,17 @@ const JobsList = (props: IProps) => {
     <>
       <div className="row d-flex flex-row">
         <div className="col ">
-          <h3 className="extra">Jobs</h3>
+          <h3 className="extra">Jobs for Clients</h3>
+          <p className="text-secondary"><InfoIcon /> List of Jobs. There are <strong>{props?.jobs?.data?.totalCount || 0}</strong> Jobs in the list</p>
         </div>
         {currUser.role === 'ADMIN' || currUser.role === 'WORKER' ? (
           <div className="col d-flex flex-row align-items-center justify-content-end">
             <button onClick={() => navigate(endpoints.admin.jobs.add)} type="button" className="btn btn-primary d-flex float-end">
               <TasklistIcon className="mt-1" />
-              &nbsp;Create a Job
+              &nbsp;Create a New Job
             </button>
           </div>
         ) : null}
-        <label className="txt-grey">Total {props?.jobs?.data?.totalCount || 0} Jobs</label>
       </div>
       <div className="card">
         <div className="row pt-2 m-1 rounded-top bg-grey">

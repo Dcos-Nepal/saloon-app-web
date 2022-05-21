@@ -150,6 +150,7 @@ const ClientJobCreateForm = ({ actions, isLoading }: IProps) => {
       `team`,
       selected.map((worker) => worker.meta._id)
     );
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   /**

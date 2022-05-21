@@ -1,3 +1,4 @@
+import { InfoIcon } from "@primer/octicons-react";
 import { FC } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -18,8 +19,9 @@ const RequestEdit: FC<IProps> = () => {
           </span>
           <span className="col">Back to previous</span>
         </div>
-        <div className="d-flex flex-row">
-          <h3 className="extra">Update Request</h3>
+        <div className="col">
+          <h3 className="extra mt-2">Update Request</h3>
+          <p className="text-secondary"><InfoIcon /> Job Request made by a client. This stores the information about type of job, and client's requirements. </p>
         </div>
       </div>
       <RequestForm id={id} />

@@ -4,6 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 
 import JobEditForm from './JobEditForm';
 import * as jobsActions from '../../../store/actions/job.actions';
+import { InfoIcon } from '@primer/octicons-react';
 
 interface IProps {
   actions: { fetchJob: (id: string, query: any) => any };
@@ -68,10 +69,10 @@ const EditJob = (props: IProps) => {
           <span className="col">Back to previous</span>
         </div>
         <div className="d-flex flex-row">
-          <h3 className="extra">Edit Job for {props.job?.jobFor.fullName}</h3>
-        </div>
-        <div className="txt-orange">
-            Ref. #{props.job?.refCode || 'XXXXX'}
+          <div className='mt-2'>
+            <h3 className="txt-bold extra">Edit Job Detail</h3>
+            <p className="text-secondary"><InfoIcon /> This is the Job Details view. In contains the all the information for the job with it's visits.</p>
+          </div>
         </div>
       </div>
       {initialValues && (

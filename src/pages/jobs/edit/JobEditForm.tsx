@@ -200,6 +200,11 @@ const EditJobForm = (props: IProps) => {
           <div className="col">
             <div className="card full-height">
               <div className="col">
+                <div className="row mb-2">
+                  <div className="txt-orange">
+                    Ref. <strong>#{props.job?.refCode || 'XXXXX'}</strong>
+                  </div>
+                </div>
                 <div className="row">
                   <div className="col-12">
                     <InputField

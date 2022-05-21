@@ -24,6 +24,8 @@ import { getServices } from 'data';
 import { deletePublicFile, uploadPublicFile } from 'services/files.service';
 import { getCurrentUser, getPropertyAddress } from 'utils';
 import { getData } from 'utils/storage';
+import Image from 'common/components/atoms/Image';
+import Spinner from '../../../assets/images/spinner.gif';
 
 interface IProps {
   actions: {
@@ -41,8 +43,9 @@ const ClientJobCreateForm = ({ actions, isLoading }: IProps) => {
   const [isRecommendationsLoading, setIsRecommendationsLoading] = useState(false);
   const [rruleStr, setRruleStr] = useState(new RRule({ dtstart: new Date(), interval: 1, freq: Frequency.DAILY }).toString());
   const [activeTab, setActiveTab] = useState('ONE-OFF');
-  const currUser: { role: string; id: string } = getCurrentUser();
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
 
+  const currUser: { role: string; id: string } = getCurrentUser();
   const currentUser = getData('user');
   const isWorker = currentUser?.userData?.type === 'WORKER';
 
@@ -208,10 +211,12 @@ const ClientJobCreateForm = ({ actions, isLoading }: IProps) => {
     formData.append('file', file, file.name);
 
     try {
+      setIsUploadingImage(true);
       const uploadedFile = await uploadPublicFile(formData);
 
       // Setting Formik form document properties
       formik.setFieldValue(`docs`, [...formik.values.docs, { key: uploadedFile.data.data.key, url: uploadedFile.data.data.url }]);
+      setIsUploadingImage(false);
     } catch (error) {
       console.log('Error');
     }
@@ -802,7 +807,7 @@ const ClientJobCreateForm = ({ actions, isLoading }: IProps) => {
               {formik.values.docs.map((doc: any, index: number) => (
                 <div key={`~${index}`} className="mr-2 p-2" style={{ position: 'relative' }}>
                   <div className="">
-                    <img src={doc.url} className="rounded float-start" alt="" style={{ width: '150px', height: '150px' }} />
+                    <Image fileSrc={doc.url} className="rounded float-start" style={{ width: '150px', height: '150px' }} />
                   </div>
                   <div className="col mt-2"></div>
                   <div
@@ -821,6 +826,14 @@ const ClientJobCreateForm = ({ actions, isLoading }: IProps) => {
                   </div>
                 </div>
               ))}
+
+              {isUploadingImage ? (
+                <div className="mr-2 p-2" style={{ position: 'relative' }}>
+                  <div className="">
+                    <Image fileSrc={Spinner} className="rounded float-start" style={{ width: '150px', height: '150px' }} />
+                  </div>
+                </div>
+              ) : null}
             </div>
             <div className="">
               <input className="form-control hidden" id="file" type="file" value={undefined} onChange={handleFileUpload} />

@@ -20,6 +20,7 @@ import { deletePublicFile, uploadPublicFile } from 'services/files.service';
 import { Loader } from 'common/components/atoms/Loader';
 import { getData } from 'utils/storage';
 import { getPropertyAddress } from 'utils';
+import Image from 'common/components/atoms/Image';
 
 interface IProps {
   isLoading: boolean;
@@ -579,7 +580,7 @@ const EditJobForm = (props: IProps) => {
               {formik.values.docs.map((doc: any, index: number) => (
                 <div key={`~${index}`} className="mr-2 p-2" style={{ position: 'relative' }}>
                   <div className="">
-                    <img src={doc.url} className="rounded float-start" alt="" style={{ width: '150px', height: '150px' }} />
+                    <Image fileSrc={doc.url} className="rounded float-start" style={{ width: '150px', height: '150px' }} />
                   </div>
                   <div
                     className="col-2 mt-2 pointer text-center"

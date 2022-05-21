@@ -37,6 +37,7 @@ import VisitDetail from './VisitDetail';
 import DeleteConfirm from 'common/components/DeleteConfirm';
 import CompleteVisit from 'pages/schedules/CompleteVisit';
 import { getCurrentUser, getJobPropertyAddress } from 'utils';
+import Image from 'common/components/atoms/Image';
 
 export interface IVisit {
   overdue: any;
@@ -730,7 +731,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
             {job?.docs.map((doc: any, index: number) => (
               <div key={`~${index}`} className="mr-2 p-2">
                 <a target="_blank" href={doc.url} rel="noreferrer">
-                  <img src={doc.url} className="rounded float-start" alt="" style={{ width: '150px', height: '150px' }} />
+                  <Image fileSrc={doc.url} className="rounded float-start" style={{ width: '150px', height: '150px' }}/>
                 </a>
               </div>
             ))}

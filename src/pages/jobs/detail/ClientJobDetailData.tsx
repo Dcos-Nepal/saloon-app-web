@@ -587,8 +587,10 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
               <h6 className="txt-bold">Job Completion Info</h6>
               <div className="row mt-3 pb-2 border-bottom">
                 <div className="col p-2 ps-4 mt-1">
-                  <div className="txt-grey">Statues</div>
-                  <span className={`status status-green`}>Completed</span>
+                  <div className="txt-grey">Status:</div>
+                  <span className="status status-green">COMPLETED</span>
+                  <div className="mt-2">Completed On:</div>
+                  <span className={`status status-primary`}>{new Date(job?.completion?.date).toLocaleDateString()}</span>
                 </div>
                 <div className="col p-2 ps-4">
                   <div className="txt-grey">Completion Note:</div>
@@ -599,15 +601,15 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
                 <div className="row pb-2 border-bottom">
                   <div className="col-12 p-2 ps-4 mt-1">
                     <div className="txt-grey mb-2">Uploaded Documents</div>
-                    {job?.completion?.docs.map((doc: { url: string | undefined }, i: number) => (
-                      <div key={'doc_' + i}>
-                        {i + 1}.{' '}
-                        <a className="text-decoration-none" href={doc.url}>
-                          {' '}
-                          <FileIcon /> Document/Image {i + 1}
-                        </a>
-                      </div>
-                    ))}
+                    <div className="d-flex flex-row justify-content-start">
+                      {job?.completion?.docs.map((doc: any, index: number) => (
+                        <div key={`~${index}_doc`} className="mr-2 p-2">
+                          <a target="_blank" href={doc.url} rel="noreferrer">
+                            <Image fileSrc={doc.url} className="img-thumbnail float-start" style={{ width: '100px', height: '100px' }} />
+                          </a>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
               ) : null}

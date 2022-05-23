@@ -15,6 +15,7 @@ const ReferralProgram = React.lazy(() => import('pages/referral'));
 const Requests = React.lazy(() => import('pages/requests'));
 const Quotes = React.lazy(() => import('pages/quotes'));
 const LineItems = React.lazy(() => import('pages/lineItems'));
+const Services = React.lazy(() => import('pages/services'));
 const Profile = React.lazy(() => import('pages/profile'));
 const Setting = React.lazy(() => import('pages/setting'));
 
@@ -63,6 +64,14 @@ const AdminDashboard: FC<IProps> = (): JSX.Element => {
           element={
             <Suspense fallback={<Loader isLoading={true} />}>
               <LineItems />
+            </Suspense>
+          }
+        />
+        <Route
+          path={endpoints.admin.services.list + '/*'}
+          element={
+            <Suspense fallback={<Loader isLoading={true} />}>
+              <Services />
             </Suspense>
           }
         />

@@ -17,7 +17,8 @@ import {
   fetchPropertySaga,
   updatePropertySaga,
   fetchPropertiesSaga,
-  verifyUserEmailSaga
+  verifyUserEmailSaga,
+  fetchServicesSaga
 } from './sagas';
 import { addJobSaga, fetchJobsSaga, fetchJobSaga, updateJobSaga } from './sagas/jobs.saga';
 import { addLineItemSaga, fetchLineItemsSaga, fetchLineItemSaga, updateLineItemSaga } from './sagas/lineItems.saga';
@@ -58,6 +59,7 @@ sagaMiddleware.run(fetchPropertySaga);
 sagaMiddleware.run(updatePropertySaga);
 sagaMiddleware.run(fetchPropertiesSaga);
 sagaMiddleware.run(addLineItemSaga);
+sagaMiddleware.run(fetchServicesSaga);
 sagaMiddleware.run(fetchLineItemsSaga);
 sagaMiddleware.run(fetchLineItemSaga);
 sagaMiddleware.run(updateLineItemSaga);

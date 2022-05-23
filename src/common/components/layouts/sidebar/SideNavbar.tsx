@@ -11,7 +11,8 @@ import {
   BriefcaseIcon,
   FileBadgeIcon,
   PersonFillIcon,
-  AccessibilityIcon
+  AccessibilityIcon,
+  GearIcon
 } from '@primer/octicons-react';
 import { useNavigate } from 'react-router-dom';
 import { getCurrentUser } from 'utils';
@@ -136,17 +137,30 @@ const SideNavbar: FC<IProps> = ({ active }) => {
           ) : null}
 
           {currUser.role === 'ADMIN' ? (
-            <li>
-              <span
-                onClick={() => navigate('/dashboard/' + endpoints.admin.lineItems.list)}
-                className={active === 'LineItems' ? 'nav-link nav-link-active align-middle px-0' : 'nav-link align-middle px-0'}
-              >
-                <span className="mt-2">
-                  <LogIcon size={'small'} />
+            <>
+              <li>
+                <span
+                  onClick={() => navigate('/dashboard/' + endpoints.admin.lineItems.list)}
+                  className={active === 'LineItems' ? 'nav-link nav-link-active align-middle px-0' : 'nav-link align-middle px-0'}
+                >
+                  <span className="mt-2">
+                    <LogIcon size={'small'} />
+                  </span>
+                  <span className="ms-2 d-none d-sm-inline">Line Items</span>
                 </span>
-                <span className="ms-2 d-none d-sm-inline">Line Items</span>
-              </span>
-            </li>
+              </li>
+              {/* <li>
+                <span
+                  onClick={() => navigate('/dashboard/' + endpoints.admin.services.list)}
+                  className={active === 'Services' ? 'nav-link nav-link-active align-middle px-0' : 'nav-link align-middle px-0'}
+                >
+                  <span className="mt-2">
+                    <GearIcon size={'small'} />
+                  </span>
+                  <span className="ms-2 d-none d-sm-inline">Services</span>
+                </span>
+              </li> */}
+            </>
           ) : null}
 
           {!(currUser.role === 'ADMIN') ? (

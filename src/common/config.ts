@@ -29,6 +29,9 @@ export const endpoints = {
     lineItems: {
       list: 'line-items'
     },
+    services: {
+      list: 'services'
+    },
     referral: {
       program: 'referral-program'
     },

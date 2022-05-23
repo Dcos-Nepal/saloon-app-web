@@ -124,6 +124,14 @@ export const FETCH_LINE_ITEMS_LOADING = 'FETCH_LINE_ITEMS_LOADING';
 export const FETCH_LINE_ITEMS_ERROR = 'FETCH_LINE_ITEMS_ERROR';
 
 /**
+ * Load Services Listing action types
+ */
+ export const FETCH_SERVICES = 'FETCH_SERVICES';
+ export const FETCH_SERVICES_SUCCESS = 'FETCH_SERVICES_SUCCESS';
+ export const FETCH_SERVICES_LOADING = 'FETCH_SERVICES_LOADING';
+ export const FETCH_SERVICES_ERROR = 'FETCH_SERVICES_ERROR';
+ 
+/**
  * Update Line Item action types
  */
 export const UPDATE_LINE_ITEM = 'UPDATE_LINE_ITEM';

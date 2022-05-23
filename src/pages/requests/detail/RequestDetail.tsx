@@ -21,6 +21,7 @@ const RequestDetail: FC<IProps> = ({ actions, currentRequest, isRequestsLoading 
   const { id } = useParams();
   const navigate = useNavigate();
   const currentUser = getCurrentUser();
+  const property = currentRequest?.property ? currentRequest?.property : currentRequest?.client?.address;
 
   useEffect(() => {
     if (id) actions.fetchRequest(id);
@@ -132,13 +133,13 @@ const RequestDetail: FC<IProps> = ({ actions, currentRequest, isRequestsLoading 
                       </div>
                     </div>
                     <div className="txt-bold mt-3 txt-grey">Property Details</div>
-                    {currentRequest?.property ? (
+                    {!!property ? (
                       <>
                         <div className="row mb-4 border-bottom">
                           <div className="col p-2 ps-4">
                             <div className="txt-grey">Street 1</div>
                             <div className="">
-                              {currentRequest?.property?.street1}
+                              {property.street1}
                             </div>
                           </div>
                         </div>
@@ -146,7 +147,7 @@ const RequestDetail: FC<IProps> = ({ actions, currentRequest, isRequestsLoading 
                           <div className="col p-2 ps-4">
                             <div className="txt-grey">Street 2</div>
                             <div className="">
-                              {currentRequest?.property?.street2}
+                              {property.street2}
                             </div>
                           </div>
                         </div>
@@ -154,13 +155,13 @@ const RequestDetail: FC<IProps> = ({ actions, currentRequest, isRequestsLoading 
                           <div className="col p-2 ps-4">
                             <div className="txt-grey">City</div>
                             <div className="">
-                              {currentRequest?.property?.city}
+                              {property.city}
                             </div>
                           </div>
                           <div className="col p-2 ps-4">
                             <div className="txt-grey">State</div>
                             <div className="">
-                              {currentRequest?.property?.state}
+                              {property.state}
                             </div>
                           </div>
                         </div>
@@ -168,13 +169,13 @@ const RequestDetail: FC<IProps> = ({ actions, currentRequest, isRequestsLoading 
                           <div className="col p-2 ps-4">
                             <div className="txt-grey">Post code</div>
                             <div className="">
-                              {currentRequest?.property?.postalCode}
+                              {property.postalCode}
                             </div>
                           </div>
                           <div className="col p-2 ps-4">
                             <div className="txt-grey">Country</div>
                             <div className="">
-                              {currentRequest?.property?.country}
+                              {property.country}
                             </div>
                           </div>
                         </div>

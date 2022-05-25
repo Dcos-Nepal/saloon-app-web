@@ -11,8 +11,7 @@ import {
   BriefcaseIcon,
   FileBadgeIcon,
   PersonFillIcon,
-  AccessibilityIcon,
-  GearIcon
+  AccessibilityIcon
 } from '@primer/octicons-react';
 import { useNavigate } from 'react-router-dom';
 import { getCurrentUser } from 'utils';

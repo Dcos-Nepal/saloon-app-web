@@ -181,7 +181,7 @@ const Summary = () => {
 
                 <div className="row">
                   <div className="col mt-2 p-2 txt-bold">
-                    <div className="row border-bottom p-2">
+                    {/* <div className="row border-bottom p-2">
                       <div className="">
                         Active
                         <div className="d-flex float-end">
@@ -204,10 +204,10 @@ const Summary = () => {
                           <div className="">{requestsSummary.inActiveCount}</div>
                         </div>
                       </div>
-                    </div>
+                    </div> */}
                     <div className="row border-bottom p-2">
                       <div className="">
-                        Pending
+                        Total Job Requests
                         <div className="d-flex float-end">
                           <div className="">{requestsSummary.pendingCount}</div>
                         </div>

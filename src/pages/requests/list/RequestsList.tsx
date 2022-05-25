@@ -133,17 +133,6 @@ const RequestsList = (props: any) => {
         accessor: 'requestDate'
       },
       {
-        Header: 'STATUS',
-        accessor: (row: any) => (
-          <div>
-            <span className={`status ${row.status === 'Inactive' ? 'status-red' : row.status === 'Active' ? 'status-green' : 'status-blue'}`}>
-              {row.status}
-            </span>
-            <label className="txt-grey ms-2">{row.updatedDate}</label>
-          </div>
-        )
-      },
-      {
         Header: ' ',
         maxWidth: 40,
         accessor: (row: any) => (

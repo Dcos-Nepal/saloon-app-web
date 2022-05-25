@@ -53,6 +53,9 @@ const InvoicesList = (props: any) => {
   const [invoices, setInvoices] = useState<IInvoice[]>([]);
   const [deleteInProgress, setDeleteInProgress] = useState('');
 
+  const isWorkerOrAdmin = () => {
+    return (currentUser.role === 'WORKER' || currentUser.role === 'ADMIN');
+  }
   const deleteInvoiceHandler = async () => {
     try {
       if (deleteInProgress) {
@@ -179,11 +182,9 @@ const InvoicesList = (props: any) => {
         Header: 'DUE DATE',
         accessor: (row: IInvoice) => {
           return (
-            <div style={{ width: '150px' }}>
-              <div>
-                <strong>{row.updatedAt}</strong>
-              </div>
-              <div>{row.createdAt}</div>
+            <div style={{ width: '200px' }}>
+              <div>Created: {row.createdAt}</div>
+              <div>Updated: <strong>{row.updatedAt}</strong></div>
             </div>
           );
         }
@@ -205,7 +206,7 @@ const InvoicesList = (props: any) => {
             );
           }
 
-          return <div>{row.isPaid ? 'PAID' : row.isIssued ? 'PENDING' : 'ALL'}</div>;
+          return <div>{row.isPaid ? 'PAID' : row.isIssued ? 'PENDING' : 'GENERATED'}</div>;
         }
       },
       {
@@ -257,12 +258,14 @@ const InvoicesList = (props: any) => {
         <div className="col d-flex flex-row">
           <h3 className="extra">Invoices</h3>
         </div>
-        <div className="col">
-          <button onClick={() => navigate('/dashboard/invoices/' + endpoints.admin.invoices.add)} type="button" className="btn btn-primary d-flex float-end">
-            <ReportIcon className="mt-1" />
-            &nbsp;New Invoice
-          </button>
-        </div>
+        {isWorkerOrAdmin() ? (
+          <div className="col">
+            <button onClick={() => navigate('/dashboard/invoices/' + endpoints.admin.invoices.add)} type="button" className="btn btn-primary d-flex float-end">
+              <ReportIcon className="mt-1" />
+              &nbsp;New Invoice
+            </button>
+          </div>
+        ) : null}
         <label className="txt-grey">{invoices.length} invoices</label>
       </div>
       <div className="card">

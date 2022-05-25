@@ -52,6 +52,14 @@ const Summary = () => {
     return (currUser.role === 'CLIENT' || currUser.role === 'ADMIN');
   }
 
+  const isWorkerOrAdmin = () => {
+    return (currUser.role === 'WORKER' || currUser.role === 'ADMIN');
+  }
+
+  const isAdmin = () => {
+    return (currUser.role === 'ADMIN');
+  }
+
   useEffect(() => {
     const jobQuery: { createdBy?: string; team?: string; jobFor?: string } = {};
     const visitQuery: { team?: string; visitFor?: string } = {};
@@ -181,33 +189,9 @@ const Summary = () => {
 
                 <div className="row">
                   <div className="col mt-2 p-2 txt-bold">
-                    {/* <div className="row border-bottom p-2">
-                      <div className="">
-                        Active
-                        <div className="d-flex float-end">
-                          <div className="">{requestsSummary.activeCount}</div>
-                        </div>
-                      </div>
-                    </div>
                     <div className="row border-bottom p-2">
                       <div className="">
-                        In Progress
-                        <div className="d-flex float-end">
-                          <div className="">{requestsSummary.inProgressCount}</div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="row border-bottom p-2">
-                      <div className="">
-                        InActive
-                        <div className="d-flex float-end">
-                          <div className="">{requestsSummary.inActiveCount}</div>
-                        </div>
-                      </div>
-                    </div> */}
-                    <div className="row border-bottom p-2">
-                      <div className="">
-                        Total Job Requests
+                        Job Requests
                         <div className="d-flex float-end">
                           <div className="">{requestsSummary.pendingCount}</div>
                         </div>
@@ -226,11 +210,13 @@ const Summary = () => {
                   <div className="col ">
                     <h5 className="">Quotes</h5>
                   </div>
-                  <div className="col d-flex flex-row align-items-center justify-content-end">
-                    <button onClick={() => navigate('/dashboard/quotes/add')} type="button" className="btn btn-primary d-flex float-end">
-                      New Quote
-                    </button>
-                  </div>
+                  {isAdmin() ? (
+                    <div className="col d-flex flex-row align-items-center justify-content-end">
+                      <button onClick={() => navigate('/dashboard/quotes/add')} type="button" className="btn btn-primary d-flex float-end">
+                        New Quote
+                      </button>
+                    </div>
+                  ) :  null}
                 </div>
 
                 <div className="row">
@@ -271,11 +257,13 @@ const Summary = () => {
                 <div className="col ">
                   <h5 className="">Jobs</h5>
                 </div>
-                <div className="col d-flex flex-row align-items-center justify-content-end">
-                  <button onClick={() => navigate('/dashboard/jobs/add')} type="button" className="btn btn-primary d-flex float-end">
-                    New Job
-                  </button>
-                </div>
+                {isWorkerOrAdmin() ? (
+                  <div className="col d-flex flex-row align-items-center justify-content-end">
+                    <button onClick={() => navigate('/dashboard/jobs/add')} type="button" className="btn btn-primary d-flex float-end">
+                      New Job
+                    </button>
+                  </div>
+                ) : null}
               </div>
               <div className="row">
                 <div className="col mt-2 p-2 txt-bold">

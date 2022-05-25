@@ -12,7 +12,7 @@ const PrivacyPolicy = () => {
 
   useEffect(() => {
     setIsLoading(true);
-    fetch("privacy-policy.md")
+    fetch("/privacy-policy.md")
       .then((res) => res.text())
       .then((text) => {
         setContent(text);

@@ -43,7 +43,6 @@ const WorkSchedule = (props: any) => {
    * @returns String
    */
   const createOneOffRule = (visit: any) => {
-    debugger
     return new RRule({
       dtstart: new Date(`${visit.startDate} ${visit.startTime}`),
       interval: 1,
@@ -61,7 +60,7 @@ const WorkSchedule = (props: any) => {
    */
   const markVisitCompleteHandler = async (visitCompleted: boolean, visit: IVisit) => {
     let newlyCreatedVisit: any;
-    debugger
+
     // If the visit has multiple visits
     if (visit.hasMultiVisit) {
       // Create One-Off rrule for to-complete visit
@@ -207,7 +206,7 @@ const WorkSchedule = (props: any) => {
           end: event.inheritJob && event.job?.endDate ? event.job?.endDate : event?.endDate,
           rrule: event.job.type === 'ONE-OFF' ? null : event.rruleSet,
           exrule: event.job.type === 'ONE-OFF' ? null : exRules,
-          meta: event
+          meta: {...event, lineItems: event.inheritJob ? event.job.lineItems : event.lineItems},
         };
       });
 

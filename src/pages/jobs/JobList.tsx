@@ -18,7 +18,7 @@ import DeleteConfirm from 'common/components/DeleteConfirm';
 import * as jobsActions from '../../store/actions/job.actions';
 import { deleteJobApi, provideFeedbackApi } from 'services/jobs.service';
 import { Loader } from 'common/components/atoms/Loader';
-import { CheckIcon, EyeIcon, InfoIcon, NoteIcon, PencilIcon, TasklistIcon, TrashIcon } from '@primer/octicons-react';
+import { CheckIcon, EyeIcon, InfoIcon, NoteIcon, PencilIcon, PlusIcon, SyncIcon, TasklistIcon, TrashIcon } from '@primer/octicons-react';
 import { getCurrentUser, getJobPropertyAddress } from 'utils';
 import Truncate from 'react-truncate';
 import EmptyState from 'common/components/EmptyState';
@@ -66,32 +66,6 @@ const JobsList = (props: IProps) => {
       toast.error('Failed to delete job');
     }
   };
-
-  useEffect(() => {
-    const jobQuery: { jobFor?: string; team?: string } = {};
-
-    if (currentUser.role === 'CLIENT') jobQuery.jobFor = currentUser.id;
-    if (currentUser.role === 'WORKER') jobQuery.team = currentUser.id;
-
-    props.actions.fetchJobs({ q: search, ...jobQuery, page, limit: itemsPerPage });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, search, itemsPerPage, props.actions]);
-
-  useEffect(() => {
-    if (props.jobs?.data?.rows) {
-      setJobs(
-        props.jobs.data?.rows.map((job: any) => ({
-          ...job,
-          jobFor: job.jobFor,
-          total: job.lineItems.reduce((total: number, val: any) => total + val.quantity * val.unitPrice, 0),
-          schedule: job.primaryVisit?.rruleSet
-            ? _.startCase(rrulestr(job.primaryVisit.rruleSet).toText())
-            : new Date(job.startDate).toLocaleDateString('en-US', { timeZone: 'Australia/Adelaide' })
-        }))
-      );
-      setPageCount(Math.ceil(props.jobs.data.totalCount / itemsPerPage));
-    }
-  }, [props.jobs, itemsPerPage]);
 
   const columns: Column<any>[] = useMemo(
     () => [
@@ -224,21 +198,68 @@ const JobsList = (props: IProps) => {
     }
   };
 
+  /**
+   * Handles job reload
+   */
+  const handleRefresh = () => {
+    const jobQuery: { jobFor?: string; team?: string } = {};
+
+    if (currentUser.role === 'CLIENT') jobQuery.jobFor = currentUser.id;
+    if (currentUser.role === 'WORKER') jobQuery.team = currentUser.id;
+
+    props.actions.fetchJobs({ q: search, ...jobQuery, page, limit: itemsPerPage });
+  }
+
+  useEffect(() => {
+    const jobQuery: { jobFor?: string; team?: string } = {};
+
+    if (currentUser.role === 'CLIENT') jobQuery.jobFor = currentUser.id;
+    if (currentUser.role === 'WORKER') jobQuery.team = currentUser.id;
+
+    props.actions.fetchJobs({ q: search, ...jobQuery, page, limit: itemsPerPage });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page, search, itemsPerPage, props.actions]);
+
+  useEffect(() => {
+    if (props.jobs?.data?.rows) {
+      setJobs(
+        props.jobs.data?.rows.map((job: any) => ({
+          ...job,
+          jobFor: job.jobFor,
+          total: job.lineItems.reduce((total: number, val: any) => total + val.quantity * val.unitPrice, 0),
+          schedule: job.primaryVisit?.rruleSet
+            ? _.startCase(rrulestr(job.primaryVisit.rruleSet).toText())
+            : new Date(job.startDate).toLocaleDateString('en-US', { timeZone: 'Australia/Adelaide' })
+        }))
+      );
+      setPageCount(Math.ceil(props.jobs.data.totalCount / itemsPerPage));
+    }
+  }, [props.jobs, itemsPerPage]);
+
   return (
     <>
-      <div className="row d-flex flex-row">
-        <div className="col ">
-          <h3 className="extra">Jobs for Clients</h3>
-          <p className="text-secondary"><InfoIcon /> List of Jobs. There are <strong>{props?.jobs?.data?.totalCount || 0}</strong> Jobs in the list</p>
-        </div>
-        {currUser.role === 'ADMIN' || currUser.role === 'WORKER' ? (
-          <div className="col d-flex flex-row align-items-center justify-content-end">
-            <button onClick={() => navigate(endpoints.admin.jobs.add)} type="button" className="btn btn-primary d-flex float-end">
-              <TasklistIcon className="mt-1" />
-              &nbsp;Create a New Job
-            </button>
+      <div className="row">
+        <div className="col d-flex flex-row">
+          <h3 className="extra col-9">Jobs for Clients</h3>
+          <div className="col-3 d-flex flex-row-reverse">
+            <div
+              onClick={() => handleRefresh()}
+              className="btn btn-secondary d-flex float-end"
+            >
+              <SyncIcon className='mt-1' />&nbsp;Refresh
+            </div>
+            &nbsp;&nbsp;
+            {currUser.role === 'ADMIN' || currUser.role === 'WORKER' ? (
+              <div
+                onClick={() => navigate(endpoints.admin.jobs.add)}
+                className="btn btn-primary d-flex float-end"
+              >
+                <PlusIcon className='mt-1' />&nbsp;Create a New Job
+              </div>
+            ) : null}
           </div>
-        ) : null}
+        </div>
+        <p className="text-secondary"><InfoIcon /> List of Jobs. There are <strong>{props?.jobs?.data?.totalCount || 0}</strong> Jobs in the list</p>
       </div>
       <div className="card">
         <div className="row pt-2 m-1 rounded-top bg-grey">

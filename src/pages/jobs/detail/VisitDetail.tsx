@@ -11,7 +11,7 @@ interface IProps {
 
 const VisitDetail: FC<IProps> = ({ closeModal, markVisitCompleteHandler, event }) => {
   const currUser: { role: string; id: string } = getCurrentUser();
-  debugger;
+
   return (
     <div className={`modal fade show mt-5`} role="dialog" style={{ display: 'block' }}>
       <div className="modal-dialog">

@@ -11,7 +11,7 @@ import ReactPaginate from 'react-paginate';
 import { Loader } from 'common/components/atoms/Loader';
 import debounce from 'lodash/debounce';
 import EmptyState from 'common/components/EmptyState';
-import { AlertIcon, CheckCircleIcon, EyeIcon, PencilIcon, PersonAddIcon, TrashIcon } from '@primer/octicons-react';
+import { AlertIcon, CheckCircleIcon, EyeIcon, PencilIcon, PersonAddIcon, RepoPullIcon, SyncIcon, TrashIcon } from '@primer/octicons-react';
 import Modal from 'common/components/atoms/Modal';
 import { deleteUserApi } from 'services/users.service';
 import { toast } from 'react-toastify';
@@ -54,6 +54,21 @@ const ClientsList = (props: any) => {
       toast.error('Failed to delete client');
     }
   };
+  
+  const handleRefresh = () => {
+    const currUser = getCurrentUser();
+    const clientQuery: { createdBy?: string; } = {};
+
+    if (currUser.role === 'WORKER') clientQuery.createdBy = currUser.id;
+
+    props.actions.fetchClients({
+      q: query,
+      ...clientQuery,
+      roles: 'CLIENT',
+      page: offset,
+      limit: itemsPerPage
+    });
+  }
 
   useEffect(() => {
     const currUser = getCurrentUser();
@@ -179,19 +194,23 @@ const ClientsList = (props: any) => {
   return (
     <>
       <div className="row">
-        <div className="col d-flex flex-row">
+        <div className="col-9 d-flex flex-row">
           <h3 className="extra">Clients</h3>
         </div>
-        <div className="col">
-          <button
-            onClick={() => {
-              navigate(endpoints.admin.client.add);
-            }}
-            type="button"
+        <div className="col-3 d-flex flex-row-reverse">
+          <div
+            onClick={() => handleRefresh()}
+            className="btn btn-secondary d-flex float-end"
+          >
+            <SyncIcon className='mt-1' />&nbsp;Refresh
+          </div>
+          &nbsp;&nbsp;
+          <div
+            onClick={() => { navigate(endpoints.admin.client.add);}}
             className="btn btn-primary d-flex float-end"
           >
             <PersonAddIcon className='mt-1' />&nbsp;New client
-          </button>
+          </div>
         </div>
         <label className="txt-grey">Total {query ? `${clients.length} search results found!` : `${props?.clients?.data?.totalCount || 0} clients`}</label>
       </div>

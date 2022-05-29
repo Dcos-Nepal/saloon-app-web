@@ -11,7 +11,7 @@ import * as workersActions from '../../../store/actions/workers.actions';
 import { endpoints } from 'common/config';
 import InputField from 'common/components/form/Input';
 import { Loader } from 'common/components/atoms/Loader';
-import { AlertIcon, CheckCircleIcon, EyeIcon, PencilIcon, PersonAddIcon, TrashIcon } from '@primer/octicons-react';
+import { AlertIcon, CheckCircleIcon, EyeIcon, PencilIcon, PersonAddIcon, SyncIcon, TrashIcon } from '@primer/octicons-react';
 import Modal from 'common/components/atoms/Modal';
 import { deleteUserApi } from 'services/users.service';
 import { toast } from 'react-toastify';
@@ -35,15 +35,6 @@ const WorkerList = (props: any) => {
   const [query, setQuery] = useState('');
   const [deleteInProgress, setDeleteInProgress] = useState('');
 
-  useEffect(() => {
-    props.actions.fetchWorkers({
-      q: query,
-      roles: 'WORKER',
-      page: offset,
-      limit: itemsPerPage
-    });
-  }, [offset, itemsPerPage, props.actions, query]);
-
   const deleteWorkerHandler = async () => {
     try {
       if (deleteInProgress) {
@@ -63,25 +54,6 @@ const WorkerList = (props: any) => {
     }
   };
 
-  useEffect(() => {
-    if (props.workers?.data?.rows) {
-      setWorkers(
-        props.workers.data?.rows.map((row: any) => ({
-          _id: row._id,
-          name: `${row.firstName} ${row.lastName}`,
-          address: row?.address
-            ? `${row.address.street1}, ${row.address.street2}, ${row.address.city}, ${row.address.state}, ${row.address.postalCode}, ${row.address.country}`
-            : 'Address not added!',
-          phoneNumber: row.phoneNumber,
-          email: row.email,
-          status: row.auth.email,
-          updatedAt: row.updatedAt
-        }))
-      );
-      setPageCount(Math.ceil(props.workers.data.totalCount / itemsPerPage));
-    }
-  }, [itemsPerPage, props.workers]);
-
   const handlePageClick = (event: any) => {
     const selectedPage = event.selected;
     setOffset(selectedPage + 1);
@@ -91,6 +63,15 @@ const WorkerList = (props: any) => {
     const query = event.target.value;
     setQuery(query);
   };
+
+  const handleRefresh = () => {
+    props.actions.fetchWorkers({
+      q: query,
+      roles: 'WORKER',
+      page: offset,
+      limit: itemsPerPage
+    });
+  }
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedChangeHandler = useCallback(debounce(handleWorkerSearch, 300), []);
@@ -187,22 +168,54 @@ const WorkerList = (props: any) => {
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({ columns, data: workers });
 
+  useEffect(() => {
+    if (props.workers?.data?.rows) {
+      setWorkers(
+        props.workers.data?.rows.map((row: any) => ({
+          _id: row._id,
+          name: `${row.firstName} ${row.lastName}`,
+          address: row?.address
+            ? `${row.address.street1}, ${row.address.street2}, ${row.address.city}, ${row.address.state}, ${row.address.postalCode}, ${row.address.country}`
+            : 'Address not added!',
+          phoneNumber: row.phoneNumber,
+          email: row.email,
+          status: row.auth.email,
+          updatedAt: row.updatedAt
+        }))
+      );
+      setPageCount(Math.ceil(props.workers.data.totalCount / itemsPerPage));
+    }
+  }, [itemsPerPage, props.workers]);
+
+  useEffect(() => {
+    props.actions.fetchWorkers({
+      q: query,
+      roles: 'WORKER',
+      page: offset,
+      limit: itemsPerPage
+    });
+  }, [offset, itemsPerPage, props.actions, query]);
+
   return (
     <>
       <div className="row">
         <div className="col d-flex flex-row">
           <h3 className="extra">Workers</h3>
         </div>
-        <div className="col">
-          <button
-            onClick={() => {
-              navigate(endpoints.admin.worker.add);
-            }}
-            type="button"
+        <div className="col-3 d-flex flex-row-reverse">
+          <div
+            onClick={() => handleRefresh()}
+            className="btn btn-secondary d-flex float-end"
+          >
+            <SyncIcon className='mt-1' />&nbsp;Refresh
+          </div>
+          &nbsp;&nbsp;
+          <div
+            onClick={() => { navigate(endpoints.admin.worker.add);}}
             className="btn btn-primary d-flex float-end"
           >
             <PersonAddIcon className='mt-1' />&nbsp;New Worker
-          </button>
+          </div>
         </div>
         <label className="txt-grey">Total {query ? `${workers.length} search results found!` : `${props?.workers?.data?.totalCount || 0} workers`}</label>
       </div>

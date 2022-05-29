@@ -43,9 +43,8 @@ const Summary = () => {
   });
   const [requestsSummary, setRequestsSummary] = useState({
     activeCount: 0,
-    inActiveCount: 0,
-    inProgressCount: 0,
-    pendingCount: 0
+    completedCount: 0,
+    cancelledCount: 0,
   });
 
   const isClientOrAdmin = () => {
@@ -191,9 +190,25 @@ const Summary = () => {
                   <div className="col mt-2 p-2 txt-bold">
                     <div className="row border-bottom p-2">
                       <div className="">
-                        Job Requests
+                        Active Requests
                         <div className="d-flex float-end">
-                          <div className="">{requestsSummary.pendingCount}</div>
+                          <div className="">{requestsSummary.activeCount}</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="row border-bottom p-2">
+                      <div className="">
+                        Completed-Cancelled Requests
+                        <div className="d-flex float-end">
+                          <div className="">{requestsSummary.completedCount} - {requestsSummary.cancelledCount}</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="row border-bottom p-2">
+                      <div className="">
+                        Total Requests
+                        <div className="d-flex float-end">
+                          <div className="">{requestsSummary.cancelledCount + requestsSummary.activeCount}</div>
                         </div>
                       </div>
                     </div>

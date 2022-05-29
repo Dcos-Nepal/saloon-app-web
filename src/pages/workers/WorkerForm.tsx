@@ -92,7 +92,7 @@ const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker }) => {
               policeCert: {
                 url: '',
                 key: '',
-                type: 'POLICE_CERTIFICATE'
+                type: 'VACCINATION_CERTIFICATE'
               }
             },
             services: []
@@ -522,11 +522,11 @@ const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker }) => {
             'CLEANING_CERTIFICATE'
           )}
           {generateDocSelect(
-            '3. POLICE CERTIFICATE:',
+            '3. VACCINATION CERTIFICATE:',
             "userData.documents['policeCert'].url",
             'policeCert',
             'Click to browse or drag and drop your file to upload police check.',
-            'POLICE_CERTIFICATE'
+            'VACCINATION'
           )}
         </div>
       </div>

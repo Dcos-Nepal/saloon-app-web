@@ -11,7 +11,7 @@ interface IProps {
 
 const VisitDetail: FC<IProps> = ({ closeModal, markVisitCompleteHandler, event }) => {
   const currUser: { role: string; id: string } = getCurrentUser();
-
+  debugger;
   return (
     <div className={`modal fade show mt-5`} role="dialog" style={{ display: 'block' }}>
       <div className="modal-dialog">
@@ -48,14 +48,14 @@ const VisitDetail: FC<IProps> = ({ closeModal, markVisitCompleteHandler, event }
                     </span>
                   </div>
                 </div>
-                {/* <div className="col">
+                <div className="col">
                   <label>
                     <strong>Visit Type</strong>
                   </label>
                   <div className="mt-1">
-                    <span className="status status-blue">{event.extendedProps?.meta?.job?.type}</span>
+                    <span className="status status-blue">{event?.job?.type}</span>
                   </div>
-                </div> */}
+                </div>
               </div>
             </div>
 

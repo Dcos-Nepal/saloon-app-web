@@ -162,8 +162,9 @@ const ScheduleEventDetail: FC<IProps> = ({ closeModal, markVisitCompleteHandler,
                 <div className="col">
                   <h5>Start Date/Time</h5>
                   <div>
-                    {new Date(event.start).toLocaleDateString('en-US', { timeZone: 'Australia/Adelaide' })}&nbsp;
-                    {new Date(event.start).toLocaleTimeString('en-US', { timeZone: 'Australia/Adelaide' })}
+                    {new Date(event.start).toLocaleDateString('en-AU')}&nbsp;
+                    {new Date(event.start).toLocaleTimeString('en-AU')}
+                    {/* {new Date(event.start).toLocaleTimeString('en-US', { timeZone: 'Australia/Adelaide' })} */}
                   </div>
                 </div>
               ) : null}
@@ -171,8 +172,8 @@ const ScheduleEventDetail: FC<IProps> = ({ closeModal, markVisitCompleteHandler,
                 <div className="col">
                   <h5>End Date/Time</h5>
                   <div>
-                    {new Date(event.end).toLocaleDateString('en-US', { timeZone: 'Australia/Adelaide' })}&nbsp;
-                    {new Date(event.end).toLocaleTimeString('en-US', { timeZone: 'Australia/Adelaide' })}
+                    {new Date(event.end).toLocaleDateString('en-AU')}&nbsp;
+                    {new Date(event.end).toLocaleTimeString('en-AU')}
                   </div>
                 </div>
               ) : null}

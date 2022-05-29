@@ -43,6 +43,7 @@ const WorkSchedule = (props: any) => {
    * @returns String
    */
   const createOneOffRule = (visit: any) => {
+    debugger
     return new RRule({
       dtstart: new Date(`${visit.startDate} ${visit.startTime}`),
       interval: 1,
@@ -60,7 +61,7 @@ const WorkSchedule = (props: any) => {
    */
   const markVisitCompleteHandler = async (visitCompleted: boolean, visit: IVisit) => {
     let newlyCreatedVisit: any;
-
+    debugger
     // If the visit has multiple visits
     if (visit.hasMultiVisit) {
       // Create One-Off rrule for to-complete visit
@@ -188,7 +189,8 @@ const WorkSchedule = (props: any) => {
           </Truncate>
         </div>
         <div>
-          <ClockIcon size={12} /> {new Date(eventInfo.event.start).toLocaleTimeString('en-US', { timeZone: 'Australia/Adelaide' })}
+          <ClockIcon size={12} /> {new Date(eventInfo.event.start).toLocaleTimeString('en-AU')}
+          {/* <ClockIcon size={12} /> {new Date(eventInfo.event.start).toLocaleTimeString('en-US', { timeZone: 'Australia/Adelaide' })} */}
         </div>
       </div>
     );
@@ -248,7 +250,7 @@ const WorkSchedule = (props: any) => {
                 right: 'dayGridMonth,timeGridWeek,timeGridDay'
               }}
               initialView="dayGridMonth"
-              timeZone="Australia/Adelaide"
+              // timeZone="Australia/Adelaide"
               editable={true}
               selectable={true}
               selectMirror={true}

@@ -72,6 +72,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
         visitSetting.excRrule.map((rule: string) => rruleSet.exrule(rrulestr(rule)));
         rruleSet.all().map((visit, index: number) => {
           let visitMonth = DateTime.fromJSDate(visit).toFormat('LLL');
+
           if (visitSetting.status.status === 'COMPLETED') visitMonth = 'completed';
           else if (new Date(visit).valueOf() < new Date().valueOf()) visitMonth = 'overdue';
 
@@ -83,8 +84,10 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
             title: visitSetting.inheritJob ? job?.title : visitSetting.title,
             instruction: visitSetting.inheritJob ? job?.instruction : visitSetting.instruction,
             team: visitSetting.team,
-            lineItems: visitSetting.inheritJob ? job?.lineItems : visitSetting.lineItems
+            lineItems: visitSetting.inheritJob ? job?.lineItems : visitSetting.lineItems,
+            type: job?.type
           };
+
           if (acc[visitMonth]) acc[visitMonth].push(visitObj);
           else acc[visitMonth] = [visitObj];
           return true;

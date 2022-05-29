@@ -693,11 +693,11 @@ const Setting = ({
                           'CLEANING_CERTIFICATE'
                         )}
                         {generateDocSelect(
-                          '3. POLICE CERTIFICATE:',
+                          '3. VACCINATION CERTIFICATE:',
                           "userData.documents['policeCert'].url",
                           'policeCert',
                           'Click to browse or drag and drop your file to upload police check.',
-                          'POLICE_CERTIFICATE'
+                          'VACCINATION_CERTIFICATE'
                         )}
                       </div>
                     </>

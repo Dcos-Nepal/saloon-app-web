@@ -13,6 +13,7 @@ import { StopIcon, UploadIcon, XCircleIcon } from '@primer/octicons-react';
 import { deletePublicFile, uploadPublicFile } from 'services/files.service';
 import { getServices } from 'data';
 import SearchLocation from 'common/components/form/SearchLocation';
+import { Loader } from 'common/components/atoms/Loader';
 
 interface IProps {
   actions: {
@@ -25,7 +26,7 @@ interface IProps {
   isWorkersLoading: boolean;
 }
 
-const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker }) => {
+const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker, isWorkersLoading }) => {
   const navigate = useNavigate();
 
   const [isUploading, setIsUploading] = useState({
@@ -312,6 +313,7 @@ const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker }) => {
   return (
     <form noValidate onSubmit={formik.handleSubmit}>
       <div className="row">
+        <Loader isLoading={isWorkersLoading} />
         <div className="col card">
           <h5>Worker Details {formik.values?.userCode ? `(${formik.values?.userCode})` : ''}</h5>
           <div className="row">
@@ -425,7 +427,7 @@ const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker }) => {
           <div className="mb-3">
             <label className="txt-bold mt-2 mb-2">Address Section</label>
             <div className="mb-3">
-              <SearchLocation formikForm={formik} addressPath={"address"}/>
+              <SearchLocation formikForm={formik} addressPath={'address'} />
             </div>
 
             <InputField
@@ -531,10 +533,7 @@ const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker }) => {
         </div>
       </div>
       <div className="mb-3 mt-3">
-        <button
-          type="submit"
-          className="btn btn-primary"
-        >
+        <button type="submit" className="btn btn-primary">
           Save worker
         </button>
         <button onClick={() => navigate(-1)} type="button" className="btn ms-3">

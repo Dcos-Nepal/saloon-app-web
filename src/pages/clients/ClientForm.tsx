@@ -40,7 +40,7 @@ interface IProps {
   properties: any[];
 }
 
-const ClientForm: FC<IProps> = ({ id, actions, currentClient, properties }) => {
+const ClientForm: FC<IProps> = ({ id, isClientsLoading, isPropertiesLoading, actions, currentClient, properties }) => {
   const navigate = useNavigate();
   const [addProperty, setAddProperty] = useState(false);
   const [editPropertyFor, setEditPropertyFor] = useState<any>(null);
@@ -67,20 +67,17 @@ const ClientForm: FC<IProps> = ({ id, actions, currentClient, properties }) => {
       preferredTime: '',
       isCompanyNamePrimary: false
     },
-    avatar: '',
-    
+    avatar: ''
   });
 
   const ClientSchema = Yup.object().shape({
     firstName: Yup.string().required(`First name is required`).min(2, 'Too Short!').max(20, 'Too Long!'),
     lastName: Yup.string().required(`Last name is required`).min(2, 'Too Short!').max(20, 'Too Long!'),
     email: Yup.string().required(`Email is required`).email('Invalid email'),
-    phoneNumber: Yup.string().label('Phone Number')
+    phoneNumber: Yup.string()
+      .label('Phone Number')
       .required(`Phone number is required`)
-      .matches(
-        /^\+(?:[0-9] ?){6,14}[0-9]$/,
-        "Phone number must be at least 6 numbers to 14 numbers starting with '+'"
-      ),
+      .matches(/^\+(?:[0-9] ?){6,14}[0-9]$/, "Phone number must be at least 6 numbers to 14 numbers starting with '+'"),
     address: Yup.object().shape({
       street1: Yup.string().required(`Street 1 is required`),
       street2: Yup.string(),
@@ -94,7 +91,7 @@ const ClientForm: FC<IProps> = ({ id, actions, currentClient, properties }) => {
       preferredTime: Yup.string().notRequired(),
       companyName: Yup.string(),
       isCompanyNamePrimary: Yup.boolean().notRequired()
-    }),
+    })
   });
 
   const formik = useFormik({
@@ -136,7 +133,6 @@ const ClientForm: FC<IProps> = ({ id, actions, currentClient, properties }) => {
     if (currentClient?._id) {
       await actions.updateProperty({ ...data, user: currentClient._id });
 
-      actions.fetchProperties({ user: currentClient._id });
       setEditPropertyFor(null);
     }
   };
@@ -181,10 +177,6 @@ const ClientForm: FC<IProps> = ({ id, actions, currentClient, properties }) => {
 
   useEffect(() => {
     if (id) actions.fetchClient(id);
-
-    return () => {
-      actions.fetchClient = () => {};
-    }
   }, [id, actions]);
 
   useEffect(() => {
@@ -198,10 +190,6 @@ const ClientForm: FC<IProps> = ({ id, actions, currentClient, properties }) => {
 
   useEffect(() => {
     if (currentClient?._id && id) actions.fetchProperties({ user: currentClient._id });
-
-    return () => {
-      actions.fetchProperties = () => {};
-    }
   }, [id, currentClient?._id, actions]);
 
   return (
@@ -209,6 +197,7 @@ const ClientForm: FC<IProps> = ({ id, actions, currentClient, properties }) => {
       <div className="col">
         <form noValidate onSubmit={formik.handleSubmit}>
           <div className={`${currentClient && currentClient._id && id ? '' : 'row'} m-1`}>
+            <Loader isLoading={isClientsLoading} />
             <div className="col card">
               <h5>Client Details</h5>
               <div className="row mt-3">
@@ -254,7 +243,14 @@ const ClientForm: FC<IProps> = ({ id, actions, currentClient, properties }) => {
                 onBlur={formik.handleBlur}
               />
               <div className="mb-3">
-                <input className="form-check-input" type="checkbox" checked={formik.values?.userData?.isCompanyNamePrimary} id="flexCheckDefault" name="userData.isCompanyNamePrimary" onChange={formik.handleChange}/>
+                <input
+                  className="form-check-input"
+                  type="checkbox"
+                  checked={formik.values?.userData?.isCompanyNamePrimary}
+                  id="flexCheckDefault"
+                  name="userData.isCompanyNamePrimary"
+                  onChange={formik.handleChange}
+                />
                 <label className="ms-2 form-check-label" htmlFor="flexCheckDefault">
                   Use company name as the primary name
                 </label>
@@ -295,7 +291,7 @@ const ClientForm: FC<IProps> = ({ id, actions, currentClient, properties }) => {
                 <div className="mb-3">
                   <label className="txt-bold mt-2 mb-2">Address Section</label>
                   <div className="mb-3">
-                    <SearchLocation formikForm={formik} addressPath={"address"}/>
+                    <SearchLocation formikForm={formik} addressPath={'address'} />
                   </div>
 
                   <InputField
@@ -375,11 +371,8 @@ const ClientForm: FC<IProps> = ({ id, actions, currentClient, properties }) => {
             </div>
           </div>
           <div className="mb-3 mt-2 m-1">
-            <button
-              type="submit"
-              className="btn btn-primary"
-            >
-              {(id ? "Update" : "Save")} Client Info
+            <button type="submit" className="btn btn-primary">
+              {id ? 'Update' : 'Save'} Client Info
             </button>
             <button onClick={() => navigate(-1)} type="button" className="btn ms-3">
               Cancel
@@ -393,10 +386,17 @@ const ClientForm: FC<IProps> = ({ id, actions, currentClient, properties }) => {
           <div className="row">
             <div className="col card ms-3">
               <h5>{properties.length ? 'Listed Properties' : 'Properties'}</h5>
+              <Loader isLoading={isPropertiesLoading} />
               {properties.length
-                ? properties.map((property) => <PropertyDetail key={property?._id} setEditPropertyFor={setEditPropertyFor} setDeletePropertyFor={setDeletePropertyFor} property={property} />)
-                : null
-              }
+                ? properties.map((property) => (
+                    <PropertyDetail
+                      key={property?._id}
+                      setEditPropertyFor={setEditPropertyFor}
+                      setDeletePropertyFor={setDeletePropertyFor}
+                      property={property}
+                    />
+                  ))
+                : null}
               <div
                 onClick={() => {
                   if (currentClient && currentClient._id) setAddProperty(true);

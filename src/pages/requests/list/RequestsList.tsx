@@ -15,13 +15,21 @@ import { Loader } from 'common/components/atoms/Loader';
 import { useNavigate } from 'react-router-dom';
 import { endpoints } from 'common/config';
 import debounce from 'lodash/debounce';
-import { deleteJobRequestApi } from 'services/job-requests.service';
+import { deleteJobRequestApi, updateJobRequestApi } from 'services/job-requests.service';
 import Modal from 'common/components/atoms/Modal';
 import { EyeIcon, InfoIcon, PencilIcon, TrashIcon } from '@primer/octicons-react';
 import EmptyState from 'common/components/EmptyState';
 import { getCurrentUser } from 'utils';
+import SelectField from 'common/components/form/Select';
+
+const requestStatusOptions = [
+  { label: 'PENDING', value: 'PENDING' },
+  { label: 'ACCEPTED', value: 'ACCEPTED' },
+  { label: 'CANCELLED', value: 'CANCELLED' }
+];
 
 interface IRequest {
+  _id: string;
   name: string;
   title: string;
   requestDate: string;
@@ -38,6 +46,7 @@ const RequestsList = (props: any) => {
   const [pageCount, setPageCount] = useState(0);
   const [requests, setRequests] = useState<IRequest[]>([]);
   const [deleteInProgress, setDeleteInProgress] = useState('');
+  const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
 
   /**
    * Delete Job Request Handler
@@ -70,7 +79,7 @@ const RequestsList = (props: any) => {
   const handleSearch = useCallback(debounce(handleJobRequestSearch, 300), []);
 
   useEffect(() => {
-    const reqQuery: { client?: string; } = {}
+    const reqQuery: { client?: string } = {};
 
     if (currentUser.role === 'CLIENT') reqQuery.client = currentUser.id;
 
@@ -93,20 +102,54 @@ const RequestsList = (props: any) => {
     }
   }, [itemsPerPage, props.itemList]);
 
+  const handleStatusChange = async (id: string, status: { label: string; value: string }) => {
+    try {
+      setIsUpdatingStatus(true);
+      await updateJobRequestApi({ _id: id, status: status.value });
+      toast.success("Status updated successfully")
+
+      props.actions.fetchJobRequests({ q: query, page: offset, limit: itemsPerPage });
+    } catch (ex) {
+      toast.error("Failed to update status")
+    } finally {
+      setIsUpdatingStatus(false);
+    }
+  };
+
+  const Status = ({ row }: { row: IRequest }) => {
+    return (
+      <div style={{ minWidth: '150px' }}>
+        <SelectField
+          label=""
+          isDisabled={isUpdatingStatus}
+          options={requestStatusOptions}
+          value={{ label: row.status, value: row.status }}
+          placeholder="All"
+          handleChange={(selected: { label: string; value: string }) => {
+            handleStatusChange(row._id, selected);
+          }}
+        />
+      </div>
+    );
+  };
+
   const columns: Column<IRequest>[] = useMemo(
     () => [
       {
         Header: 'REQUEST TITLE',
         accessor: (row: any) => {
           return (
-            <div className="cursor-pointer" onClick={() =>
-              navigate(
-                pinterpolate(endpoints.admin.requests.detail, {
-                  id: row._id
-                })
-              )
-            }>
-            {row.title}
+            <div
+              className="cursor-pointer"
+              onClick={() =>
+                navigate(
+                  pinterpolate(endpoints.admin.requests.detail, {
+                    id: row._id
+                  })
+                )
+              }
+            >
+              {row.title}
             </div>
           );
         }
@@ -117,7 +160,9 @@ const RequestsList = (props: any) => {
           return (
             <div>
               <div>
-                <b>{row.name?.firstName} {row.name?.firstName}</b>
+                <b>
+                  {row.name?.firstName} {row.name?.firstName}
+                </b>
               </div>
               <small>
                 {row.name?.email} / {row.name?.phoneNumber}
@@ -129,6 +174,10 @@ const RequestsList = (props: any) => {
       {
         Header: 'REQUEST DATE',
         accessor: 'requestDate'
+      },
+      {
+        Header: 'STATUS',
+        accessor: (row: IRequest) => <Status row={row} />
       },
       {
         Header: ' ',
@@ -176,7 +225,7 @@ const RequestsList = (props: any) => {
       }
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    [isUpdatingStatus]
   );
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({ columns, data: requests });
@@ -186,7 +235,9 @@ const RequestsList = (props: any) => {
       <div className="row">
         <div className="col">
           <h3 className="extra">Job Requests</h3>
-          <p className="text-secondary"><InfoIcon /> List of Job Requests. There are <strong>{requests.length}</strong> Job Requests </p>
+          <p className="text-secondary">
+            <InfoIcon /> List of Job Requests. There are <strong>{requests.length}</strong> Job Requests{' '}
+          </p>
         </div>
         <div className="col">
           <button
@@ -275,7 +326,7 @@ const mapDispatchToProps = (dispatch: any) => ({
   actions: {
     fetchJobRequests: (payload: any) => {
       dispatch(jobReqActions.fetchJobRequests(payload));
-    }
+    },
   }
 });
 

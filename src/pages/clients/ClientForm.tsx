@@ -99,13 +99,16 @@ const ClientForm: FC<IProps> = ({ id, isClientsLoading, isPropertiesLoading, act
     initialValues: initialValues,
     validationSchema: ClientSchema,
     onSubmit: (data: any) => {
-      // Set default password as phone number
-      data.password = data.phoneNumber;
+      if (id) {
+        // Update client
+        actions.updateClient(data);
+      } else {
+        // Set default password as phone number
+        data.password = data.phoneNumber;
 
-      // Update client
-      if (id) actions.updateClient(data);
-      // Add new client
-      else actions.addClient(data);
+        // Add new client
+        actions.addClient(data);
+      }
 
       // Redirect to previous page
       setTimeout(() => navigate(-1), 600);

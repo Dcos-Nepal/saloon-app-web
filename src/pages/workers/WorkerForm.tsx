@@ -150,15 +150,20 @@ const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker, isWorkersLoa
     initialValues: initialValues,
     validationSchema: WorkerSchema,
     onSubmit: async (data: any) => {
-      // Set default password as phone number
-      data.password = data.phoneNumber;
 
       // Set type if no type is provided
       if (!data.userData?.type) data.userData.type = 'WORKER';
+
       // For updating worker
-      if (id) await actions.updateWorker(data);
-      // For creating worker
-      else await actions.addWorker(data);
+      if (id) {
+        await actions.updateWorker(data);
+      } else {
+        // For creating worker
+        // Set default password as phone number
+        data.password = data.phoneNumber;
+        await actions.addWorker(data);
+      }
+
       // Redirect to previous page
       navigate(-1);
     }

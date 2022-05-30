@@ -66,7 +66,15 @@ const propertiesReducer = (state = initialState, action: any) => {
       state.isLoading = false;
       state.isFailed = false;
       state.isSuccess = true;
-      return { ...state };
+      state.properties = state.properties.map((property) => {
+        if(property._id === action.payload._id) {
+          return action.payload
+        }
+
+        return property
+      })
+
+      return { ...state, properties: [...state.properties] };
     }
 
     case actionType.UPDATE_PROPERTY_ERROR: {

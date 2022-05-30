@@ -5,6 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import JobEditForm from './JobEditForm';
 import * as jobsActions from '../../../store/actions/job.actions';
 import { InfoIcon } from '@primer/octicons-react';
+import { Loader } from 'common/components/atoms/Loader';
 
 interface IProps {
   actions: { fetchJob: (id: string, query: any) => any };
@@ -75,6 +76,7 @@ const EditJob = (props: IProps) => {
           </div>
         </div>
       </div>
+      <Loader isLoading={props.isLoading} />
       {initialValues && (
         <div className="">
           <JobEditForm isLoading={props.isLoading} job={{...initialValues, refCode: props.job?.refCode}} jobUpdated={() => console.log('updated')} />

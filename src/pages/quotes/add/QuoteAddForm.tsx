@@ -14,6 +14,8 @@ import InputField from 'common/components/form/Input';
 import SelectAsync from 'common/components/form/AsyncSelect';
 import TextArea from 'common/components/form/TextArea';
 import AsyncInputDataList from 'common/components/form/AsyncInputDataList';
+import { getPropertyAddress } from 'utils';
+import { getData } from 'utils/storage';
 
 interface IProps {
   id: string;
@@ -28,6 +30,8 @@ interface IProps {
 
 const QuoteAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => {
   const navigate = useNavigate();
+  const currentUser = getData('user');
+  const isWorker = currentUser?.userData?.type === 'WORKER';
 
   const [clientDetails, setClientDetails] = useState(null);
   const [properties, setProperties] = useState([]);
@@ -244,7 +248,7 @@ const QuoteAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => {
                   name={`quoteFor`}
                   label="Select Client"
                   value={formik.values.quoteFor}
-                  resource={{ name: 'users', labelProp: 'fullName', valueProp: '_id', params: { roles: 'CLIENT' } }}
+                  resource={{ name: 'users', labelProp: 'fullName', valueProp: '_id', params: isWorker ? { roles: 'CLIENT', createdBy: currentUser._id } : { roles: 'CLIENT'} }}
                   onChange={handleClientSelection}
                 />
                 <ErrorMessage name={`quoteFor.value`} />
@@ -256,7 +260,7 @@ const QuoteAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => {
                         {(clientDetails as any)?.email} / {(clientDetails as any)?.phoneNumber}
                       </div>
                       <div className="txt-grey">
-                        {(clientDetails as any)?.address?.street1}, {(clientDetails as any)?.address?.city}, {(clientDetails as any)?.address?.country}
+                        {getPropertyAddress((clientDetails as any)?.address)}
                       </div>
                     </div>
                   </div>

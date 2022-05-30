@@ -411,7 +411,7 @@ const ClientJobCreateForm = ({ actions, isLoading }: IProps) => {
                     </div>
                     <div className="txt-grey">
                       {(clientDetails as any)?.address
-                        ? `${(clientDetails as any)?.address?.street1}, ${(clientDetails as any)?.address?.city}, ${(clientDetails as any)?.address?.country}`
+                        ? getPropertyAddress((clientDetails as any)?.address)
                         : 'No primary address added.'}
                     </div>
                   </div>

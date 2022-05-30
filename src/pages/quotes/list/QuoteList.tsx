@@ -18,7 +18,7 @@ import { toast } from 'react-toastify';
 import DeleteConfirm from 'common/components/DeleteConfirm';
 import { deleteQuoteApi } from 'services/quotes.service';
 import StatusChangeWithReason from './StatusChangeWithReason';
-import { EyeIcon, FileBadgeIcon, PencilIcon, TrashIcon } from '@primer/octicons-react';
+import { EyeIcon, FileBadgeIcon, PencilIcon, SyncIcon, TrashIcon } from '@primer/octicons-react';
 import { getCurrentUser } from 'utils';
 
 interface IQuote {
@@ -66,41 +66,24 @@ const QuotesList = (props: any) => {
     }
   };
 
-  useEffect(() => {
+  const handlePageClick = (event: any) => {
+    const selectedPage = event.selected;
+    setOffset(selectedPage + 1);
+  };
+
+  const handleRefresh = () => {
     const quoteQuery: { quoteFor?: string; createdBy?: string;} = {}
 
-    if (currentUser.role === 'CLIENT') quoteQuery.quoteFor = currentUser.id;
+    if (currentUser.role === 'CLIENT') {
+      quoteQuery.quoteFor = currentUser.id;
+    }
+
     if (currentUser.role === 'WORKER') {
       quoteQuery.createdBy = currentUser.id;
     }
 
     props.actions.fetchQuotes({ q: query, ...quoteQuery, page: offset, limit: itemsPerPage });
-  }, [offset, itemsPerPage, props.actions, query, currentUser.id, currentUser.role]);
-
-  useEffect(() => {
-    if (props.itemList?.data?.rows) {
-      setQuotes(
-        props.itemList.data?.rows.map((row: IQuote) => ({
-          id: row.id,
-          title: row.title,
-          description: row.description,
-          quoteFor: row.quoteFor,
-          lineItems: row.lineItems,
-          status: row.status,
-          total: '',
-          createdAt: new Date(row.createdAt).toDateString(),
-          updatedAt: new Date(row.updatedAt).toDateString()
-        }))
-      );
-      setPageCount(Math.ceil(props.itemList.data.totalCount / itemsPerPage));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.isLoading]);
-
-  const handlePageClick = (event: any) => {
-    const selectedPage = event.selected;
-    setOffset(selectedPage + 1);
-  };
+  }
 
   const handleQuotesSearch = (event: any) => {
     const query = event.target.value;
@@ -249,16 +232,57 @@ const QuotesList = (props: any) => {
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({ columns, data: quotes });
 
+  useEffect(() => {
+    const quoteQuery: { quoteFor?: string; createdBy?: string;} = {}
+
+    if (currentUser.role === 'CLIENT') quoteQuery.quoteFor = currentUser.id;
+    if (currentUser.role === 'WORKER') {
+      quoteQuery.createdBy = currentUser.id;
+    }
+
+    props.actions.fetchQuotes({ q: query, ...quoteQuery, page: offset, limit: itemsPerPage });
+  }, [offset, itemsPerPage, props.actions, query, currentUser.id, currentUser.role]);
+
+  useEffect(() => {
+    if (props.itemList?.data?.rows) {
+      setQuotes(
+        props.itemList.data?.rows.map((row: IQuote) => ({
+          id: row.id,
+          title: row.title,
+          description: row.description,
+          quoteFor: row.quoteFor,
+          lineItems: row.lineItems,
+          status: row.status,
+          total: '',
+          createdAt: new Date(row.createdAt).toDateString(),
+          updatedAt: new Date(row.updatedAt).toDateString()
+        }))
+      );
+      setPageCount(Math.ceil(props.itemList.data.totalCount / itemsPerPage));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.isLoading]);
+
   return (
     <>
       <div className="row">
         <div className="col d-flex flex-row">
           <h3 className="extra">Quotes</h3>
         </div>
-        <div className="col">
-          <button onClick={() => navigate(endpoints.admin.quotes.add)} type="button" className="btn btn-primary d-flex float-end">
+        <div className="col-3 d-flex flex-row-reverse">
+          <div
+            onClick={() => handleRefresh()}
+            className="btn btn-secondary d-flex float-end"
+          >
+            <SyncIcon className='mt-1' />&nbsp;Refresh
+          </div>
+          &nbsp;&nbsp;
+          <div
+            onClick={() => { navigate(endpoints.admin.quotes.add);}}
+            className="btn btn-primary d-flex float-end"
+          >
             <FileBadgeIcon className='mt-1'/>&nbsp; New Quote
-          </button>
+          </div>
         </div>
         <label className="txt-grey">{quotes.length} quotes</label>
       </div>

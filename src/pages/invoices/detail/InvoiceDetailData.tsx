@@ -6,7 +6,7 @@ import { useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { sendInvoiceApi } from 'services/invoice.service';
 import * as invoicesActions from 'store/actions/invoices.actions';
-import { getCurrentUser } from 'utils';
+import { formatAddress, getCurrentUser } from 'utils';
 
 interface IProps {
   actions: {
@@ -68,12 +68,8 @@ const InvoiceDetailData: FC<IProps> = ({ isLoading, actions, currentInvoice }) =
                 <label className="txt-grey mb-3">TO</label>
                 <div className="col">
                   <h5 className="txt-bold">{`${currentInvoice?.invoiceFor?.firstName} ${currentInvoice?.invoiceFor?.lastName}`}</h5>
-                  <div>
-                    {currentInvoice?.invoiceFor?.address?.street1}, {currentInvoice?.invoiceFor?.address?.street2}, {currentInvoice?.invoiceFor?.address?.city}
-                  </div>
                   <div className="mb-1">
-                    {currentInvoice?.invoiceFor?.address?.state}, {currentInvoice?.invoiceFor?.address?.country},{' '}
-                    {currentInvoice?.invoiceFor?.address?.postalCode}
+                    {formatAddress(currentInvoice?.invoiceFor?.address)}
                   </div>
                   <div className="mb-1">{currentInvoice?.invoiceFor?.email || '-'}</div>
                   <div className="mb-1">{currentInvoice?.invoiceFor?.phoneNumber || '-'}</div>
@@ -85,8 +81,7 @@ const InvoiceDetailData: FC<IProps> = ({ isLoading, actions, currentInvoice }) =
             <div className="p-3">
               <label className="txt-grey mb-3">FROM</label>
               <h5 className="txt-bold">Orange Cleaning</h5>
-              <div>43 Hamley Cres, Mansfield Park</div>
-              <div className="mb-1">SA 5012</div>
+              <div className="mb-1">43 Hamley Cres, Mansfield Park, SA, 5012, Australia</div>
               <div className="mb-1">info@orangecleaning.com.au</div>
               <div className="mb-1">+62 1300 612 667</div>
             </div>

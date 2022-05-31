@@ -2,7 +2,7 @@ import { FC, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChecklistIcon, PersonIcon, StopIcon } from '@primer/octicons-react';
 import { Loader } from 'common/components/atoms/Loader';
-import { getCurrentUser, getJobPropertyAddress, isDateBefore } from 'utils';
+import { getCurrentUser, getJobAddress, isDateBefore } from 'utils';
 import Image from 'common/components/atoms/Image';
 
 interface IProps {
@@ -113,7 +113,7 @@ const ScheduleEventDetail: FC<IProps> = ({ closeModal, markVisitCompleteHandler,
             <div className="row">
               <h5>Property Location</h5>
               <div className="txt-grey">{event.extendedProps?.meta?.job?.property ? event.extendedProps?.meta?.job?.property?.name : 'Primary Address'}</div>
-              <div className="">{getJobPropertyAddress(event.extendedProps?.meta?.job)}</div>
+              <div className="">{getJobAddress(event.extendedProps?.meta?.job)}</div>
             </div>
 
             <div className="hr mb-3"></div>

@@ -19,7 +19,7 @@ import { IOption } from 'common/types/form';
 import { deletePublicFile, uploadPublicFile } from 'services/files.service';
 import { Loader } from 'common/components/atoms/Loader';
 import { getData } from 'utils/storage';
-import { getPropertyAddress } from 'utils';
+import { formatAddress } from 'utils';
 import Image from 'common/components/atoms/Image';
 
 interface IProps {
@@ -271,7 +271,7 @@ const EditJobForm = (props: IProps) => {
                         {(clientDetails as any)?.email} / {(clientDetails as any)?.phoneNumber}
                       </div>
                       <div className="txt-grey">
-                        {getPropertyAddress((clientDetails as any)?.address)}
+                        {formatAddress((clientDetails as any)?.address)}
                       </div>
                     </div>
                   </div>
@@ -291,7 +291,7 @@ const EditJobForm = (props: IProps) => {
                       <div className="txt-grey">Clients Primary Address</div>
                       <div className="">
                         {(clientDetails as any)?.address
-                          ? getPropertyAddress((clientDetails as any)?.address)
+                          ? formatAddress((clientDetails as any)?.address)
                           : 'No primary address added.'}
                       </div>
                     </div>
@@ -312,7 +312,7 @@ const EditJobForm = (props: IProps) => {
                       <div className="col p-2 ps-4">
                         <div className="txt-grey">{property.name}</div>
                         <div className="">
-                          {getPropertyAddress(property)}
+                          {formatAddress(property)}
                         </div>
                       </div>
                     </div>

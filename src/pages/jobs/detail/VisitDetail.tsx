@@ -1,7 +1,7 @@
 import { ChecklistIcon, PersonIcon, StopIcon } from '@primer/octicons-react';
 import Image from 'common/components/atoms/Image';
 import { FC } from 'react';
-import { getCurrentUser, getJobPropertyAddress, isDateBefore } from 'utils';
+import { getCurrentUser, getJobAddress, isDateBefore } from 'utils';
 
 interface IProps {
   event: any;
@@ -84,7 +84,7 @@ const VisitDetail: FC<IProps> = ({ closeModal, markVisitCompleteHandler, event }
             <div className="row mb-3">
               <h5>Property Location</h5>
               <div className="txt-grey">{event.job?.property ? event.job?.property?.name : 'Primary Address'}</div>
-              <div className="">{getJobPropertyAddress(event.job)}</div>
+              <div className="">{getJobAddress(event.job)}</div>
             </div>
 
             <div className="hr mb-3"></div>

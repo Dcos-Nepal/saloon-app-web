@@ -35,7 +35,7 @@ import { Loader } from 'common/components/atoms/Loader';
 import VisitDetail from './VisitDetail';
 import DeleteConfirm from 'common/components/DeleteConfirm';
 import CompleteVisit from 'pages/schedules/CompleteVisit';
-import { getCurrentUser, getJobPropertyAddress } from 'utils';
+import { getCurrentUser, getJobAddress } from 'utils';
 import Image from 'common/components/atoms/Image';
 
 export interface IVisit {
@@ -451,7 +451,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
               <div className="col p-2 ps-4">
                 <div className="txt-grey">Property address</div>
                 <div className="">
-                  <LocationIcon /> {getJobPropertyAddress(job)}
+                  <LocationIcon /> {getJobAddress(job)}
                 </div>
               </div>
             </div>

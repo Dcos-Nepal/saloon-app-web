@@ -22,7 +22,7 @@ import SelectField from 'common/components/form/Select';
 import { IOption } from 'common/types/form';
 import { getServices } from 'data';
 import { deletePublicFile, uploadPublicFile } from 'services/files.service';
-import { getCurrentUser, getPropertyAddress } from 'utils';
+import { getCurrentUser, formatAddress } from 'utils';
 import { getData } from 'utils/storage';
 import Image from 'common/components/atoms/Image';
 import Spinner from '../../../assets/images/spinner.gif';
@@ -103,6 +103,9 @@ const ClientJobCreateForm = ({ actions, isLoading }: IProps) => {
         delete job.property;
       }
 
+      // Remove oneOff property from Request
+      delete job.oneOff;
+
       await actions.addJob({
         ...job,
         schedule: {
@@ -119,7 +122,9 @@ const ClientJobCreateForm = ({ actions, isLoading }: IProps) => {
       setRecommendedTeam([]);
 
       // Navigate to the previous screen
-      navigate(-1);
+      setTimeout(() => {
+        navigate(-1);
+      }, 300);
     }
   });
 
@@ -411,7 +416,7 @@ const ClientJobCreateForm = ({ actions, isLoading }: IProps) => {
                     </div>
                     <div className="txt-grey">
                       {(clientDetails as any)?.address
-                        ? getPropertyAddress((clientDetails as any)?.address)
+                        ? formatAddress((clientDetails as any)?.address)
                         : 'No primary address added.'}
                     </div>
                   </div>
@@ -427,7 +432,7 @@ const ClientJobCreateForm = ({ actions, isLoading }: IProps) => {
                     <div className="txt-grey">Clients Primary Address</div>
                     <div className="">
                       {(clientDetails as any)?.address
-                        ? getPropertyAddress((clientDetails as any)?.address)
+                        ? formatAddress((clientDetails as any)?.address)
                         : 'No primary address added.'}
                     </div>
                   </div>
@@ -447,7 +452,7 @@ const ClientJobCreateForm = ({ actions, isLoading }: IProps) => {
                   <div className="col p-2 ps-4">
                     <div className="txt-grey">{property.name}</div>
                     <div className="">
-                      {getPropertyAddress(property)}
+                      {formatAddress(property)}
                     </div>
                   </div>
                 </div>
@@ -843,7 +848,6 @@ const ClientJobCreateForm = ({ actions, isLoading }: IProps) => {
             </div>
           </div>
         </div>
-
         <div className="mb-3 mt-3">
           <button type="submit" className="btn btn-primary">
             Save Job

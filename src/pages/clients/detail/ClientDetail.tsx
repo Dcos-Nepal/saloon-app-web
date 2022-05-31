@@ -3,7 +3,7 @@ import pinterpolate from 'pinterpolate';
 import { FC, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { getCurrentUser, getPropertyAddress } from 'utils';
+import { getCurrentUser, formatAddress } from 'utils';
 import { IClient } from 'common/types/client';
 import { Loader } from 'common/components/atoms/Loader';
 import * as jobsActions from 'store/actions/job.actions';
@@ -330,7 +330,7 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient, quotes, properties, 
                   <div className="col p-2 ps-4">
                     <div className="txt-grey">Client's Address</div>
                     <div className="">
-                      {getPropertyAddress(currentClient.address)}
+                      {currentClient?.address ? formatAddress(currentClient?.address) : null}
                       </div>
                   </div>
                 </div>
@@ -352,7 +352,7 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient, quotes, properties, 
                       <div className="col p-2 ps-4">
                         <div className="txt-grey">{property.name}</div>
                         <div className="">
-                          {getPropertyAddress(property)}
+                          {formatAddress(property)}
                         </div>
                       </div>
                     </div>

@@ -18,8 +18,8 @@ import DeleteConfirm from 'common/components/DeleteConfirm';
 import * as jobsActions from '../../store/actions/job.actions';
 import { deleteJobApi, provideFeedbackApi } from 'services/jobs.service';
 import { Loader } from 'common/components/atoms/Loader';
-import { CheckIcon, EyeIcon, InfoIcon, NoteIcon, PencilIcon, PlusIcon, SyncIcon, TasklistIcon, TrashIcon } from '@primer/octicons-react';
-import { getCurrentUser, getJobPropertyAddress } from 'utils';
+import { CheckIcon, EyeIcon, InfoIcon, NoteIcon, PencilIcon, PlusIcon, SyncIcon, TrashIcon } from '@primer/octicons-react';
+import { getCurrentUser, getJobAddress } from 'utils';
 import Truncate from 'react-truncate';
 import EmptyState from 'common/components/EmptyState';
 
@@ -89,7 +89,7 @@ const JobsList = (props: IProps) => {
         accessor: (row: any) => {
           return (<>
             <div><strong>{row.jobFor?.fullName}</strong></div>
-            <div>{getJobPropertyAddress(row)}</div>
+            <div>{getJobAddress(row)}</div>
           </>);
         }
       },

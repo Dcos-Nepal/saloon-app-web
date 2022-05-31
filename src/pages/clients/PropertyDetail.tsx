@@ -1,4 +1,4 @@
-import { getPropertyAddress } from "utils";
+import { formatAddress } from "utils";
 
 const PropertyDetail = ({ setEditPropertyFor, setDeletePropertyFor, property }: any) => {
   return (
@@ -16,7 +16,7 @@ const PropertyDetail = ({ setEditPropertyFor, setDeletePropertyFor, property }: 
       </div>
       <div className="row">
         <div className="col-12">
-          <div className="">{getPropertyAddress(property)}</div>
+          <div className="">{formatAddress(property)}</div>
         </div>
       </div>
     </div>

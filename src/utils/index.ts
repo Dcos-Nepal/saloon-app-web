@@ -66,28 +66,32 @@ export const getTodayStr = () => {
 }
 
 /**
- * Get Property Address
- * @param job
- * @returns
+ * Format Address
+ * @param address  Address
+ * @returns String
  */
- export const getPropertyAddress = (property: any) => {
+export const formatAddress = (address: { street1?: string; street2?: string; city?: string; postalCode?: string; country?: string }) => {
+  if (!address) {
+    return '';
+  }
+
   const addressStack = [];
 
-  if (property?.street1) addressStack.push(property?.street1);
-  if (property?.street2) addressStack.push(property?.street2);
-  if (property?.city) addressStack.push(property?.city);
-  if (property?.postalCode) addressStack.push(property?.postalCode);
-  if (property?.country) addressStack.push(property?.country);
+  if (address?.street1) addressStack.push(address?.street1);
+  if (address?.street2) addressStack.push(address?.street2);
+  if (address?.city) addressStack.push(address?.city);
+  if (address?.postalCode) addressStack.push(address?.postalCode);
+  if (address?.country) addressStack.push(address?.country);
 
   return addressStack.join(', ');
-}
+};
 
 /**
- * Get Job's Property
- * @param job
- * @returns
+ * Get Job's Address
+ * @param job Job
+ * @returns String
  */
-export const getJobPropertyAddress = (job: any) => {
+export const getJobAddress = (job: any) => {
   let property = (job?.property) ? job?.property : job?.jobFor?.address;
-  return getPropertyAddress(property);
+  return formatAddress(property);
 }

@@ -14,7 +14,7 @@ import InputField from 'common/components/form/Input';
 import SelectAsync from 'common/components/form/AsyncSelect';
 import TextArea from 'common/components/form/TextArea';
 import AsyncInputDataList from 'common/components/form/AsyncInputDataList';
-import { getPropertyAddress } from 'utils';
+import { formatAddress } from 'utils';
 import { getData } from 'utils/storage';
 
 interface IProps {
@@ -260,7 +260,7 @@ const QuoteAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => {
                         {(clientDetails as any)?.email} / {(clientDetails as any)?.phoneNumber}
                       </div>
                       <div className="txt-grey">
-                        {getPropertyAddress((clientDetails as any)?.address)}
+                        {formatAddress((clientDetails as any)?.address)}
                       </div>
                     </div>
                   </div>

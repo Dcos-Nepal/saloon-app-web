@@ -47,7 +47,7 @@ function* addClient(action: any): any {
     if (newClient?.data?.success) {
       yield put({
         type: actionType.ADD_CLIENT_SUCCESS,
-        payload: newClient?.data?.data,
+        payload: newClient?.data?.data?.data,
       });
 
       return toast.success(getMessage(newClient?.data?.message));

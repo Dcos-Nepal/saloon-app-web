@@ -1,11 +1,11 @@
-import * as actionType from "../constants";
+import * as actionType from '../constants';
 
-const initialState : any = {
-  workers: {data: {rows: [], totalCount: 0}},
+const initialState: any = {
+  workers: { data: { rows: [], totalCount: 0 } },
   currentUser: null,
   isFailed: false,
   isSuccess: false,
-  isLoading: false,
+  isLoading: false
 };
 
 const workersReducer = (state = initialState, action: any) => {
@@ -38,7 +38,7 @@ const workersReducer = (state = initialState, action: any) => {
       state.isLoading = false;
       state.isFailed = false;
       state.isSuccess = true;
-      state.workers.data.rows = [...state.workers.data.rows];
+      state.workers.data.rows = [action.payload, ...state.workers.data.rows];
 
       return { ...state, workers: { ...state.workers } };
     }
@@ -67,7 +67,7 @@ const workersReducer = (state = initialState, action: any) => {
         return worker;
       });
 
-      return { ...state, workers: {...state.workers}};
+      return { ...state, workers: { ...state.workers } };
     }
 
     case actionType.UPDATE_WORKER_ERROR: {

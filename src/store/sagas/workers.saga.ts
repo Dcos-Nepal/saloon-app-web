@@ -42,7 +42,7 @@ function* addWorker(action: any): any {
     if (newWorker?.data?.success) {
       yield put({
         type: actionType.ADD_WORKER_SUCCESS,
-        payload: newWorker?.data?.data,
+        payload: newWorker?.data?.data?.data,
       });
 
       return toast.success(getMessage(newWorker?.data?.message));

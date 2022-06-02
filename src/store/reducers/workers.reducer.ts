@@ -38,7 +38,7 @@ const workersReducer = (state = initialState, action: any) => {
       state.isLoading = false;
       state.isFailed = false;
       state.isSuccess = true;
-      state.workers.data.rows = [action.payload, ...state.workers.data.rows];
+      state.workers.data.rows = [...state.workers.data.rows];
 
       return { ...state, workers: { ...state.workers } };
     }

@@ -38,7 +38,7 @@ const clientsReducer = (state = initialState, action: any) => {
       state.isLoading = false;
       state.isFailed = false;
       state.isSuccess = true;
-      state.clients.data.rows = [action.payload, ...state.clients.data.rows];
+      state.clients.data.rows = [...state.clients.data.rows];
 
       return { ...state, clients: { ...state.clients } };
     }

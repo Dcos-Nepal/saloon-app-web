@@ -637,11 +637,11 @@ const ClientJobCreateForm = ({ actions, isLoading }: IProps) => {
                         closeOnSelect={true}
                       />
                       <small className="text-warning">
-                        <InfoIcon size={14} /> {isWorker ? "You are assigned as worker by default for this job" : ''} 
+                        <InfoIcon size={14} /> {isWorker ? "You are assigned as worker by default for this job" : ''}
                       </small>
                     </>
                   ) : null}
-                  
+
                   {(currUser.role !== 'WORKER') ? (
                     <>
                       <SelectAsync

@@ -21,6 +21,8 @@ import { Loader } from 'common/components/atoms/Loader';
 import { getData } from 'utils/storage';
 import { formatAddress } from 'utils';
 import Image from 'common/components/atoms/Image';
+import { getWorkerRecommendations } from 'services/users.service';
+import { IUser } from 'common/types/user';
 
 interface IProps {
   isLoading: boolean;
@@ -33,7 +35,12 @@ const EditJobForm = (props: IProps) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [clientDetails, setClientDetails] = useState(null);
-  const [properties, setProperties] = useState([]);
+  const [properties, setProperties] = useState<any[]>([]);
+
+  const [selectedTeam, setSelectedTeam] = useState<Array<any>>([]);
+  const [recommendedTeam, setRecommendedTeam] = useState<Array<any>>([]);
+
+  const [isRecommendationsLoading, setIsRecommendationsLoading] = useState(false);
 
   const currentUser = getData('user');
   const isWorker = currentUser?.userData?.type === 'WORKER';
@@ -54,6 +61,7 @@ const EditJobForm = (props: IProps) => {
   /**
    * Initialize formik form
    */
+  console.log(props.job);
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: props.job,
@@ -193,6 +201,49 @@ const EditJobForm = (props: IProps) => {
     });
   }, [props.isLoading, props.job?.jobFor]);
 
+  useEffect(() => {
+    if (formik.values.jobFor && formik.values.oneOff?.startTime && formik.values.oneOff?.endTime && formik.values.jobType) {
+      (async () => {
+        try {
+          setIsRecommendationsLoading(true);
+
+          let property = props.job.jobFor?.meta?.address;
+          if (formik.values.property) property = properties.find((property) => property._id === formik.values.property);
+
+          const {
+            data: { data: recommendationData }
+          } = await getWorkerRecommendations({
+            address: `${property?.city}, ${property?.state}, ${property?.country}`,
+
+            startTime: formik.values.oneOff?.startTime,
+
+            endTime: formik.values.oneOff?.endTime,
+
+            jobType: formik.values.jobType
+          });
+
+          const team = recommendationData?.data?.map((recommendation: IUser) => {
+            return {
+              label: recommendation.fullName,
+
+              value: recommendation._id
+            };
+          });
+
+          console.log(team);
+
+          setRecommendedTeam(team);
+
+          setSelectedTeam(team);
+        } catch (ex) {
+          console.log(ex);
+        } finally {
+          setIsRecommendationsLoading(false);
+        }
+      })();
+    }
+  }, [formik.values.jobFor, formik.values.property, formik.values.oneOff?.startTime, formik.values.oneOff?.endTime, formik.values.jobType, properties]);
+
   return (
     <form onSubmit={formik.handleSubmit} style={{ position: 'relative' }}>
       <Loader isLoading={formik.isSubmitting} />
@@ -259,7 +310,12 @@ const EditJobForm = (props: IProps) => {
                   name={`jobFor`}
                   label="Select Client"
                   value={formik.values.jobFor}
-                  resource={{ name: 'users', labelProp: 'fullName', valueProp: '_id', params: isWorker ? { roles: 'CLIENT', createdBy: currentUser._id } : { roles: 'CLIENT'} }}
+                  resource={{
+                    name: 'users',
+                    labelProp: 'fullName',
+                    valueProp: '_id',
+                    params: isWorker ? { roles: 'CLIENT', createdBy: currentUser._id } : { roles: 'CLIENT' }
+                  }}
                   onChange={handleClientSelection}
                 />
                 <ErrorMessage name={`jobFor.value`} />
@@ -270,9 +326,7 @@ const EditJobForm = (props: IProps) => {
                       <div className="txt-bold">
                         {(clientDetails as any)?.email} / {(clientDetails as any)?.phoneNumber}
                       </div>
-                      <div className="txt-grey">
-                        {formatAddress((clientDetails as any)?.address)}
-                      </div>
+                      <div className="txt-grey">{formatAddress((clientDetails as any)?.address)}</div>
                     </div>
                   </div>
                 ) : null}
@@ -289,11 +343,7 @@ const EditJobForm = (props: IProps) => {
                     </div>
                     <div className="col p-2 ps-4">
                       <div className="txt-grey">Clients Primary Address</div>
-                      <div className="">
-                        {(clientDetails as any)?.address
-                          ? formatAddress((clientDetails as any)?.address)
-                          : 'No primary address added.'}
-                      </div>
+                      <div className="">{(clientDetails as any)?.address ? formatAddress((clientDetails as any)?.address) : 'No primary address added.'}</div>
                     </div>
                   </div>
                 ) : null}
@@ -311,9 +361,7 @@ const EditJobForm = (props: IProps) => {
                       </div>
                       <div className="col p-2 ps-4">
                         <div className="txt-grey">{property.name}</div>
-                        <div className="">
-                          {formatAddress(property)}
-                        </div>
+                        <div className="">{formatAddress(property)}</div>
                       </div>
                     </div>
                   );
@@ -410,19 +458,85 @@ const EditJobForm = (props: IProps) => {
                   <h6 className="txt-bold mt-2">Team</h6>
                 </div>
               </div>
-              <div className="row">
-                <SelectAsync
-                  name={`team`}
-                  label="Select Workers"
-                  value={formik.values.team}
-                  resource={{ name: 'users', labelProp: 'fullName', valueProp: '_id', params: { roles: 'WORKER' } }}
-                  onChange={handleWorkerSelection}
-                  isMulti={true}
-                  closeOnSelect={true}
-                  isDisabled={isWorker}
-                />
-                <div className="row text-danger mt-1 mb-2">{/* <ErrorMessage name={`team`} /> */}</div>
-              </div>
+              {formik.values.jobFor && formik.values.oneOff?.endTime && formik.values.oneOff?.startTime && formik.values.jobType ? (
+                <>
+                  <div className="row">
+                    {isRecommendationsLoading ? (
+                      <Loader isLoading />
+                    ) : recommendedTeam.length ? (
+                      <SelectField
+                        isMulti
+                        label=""
+                        name="team"
+                        options={recommendedTeam}
+                        helperComponent={
+                          <div className="row text-danger mt-1 mb-2">
+                            <ErrorMessage name="team" />
+                          </div>
+                        }
+                        value={selectedTeam}
+                        handleChange={handleWorkerSelection}
+                        onBlur={formik.handleBlur}
+                      />
+                    ) : (
+                      <>
+                        <SelectAsync
+                          name={`team`}
+                          label="Select Workers"
+                          value={selectedTeam}
+                          resource={{ name: 'users', labelProp: 'fullName', valueProp: '_id', params: { roles: 'WORKER' } }}
+                          onChange={handleWorkerSelection}
+                          isMulti={true}
+                          closeOnSelect={true}
+                        />
+
+                        <small className="text-warning">
+                          <InfoIcon size={14} /> No recommendation found for the job, please select worker manually.
+                        </small>
+                      </>
+                    )}
+
+                    <div className="row text-danger mt-1 mb-2">
+                      <ErrorMessage name={`team`} />
+                    </div>
+                  </div>
+
+                  <div className="mt-3">
+                    <input name="notifyTeam" className="form-check-input" type="checkbox" value="true" id="flexCheckDefault" onChange={formik.handleChange} />
+
+                    <label className="ms-2 form-check-label" htmlFor="flexCheckDefault">
+                      Notify team about this assignment
+                    </label>
+
+                    <div>
+                      <small>
+                        <InfoIcon size={14} /> If you select Email, each team members will receive email notification.
+                      </small>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div className="row">
+                  <SelectAsync
+                    isDisabled
+                    name={`team`}
+                    label="Select Workers"
+                    value={selectedTeam}
+                    resource={{ name: 'users/recommendation/', labelProp: 'fullName', valueProp: '_id', params: { roles: 'WORKER' } }}
+                    onChange={handleWorkerSelection}
+                    isMulti={true}
+                    closeOnSelect={true}
+                  />
+
+                  <div className="row text-danger mt-1 mb-2">
+                    <div className="col-1" style={{ width: '20px' }}>
+                      <StopIcon size={14} />
+                    </div>
+
+                    <div className="col">Select client, property, service type and time to get worker recommendation</div>
+                  </div>
+                </div>
+              )}
 
               <div className="mt-3">
                 <input className="form-check-input" type="checkbox" value="" id="flexCheckDefault" />

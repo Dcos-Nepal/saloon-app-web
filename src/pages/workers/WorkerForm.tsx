@@ -9,7 +9,7 @@ import { COUNTRIES_OPTIONS, DAYS_OF_WEEK, DEFAULT_COUNTRY, STATES_OPTIONS } from
 import InputField from 'common/components/form/Input';
 import SelectField from 'common/components/form/Select';
 import * as workersActions from 'store/actions/workers.actions';
-import { StopIcon, UploadIcon, XCircleIcon } from '@primer/octicons-react';
+import { InfoIcon, StopIcon, UploadIcon, XCircleIcon } from '@primer/octicons-react';
 import { deletePublicFile, uploadPublicFile } from 'services/files.service';
 import { getServices } from 'data';
 import SearchLocation from 'common/components/form/SearchLocation';
@@ -346,7 +346,7 @@ const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker, isWorkersLoa
             </div>
           </div>
           <InputField
-            label="Email address"
+            label={<span>Email address &nbsp; {id ? <><br/><small><InfoIcon /> Worker will receive a verification email with password.</small></> : null}</span>}
             placeholder="Enter email address"
             type="email"
             name="email"

@@ -232,7 +232,7 @@ const Profile: FC<IProps> = ({ actions, properties }) => {
                     </div>
                     {properties.length ? (
                       properties.map((property: any, index) => (
-                        <div className={`row mt-1`}>
+                        <div key={property._id + index} className={`row mt-1`}>
                           <div className="col-2 mt-2">
                             <button className="btn btn-secondary d-flex float-end">
                               <box-icon name="map" color="#EC7100" />
@@ -259,48 +259,7 @@ const Profile: FC<IProps> = ({ actions, properties }) => {
             </div>
             <div className="row m-1">
               <div className="col card">
-                {currentUser.userData?.type === 'WORKER' ? (
-                  <>
-                    <div className="row">
-                      <div className="col d-flex flex-row">
-                        <h5 className="txt-bold">Worker Documents</h5>
-                      </div>
-                      <div className="txt-info">
-                        <StopIcon size={16} /> Click on the each document to download/view the document.
-                      </div>
-                    </div>
-                    {currentUser.userData?.documents && Object.keys(currentUser?.userData?.documents).length ? (
-                      <div className="row mt-3" >
-                        {Object.keys(currentUser?.userData?.documents).map((key) => (
-                          <div className="col p-1 ps-4" key={currentUser?._id}>
-                            <div className="txt-grey mb-2">{currentUser.userData.documents[key]?.type?.split('_').join(' ')}:</div>
-                            {currentUser.userData.documents[key]?.key ? (
-                              <a
-                                className="mt-3 txt-orange text-decoration-none"
-                                target="_blank"
-                                href={currentUser.userData.documents[key]?.url}
-                                rel="noreferrer"
-                              >
-                                <img height="200" width="200" src={currentUser.userData.documents[key]?.url} className="rounded float-start" alt="" />
-                              </a>
-                            ) : (
-                              <div className="txt-grey pt-2">
-                                <StopIcon size={16} /> Not document added yet!.
-                              </div>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="row border-bottom mb-3">
-                        <div className="col p-2 ps-4">
-                          <div className="txt-grey">No documents</div>
-                        </div>
-                      </div>
-                    )}
-                  </>
-                ) : null}
-                <div className="row mt-3">
+                <div className="row mt-1">
                   <div className="col d-flex flex-row">
                     <h5 className="txt-bold">Other Information</h5>
                   </div>
@@ -336,13 +295,13 @@ const Profile: FC<IProps> = ({ actions, properties }) => {
                         <div className="txt-grey">Services Offered</div>
                         <div className="">
                           {currentUser?.userData?.services.length
-                            ? currentUser?.userData?.services.map((service: string) => (
-                                <>
-                                  <span key={service} className="badge rounded-pill bg-secondary p-1">
+                            ? currentUser?.userData?.services.map((service: string, index: number) => (
+                                <span key={service + index}>
+                                  <span className="badge rounded-pill bg-secondary p-2 px-3">
                                     {service}
                                   </span>
                                   &nbsp;
-                                </>
+                                </span>
                               ))
                             : 'No services added yet.'}
                         </div>
@@ -361,6 +320,47 @@ const Profile: FC<IProps> = ({ actions, properties }) => {
                       <div className="">{currentUser.userData?.preferredTime || 'XXXXX-XXXXX'}</div>
                     </div>
                   </div>
+                ) : null}
+                {currentUser.userData?.type === 'WORKER' ? (
+                  <>
+                    <div className="row mt-3">
+                      <div className="col d-flex flex-row">
+                        <h5 className="txt-bold">Worker Documents</h5>
+                      </div>
+                      <div className="txt-info">
+                        <StopIcon size={16} /> Click on the each document to download/view the document.
+                      </div>
+                    </div>
+                    {currentUser.userData?.documents && Object.keys(currentUser?.userData?.documents).length ? (
+                      <div className="row mt-3" >
+                        {Object.keys(currentUser?.userData?.documents).map((key, index) => (
+                          <div className="col p-1 ps-4" key={currentUser?._id + index}>
+                            <div className="txt-grey mb-2">{currentUser.userData.documents[key]?.type?.split('_').join(' ')}:</div>
+                            {currentUser.userData.documents[key]?.key ? (
+                              <a
+                                className="mt-3 txt-orange text-decoration-none"
+                                target="_blank"
+                                href={currentUser.userData.documents[key]?.url}
+                                rel="noreferrer"
+                              >
+                                <img height="200" width="200" src={currentUser.userData.documents[key]?.url} className="rounded float-start" alt="" />
+                              </a>
+                            ) : (
+                              <div className="txt-grey pt-2">
+                                <StopIcon size={16} /> Not document added yet!.
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="row border-bottom mb-3">
+                        <div className="col p-2 ps-4">
+                          <div className="txt-grey">No documents</div>
+                        </div>
+                      </div>
+                    )}
+                  </>
                 ) : null}
               </div>
             </div>

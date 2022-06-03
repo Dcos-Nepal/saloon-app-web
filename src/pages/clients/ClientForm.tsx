@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { IOption } from 'common/types/form';
 import PropertyDetail from './PropertyDetail';
 import { IClient } from 'common/types/client';
-import { StopIcon } from '@primer/octicons-react';
+import { InfoIcon, StopIcon } from '@primer/octicons-react';
 import InputField from 'common/components/form/Input';
 import { Loader } from 'common/components/atoms/Loader';
 import SelectField from 'common/components/form/Select';
@@ -228,7 +228,7 @@ const ClientForm: FC<IProps> = ({ id, isClientsLoading, isPropertiesLoading, act
                 </div>
               </div>
               <InputField
-                label="Email address"
+                label={<span>Email address &nbsp; {id ? <><br/><small><InfoIcon /> Client will receive a verification email with password.</small></> : null}</span>}
                 value={formik.values.email}
                 placeholder="Enter email address"
                 type="email"
@@ -278,7 +278,7 @@ const ClientForm: FC<IProps> = ({ id, isClientsLoading, isPropertiesLoading, act
                 <div className="row">
                   <div className="col">
                     <InputField
-                      label="Phone number"
+                      label="Phone Number"
                       placeholder="Enter phone number"
                       name="phoneNumber"
                       helperComponent={

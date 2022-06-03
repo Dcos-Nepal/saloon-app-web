@@ -12,7 +12,7 @@ import SideNavbar from 'common/components/layouts/sidebar';
 import InputField from 'common/components/form/Input';
 import { changePasswordApi } from 'services/auth.service';
 import * as workersActions from 'store/actions/workers.actions';
-import { StopIcon, UploadIcon, XCircleIcon } from '@primer/octicons-react';
+import { InfoIcon, StopIcon, UploadIcon, XCircleIcon } from '@primer/octicons-react';
 import SelectField from 'common/components/form/Select';
 import { COUNTRIES_OPTIONS, DAYS_OF_WEEK, STATES_OPTIONS } from 'common/constants';
 import { IOption } from 'common/types/form';
@@ -436,7 +436,7 @@ const Setting = ({
                     </div>
                   </div>
                   <InputField
-                    label="Email address"
+                    label={<span>Email address &nbsp; <br/><small><InfoIcon /> You'll receive a verification email if you update your email.</small></span>}
                     placeholder="Enter email address"
                     type="email"
                     name="email"
@@ -444,10 +444,9 @@ const Setting = ({
                     onChange={profileFormik.handleChange}
                     onBlur={profileFormik.handleBlur}
                     value={profileFormik.values.email}
-                    disabled={true}
                   />
                   <InputField
-                    label="Phone number: [+xxx xxxxxxxxxx]"
+                    label={<span>Phone Number: <i>[eg. +61 1234567890]</i> &nbsp; <br/><small><InfoIcon/ > You'll need to verify your Phone Number if you update it.</small></span>}
                     placeholder="Enter phone number"
                     name="phoneNumber"
                     helperComponent={<ErrorMessage formik={profileFormik} name="phoneNumber" />}

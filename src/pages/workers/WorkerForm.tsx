@@ -346,7 +346,7 @@ const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker, isWorkersLoa
             </div>
           </div>
           <InputField
-            label={<span>Email address &nbsp; {id ? <><br/><small><InfoIcon /> Worker will receive a verification email with password.</small></> : null}</span>}
+            label={<span>Email address &nbsp; {!id ? <><br/><small><InfoIcon /> Worker will receive a verification email with password.</small></> : null}</span>}
             placeholder="Enter email address"
             type="email"
             name="email"
@@ -358,7 +358,7 @@ const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker, isWorkersLoa
           <InputField
             label={
               <span>
-                Phone Number: <small className="text-primary">[Note: This Phone Number will be default password for new workers]</small>
+                Phone Number: <i>[eg. +61 1234567890]</i> &nbsp; <br/><small className="text-primary">[Worker needs to verify this phone number from profile page]</small>
               </span>
             }
             placeholder="Enter phone number"

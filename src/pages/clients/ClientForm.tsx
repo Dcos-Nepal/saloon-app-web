@@ -278,7 +278,11 @@ const ClientForm: FC<IProps> = ({ id, isClientsLoading, isPropertiesLoading, act
                 <div className="row">
                   <div className="col">
                     <InputField
-                      label="Phone Number"
+                      label={
+                        <span>
+                          Phone Number: <i>[eg. +61 1234567890]</i> &nbsp; <br/><small className="text-primary">[Client needs to verify this phone number from profile page]</small>
+                        </span>
+                      }
                       placeholder="Enter phone number"
                       name="phoneNumber"
                       helperComponent={

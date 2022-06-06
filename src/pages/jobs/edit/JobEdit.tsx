@@ -2,11 +2,12 @@ import { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import JobEditForm from './JobEditForm';
 import * as jobsActions from '../../../store/actions/job.actions';
 import { InfoIcon } from '@primer/octicons-react';
 import { Loader } from 'common/components/atoms/Loader';
 import useMountedRef from 'common/hooks/is-mounted';
+import JobForm from '../JobForm';
+import { DateTime } from 'luxon';
 
 interface IProps {
   actions: { fetchJob: (id: string, query: any) => any };
@@ -32,6 +33,7 @@ const EditJob = (props: IProps) => {
 
     if (isMounted) {
       setInitialValues({
+        _id: job._id,
         title: job.title,
         instruction: job.instruction,
         jobFor: { value: job.jobFor._id, label: job.jobFor.fullName, meta: job.jobFor },
@@ -55,9 +57,9 @@ const EditJob = (props: IProps) => {
         },
         oneOff: {
           rruleSet: job.primaryVisit?.rruleSet || '',
-          startDate: job.primaryVisit?.startDate || '',
+          startDate: DateTime.fromISO(job.primaryVisit?.startDate).toLocaleString() || '',
           startTime: job.primaryVisit?.startTime || '',
-          endDate: job.primaryVisit?.endDate || '',
+          endDate: DateTime.fromISO(job.primaryVisit?.endDate).toLocaleString() || '',
           endTime: job.primaryVisit?.endTime || ''
         },
         notes: job?.notes || '' ,
@@ -85,7 +87,8 @@ const EditJob = (props: IProps) => {
       <Loader isLoading={props.isLoading} />
       {initialValues && (
         <div className="">
-          <JobEditForm isLoading={props.isLoading} job={{...initialValues, refCode: props.job?.refCode}} jobUpdated={() => console.log('updated')} />
+          <JobForm initialValues={{...initialValues, refCode: props.job?.refCode}} />
+          {/* <JobEditForm isLoading={props.isLoading} job={{...initialValues, refCode: props.job?.refCode}} jobUpdated={() => console.log('updated')} /> */}
         </div>
       )}
     </>

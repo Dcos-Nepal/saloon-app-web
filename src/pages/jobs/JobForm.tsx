@@ -8,45 +8,44 @@ import { FieldArray, FormikProvider, useFormik, getIn } from 'formik';
 import ReactRRuleGenerator, { translations } from 'common/components/rrule-form';
 import { InfoIcon, PlusCircleIcon, StopIcon, UploadIcon, XCircleIcon } from '@primer/octicons-react';
 
-import { IUser } from 'common/types/user';
 import InputField from 'common/components/form/Input';
 import TextArea from 'common/components/form/TextArea';
 import * as jobActions from 'store/actions/job.actions';
 import { Loader } from 'common/components/atoms/Loader';
-import { CreateSchema } from './validations/create.schema';
 import SelectAsync from 'common/components/form/AsyncSelect';
 import { fetchUserProperties } from 'services/common.service';
-import { getWorkerRecommendations } from 'services/users.service';
 import AsyncInputDataList from 'common/components/form/AsyncInputDataList';
 import SelectField from 'common/components/form/Select';
 import { IOption } from 'common/types/form';
 import { getServices } from 'data';
 import { deletePublicFile, uploadPublicFile } from 'services/files.service';
-import { getCurrentUser, formatAddress } from 'utils';
+import { formatAddress, getJobAddress } from 'utils';
 import { getData } from 'utils/storage';
-import Image from 'common/components/atoms/Image';
-import Spinner from '../../../assets/images/spinner.gif';
+
 import { DefaultEditor } from 'react-simple-wysiwyg';
+import { CreateSchema } from './add/validations/create.schema';
+import Image from 'common/components/atoms/Image';
+import Spinner from '../../assets/images/spinner.gif';
+import { format } from 'date-fns';
+import { RecommendWorker } from 'common/components/RecommendWorker';
 
 interface IProps {
+  isLoading: boolean;
+  initialValues: any;
   actions: {
     addJob: (data: any) => any;
+    updateJob: (id: any, data: any) => any;
   };
-  isLoading: boolean;
 }
 
-const ClientJobCreateForm = ({ actions, isLoading }: IProps) => {
+const JobForm = ({ isLoading, actions, initialValues }: IProps) => {
   const navigate = useNavigate();
   const [properties, setProperties] = useState<any[]>([]);
   const [clientDetails, setClientDetails] = useState(null);
-  const [selectedTeam, setSelectedTeam] = useState<Array<any>>([]);
-  const [recommendedTeam, setRecommendedTeam] = useState<Array<any>>([]);
-  const [isRecommendationsLoading, setIsRecommendationsLoading] = useState(false);
   const [rruleStr, setRruleStr] = useState(new RRule({ dtstart: new Date(), interval: 1, freq: Frequency.DAILY }).toString());
-  const [activeTab, setActiveTab] = useState('ONE-OFF');
+  const [activeTab, setActiveTab] = useState(initialValues.type ?? 'ONE-OFF');
   const [isUploadingImage, setIsUploadingImage] = useState(false);
 
-  const currUser: { role: string; id: string } = getCurrentUser();
   const currentUser = getData('user');
   const isWorker = currentUser?.userData?.type === 'WORKER';
 
@@ -64,33 +63,6 @@ const ClientJobCreateForm = ({ actions, isLoading }: IProps) => {
   };
 
   /**
-   * Initial values for Job Creation Form
-   */
-  const initialValues = {
-    title: '',
-    instruction: '',
-    jobFor: '',
-    property: null,
-    type: 'ONE-OFF',
-    team: [],
-    jobType: '',
-    lineItems: [
-      {
-        name: { label: '', value: '' },
-        description: '',
-        quantity: 0,
-        unitPrice: 0,
-        total: 0
-      }
-    ],
-    schedule: { rruleSet: '', startDate: '', startTime: '', endDate: '', endTime: '' },
-    oneOff: { rruleSet: '', startDate: '', startTime: '', endDate: '', endTime: '' },
-    notifyTeam: false,
-    notes: '',
-    docs: []
-  };
-
-  /**
    * Initializing the Formik
    */
   const formik = useFormik({
@@ -99,7 +71,13 @@ const ClientJobCreateForm = ({ actions, isLoading }: IProps) => {
     validationSchema: CreateSchema,
     validateOnChange: true,
     onSubmit: async (job: any) => {
-      // Handle cases for not secondary properties
+      debugger;
+      // Creating JobFor for API
+      if (job.jobFor) {
+        job.jobFor = job.jobFor.value;
+      }
+
+      // Handle cases for no secondary properties
       if (!job.property) {
         delete job.property;
       }
@@ -107,20 +85,30 @@ const ClientJobCreateForm = ({ actions, isLoading }: IProps) => {
       // Remove oneOff property from Request
       delete job.oneOff;
 
-      await actions.addJob({
-        ...job,
-        schedule: {
-          ...job.schedule,
-          startDate: new Date(`${job.schedule.startDate} ${job.schedule.startTime}`).toISOString(),
-          endDate: new Date(`${job.schedule.endDate} ${job.schedule.endTime}`).toISOString()
-        }
-      });
+      if (initialValues?._id) {
+        await actions.updateJob(job._id,{
+          ...job,
+          schedule: {
+            ...job.schedule,
+            startDate: new Date(`${job.schedule.startDate} ${job.schedule.startTime}`).toISOString(),
+            endDate: new Date(`${job.schedule.endDate} ${job.schedule.endTime}`).toISOString()
+          }
+        });
+      } else {
+        await actions.addJob({
+          ...job,
+          schedule: {
+            ...job.schedule,
+            startDate: new Date(`${job.schedule.startDate} ${job.schedule.startTime}`).toISOString(),
+            endDate: new Date(`${job.schedule.endDate} ${job.schedule.endTime}`).toISOString()
+          }
+        });
+      }
 
       // Reset form
       formik.resetForm();
       setProperties([]);
       setClientDetails(null);
-      setRecommendedTeam([]);
 
       // Navigate to the previous screen
       setTimeout(() => {
@@ -143,7 +131,7 @@ const ClientJobCreateForm = ({ actions, isLoading }: IProps) => {
    * Handles Client selection
    */
   const handleClientSelection = async ({ label, value, meta }: any) => {
-    formik.setFieldValue(`jobFor`, meta._id);
+    formik.setFieldValue(`jobFor`, {_id: meta._id, label: label, value: value});
     setClientDetails(meta);
 
     const response = await fetchUserProperties(value);
@@ -154,10 +142,9 @@ const ClientJobCreateForm = ({ actions, isLoading }: IProps) => {
    * Handles Assignees selection
    */
   const handleWorkerSelection = useCallback((selected: any[]) => {
-    setSelectedTeam(selected);
     formik.setFieldValue(
       `team`,
-      selected.map((worker) => worker.meta._id)
+      selected.map((worker) => ({_id: worker.meta._id, label: worker.label, value: worker.value}))
     );
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -285,57 +272,6 @@ const ClientJobCreateForm = ({ actions, isLoading }: IProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab]);
 
-  /**
-   * Handles Recommendation API call
-   */
-  useEffect(() => {
-    if (currUser.role === 'ADMIN') {
-      if (
-        formik.values.jobType &&
-        formik.values.jobFor &&
-        formik.values.property !== undefined &&
-        ((formik.values.oneOff?.startTime && formik.values.oneOff?.endTime) || formik.values.schedule?.startTime)
-      ) {
-        (async () => {
-          try {
-            setIsRecommendationsLoading(true);
-            const property = formik.values.property ? properties.find((property) => property._id === formik.values.property) : (clientDetails as any).address;
-            const {
-              data: { data: recommendationData }
-            } = await getWorkerRecommendations({
-              address: `${property?.city}, ${property?.state}, ${property?.country}`,
-              startTime: formik.values.oneOff?.startTime && formik.values.oneOff?.endTime ? formik.values.oneOff?.startTime : formik.values.schedule?.startTime,
-              endTime: formik.values.oneOff?.startTime && formik.values.oneOff?.endTime ? formik.values.oneOff?.endTime : formik.values.schedule?.endTime,
-              jobType: formik.values.jobType
-            });
-            const team = recommendationData?.data?.map((recommendation: IUser) => {
-              return {
-                label: recommendation.fullName,
-                value: recommendation._id
-              };
-            });
-            setRecommendedTeam(team);
-            setSelectedTeam(team);
-          } catch (ex) {
-            console.log(ex);
-          } finally {
-            setIsRecommendationsLoading(false);
-          }
-        })();
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    properties,
-    formik.values.jobFor,
-    formik.values.jobType,
-    formik.values.property,
-    formik.values.oneOff?.endTime,
-    formik.values.oneOff?.startTime,
-    formik.values.schedule?.endTime,
-    formik.values.schedule?.startTime
-  ]);
-
   useEffect(() => {
     if (isWorker) {
       handleWorkerSelection([{ label: `${currentUser.firstName} ${currentUser.lastName}`, value: currentUser._id, meta: currentUser }]);
@@ -343,6 +279,12 @@ const ClientJobCreateForm = ({ actions, isLoading }: IProps) => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isWorker, handleWorkerSelection]);
 
+  useEffect(() => {
+    setClientDetails(initialValues?.jobFor.meta);
+    fetchUserProperties(initialValues?.jobFor.value).then((response) => {
+      setProperties(response.data?.data?.data?.rows || []);
+    });
+  }, [isLoading, initialValues?.jobFor]);
 
   return (
     <form onSubmit={formik.handleSubmit} style={{ position: 'relative' }}>
@@ -401,6 +343,7 @@ const ClientJobCreateForm = ({ actions, isLoading }: IProps) => {
               <SelectAsync
                 name={`jobFor`}
                 label="Select Client"
+                value={formik.values.jobFor}
                 resource={{ name: 'users', labelProp: 'fullName', valueProp: '_id', params: isWorker ? { roles: 'CLIENT', createdBy: currentUser._id } : { roles: 'CLIENT'} }}
                 onChange={handleClientSelection}
                 preload={true}
@@ -507,16 +450,16 @@ const ClientJobCreateForm = ({ actions, isLoading }: IProps) => {
                       <InputField
                         label="Start date"
                         type="date"
+                        value={formik.values.oneOff?.startDate ? format(new Date(formik.values.oneOff?.startDate), 'yyyy-MM-dd') : ''}
                         onChange={(e: any) => formik.setFieldValue('oneOff.startDate', e.target.value)}
-                        value={formik.values.oneOff?.startDate}
                       />
                     </div>
                     <div className="col">
                       <InputField
                         label="End date"
                         type="date"
+                        value={formik.values.oneOff?.endDate ? format(new Date(formik.values.oneOff?.endDate), 'yyyy-MM-dd') : ''}
                         onChange={(e: any) => formik.setFieldValue('oneOff.endDate', e.target.value)}
-                        value={formik.values.oneOff?.endDate}
                       />
                     </div>
                   </div>
@@ -565,106 +508,15 @@ const ClientJobCreateForm = ({ actions, isLoading }: IProps) => {
                   <h6 className="txt-bold mt-2">Team</h6>
                 </div>
               </div>
-
-              {formik.values.jobFor &&
-              formik.values.property !== undefined &&
-              ((formik.values.oneOff?.startTime && formik.values.oneOff?.endTime) || formik.values.schedule?.startTime) &&
-              formik.values.jobType ? (
-                <>
-                  <div className="row">
-                    {isRecommendationsLoading ? (
-                      <Loader isLoading />
-                    ) : recommendedTeam.length ? (
-                      <SelectField
-                        isMulti
-                        label=""
-                        name="team"
-                        options={recommendedTeam}
-                        helperComponent={
-                          <div className="row text-danger mt-1 mb-2">
-                            <ErrorMessage name="team" />
-                          </div>
-                        }
-                        value={selectedTeam}
-                        handleChange={handleWorkerSelection}
-                        onBlur={formik.handleBlur}
-                      />
-                    ) : (
-                      <>
-                        <SelectAsync
-                          name={`team`}
-                          label="Select Workers"
-                          value={selectedTeam}
-                          resource={{ name: 'users', labelProp: 'fullName', valueProp: '_id', params: { roles: 'WORKER' } }}
-                          onChange={handleWorkerSelection}
-                          isMulti={true}
-                          closeOnSelect={true}
-                          preload={true}
-                        />
-                        <small className="text-warning">
-                          <InfoIcon size={14} /> No recommendation found for the job, please select worker manually.
-                        </small>
-                      </>
-                    )}
-                    <div className="row text-danger mt-1 mb-2">
-                      <ErrorMessage name={`team`} />
-                    </div>
-                  </div>
-                  <div className="mt-3">
-                    <input name="notifyTeam" className="form-check-input" type="checkbox" value="true" id="flexCheckDefault" onChange={formik.handleChange} />
-                    <label className="ms-2 form-check-label" htmlFor="flexCheckDefault">
-                      Notify team about this assignment
-                    </label>
-                    <div>
-                      <small>
-                        <InfoIcon size={14} /> If you select Email, each team members will receive email notification.
-                      </small>
-                    </div>
-                  </div>
-                </>
-              ) : (
-                <div className="row">
-                  {(currUser.role === 'WORKER') ? (
-                    <>
-                      <SelectAsync
-                        name={`team`}
-                        label="Select Workers"
-                        value={selectedTeam}
-                        resource={{ name: 'users', labelProp: 'fullName', valueProp: '_id', params: { roles: 'WORKER' } }}
-                        onChange={handleWorkerSelection}
-                        isMulti={false}
-                        isDisabled={isWorker}
-                        closeOnSelect={true}
-                      />
-                      <small className="text-warning">
-                        <InfoIcon size={14} /> {isWorker ? "You are assigned as worker by default for this job" : ''}
-                      </small>
-                    </>
-                  ) : null}
-
-                  {(currUser.role !== 'WORKER') ? (
-                    <>
-                      <SelectAsync
-                        isDisabled
-                        name={`team`}
-                        label="Select Workers"
-                        value={selectedTeam}
-                        resource={{ name: 'users/recommendation/', labelProp: 'fullName', valueProp: '_id', params: { roles: 'WORKER' } }}
-                        onChange={handleWorkerSelection}
-                        isMulti={true}
-                        closeOnSelect={true}
-                      />
-
-                      <div className="row text-danger mt-1 mb-2">
-                        <div className="col-1" style={{ width: '20px' }}>
-                          <StopIcon size={14} />
-                        </div>
-                        <div className="col">Select client, property, service type and time to get worker recommendation</div>
-                      </div>
-                    </>
-                  ) : null}
-                </div>
-              )}
+              <RecommendWorker
+                startTime={formik.values.oneOff?.startTime}
+                endTime={formik.values.oneOff?.endTime}
+                jobFor={formik.values.jobFor}
+                jobType={formik.values.jobType}
+                property={getJobAddress(formik.values)}
+                selectedWorkers={formik.values.team}
+                handleWorkerSelection={handleWorkerSelection}
+              />
             </div>
           </div>
         </div>
@@ -878,4 +730,4 @@ const mapDispatchToProps = (dispatch: any) => ({
   }
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(ClientJobCreateForm);
+export default connect(mapStateToProps, mapDispatchToProps)(JobForm);

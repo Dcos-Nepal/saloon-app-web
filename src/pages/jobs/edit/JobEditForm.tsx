@@ -242,6 +242,7 @@ const EditJobForm = (props: IProps) => {
         }
       })();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formik.values.jobFor, formik.values.property, formik.values.oneOff?.startTime, formik.values.oneOff?.endTime, formik.values.jobType, properties]);
 
   return (

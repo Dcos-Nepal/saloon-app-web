@@ -1,10 +1,38 @@
 import { InfoIcon } from "@primer/octicons-react";
 import { useNavigate } from "react-router-dom";
 
-import ClientJobCreateForm from "./ClientJobCreateForm";
+import JobForm from "../JobForm";
 
 const ClientAdd = () => {
   const navigate = useNavigate();
+
+  /**
+   * Initial values for Job Creation Form
+   */
+  const initialValues = {
+    title: '',
+    instruction: '',
+    jobFor: '',
+    property: null,
+    type: 'ONE-OFF',
+    team: [],
+    jobType: '',
+    lineItems: [
+      {
+        name: { label: '', value: '' },
+        description: '',
+        quantity: 0,
+        unitPrice: 0,
+        total: 0
+      }
+    ],
+    schedule: { rruleSet: '', startDate: '', startTime: '', endDate: '', endTime: '' },
+    oneOff: { rruleSet: '', startDate: '', startTime: '', endDate: '', endTime: '' },
+    notifyTeam: false,
+    notes: '',
+    docs: []
+  };
+  
 
   return (
     <>
@@ -23,7 +51,7 @@ const ClientAdd = () => {
         </div>
       </div>
       <div className="">
-        <ClientJobCreateForm />
+        <JobForm initialValues={initialValues}/>
       </div>
     </>
   );

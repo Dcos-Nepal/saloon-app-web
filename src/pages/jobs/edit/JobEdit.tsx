@@ -6,6 +6,7 @@ import JobEditForm from './JobEditForm';
 import * as jobsActions from '../../../store/actions/job.actions';
 import { InfoIcon } from '@primer/octicons-react';
 import { Loader } from 'common/components/atoms/Loader';
+import useMountedRef from 'common/hooks/is-mounted';
 
 interface IProps {
   actions: { fetchJob: (id: string, query: any) => any };
@@ -16,49 +17,54 @@ interface IProps {
 const EditJob = (props: IProps) => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const isMounted = useMountedRef();
   const [initialValues, setInitialValues] = useState<any>(null);
 
   useEffect(() => {
-    props.actions.fetchJob(id as string, {});
-  }, [id, props.actions]);
+    if (isMounted) {
+      props.actions.fetchJob(id as string, {});
+    }
+  }, [isMounted, id, props.actions]);
 
   useEffect(() => {
     const job = props.job;
     if (!job) return;
 
-    setInitialValues({
-      title: job.title,
-      instruction: job.instruction,
-      jobFor: { value: job.jobFor._id, label: job.jobFor.fullName, meta: job.jobFor },
-      property: job.property?._id || null,
-      type: job.type,
-      jobType: job.jobType,
-      team: job.team.map((t: any) => ({ value: t._id, label: t.fullName })),
-      lineItems: job.lineItems.map((lineItem: any) => ({
-        name: { label: lineItem.name, value: lineItem._id },
-        description: lineItem.description,
-        quantity: lineItem.quantity,
-        unitPrice: lineItem.unitPrice,
-        total: lineItem.quantity * lineItem.unitPrice
-      })),
-      schedule: {
-        rruleSet: job.primaryVisit?.rruleSet || '',
-        startDate: job.primaryVisit?.startDate || '',
-        startTime: job.primaryVisit?.startTime || '',
-        endDate: job.primaryVisit?.endDate || '',
-        endTime: job.primaryVisit?.endTime || ''
-      },
-      oneOff: {
-        rruleSet: job.primaryVisit?.rruleSet || '',
-        startDate: job.primaryVisit?.startDate || '',
-        startTime: job.primaryVisit?.startTime || '',
-        endDate: job.primaryVisit?.endDate || '',
-        endTime: job.primaryVisit?.endTime || ''
-      },
-      notes: job?.notes || '' ,
-      docs: job?.docs || []
-    });
-  }, [props.job]);
+    if (isMounted) {
+      setInitialValues({
+        title: job.title,
+        instruction: job.instruction,
+        jobFor: { value: job.jobFor._id, label: job.jobFor.fullName, meta: job.jobFor },
+        property: job.property._id || null,
+        type: job.type,
+        jobType: job.jobType,
+        team: job.team.map((t: any) => ({ value: t._id, label: t.fullName })),
+        lineItems: job.lineItems.map((lineItem: any) => ({
+          name: { label: lineItem.name, value: lineItem._id },
+          description: lineItem.description,
+          quantity: lineItem.quantity,
+          unitPrice: lineItem.unitPrice,
+          total: lineItem.quantity * lineItem.unitPrice
+        })),
+        schedule: {
+          rruleSet: job.primaryVisit?.rruleSet || '',
+          startDate: job.primaryVisit?.startDate || '',
+          startTime: job.primaryVisit?.startTime || '',
+          endDate: job.primaryVisit?.endDate || '',
+          endTime: job.primaryVisit?.endTime || ''
+        },
+        oneOff: {
+          rruleSet: job.primaryVisit?.rruleSet || '',
+          startDate: job.primaryVisit?.startDate || '',
+          startTime: job.primaryVisit?.startTime || '',
+          endDate: job.primaryVisit?.endDate || '',
+          endTime: job.primaryVisit?.endTime || ''
+        },
+        notes: job?.notes || '' ,
+        docs: job?.docs || []
+      });
+    }
+  }, [isMounted, props.job]);
 
   return (
     <>

@@ -1,9 +1,13 @@
-import { useNavigate } from "react-router-dom";
+import { InfoIcon, PencilIcon } from "@primer/octicons-react";
+import { useNavigate, useParams } from "react-router-dom";
+import { getCurrentUser } from "utils";
 import ClientJobDetailData from "./JobQuoteDetailData";
 
 const JobQuoteDetail = () => {
   const navigate = useNavigate();
-
+  const currUser: { role: string; id: string } = getCurrentUser();
+  const { id } = useParams();
+  
   return (
     <>
       <div className="row">
@@ -13,8 +17,19 @@ const JobQuoteDetail = () => {
           </span>
           <span className="col">Back to previous</span>
         </div>
-        <div className="mt-2 d-flex flex-row">
-          <h3 className="txt-bold extra">Job Quote</h3>
+        <div className="d-flex flex-row justify-content-between mt-2">
+          <div className='mt-2'>
+            <h3 className="txt-bold extra">Quote Detail</h3>
+            <p className="text-secondary"><InfoIcon /> This is the Quote Details view. In contains the all the information for the quote.</p>
+          </div>
+          {currUser.role === 'ADMIN' || currUser.role === 'WORKER' ? (
+            <div className="d-flex flex-row align-items-center mt-2">
+              <button onClick={() => id && navigate(`edit`)} type="button" className="btn btn-primary d-flex float-end me-2">
+                <PencilIcon className="mt-1" />
+                &nbsp; Edit Quote Details
+              </button>
+            </div>
+          ) : null}
         </div>
       </div>
       <div className="m-1">

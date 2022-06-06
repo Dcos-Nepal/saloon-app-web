@@ -266,25 +266,25 @@ const QuotesList = (props: any) => {
   return (
     <>
       <div className="row">
-        <div className="col d-flex flex-row">
+        <div className="col">
           <h3 className="extra">Quotes</h3>
         </div>
         <div className="col-3 d-flex flex-row-reverse">
           <div
             onClick={() => handleRefresh()}
-            className="btn btn-secondary d-flex float-end"
+            className="btn btn-secondary"
           >
-            <SyncIcon className='mt-1' />&nbsp;Refresh
+            <SyncIcon />&nbsp;Refresh
           </div>
           &nbsp;&nbsp;
           <div
             onClick={() => { navigate(endpoints.admin.quotes.add);}}
-            className="btn btn-primary d-flex float-end"
+            className="btn btn-primary"
           >
-            <FileBadgeIcon className='mt-1'/>&nbsp; New Quote
+            <FileBadgeIcon />&nbsp; New Quote
           </div>
         </div>
-        <label className="txt-grey">{quotes.length} quotes</label>
+        <label className="txt-grey">There are {quotes.length} no. of quotes created so far.</label>
       </div>
       <div className="card">
         <div className="row pt-2 m-1 rounded-top bg-grey">

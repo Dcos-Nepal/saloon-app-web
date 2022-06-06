@@ -26,6 +26,7 @@ import { getCurrentUser, formatAddress } from 'utils';
 import { getData } from 'utils/storage';
 import Image from 'common/components/atoms/Image';
 import Spinner from '../../../assets/images/spinner.gif';
+import { DefaultEditor } from 'react-simple-wysiwyg';
 
 interface IProps {
   actions: {
@@ -383,15 +384,12 @@ const ClientJobCreateForm = ({ actions, isLoading }: IProps) => {
                     />
                   </div>
                   <div className="col-12">
-                    <TextArea
-                      label={'Job Instructions'}
-                      name={`instruction`}
-                      rows={4}
-                      value={formik.values.instruction}
-                      onChange={formik.handleChange}
-                      className={`form-control`}
-                      placeholder={"Job's description..."}
-                    />
+                    <div className="mb-3">
+                      <label htmlFor="instructions" className="form-label txt-dark-grey">
+                        Job's Instructions
+                      </label>
+                      <DefaultEditor placeholder='Enter the job instructions here' style={{minHeight: '150px'}} name="instruction" value={formik.values.instruction} onChange={formik.handleChange} />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -405,6 +403,7 @@ const ClientJobCreateForm = ({ actions, isLoading }: IProps) => {
                 label="Select Client"
                 resource={{ name: 'users', labelProp: 'fullName', valueProp: '_id', params: isWorker ? { roles: 'CLIENT', createdBy: currentUser._id } : { roles: 'CLIENT'} }}
                 onChange={handleClientSelection}
+                preload={true}
               />
               {formik.errors.jobFor && formik.touched.jobFor && <div className="txt-red">{formik.errors.jobFor}</div>}
               {clientDetails ? (
@@ -600,6 +599,7 @@ const ClientJobCreateForm = ({ actions, isLoading }: IProps) => {
                           onChange={handleWorkerSelection}
                           isMulti={true}
                           closeOnSelect={true}
+                          preload={true}
                         />
                         <small className="text-warning">
                           <InfoIcon size={14} /> No recommendation found for the job, please select worker manually.

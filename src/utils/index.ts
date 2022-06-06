@@ -92,6 +92,7 @@ export const formatAddress = (address: { street1?: string; street2?: string; cit
  * @returns String
  */
 export const getJobAddress = (job: any) => {
+  console.log(job?.property)
   let property = (job?.property) ? job?.property : job?.jobFor?.address;
   return formatAddress(property);
 }

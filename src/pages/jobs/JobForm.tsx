@@ -513,7 +513,7 @@ const JobForm = ({ isLoading, actions, initialValues }: IProps) => {
                 endTime={formik.values.oneOff?.endTime}
                 jobFor={formik.values.jobFor}
                 jobType={formik.values.jobType}
-                property={getJobAddress(formik.values)}
+                property={formik.values.property || formik.values.jobFor?.address}
                 selectedWorkers={formik.values.team}
                 handleWorkerSelection={handleWorkerSelection}
               />

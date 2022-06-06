@@ -5,7 +5,7 @@ import { DateTime } from 'luxon';
 
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import RRule, { Frequency, RRuleSet, rrulestr } from 'rrule';
-import { FieldArray, FormikProvider, useFormik } from 'formik';
+import { ErrorMessage, FieldArray, FormikProvider, useFormik } from 'formik';
 import {
   AlertIcon,
   CheckCircleIcon,
@@ -38,6 +38,9 @@ import CompleteVisit from 'pages/schedules/CompleteVisit';
 import { getCurrentUser, getJobAddress } from 'utils';
 import Image from 'common/components/atoms/Image';
 import { RecommendWorker } from 'common/components/RecommendWorker';
+import SelectField from 'common/components/form/Select';
+import { getServices } from 'data';
+import { IOption } from 'common/types/form';
 
 export interface IVisit {
   overdue: any;
@@ -214,7 +217,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
       ..._.cloneDeep(selectedVisit),
       team: selectedVisit?.team ? selectedVisit?.team.map((t: any) => ({ _id: t._id, value: t._id, label: t.fullName })) : [],
       startDate: DateTime.fromJSDate(selectedVisit?.startDate).toFormat('yyyy-MM-dd'),
-      endDate: DateTime.fromJSDate(selectedVisit?.endDate ? new Date(selectedVisit?.endDate) : selectedVisit?.startDate).toFormat('yyyy-MM-dd'),
+      endDate: DateTime.fromJSDate(selectedVisit?.endDate ? new Date(selectedVisit?.endDate) : selectedVisit?.startDate).toFormat('yyyy-MM-dd')
     },
     validateOnChange: true,
     onSubmit: async (visit) => {
@@ -485,7 +488,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
         </div>
         <div className="col">
           <div className="card full-height">
-            <div className='d-flex flex-row justify-content-between'>
+            <div className="d-flex flex-row justify-content-between">
               <h6 className="txt-bold">Job Detail</h6>
               <>
                 {job?.isCompleted === true ? (
@@ -677,7 +680,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
                   {visits[visitKey].map((v: any, index: number) => (
                     <tr key={index} className="rt-tr-group cursor-pointer" onClick={() => setShowEventDetail(v)}>
                       <td onClick={(e) => e.stopPropagation()}>
-                        <input type="checkbox" id={v.visitMapId} checked={v.status.status === 'COMPLETED'} onChange={() => { }} />
+                        <input type="checkbox" id={v.visitMapId} checked={v.status.status === 'COMPLETED'} onChange={() => {}} />
                       </td>
                       <td>{DateTime.fromJSDate(v.startDate).toFormat('yyyy LLL dd')}</td>
                       <td>
@@ -759,7 +762,9 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
             ))}
             <div className="txt-grey pt-2">
               {job?.docs.length ? null : (
-                <><StopIcon size={16} /> Not document added yet!.</>
+                <>
+                  <StopIcon size={16} /> Not document added yet!.
+                </>
               )}
             </div>
           </div>
@@ -808,6 +813,24 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
                                 onChange={visitEditForm.handleChange}
                                 className={`form-control`}
                                 placeholder={"Quote's description..."}
+                              />
+                            </div>
+                            <div className="col-12">
+                              <SelectField
+                                label="Services Type"
+                                name="jobType"
+                                placeholder="Search available services..."
+                                value={getServices().find((service) => service.value === visitEditForm.values.jobType)}
+                                options={getServices().filter((service) => service.isActive)}
+                                helperComponent={
+                                  <div className="row text-danger mt-1 mb-2">
+                                    <ErrorMessage name="jobType" />
+                                  </div>
+                                }
+                                handleChange={(value: IOption) => {
+                                  visitEditForm.setFieldValue('jobType', value.value);
+                                }}
+                                onBlur={visitEditForm.handleBlur}
                               />
                             </div>
                           </div>
@@ -1015,16 +1038,26 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
                   </div>
                 </div>
                 <div className="modal-footer">
-                  <button disabled={isSubmitting} type="submit" className="btn btn-secondary" onClick={() => {
-                    visitEditForm.values.team = visitEditForm.values.team.map((w: { value: string; }) => w.value);
-                    saveVisit(visitEditForm.values, true);
-                  }}>
+                  <button
+                    disabled={isSubmitting}
+                    type="submit"
+                    className="btn btn-secondary"
+                    onClick={() => {
+                      visitEditForm.values.team = visitEditForm.values.team.map((w: { value: string }) => w.value);
+                      saveVisit(visitEditForm.values, true);
+                    }}
+                  >
                     Save and Update Future Visit
                   </button>
-                  <button disabled={isSubmitting} type="submit" className="btn btn-primary" onClick={() => {
-                    visitEditForm.values.team = visitEditForm.values.team.map((w: { value: string; }) => w.value);
-                    saveVisit(visitEditForm.values);
-                  }}>
+                  <button
+                    disabled={isSubmitting}
+                    type="submit"
+                    className="btn btn-primary"
+                    onClick={() => {
+                      visitEditForm.values.team = visitEditForm.values.team.map((w: { value: string }) => w.value);
+                      saveVisit(visitEditForm.values);
+                    }}
+                  >
                     Update this Visit
                   </button>
                   <button type="button" className="btn btn-danger" onClick={() => setEditVisitMode(!editVisitMode)}>

@@ -45,7 +45,7 @@ export const RecommendWorker = ({startTime, endTime, jobType, jobFor, property, 
           if (team.length !== 0) {
             setSelectedTeam(team);
             setRecommendedTeam(team);
-          } 
+          }
 
           setSelectedTeam(!!selectedWorkers ? selectedWorkers : []);
         } catch (ex) {
@@ -57,7 +57,7 @@ export const RecommendWorker = ({startTime, endTime, jobType, jobFor, property, 
     } else {
       setSelectedTeam(!!selectedWorkers ? selectedWorkers : []);
     }
-  
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [jobType, jobFor, property, startTime, endTime, jobType, selectedWorkers.length]);
 

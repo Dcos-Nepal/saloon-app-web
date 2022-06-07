@@ -19,7 +19,7 @@ import SelectField from 'common/components/form/Select';
 import { IOption } from 'common/types/form';
 import { getServices } from 'data';
 import { deletePublicFile, uploadPublicFile } from 'services/files.service';
-import { formatAddress, getJobAddress } from 'utils';
+import { formatAddress } from 'utils';
 import { getData } from 'utils/storage';
 
 import { DefaultEditor } from 'react-simple-wysiwyg';
@@ -71,10 +71,13 @@ const JobForm = ({ isLoading, actions, initialValues }: IProps) => {
     validationSchema: CreateSchema,
     validateOnChange: true,
     onSubmit: async (job: any) => {
-      debugger;
       // Creating JobFor for API
       if (job.jobFor) {
         job.jobFor = job.jobFor.value;
+      }
+
+      if (job?.team && job?.team.length) {
+        job.team = job.team.map((t: { value: any; }) => t.value);
       }
 
       // Handle cases for no secondary properties
@@ -84,6 +87,14 @@ const JobForm = ({ isLoading, actions, initialValues }: IProps) => {
 
       // Remove oneOff property from Request
       delete job.oneOff;
+
+      // if (job.lineItems.length) {
+      //   job.lineItems = job.lineItems.map((item: any) => ({
+      //     ...item,
+      //     name: item.name?.label,
+      //     _id: item.name?.value
+      //   }));
+      // }
 
       if (initialValues?._id) {
         await actions.updateJob(job._id,{
@@ -113,7 +124,7 @@ const JobForm = ({ isLoading, actions, initialValues }: IProps) => {
       // Navigate to the previous screen
       setTimeout(() => {
         navigate(-1);
-      }, 300);
+      }, 600);
     }
   });
 

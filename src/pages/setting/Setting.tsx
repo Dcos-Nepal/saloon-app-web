@@ -689,14 +689,14 @@ const Setting = ({
                           "userData.documents['cleaningCert'].url",
                           'cleaningCert',
                           'Click to browse or drag and drop your file to upload clinic certificate.',
-                          'CLEANING_CERTIFICATE'
+                          'VACCINATION_CERTIFICATE'
                         )}
                         {generateDocSelect(
                           '3. VACCINATION CERTIFICATE:',
                           "userData.documents['policeCert'].url",
                           'policeCert',
                           'Click to browse or drag and drop your file to upload police check.',
-                          'VACCINATION_CERTIFICATE'
+                          'POLICE_CERTIFICATE'
                         )}
                       </div>
                     </>

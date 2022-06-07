@@ -42,7 +42,7 @@ const EditJob = (props: IProps) => {
         jobType: job?.jobType,
         team: job?.team.map((t: any) => ({ value: t._id, label: t.fullName })),
         lineItems: job?.lineItems.map((lineItem: any) => ({
-          name: { label: lineItem.name, value: lineItem._id },
+          name: lineItem.name,
           description: lineItem.description,
           quantity: lineItem.quantity,
           unitPrice: lineItem.unitPrice,
@@ -88,7 +88,6 @@ const EditJob = (props: IProps) => {
       {initialValues && (
         <div className="">
           <JobForm initialValues={{...initialValues, refCode: props.job?.refCode}} />
-          {/* <JobEditForm isLoading={props.isLoading} job={{...initialValues, refCode: props.job?.refCode}} jobUpdated={() => console.log('updated')} /> */}
         </div>
       )}
     </>

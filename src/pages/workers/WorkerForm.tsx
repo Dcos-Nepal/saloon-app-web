@@ -88,12 +88,12 @@ const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker, isWorkersLoa
               cleaningCert: {
                 url: '',
                 key: '',
-                type: 'CLEANING_CERTIFICATE'
+                type: 'VACCINATION_CERTIFICATE'
               },
               policeCert: {
                 url: '',
                 key: '',
-                type: 'VACCINATION_CERTIFICATE'
+                type: 'POLICE_CERTIFICATE'
               }
             },
             services: []
@@ -526,7 +526,7 @@ const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker, isWorkersLoa
             "userData.documents['cleaningCert'].url",
             'cleaningCert',
             'Click to browse or drag and drop your file to upload cleaning certificate.',
-            'CLEANING_CERTIFICATE'
+            'VACCINATION_CERTIFICATE'
           )}
           {generateDocSelect(
             '3. VACCINATION CERTIFICATE:',

@@ -242,6 +242,7 @@ const EditJobForm = (props: IProps) => {
         }
       })();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formik.values.jobFor, formik.values.property, formik.values.oneOff?.startTime, formik.values.oneOff?.endTime, formik.values.jobType, properties]);
 
   return (
@@ -503,7 +504,6 @@ const EditJobForm = (props: IProps) => {
 
                   <div className="mt-3">
                     <input name="notifyTeam" className="form-check-input" type="checkbox" value="true" id="flexCheckDefault" onChange={formik.handleChange} />
-
                     <label className="ms-2 form-check-label" htmlFor="flexCheckDefault">
                       Notify team about this assignment
                     </label>
@@ -537,18 +537,6 @@ const EditJobForm = (props: IProps) => {
                   </div>
                 </div>
               )}
-
-              <div className="mt-3">
-                <input className="form-check-input" type="checkbox" value="" id="flexCheckDefault" />
-                <label className="ms-2 form-check-label" htmlFor="flexCheckDefault">
-                  Email team about assignment
-                </label>
-                <div>
-                  <small>
-                    <InfoIcon size={14} /> If you select Email, each team members will receive email notification.
-                  </small>
-                </div>
-              </div>
             </div>
           </div>
         </div>

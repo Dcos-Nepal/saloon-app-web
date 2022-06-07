@@ -7,7 +7,6 @@ import * as invoicesActions from '../../../src/store/actions/invoices.actions';
 
 import InputField from 'common/components/form/Input';
 import SelectField from 'common/components/form/Select';
-import { endpoints } from 'common/config';
 import ReactPaginate from 'react-paginate';
 import { connect } from 'react-redux';
 import { Loader } from 'common/components/atoms/Loader';
@@ -18,7 +17,7 @@ import Modal from 'common/components/atoms/Modal';
 import { deleteInvoiceApi } from 'services/invoice.service';
 import { toast } from 'react-toastify';
 import DeleteConfirm from 'common/components/DeleteConfirm';
-import { EyeIcon, PencilIcon, ReportIcon, TrashIcon } from '@primer/octicons-react';
+import { EyeIcon, PencilIcon, TrashIcon } from '@primer/octicons-react';
 import { getCurrentUser } from 'utils';
 
 interface IInvoice {
@@ -53,9 +52,6 @@ const InvoicesList = (props: any) => {
   const [invoices, setInvoices] = useState<IInvoice[]>([]);
   const [deleteInProgress, setDeleteInProgress] = useState('');
 
-  const isWorkerOrAdmin = () => {
-    return (currentUser.role === 'WORKER' || currentUser.role === 'ADMIN');
-  }
   const deleteInvoiceHandler = async () => {
     try {
       if (deleteInProgress) {
@@ -258,14 +254,6 @@ const InvoicesList = (props: any) => {
         <div className="col d-flex flex-row">
           <h3 className="extra">Invoices</h3>
         </div>
-        {isWorkerOrAdmin() ? (
-          <div className="col">
-            <button onClick={() => navigate('/dashboard/invoices/' + endpoints.admin.invoices.add)} type="button" className="btn btn-primary d-flex float-end">
-              <ReportIcon className="mt-1" />
-              &nbsp;New Invoice
-            </button>
-          </div>
-        ) : null}
         <label className="txt-grey">{invoices.length} invoices</label>
       </div>
       <div className="card">

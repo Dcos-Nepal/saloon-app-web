@@ -281,6 +281,7 @@ const RequestAddForm: FC<IProps> = ({ id, actions, isJobRequestsLoading, current
               value={formik.values.client}
               resource={{ name: 'users', labelProp: 'fullName', valueProp: '_id', params: { roles: 'CLIENT' } }}
               onChange={handleClientSelection}
+              preload={true}
             />
             <ErrorMessage name={`quoteFor.value`} />
             {clientDetails ? (

@@ -17,7 +17,7 @@ import { endpoints } from 'common/config';
 import debounce from 'lodash/debounce';
 import { deleteJobRequestApi, updateJobRequestApi } from 'services/job-requests.service';
 import Modal from 'common/components/atoms/Modal';
-import { EyeIcon, InfoIcon, PencilIcon, TrashIcon } from '@primer/octicons-react';
+import { EyeIcon, InfoIcon, PencilIcon, PlusIcon, TrashIcon } from '@primer/octicons-react';
 import EmptyState from 'common/components/EmptyState';
 import { getCurrentUser } from 'utils';
 import SelectField from 'common/components/form/Select';
@@ -247,7 +247,7 @@ const RequestsList = (props: any) => {
             type="button"
             className="btn btn-primary d-flex float-end"
           >
-            New request
+            <PlusIcon  className='mt-1'/> &nbsp; New Job Request
           </button>
         </div>
       </div>

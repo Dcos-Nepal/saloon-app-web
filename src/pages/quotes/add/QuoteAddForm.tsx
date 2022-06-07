@@ -12,10 +12,10 @@ import { fetchUserProperties } from 'services/common.service';
 
 import InputField from 'common/components/form/Input';
 import SelectAsync from 'common/components/form/AsyncSelect';
-import TextArea from 'common/components/form/TextArea';
 import AsyncInputDataList from 'common/components/form/AsyncInputDataList';
 import { formatAddress } from 'utils';
 import { getData } from 'utils/storage';
+import { DefaultEditor } from 'react-simple-wysiwyg';
 
 interface IProps {
   id: string;
@@ -227,15 +227,12 @@ const QuoteAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => {
                       />
                     </div>
                     <div className="col-12">
-                      <TextArea
-                        label={'Quote Description'}
-                        name={`description`}
-                        rows={4}
-                        value={formik.values.description}
-                        onChange={formik.handleChange}
-                        className={`form-control`}
-                        placeholder={"Quote's description..."}
-                      />
+                      <div className="mb-3">
+                        <label htmlFor="instructions" className="form-label txt-dark-grey">
+                          Job Description
+                        </label>
+                        <DefaultEditor placeholder='Enter the Quote description here' style={{minHeight: '150px'}} name="description" value={formik.values.description} onChange={formik.handleChange} />
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -250,6 +247,7 @@ const QuoteAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => {
                   value={formik.values.quoteFor}
                   resource={{ name: 'users', labelProp: 'fullName', valueProp: '_id', params: isWorker ? { roles: 'CLIENT', createdBy: currentUser._id } : { roles: 'CLIENT'} }}
                   onChange={handleClientSelection}
+                  preload={true}
                 />
                 <ErrorMessage name={`quoteFor.value`} />
                 {clientDetails ? (

@@ -1,11 +1,13 @@
 import { AxiosResponse } from 'axios';
-import { FC, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 
 import AsyncSelect from 'react-select/async';
 import { filterApi } from 'services/common.service';
 
-const SelectAsync: FC<any> = ({ name, label, placeholder, onChange, value, resource, isDisabled, helperComponent, closeOnSelect = true, isMulti = false }) => {
+const SelectAsync: FC<any> = ({ name, label, placeholder, onChange, value, resource, isDisabled, helperComponent, preload = false, closeOnSelect = true, isMulti = false }) => {
   const [query, setQuery] = useState('');
+  const [defaultOptions, setDefaultOptions] = useState([]);
+
   const loadOptions = async (inputValue: string) => {
     return await filterApi(resource.name, { q: inputValue, ...(resource?.params ? resource.params : ''), page: 1, limit: 20 })
       .then((response: AxiosResponse) => {
@@ -19,9 +21,26 @@ const SelectAsync: FC<any> = ({ name, label, placeholder, onChange, value, resou
       });
   };
 
-  const handleInputChange = (inputValue: string) => {
+    const handleInputChange = (inputValue: string) => {
     setQuery(inputValue);
   };
+
+  useEffect(() => {
+    if (preload) {
+      filterApi(resource.name, { ...(resource?.params ? resource.params : ''), page: 1, limit: 20 })
+        .then((response: AxiosResponse) => {
+          const {
+            data: { data }
+          } = response;
+          return data?.data ? data.data : data;
+        })
+        .then((data: any) => {
+          if (data?.rows) {
+            setDefaultOptions(data.rows.map((d: never) => ({ label: d[resource.labelProp], value: d[resource.valueProp], meta: d })));
+          }
+        });
+    }
+  }, []);
 
   return (
     <div className={`${name}`}>
@@ -39,7 +58,8 @@ const SelectAsync: FC<any> = ({ name, label, placeholder, onChange, value, resou
         onChange={onChange}
         onInputChange={handleInputChange}
         loadOptions={loadOptions}
-        cacheOptions={false}
+        cacheOptions={true}
+        defaultOptions={defaultOptions}
         menuPlacement="auto"
         isDisabled={isDisabled}
         classNamePrefix={`form-control`}

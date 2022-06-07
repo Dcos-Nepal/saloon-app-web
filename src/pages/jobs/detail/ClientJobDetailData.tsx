@@ -5,7 +5,7 @@ import { DateTime } from 'luxon';
 
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import RRule, { Frequency, RRuleSet, rrulestr } from 'rrule';
-import { FieldArray, FormikProvider, useFormik } from 'formik';
+import { ErrorMessage, FieldArray, FormikProvider, useFormik } from 'formik';
 import {
   AlertIcon,
   CheckCircleIcon,
@@ -37,6 +37,10 @@ import DeleteConfirm from 'common/components/DeleteConfirm';
 import CompleteVisit from 'pages/schedules/CompleteVisit';
 import { getCurrentUser, getJobAddress } from 'utils';
 import Image from 'common/components/atoms/Image';
+import { RecommendWorker } from 'common/components/RecommendWorker';
+import SelectField from 'common/components/form/Select';
+import { getServices } from 'data';
+import { IOption } from 'common/types/form';
 
 export interface IVisit {
   overdue: any;
@@ -83,7 +87,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
             startDate: visit,
             title: visitSetting.inheritJob ? job?.title : visitSetting.title,
             instruction: visitSetting.inheritJob ? job?.instruction : visitSetting.instruction,
-            team: visitSetting.team,
+            team: visitSetting?.team ? visitSetting?.team : job?.team,
             lineItems: visitSetting.inheritJob ? job?.lineItems : visitSetting.lineItems,
             type: job?.type
           };
@@ -104,7 +108,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
           startDate: new Date(visitSetting.startDate),
           title: visitSetting.inheritJob ? job?.title : visitSetting.title,
           instruction: visitSetting.inheritJob ? job?.instruction : visitSetting.instruction,
-          team: visitSetting.team,
+          team: visitSetting?.team ? visitSetting?.team : job?.team,
           lineItems: visitSetting.inheritJob ? job?.lineItems : visitSetting.lineItems
         };
         if (acc[visitMonth]) acc[visitMonth].push(visitObj);
@@ -211,6 +215,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
     enableReinitialize: true,
     initialValues: {
       ..._.cloneDeep(selectedVisit),
+      team: selectedVisit?.team ? selectedVisit?.team.map((t: any) => ({ _id: t._id, value: t._id, label: t.fullName })) : [],
       startDate: DateTime.fromJSDate(selectedVisit?.startDate).toFormat('yyyy-MM-dd'),
       endDate: DateTime.fromJSDate(selectedVisit?.endDate ? new Date(selectedVisit?.endDate) : selectedVisit?.startDate).toFormat('yyyy-MM-dd')
     },
@@ -233,42 +238,11 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
    */
   const saveVisit = async (visit: any, updateFollowing = false) => {
     setIsSubmitting(true);
+
     // Creating One-Off RRule for a selected visit
-    const rrule = createOneOffRule(visit);
+    const rrule = createOneOffRule({ ...visit, startDate: DateTime.fromJSDate(new Date(visit?.startDate)).toFormat('yyyy-MM-dd') });
 
-    if (visit.hasMultiVisit) {
-      let newVisit = { ...visit, rruleSet: rrule };
-
-      // If you don't want to update following visits
-      if (!updateFollowing) delete newVisit._id;
-
-      // Make API Call to create a new Visit
-      await addVisitApi(
-        {
-          ...newVisit,
-          job: newVisit.job?._id,
-          inheritJob: false,
-          rruleSet: rrule,
-          isPrimary: false,
-          excRrule: [],
-          hasMultiVisit: updateFollowing,
-          visitFor: newVisit.job?.jobFor?._id,
-          startDate: new Date(`${newVisit.startDate} ${newVisit.startTime}`),
-          endDate: new Date(`${newVisit.endDate} ${newVisit.endTime}`),
-          team: newVisit.team.map((t: any) => t._id || t)
-        },
-        updateFollowing ? { updateFollowing } : null
-      );
-
-      // If you want to update following visits
-      // Update the Primary visit with RRule Exception
-      if (!updateFollowing) {
-        await updateVisitApi(visit._id, {
-          excRrule: [...visit.excRrule, rrule]
-        });
-      }
-    } else {
-      // Update a visit
+    if (visit.job.type === 'ONE-OFF') {
       await updateVisitApi(
         visit._id,
         {
@@ -279,8 +253,55 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
           startDate: new Date(`${visit.startDate} ${visit.startTime}`),
           endDate: new Date(`${visit.endDate} ${visit.endTime}`)
         },
-        updateFollowing ? { updateFollowing } : null
+        null
       );
+    } else {
+      if (visit.hasMultiVisit) {
+        let newVisit = { ...visit, rruleSet: rrule };
+
+        // If you don't want to update following visits
+        if (!updateFollowing) delete newVisit._id;
+
+        // Make API Call to create a new Visit
+        await addVisitApi(
+          {
+            ...newVisit,
+            job: newVisit.job?._id,
+            inheritJob: false,
+            rruleSet: rrule,
+            isPrimary: false,
+            excRrule: [],
+            hasMultiVisit: updateFollowing,
+            visitFor: newVisit.job?.jobFor?._id,
+            startDate: new Date(`${newVisit.startDate} ${newVisit.startTime}`),
+            endDate: new Date(`${newVisit.endDate} ${newVisit.endTime}`),
+            team: newVisit.team.map((t: any) => t._id || t)
+          },
+          updateFollowing ? { updateFollowing } : null
+        );
+
+        // If you want to update following visits
+        // Update the Primary visit with RRule Exception
+        if (!updateFollowing) {
+          await updateVisitApi(visit._id, {
+            excRrule: [...visit.excRrule, rrule]
+          });
+        }
+      } else {
+        // Update a visit
+        await updateVisitApi(
+          visit._id,
+          {
+            ...visit,
+            job: visit.job?._id,
+            rruleSet: rrule,
+            team: visit.team.map((t: any) => t._id || t),
+            startDate: new Date(`${visit.startDate} ${visit.startTime}`),
+            endDate: new Date(`${visit.endDate} ${visit.endTime}`)
+          },
+          updateFollowing ? { updateFollowing } : null
+        );
+      }
     }
 
     await actions.fetchVisits({ job: id });
@@ -402,7 +423,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
       setSelectedTeam(selected);
       visitEditForm.setFieldValue(
         `team`,
-        selected.map((worker) => worker.value)
+        selected.map((worker) => ({ label: worker.label, value: worker.value }))
       );
     },
     [visitEditForm]
@@ -467,7 +488,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
         </div>
         <div className="col">
           <div className="card full-height">
-            <div className='d-flex flex-row justify-content-between'>
+            <div className="d-flex flex-row justify-content-between">
               <h6 className="txt-bold">Job Detail</h6>
               <>
                 {job?.isCompleted === true ? (
@@ -735,7 +756,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
             {job?.docs.map((doc: any, index: number) => (
               <div key={`~${index}`} className="mr-2 p-2">
                 <a target="_blank" href={doc.url} rel="noreferrer">
-                  <Image fileSrc={doc.url} className="rounded float-start" style={{ width: '150px', height: '150px' }}/>
+                  <Image fileSrc={doc.url} className="rounded float-start" style={{ width: '150px', height: '150px' }} />
                 </a>
               </div>
             ))}
@@ -792,6 +813,24 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
                                 onChange={visitEditForm.handleChange}
                                 className={`form-control`}
                                 placeholder={"Quote's description..."}
+                              />
+                            </div>
+                            <div className="col-12">
+                              <SelectField
+                                label="Services Type"
+                                name="jobType"
+                                placeholder="Search available services..."
+                                value={getServices().find((service) => service.value === visitEditForm.values.jobType)}
+                                options={getServices().filter((service) => service.isActive)}
+                                helperComponent={
+                                  <div className="row text-danger mt-1 mb-2">
+                                    <ErrorMessage name="jobType" />
+                                  </div>
+                                }
+                                handleChange={(value: IOption) => {
+                                  visitEditForm.setFieldValue('jobType', value.value);
+                                }}
+                                onBlur={visitEditForm.handleBlur}
                               />
                             </div>
                           </div>
@@ -888,19 +927,18 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
                         </div>
                       </div>
                       <div className="row">
-                        <SelectAsync
-                          name={`team`}
-                          label="Select Workers"
-                          value={selectedTeam}
-                          resource={{ name: 'users', labelProp: 'fullName', valueProp: '_id', params: { roles: 'WORKER' } }}
-                          onChange={handleWorkerSelection}
-                          isMulti={true}
-                          closeOnSelect={true}
+                        <RecommendWorker
+                          startTime={visitEditForm.values.oneOff?.startTime}
+                          endTime={visitEditForm.values.oneOff?.endTime}
+                          jobFor={visitEditForm.values.jobFor}
+                          jobType={visitEditForm.values.jobType}
+                          property={getJobAddress(job)}
+                          selectedWorkers={visitEditForm.values.team}
+                          handleWorkerSelection={handleWorkerSelection}
                         />
                       </div>
                     </div>
                   </div>
-
                   <div className="row p-2">
                     <div className="col">
                       <div className="card mt-0">
@@ -1000,10 +1038,26 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
                   </div>
                 </div>
                 <div className="modal-footer">
-                  <button disabled={isSubmitting} type="submit" className="btn btn-secondary" onClick={() => saveVisit(visitEditForm.values, true)}>
+                  <button
+                    disabled={isSubmitting}
+                    type="submit"
+                    className="btn btn-secondary"
+                    onClick={() => {
+                      visitEditForm.values.team = visitEditForm.values.team.map((w: { value: string }) => w.value);
+                      saveVisit(visitEditForm.values, true);
+                    }}
+                  >
                     Save and Update Future Visit
                   </button>
-                  <button disabled={isSubmitting} type="submit" className="btn btn-primary" onClick={() => saveVisit(visitEditForm.values)}>
+                  <button
+                    disabled={isSubmitting}
+                    type="submit"
+                    className="btn btn-primary"
+                    onClick={() => {
+                      visitEditForm.values.team = visitEditForm.values.team.map((w: { value: string }) => w.value);
+                      saveVisit(visitEditForm.values);
+                    }}
+                  >
                     Update this Visit
                   </button>
                   <button type="button" className="btn btn-danger" onClick={() => setEditVisitMode(!editVisitMode)}>

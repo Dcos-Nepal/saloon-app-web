@@ -973,6 +973,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
                                   <div className="col-5">
                                     <SelectAsync
                                       name={`lineItem.name`}
+                                      isDisabled={true}
                                       placeholder="Search line items"
                                       value={{ label: lineItem.name, value: lineItem._id }}
                                       resource={{ name: 'line-items', labelProp: 'name', valueProp: '_id' }}
@@ -984,6 +985,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
                                       onChange={visitEditForm.handleChange}
                                       className={`form-control mb-2`}
                                       placeholder={"Line item's description..."}
+                                      disabled={true}
                                     />
                                   </div>
                                   <div className="col">
@@ -993,6 +995,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
                                       name={`lineItems[${index}].quantity`}
                                       value={lineItem.quantity}
                                       onChange={visitEditForm.handleChange}
+                                      disabled={true}
                                     />
                                   </div>
                                   <div className="col">
@@ -1002,6 +1005,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
                                       name={`lineItems[${index}].unitPrice`}
                                       value={lineItem.unitPrice}
                                       onChange={visitEditForm.handleChange}
+                                      disabled={true}
                                     />
                                   </div>
                                   <div className="col">

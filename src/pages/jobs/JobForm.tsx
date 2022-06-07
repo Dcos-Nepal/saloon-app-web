@@ -88,14 +88,6 @@ const JobForm = ({ isLoading, actions, initialValues }: IProps) => {
       // Remove oneOff property from Request
       delete job.oneOff;
 
-      // if (job.lineItems.length) {
-      //   job.lineItems = job.lineItems.map((item: any) => ({
-      //     ...item,
-      //     name: item.name?.label,
-      //     _id: item.name?.value
-      //   }));
-      // }
-
       if (initialValues?._id) {
         await actions.updateJob(job._id,{
           ...job,

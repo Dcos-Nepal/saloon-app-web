@@ -815,24 +815,6 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
                                 placeholder={"Quote's description..."}
                               />
                             </div>
-                            <div className="col-12">
-                              <SelectField
-                                label="Services Type"
-                                name="jobType"
-                                placeholder="Search available services..."
-                                value={getServices().find((service) => service.value === visitEditForm.values.jobType)}
-                                options={getServices().filter((service) => service.isActive)}
-                                helperComponent={
-                                  <div className="row text-danger mt-1 mb-2">
-                                    <ErrorMessage name="jobType" />
-                                  </div>
-                                }
-                                handleChange={(value: IOption) => {
-                                  visitEditForm.setFieldValue('jobType', value.value);
-                                }}
-                                onBlur={visitEditForm.handleBlur}
-                              />
-                            </div>
                           </div>
                         </div>
                       </div>
@@ -928,10 +910,10 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
                       </div>
                       <div className="row">
                         <RecommendWorker
-                          startTime={visitEditForm.values.oneOff?.startTime}
-                          endTime={visitEditForm.values.oneOff?.endTime}
-                          jobFor={visitEditForm.values.jobFor}
-                          jobType={visitEditForm.values.jobType}
+                          startTime={visitEditForm.values.startTime}
+                          endTime={visitEditForm.values.endTime}
+                          jobFor={job?.jobFor}
+                          jobType={job?.jobType}
                           property={getJobAddress(job)}
                           selectedWorkers={visitEditForm.values.team}
                           handleWorkerSelection={handleWorkerSelection}

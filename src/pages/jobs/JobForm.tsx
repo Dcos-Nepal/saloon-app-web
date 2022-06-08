@@ -23,7 +23,7 @@ import { formatAddress } from 'utils';
 import { getData } from 'utils/storage';
 
 import { DefaultEditor } from 'react-simple-wysiwyg';
-import { CreateSchema } from './add/validations/create.schema';
+import { JobFormSchema } from './validations/job.schema';
 import Image from 'common/components/atoms/Image';
 import Spinner from '../../assets/images/spinner.gif';
 import { format } from 'date-fns';
@@ -68,7 +68,7 @@ const JobForm = ({ isLoading, actions, initialValues }: IProps) => {
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: initialValues,
-    validationSchema: CreateSchema,
+    validationSchema: JobFormSchema,
     validateOnChange: true,
     onSubmit: async (job: any) => {
       // Creating JobFor for API

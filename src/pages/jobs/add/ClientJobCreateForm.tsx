@@ -13,7 +13,7 @@ import InputField from 'common/components/form/Input';
 import TextArea from 'common/components/form/TextArea';
 import * as jobActions from 'store/actions/job.actions';
 import { Loader } from 'common/components/atoms/Loader';
-import { CreateSchema } from './validations/create.schema';
+import { JobFormSchema } from '../validations/job.schema';
 import SelectAsync from 'common/components/form/AsyncSelect';
 import { fetchUserProperties } from 'services/common.service';
 import { getWorkerRecommendations } from 'services/users.service';
@@ -96,7 +96,7 @@ const ClientJobCreateForm = ({ actions, isLoading }: IProps) => {
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: initialValues,
-    validationSchema: CreateSchema,
+    validationSchema: JobFormSchema,
     validateOnChange: true,
     onSubmit: async (job: any) => {
       // Handle cases for not secondary properties

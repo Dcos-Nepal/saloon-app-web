@@ -1,6 +1,6 @@
 import * as Yup from 'yup';
 
-export const CreateSchema = Yup.object().shape({
+export const JobFormSchema = Yup.object().shape({
   title: Yup.string().required('Job title is required').min(3, 'Job title seems to be too short'),
   instruction: Yup.string().required('Job instruction is required'),
   jobFor: Yup.object().shape({

@@ -300,7 +300,6 @@ const JobForm = ({ isLoading, actions, initialValues }: IProps) => {
       <Loader isLoading={isLoading} />
       <FormikProvider value={formik}>
         <div className="row">
-          <pre><code>{JSON.stringify(formik.errors, null, 2)}</code></pre>
           <div className="col pb-3">
             <div className="card full-height">
               <h6 className="txt-bold">Job Details</h6>

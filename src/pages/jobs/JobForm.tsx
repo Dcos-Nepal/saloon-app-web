@@ -88,6 +88,11 @@ const JobForm = ({ isLoading, actions, initialValues }: IProps) => {
       // Remove oneOff property from Request
       delete job.oneOff;
 
+      // Preparing the line items for the API
+      job.lineItems = job.lineItems.map((item: any) => {
+        return { ...item, name: item.name.label, ref: item.name.value };
+      });
+
       if (initialValues?._id) {
         await actions.updateJob(job._id,{
           ...job,
@@ -108,15 +113,14 @@ const JobForm = ({ isLoading, actions, initialValues }: IProps) => {
         });
       }
 
-      // Reset form
-      formik.resetForm();
-      setProperties([]);
-      setClientDetails(null);
-
       // Navigate to the previous screen
       setTimeout(() => {
+        // Cleaning up the form
+        // formik.resetForm();
+        // setProperties([]);
+        // setClientDetails(null);
         navigate(-1);
-      }, 600);
+      }, 800);
     }
   });
 
@@ -126,7 +130,7 @@ const JobForm = ({ isLoading, actions, initialValues }: IProps) => {
    * @param selected
    */
   const handleLineItemSelection = (key: string, { label, value, meta }: any) => {
-    formik.setFieldValue(`${key}.name`, label);
+    formik.setFieldValue(`${key}.name`, {label, value});
     formik.setFieldValue(`${key}.description`, meta?.description || 'Enter your notes here...');
   };
 
@@ -283,10 +287,12 @@ const JobForm = ({ isLoading, actions, initialValues }: IProps) => {
   }, [isWorker, handleWorkerSelection]);
 
   useEffect(() => {
-    setClientDetails(initialValues?.jobFor.meta);
-    fetchUserProperties(initialValues?.jobFor.value).then((response) => {
-      setProperties(response.data?.data?.data?.rows || []);
-    });
+    if (initialValues?.jobFor?.meta && initialValues?.jobFor?.value) {
+      setClientDetails(initialValues?.jobFor.meta);
+      fetchUserProperties(initialValues?.jobFor.value).then((response) => {
+        setProperties(response.data?.data?.data?.rows || []);
+      });
+    }
   }, [isLoading, initialValues?.jobFor]);
 
   return (
@@ -294,6 +300,7 @@ const JobForm = ({ isLoading, actions, initialValues }: IProps) => {
       <Loader isLoading={isLoading} />
       <FormikProvider value={formik}>
         <div className="row">
+          <pre><code>{JSON.stringify(formik.errors, null, 2)}</code></pre>
           <div className="col pb-3">
             <div className="card full-height">
               <h6 className="txt-bold">Job Details</h6>
@@ -307,7 +314,11 @@ const JobForm = ({ isLoading, actions, initialValues }: IProps) => {
                       name={`title`}
                       value={formik.values.title}
                       onChange={formik.handleChange}
-                      helperComponent={formik.errors.title && formik.touched.title ? <div className="txt-red">{formik.errors.title}</div> : null}
+                      helperComponent={
+                        <div className="row text-danger mb-2">
+                          <ErrorMessage name={`title`} />
+                        </div>
+                      }
                     />
                   </div>
                   <div className="col-12">
@@ -317,23 +328,26 @@ const JobForm = ({ isLoading, actions, initialValues }: IProps) => {
                       placeholder="Search available services..."
                       value={getServices().find((service) => service.value === formik.values.jobType)}
                       options={getServices().filter((service) => service.isActive)}
-                      helperComponent={
-                        <div className="row text-danger mt-1 mb-2">
-                          <ErrorMessage name="jobType" />
-                        </div>
-                      }
                       handleChange={(value: IOption) => {
                         formik.setFieldValue('jobType', value.value);
                       }}
                       onBlur={formik.handleBlur}
+                      helperComponent={
+                        <div className="row text-danger mb-2">
+                          <ErrorMessage name={`jobType`} />
+                        </div>
+                      }
                     />
                   </div>
                   <div className="col-12">
                     <div className="mb-3">
-                      <label htmlFor="instructions" className="form-label txt-dark-grey">
+                      <label htmlFor="instruction" className="form-label txt-dark-grey">
                         Job's Instructions
                       </label>
                       <DefaultEditor placeholder='Enter the job instructions here' style={{minHeight: '150px'}} name="instruction" value={formik.values.instruction} onChange={formik.handleChange} />
+                      <div className="row text-danger mb-2">
+                        <ErrorMessage name={`instruction`} />
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -346,12 +360,14 @@ const JobForm = ({ isLoading, actions, initialValues }: IProps) => {
               <SelectAsync
                 name={`jobFor`}
                 label="Select Client"
-                value={formik.values.jobFor}
+                value={formik.values.jobFor.value ? formik.values.jobFor : null}
                 resource={{ name: 'users', labelProp: 'fullName', valueProp: '_id', params: isWorker ? { roles: 'CLIENT', createdBy: currentUser._id } : { roles: 'CLIENT'} }}
                 onChange={handleClientSelection}
                 preload={true}
               />
-              {formik.errors.jobFor && formik.touched.jobFor && <div className="txt-red">{formik.errors.jobFor}</div>}
+              <div className="row text-danger mt-1 mb-2">
+                <ErrorMessage name={`jobFor.label`} />
+              </div>
               {clientDetails ? (
                 <div className="row bg-grey m-0">
                   <div className="col p-2 ps-4">
@@ -582,6 +598,9 @@ const JobForm = ({ isLoading, actions, initialValues }: IProps) => {
                             value={formik.values.lineItems[index].quantity}
                             onChange={formik.handleChange}
                           />
+                          <div className="row text-danger mt-1 mb-2">
+                            <ErrorMessage name={`lineItems[${index}].quantity`} />
+                          </div>
                         </div>
                         <div className="col">
                           <InputField
@@ -705,7 +724,7 @@ const JobForm = ({ isLoading, actions, initialValues }: IProps) => {
         </div>
         <div className="mb-3 mt-3">
           <button type="submit" className="btn btn-primary">
-            Save Job
+            {(initialValues?._id) ? 'Update' : 'Save'} Job
           </button>
           <button onClick={() => navigate(-1)} type="button" className="btn ms-3">
             Cancel

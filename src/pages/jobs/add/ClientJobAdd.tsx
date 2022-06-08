@@ -12,7 +12,7 @@ const ClientAdd = () => {
   const initialValues = {
     title: '',
     instruction: '',
-    jobFor: '',
+    jobFor: { label: '', value: '' },
     property: null,
     type: 'ONE-OFF',
     team: [],

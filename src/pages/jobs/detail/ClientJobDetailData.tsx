@@ -5,7 +5,7 @@ import { DateTime } from 'luxon';
 
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import RRule, { Frequency, RRuleSet, rrulestr } from 'rrule';
-import { ErrorMessage, FieldArray, FormikProvider, useFormik } from 'formik';
+import { FieldArray, FormikProvider, useFormik } from 'formik';
 import {
   AlertIcon,
   CheckCircleIcon,
@@ -38,9 +38,6 @@ import CompleteVisit from 'pages/schedules/CompleteVisit';
 import { getCurrentUser, getJobAddress } from 'utils';
 import Image from 'common/components/atoms/Image';
 import { RecommendWorker } from 'common/components/RecommendWorker';
-import SelectField from 'common/components/form/Select';
-import { getServices } from 'data';
-import { IOption } from 'common/types/form';
 
 export interface IVisit {
   overdue: any;

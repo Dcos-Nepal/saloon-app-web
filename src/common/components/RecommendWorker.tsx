@@ -1,13 +1,13 @@
-import { InfoIcon } from "@primer/octicons-react";
-import { IUser } from "common/types/user";
-import { ErrorMessage } from "formik";
-import { useEffect, useState } from "react";
-import { getWorkerRecommendations } from "services/users.service";
-import { formatAddress } from "utils";
-import { getData } from "utils/storage";
-import { Loader } from "./atoms/Loader";
-import SelectAsync from "./form/AsyncSelect";
-import SelectField from "./form/Select";
+import { InfoIcon } from '@primer/octicons-react';
+import { IUser } from 'common/types/user';
+import { ErrorMessage } from 'formik';
+import { useEffect, useState } from 'react';
+import { getWorkerRecommendations } from 'services/users.service';
+import { formatAddress } from 'utils';
+import { getData } from 'utils/storage';
+import { Loader } from './atoms/Loader';
+import SelectAsync from './form/AsyncSelect';
+import SelectField from './form/Select';
 
 interface IRecomProps {
   jobFor: any;
@@ -19,7 +19,7 @@ interface IRecomProps {
   handleWorkerSelection: (workers: any[]) => void;
 }
 
-export const RecommendWorker = ({startTime, endTime, jobType, jobFor, property, selectedWorkers, handleWorkerSelection}: IRecomProps) => {
+export const RecommendWorker = ({ startTime, endTime, jobType, jobFor, property, selectedWorkers, handleWorkerSelection }: IRecomProps) => {
   const [selectedTeam, setSelectedTeam] = useState<Array<any>>([]);
   const [recommendedTeam, setRecommendedTeam] = useState<Array<any>>([]);
   const [isRecommendationsLoading, setIsRecommendationsLoading] = useState(false);
@@ -34,25 +34,27 @@ export const RecommendWorker = ({startTime, endTime, jobType, jobFor, property, 
         (async () => {
           try {
             setIsRecommendationsLoading(true);
-            const { data: { data: recommendationData } } = await getWorkerRecommendations({
+            const {
+              data: { data: recommendationData }
+            } = await getWorkerRecommendations({
               jobType: jobType,
               address: formatAddress(property),
               startTime: startTime,
-              endTime: endTime,
+              endTime: endTime
             });
-  
+
             const team = recommendationData?.data?.map((recommendation: IUser) => {
               return {
                 label: recommendation.fullName,
                 value: recommendation._id
               };
             });
-  
+
             if (team.length !== 0) {
               setSelectedTeam(team);
               setRecommendedTeam(team);
             }
-  
+
             setSelectedTeam(!!selectedWorkers ? selectedWorkers : []);
           } catch (ex) {
             console.log(ex);
@@ -65,8 +67,8 @@ export const RecommendWorker = ({startTime, endTime, jobType, jobFor, property, 
       setSelectedTeam(!!selectedWorkers ? selectedWorkers : []);
     }
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [jobType, jobFor, property, startTime, endTime, jobType, selectedWorkers.length]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [jobType, jobFor, property, startTime, endTime, selectedWorkers.length]);
 
   return (
     <>
@@ -108,5 +110,5 @@ export const RecommendWorker = ({startTime, endTime, jobType, jobFor, property, 
         )}
       </div>
     </>
-  )
-}
+  );
+};

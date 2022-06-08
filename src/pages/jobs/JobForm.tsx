@@ -535,6 +535,17 @@ const JobForm = ({ isLoading, actions, initialValues }: IProps) => {
                 selectedWorkers={formik.values.team}
                 handleWorkerSelection={handleWorkerSelection}
               />
+              <div className="mt-3">
+                <input name="notifyTeam" className="form-check-input" type="checkbox" value="true" id="flexCheckDefault" onChange={formik.handleChange} />
+                <label className="ms-2 form-check-label" htmlFor="flexCheckDefault">
+                  Notify team about this assignment
+                </label>
+                <div>
+                  <small>
+                    <InfoIcon size={14} /> If you select Email, each team members will receive email notification.
+                  </small>
+                </div>
+              </div>
             </div>
           </div>
         </div>

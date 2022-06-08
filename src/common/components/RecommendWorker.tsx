@@ -69,7 +69,7 @@ export const RecommendWorker = ({ startTime, endTime, jobType, jobFor, property,
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [jobType, jobFor, property, startTime, endTime, selectedWorkers.length]);
-
+console.log({selectedTeam}, {selectedWorkers})
   return (
     <>
       <div className="row">

@@ -147,7 +147,7 @@ const JobForm = ({ isLoading, actions, initialValues }: IProps) => {
   const handleWorkerSelection = useCallback((selected: any[]) => {
     formik.setFieldValue(
       `team`,
-      selected.map((worker) => ({_id: worker.meta._id, label: worker.label, value: worker.value}))
+      selected.map((worker) => ({_id: worker.meta?._id || worker.value, label: worker.label, value: worker.value}))
     );
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

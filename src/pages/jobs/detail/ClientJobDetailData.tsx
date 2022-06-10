@@ -38,6 +38,9 @@ import CompleteVisit from 'pages/schedules/CompleteVisit';
 import { getCurrentUser, getJobAddress } from 'utils';
 import Image from 'common/components/atoms/Image';
 import { RecommendWorker } from 'common/components/RecommendWorker';
+import SelectField from 'common/components/form/Select';
+import { getServices } from 'data';
+import { IOption } from 'common/types/form';
 
 export interface IVisit {
   overdue: any;
@@ -86,7 +89,8 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
             instruction: visitSetting.inheritJob ? job?.instruction : visitSetting.instruction,
             team: visitSetting?.team ? visitSetting?.team : job?.team,
             lineItems: visitSetting.inheritJob ? job?.lineItems : visitSetting.lineItems,
-            type: job?.type
+            type: job?.type,
+            jobType: job?.jobType,
           };
 
           if (acc[visitMonth]) acc[visitMonth].push(visitObj);
@@ -107,7 +111,8 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
           instruction: visitSetting.inheritJob ? job?.instruction : visitSetting.instruction,
           team: visitSetting?.team ? visitSetting?.team : job?.team,
           lineItems: visitSetting.inheritJob ? job?.lineItems : visitSetting.lineItems,
-          type: job?.type
+          type: job?.type,
+          jobType: job?.jobType,
         };
         if (acc[visitMonth]) acc[visitMonth].push(visitObj);
         else acc[visitMonth] = [visitObj];
@@ -786,6 +791,20 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
                                 onChange={visitEditForm.handleChange}
                                 className={`form-control`}
                                 placeholder={"Quote's description..."}
+                              />
+                            </div>
+                            <div className="col-12">
+                              <SelectField
+                                label="Services Type"
+                                name="jobType"
+                                isDisabled={true}
+                                placeholder="Search available services..."
+                                value={getServices().find((service) => service.value === visitEditForm.values.jobType)}
+                                options={getServices().filter((service) => service.isActive)}
+                                handleChange={(value: IOption) => {
+                                  visitEditForm.setFieldValue('jobType', value.value);
+                                }}
+                                onBlur={visitEditForm.handleBlur}
                               />
                             </div>
                           </div>

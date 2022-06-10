@@ -115,10 +115,6 @@ const JobForm = ({ isLoading, actions, initialValues }: IProps) => {
 
       // Navigate to the previous screen
       setTimeout(() => {
-        // Cleaning up the form
-        // formik.resetForm();
-        // setProperties([]);
-        // setClientDetails(null);
         navigate(-1);
       }, 800);
     }

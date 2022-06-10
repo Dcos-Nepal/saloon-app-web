@@ -256,7 +256,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
           startDate: new Date(`${visit.startDate} ${visit.startTime}`),
           endDate: new Date(`${visit.endDate} ${visit.endTime}`)
         },
-        null
+        updateFollowing ? { updateFollowing } : null
       );
     } else {
       let newVisit = { ...visit, rruleSet: rrule };

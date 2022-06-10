@@ -54,7 +54,6 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
   const [selectedVisit, setSelectedVisit] = useState<any>();
   const [completedVisit, setCompletedVisit] = useState<any>();
   const [showEventDetail, setShowEventDetail] = useState<any | null>();
-  const [selectedTeam, setSelectedTeam] = useState<Array<any>>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const currUser: { role: string; id: string } = getCurrentUser();
 
@@ -82,6 +81,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
             group: visitMonth,
             visitMapId: `${visitSetting._id}_${visitMonth}_${index}`,
             startDate: visit,
+            endDate: visit,
             title: visitSetting.inheritJob ? job?.title : visitSetting.title,
             instruction: visitSetting.inheritJob ? job?.instruction : visitSetting.instruction,
             team: visitSetting?.team ? visitSetting?.team : job?.team,
@@ -106,7 +106,8 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
           title: visitSetting.inheritJob ? job?.title : visitSetting.title,
           instruction: visitSetting.inheritJob ? job?.instruction : visitSetting.instruction,
           team: visitSetting?.team ? visitSetting?.team : job?.team,
-          lineItems: visitSetting.inheritJob ? job?.lineItems : visitSetting.lineItems
+          lineItems: visitSetting.inheritJob ? job?.lineItems : visitSetting.lineItems,
+          type: job?.type
         };
         if (acc[visitMonth]) acc[visitMonth].push(visitObj);
         else acc[visitMonth] = [visitObj];
@@ -239,7 +240,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
     // Creating One-Off RRule for a selected visit
     const rrule = createOneOffRule({ ...visit, startDate: DateTime.fromJSDate(new Date(visit?.startDate)).toFormat('yyyy-MM-dd') });
 
-    if (visit.job.type === 'ONE-OFF') {
+    if (visit.job.type === 'ONE-OFF' || !visit.inheritJob) {
       await updateVisitApi(
         visit._id,
         {
@@ -253,30 +254,30 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
         null
       );
     } else {
+      let newVisit = { ...visit, rruleSet: rrule };
+
+      // If you don't want to update following visits
+      if (!updateFollowing) delete newVisit._id;
+
+      // Make API Call to create a new Visit
+      await addVisitApi(
+        {
+          ...newVisit,
+          job: newVisit.job?._id,
+          inheritJob: false,
+          rruleSet: rrule,
+          isPrimary: false,
+          excRrule: [],
+          hasMultiVisit: updateFollowing,
+          visitFor: newVisit.job?.jobFor?._id,
+          startDate: new Date(`${newVisit.startDate} ${newVisit.startTime}`),
+          endDate: new Date(`${newVisit.endDate} ${newVisit.endTime}`),
+          team: newVisit.team.map((t: any) => t._id || t)
+        },
+        updateFollowing ? { updateFollowing } : null
+      );
+
       if (visit.hasMultiVisit) {
-        let newVisit = { ...visit, rruleSet: rrule };
-
-        // If you don't want to update following visits
-        if (!updateFollowing) delete newVisit._id;
-
-        // Make API Call to create a new Visit
-        await addVisitApi(
-          {
-            ...newVisit,
-            job: newVisit.job?._id,
-            inheritJob: false,
-            rruleSet: rrule,
-            isPrimary: false,
-            excRrule: [],
-            hasMultiVisit: updateFollowing,
-            visitFor: newVisit.job?.jobFor?._id,
-            startDate: new Date(`${newVisit.startDate} ${newVisit.startTime}`),
-            endDate: new Date(`${newVisit.endDate} ${newVisit.endTime}`),
-            team: newVisit.team.map((t: any) => t._id || t)
-          },
-          updateFollowing ? { updateFollowing } : null
-        );
-
         // If you want to update following visits
         // Update the Primary visit with RRule Exception
         if (!updateFollowing) {
@@ -284,20 +285,6 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
             excRrule: [...visit.excRrule, rrule]
           });
         }
-      } else {
-        // Update a visit
-        await updateVisitApi(
-          visit._id,
-          {
-            ...visit,
-            job: visit.job?._id,
-            rruleSet: rrule,
-            team: visit.team.map((t: any) => t._id || t),
-            startDate: new Date(`${visit.startDate} ${visit.startTime}`),
-            endDate: new Date(`${visit.endDate} ${visit.endTime}`)
-          },
-          updateFollowing ? { updateFollowing } : null
-        );
       }
     }
 
@@ -402,22 +389,11 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [jobVisits, job]);
 
-  useEffect(() => {
-    if (selectedVisit?.team?.length) {
-      setSelectedTeam(
-        selectedVisit?.team?.map((worker: any) => {
-          return { label: worker.fullName, value: worker._id };
-        })
-      );
-    }
-  }, [selectedVisit]);
-
   /**
    * Handles Assignees selection
    */
   const handleWorkerSelection = useCallback(
     (selected: any[]) => {
-      setSelectedTeam(selected);
       visitEditForm.setFieldValue(
         `team`,
         selected.map((worker) => ({ label: worker.label, value: worker.value }))
@@ -1024,17 +1000,6 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
                   <button
                     disabled={isSubmitting}
                     type="submit"
-                    className="btn btn-secondary"
-                    onClick={() => {
-                      visitEditForm.values.team = visitEditForm.values.team.map((w: { value: string }) => w.value);
-                      saveVisit(visitEditForm.values, true);
-                    }}
-                  >
-                    Save and Update Future Visit
-                  </button>
-                  <button
-                    disabled={isSubmitting}
-                    type="submit"
                     className="btn btn-primary"
                     onClick={() => {
                       visitEditForm.values.team = visitEditForm.values.team.map((w: { value: string }) => w.value);
@@ -1043,6 +1008,17 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
                   >
                     Update this Visit
                   </button>
+                  {(selectedVisit?.inheritJob) ? (<button
+                    disabled={isSubmitting}
+                    type="submit"
+                    className="btn btn-secondary"
+                    onClick={() => {
+                      visitEditForm.values.team = visitEditForm.values.team.map((w: { value: string }) => w.value);
+                      saveVisit(visitEditForm.values, true);
+                    }}
+                  >
+                    Save and Update Future Visit
+                  </button>) : null}
                   <button type="button" className="btn btn-danger" onClick={() => setEditVisitMode(!editVisitMode)}>
                     Close
                   </button>

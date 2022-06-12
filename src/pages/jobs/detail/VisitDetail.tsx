@@ -1,5 +1,6 @@
 import { ChecklistIcon, PersonIcon, StopIcon } from '@primer/octicons-react';
 import Image from 'common/components/atoms/Image';
+import { DateTime } from 'luxon';
 import { FC } from 'react';
 import { getCurrentUser, getJobAddress, isDateBefore } from 'utils';
 
@@ -143,20 +144,22 @@ const VisitDetail: FC<IProps> = ({ closeModal, markVisitCompleteHandler, event }
             <div className="row">
               {event.startDate ? (
                 <div className="col">
-                  <h5>Start Date/Time</h5>
+                  <h5>Visit Date</h5>
                   <div>
-                    {new Date(event.startDate).toLocaleDateString()}&nbsp;{new Date(event.startDate).toLocaleTimeString()}
+                    {new Date(event.startDate).toLocaleDateString()}
                   </div>
                 </div>
               ) : null}
-              {event.endDate ? (
-                <div className="col">
-                  <h5>End Date/Time</h5>
-                  <div>
-                    {new Date(event.endDate).toLocaleDateString()}&nbsp;{new Date(event.endDate).toLocaleTimeString()}
-                  </div>
+            </div>
+            <div className="row mt-3">
+              <div className="col">
+                <h5>Start - End Time</h5>
+                <div>
+                  {DateTime.fromISO(event?.startTime).toFormat('h:mm:ss a')}
+                  {' - '}
+                  {DateTime.fromISO(event?.endTime).toFormat('h:mm:ss a')}
                 </div>
-              ) : null}
+              </div>
             </div>
           </div>
           <div className="modal-footer">

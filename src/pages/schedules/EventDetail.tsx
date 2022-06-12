@@ -4,6 +4,7 @@ import { ChecklistIcon, PersonIcon, StopIcon } from '@primer/octicons-react';
 import { Loader } from 'common/components/atoms/Loader';
 import { getCurrentUser, getJobAddress, isDateBefore } from 'utils';
 import Image from 'common/components/atoms/Image';
+import { DateTime } from 'luxon';
 
 interface IProps {
   event: any;
@@ -160,23 +161,22 @@ const ScheduleEventDetail: FC<IProps> = ({ closeModal, markVisitCompleteHandler,
             <div className="row">
               {event.start ? (
                 <div className="col">
-                  <h5>Start Date/Time</h5>
+                  <h5>Visit Date</h5>
                   <div>
-                    {new Date(event.start).toLocaleDateString('en-AU')}&nbsp;
-                    {new Date(event.start).toLocaleTimeString('en-AU')}
-                    {/* {new Date(event.start).toLocaleTimeString('en-US', { timeZone: 'Australia/Adelaide' })} */}
+                    {new Date(event.start).toLocaleDateString()}
                   </div>
                 </div>
               ) : null}
-              {event.end ? (
-                <div className="col">
-                  <h5>End Date/Time</h5>
-                  <div>
-                    {new Date(event.end).toLocaleDateString('en-AU')}&nbsp;
-                    {new Date(event.end).toLocaleTimeString('en-AU')}
-                  </div>
+            </div>
+            <div className="row mt-3">
+              <div className="col">
+                <h5>Start - End Time</h5>
+                <div>
+                  {DateTime.fromISO(event.extendedProps?.meta?.startTime).toFormat('h:mm:ss a')}
+                  {' - '}
+                  {DateTime.fromISO(event.extendedProps?.meta?.endTime).toFormat('h:mm:ss a')}
                 </div>
-              ) : null}
+              </div>
             </div>
           </div>
           <div className="modal-footer">

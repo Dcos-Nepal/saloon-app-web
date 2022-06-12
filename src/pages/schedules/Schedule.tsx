@@ -207,6 +207,8 @@ const WorkSchedule = (props: any) => {
           rrule: event.job?.type === 'ONE-OFF' ? null : event.rruleSet,
           exrule: event.job?.type === 'ONE-OFF' ? null : exRules,
           meta: {...event, lineItems: event.inheritJob ? event.job?.lineItems : event.lineItems},
+          startTime: event.startTime ? event.startTime : '',
+          endTime: event.endTime ? event.endTime : '',
         };
       });
 

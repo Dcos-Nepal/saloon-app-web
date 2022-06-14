@@ -27,6 +27,7 @@ const ResetPassword = () => {
     onSubmit: async (userData: any) => {
       // Making a User Login Request
       setIsLoading(true);
+      userData.email = userData.email.trim().toLowerCase();
       const response: any = await forgotUserPasswordApi(userData);
 
       if (response.data.success === true) {

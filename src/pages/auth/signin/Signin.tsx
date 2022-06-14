@@ -44,6 +44,7 @@ const Signin = () => {
 
       // Making a User Login Request
       setIsLoading(true);
+      userData.email = userData.email.trim().toLowerCase();
       const response: any = await signInUserApi(userData);
 
       if (response.data.success === true) {

@@ -303,6 +303,9 @@ const Setting = ({
     enableReinitialize: true,
     initialValues: initialValues,
     onSubmit: async (userData: any) => {
+      // Cleaning up data
+      userData.email = userData.email.trim().toLowerCase();
+
       if (userData.newPassword !== userData.confirmPassword) {
         formik.setErrors({ confirmPassword: 'Password do not match!' });
         return false;
@@ -330,6 +333,8 @@ const Setting = ({
     initialValues: profileInitialValues,
     onSubmit: async (userData: any) => {
       setIsLoading(true);
+      // Cleaning up data
+      userData.email = userData.email.trim().toLowerCase();
       const { data: response }: any = await updateUserApi(userData);
 
       if (response.data.success === true) {

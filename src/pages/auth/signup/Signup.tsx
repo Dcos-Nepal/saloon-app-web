@@ -45,7 +45,7 @@ const SignUp = () => {
     enableReinitialize: true,
     initialValues: InitSignUp,
     onSubmit: async (formData: any) => {
-      // Setting User Type
+      // Setting User Type or Role
       formData.roles = [formData.userType];
 
       // Set referred by
@@ -58,6 +58,7 @@ const SignUp = () => {
 
       // Making a User Registration Request
       setIsLoading(true);
+      formData.email = formData.email.trim().toLowerCase();
       const response: any = await registerUserApi(formData);
 
       if (response.data.success === true) {

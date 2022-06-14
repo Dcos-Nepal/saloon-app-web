@@ -99,6 +99,9 @@ const ClientForm: FC<IProps> = ({ id, isClientsLoading, isPropertiesLoading, act
     initialValues: initialValues,
     validationSchema: ClientSchema,
     onSubmit: (data: any) => {
+      // Cleaning up data
+      data.email = data.email.trim().toLowerCase();
+      
       if (id) {
         // Update client
         actions.updateClient(data);

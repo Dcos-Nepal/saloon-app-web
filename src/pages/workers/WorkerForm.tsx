@@ -154,6 +154,9 @@ const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker, isWorkersLoa
       // Set type if no type is provided
       if (!data.userData?.type) data.userData.type = 'WORKER';
 
+      // Cleaning up data
+      data.email = data.email.trim().toLowerCase();
+
       // For updating worker
       if (id) {
         await actions.updateWorker(data);

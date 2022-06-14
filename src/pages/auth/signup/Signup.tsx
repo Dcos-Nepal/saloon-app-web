@@ -63,7 +63,7 @@ const SignUp = () => {
 
       if (response.data.success === true) {
         setIsLoading(false);
-        toast.success('Success! Verification email sent.');
+        toast.success('Registration Success! Please check your email inbox or spam folder with verification link.');
         return navigate(endpoints.auth.signIn);
       } else {
         if (response.data.message === 'REGISTRATION.USER_ALREADY_REGISTERED') {

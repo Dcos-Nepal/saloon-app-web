@@ -45,7 +45,7 @@ function* addWorker(action: any): any {
         payload: newWorker?.data?.data?.data,
       });
 
-      return toast.success(getMessage(newWorker?.data?.message));
+      return toast.success('Worker Created! Please inform your worker to check for email inbox or spam folder with verification link.');
     }
     yield put({
       type: actionType.ADD_WORKER_ERROR,

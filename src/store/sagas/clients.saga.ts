@@ -50,7 +50,7 @@ function* addClient(action: any): any {
         payload: newClient?.data?.data?.data,
       });
 
-      return toast.success(getMessage(newClient?.data?.message));
+      return toast.success('Client Created! Please inform your client to check for email inbox or spam folder with verification link.');
     }
     yield put({
       type: actionType.ADD_CLIENT_ERROR,

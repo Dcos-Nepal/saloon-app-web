@@ -198,14 +198,21 @@ const WorkSchedule = (props: any) => {
   useEffect(() => {
     if (props.schedules?.rows) {
       const mappedEvents = props.schedules.rows.map((event: any) => {
-        const exRules = event.excRrule?.map((rule: string) => ({ ...rrulestr(rule).origOptions })) || [];
+        if (event.job?.type === 'ONE-OFF') {
+          return {
+            title: event.inheritJob ? event.job?.title : event?.title,
+            start: DateTime.fromISO(event.inheritJob && event.job?.startDate ? event.job?.startDate : event?.startDate).toFormat('yyyy-MM-dd hh:mm'),
+            end: DateTime.fromISO(event.inheritJob && event.job?.endDate ? event.job?.endDate : event?.endDate).toFormat('yyyy-MM-dd hh:mm'),
+            meta: {...event, lineItems: event.inheritJob ? event.job?.lineItems : event.lineItems}
+          };
+        }
 
+        const exRules = event.excRrule?.map((rule: string) => ({ ...rrulestr(rule).origOptions })) || [];
+        
         return {
           title: event.inheritJob ? event.job?.title : event?.title,
-          start: event.inheritJob && event.job?.startDate ? event.job?.startDate : event?.startDate,
-          end: event.inheritJob && event.job?.endDate ? event.job?.endDate : event?.endDate,
-          rrule: event.job?.type === 'ONE-OFF' ? null : event.rruleSet,
-          exrule: event.job?.type === 'ONE-OFF' ? null : exRules,
+          rrule: event.rruleSet,
+          exrule: exRules,
           meta: {...event, lineItems: event.inheritJob ? event.job?.lineItems : event.lineItems},
           startTime: event.startTime ? event.startTime : '',
           endTime: event.endTime ? event.endTime : '',

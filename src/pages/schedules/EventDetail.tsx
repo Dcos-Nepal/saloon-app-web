@@ -164,6 +164,7 @@ const ScheduleEventDetail: FC<IProps> = ({ closeModal, markVisitCompleteHandler,
                   <h5>Visit Date</h5>
                   <div>
                     {new Date(event.start).toLocaleDateString()}
+                    {event.extendedProps?.meta?.job.type === 'ONE-OFF' ? " - " + new Date(event.end).toLocaleDateString() : null}
                   </div>
                 </div>
               ) : null}

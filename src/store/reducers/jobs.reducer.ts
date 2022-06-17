@@ -49,9 +49,9 @@ const jobsReducer = (state = initialState, action: any) => {
       state.isLoading = false;
       state.isFailed = false;
       state.isSuccess = true;
-      state.jobs.data.rows = [action.payload, ...state.jobs.data.rows];
+      // state.jobs.data.rows = [action.payload, ...state.jobs.data.rows];
 
-      return { ...state, jobs: { ...state.jobs } };
+      return { ...state };
     }
 
     case actionType.ADD_JOB_ERROR: {

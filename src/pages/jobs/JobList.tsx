@@ -60,7 +60,12 @@ const JobsList = (props: IProps) => {
         toast.success('Job deleted successfully');
         setDeleteInProgress('');
 
-        props.actions.fetchJobs({ q: search, page, limit: itemsPerPage });
+        const jobQuery: { jobFor?: string; team?: string } = {};
+
+        if (currentUser.role === 'CLIENT') jobQuery.jobFor = currentUser.id;
+        if (currentUser.role === 'WORKER') jobQuery.team = currentUser.id;
+
+        props.actions.fetchJobs({ q: search, ...jobQuery, page, limit: itemsPerPage });
       }
     } catch (ex) {
       toast.error('Failed to delete job');

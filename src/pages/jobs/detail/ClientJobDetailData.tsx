@@ -41,6 +41,7 @@ import { RecommendWorker } from 'common/components/RecommendWorker';
 import SelectField from 'common/components/form/Select';
 import { getServices } from 'data';
 import { IOption } from 'common/types/form';
+import AsyncInputDataList from 'common/components/form/AsyncInputDataList';
 
 export interface IVisit {
   overdue: any;
@@ -946,11 +947,10 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
                               {visitEditForm.values?.lineItems?.map((lineItem: any, index: number) => (
                                 <Fragment key={`~${index}`}>
                                   <div className="col-5">
-                                    <SelectAsync
-                                      name={`lineItem.name`}
-                                      isDisabled={true}
+                                    <AsyncInputDataList
+                                      name={`lineItems[${index}].name`}
                                       placeholder="Search line items"
-                                      value={{ label: lineItem.name, value: lineItem._id }}
+                                      value={visitEditForm.values?.lineItems[index].name}
                                       resource={{ name: 'line-items', labelProp: 'name', valueProp: '_id' }}
                                       onChange={(selected: any) => handleLineItemSelection(`lineItems[${index}]`, selected)}
                                     />
@@ -960,7 +960,6 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
                                       onChange={visitEditForm.handleChange}
                                       className={`form-control mb-2`}
                                       placeholder={"Line item's description..."}
-                                      disabled={true}
                                     />
                                   </div>
                                   <div className="col">
@@ -970,7 +969,6 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
                                       name={`lineItems[${index}].quantity`}
                                       value={lineItem.quantity}
                                       onChange={visitEditForm.handleChange}
-                                      disabled={true}
                                     />
                                   </div>
                                   <div className="col">
@@ -980,7 +978,6 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
                                       name={`lineItems[${index}].unitPrice`}
                                       value={lineItem.unitPrice}
                                       onChange={visitEditForm.handleChange}
-                                      disabled={true}
                                     />
                                   </div>
                                   <div className="col">

@@ -114,7 +114,7 @@ const ClientForm: FC<IProps> = ({ id, isClientsLoading, isPropertiesLoading, act
       }
 
       // Redirect to previous page
-      setTimeout(() => navigate(-1), 600);
+      setTimeout(() => navigate(-1), 800);
     }
   });
 
@@ -197,6 +197,12 @@ const ClientForm: FC<IProps> = ({ id, isClientsLoading, isPropertiesLoading, act
   useEffect(() => {
     if (currentClient?._id && id) actions.fetchProperties({ user: currentClient._id });
   }, [id, currentClient?._id, actions]);
+
+  useEffect(() => {
+    if (formik.isSubmitting && !isClientsLoading) {
+      
+    }
+  }, [formik.isSubmitting, isClientsLoading]);
 
   return (
     <div className="row">

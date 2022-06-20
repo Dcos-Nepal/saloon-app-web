@@ -1,3 +1,4 @@
+import { getUuid } from 'utils';
 import * as actionType from '../constants';
 
 const initialState: any = {
@@ -38,9 +39,9 @@ const clientsReducer = (state = initialState, action: any) => {
       state.isLoading = false;
       state.isFailed = false;
       state.isSuccess = true;
-      // state.clients.data.rows = [action.payload, ...state.clients.data.rows];
+      state.clients.data.rows = [action.payload, ...state.clients.data.rows];
 
-      return { ...state, clients: { ...state.clients } };
+      return { ...state, _id: getUuid()};
     }
 
     case actionType.ADD_CLIENT_ERROR: {

@@ -1,3 +1,4 @@
+import { getUuid } from 'utils';
 import * as actionType from '../constants';
 
 const initialState: any = {
@@ -40,7 +41,7 @@ const workersReducer = (state = initialState, action: any) => {
       state.isSuccess = true;
       state.workers.data.rows = [action.payload, ...state.workers.data.rows];
 
-      return { ...state, workers: { ...state.workers } };
+      return {_id: getUuid(), ...state, workers: { ...state.workers }};
     }
 
     case actionType.ADD_WORKER_ERROR: {

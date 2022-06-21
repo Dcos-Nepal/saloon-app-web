@@ -8,6 +8,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { resetUserPasswordApi } from "services/auth.service";
 import { Loader } from "common/components/atoms/Loader";
 import { toast } from "react-toastify";
+import { InfoIcon } from "@primer/octicons-react";
+import { endpoints } from "common/config";
 
 const ChangePassword = () => {
   const navigate = useNavigate();
@@ -45,16 +47,23 @@ const ChangePassword = () => {
 
       // Making a User Login Request
       setIsLoading(true);
-      const response: any = await resetUserPasswordApi(userData);
+      try {
+        const response: any = await resetUserPasswordApi(userData);
 
-      if (response.data.success === true) {
+        if (response.data.success === true) {
+          setIsLoading(false);
+          toast.success('Success! Password changed successfully.');
+          return navigate('/signin');
+        }
+
         setIsLoading(false);
-        toast.success('Success!! Password reset email sent.');
-        return navigate('/signin');
-      } else {
+        toast.error('Error while resetting the password.');
+      } catch (error) {
+        console.log(error);
         setIsLoading(false);
-        toast.error('Error! Error while sending password reset email.');
+        toast.error('Error! Try again later.');
       }
+      
     },
     validationSchema: ChangePasswordSchema,
   });
@@ -73,6 +82,9 @@ const ChangePassword = () => {
               <label>Fill your new password to change</label>
             </div>
             <form noValidate onSubmit={formik.handleSubmit}>
+              <div className="alert alert-info mt-1 mb-1" role="alert">
+                <small><InfoIcon />&nbsp; For better security, use the password different from the ones used previously</small>
+              </div>
               <div className="row mt-2 min-width-22">
                 <InputField
                   name="email"
@@ -110,6 +122,16 @@ const ChangePassword = () => {
                 <button type="submit" className="btn btn-primary btn-full">Submit</button>
               </div>
             </form>
+            <div className="mt-2">
+              <div className="d-flex justify-content-center mt-3">
+                <div>
+                  Already have an account and password?
+                  <span className="txt-orange pointer ms-2" onClick={() => navigate(endpoints.auth.signIn)}>
+                    Sign In Now
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
           <div className='mb-5 mt-5 text-center pb-5'>
             Copyright &copy; {new Date().getFullYear()} <b>Orange Cleaning</b>, All Rights Reserved.

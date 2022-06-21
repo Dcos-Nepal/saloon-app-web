@@ -8,6 +8,8 @@ import ResetPassword from 'pages/auth/resetPassword';
 import ChangePassword from 'pages/auth/changePassword';
 import { SignUp, VerifyEmail } from 'pages/auth/signup';
 import PrivacyPolicy from 'pages/privacy-policy';
+import PageNotFound from 'pages/NotFound';
+import ConnectionError from 'pages/ConnectionError';
 
 const AllRoutes = () => {
   return (
@@ -22,7 +24,8 @@ const AllRoutes = () => {
         <Route path={endpoints.auth.verifyEmail} element={<VerifyEmail />} />
         <Route path={endpoints.booking.add} element={<Booking />} />
         <Route path={endpoints.admin.home + '/*'} element={<Dashboard />} />
-        <Route path="*" element={<div>Page not found!</div>} />
+        <Route path="/connection-error" element={<ConnectionError />} />
+        <Route path="*" element={<PageNotFound />} />
       </Routes>
     </Router>
   );

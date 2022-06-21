@@ -28,15 +28,21 @@ const ResetPassword = () => {
       // Making a User Login Request
       setIsLoading(true);
       userData.email = userData.email.trim().toLowerCase();
-      const response: any = await forgotUserPasswordApi(userData);
+      try {
+        const response: any = await forgotUserPasswordApi(userData);
 
-      if (response.data.success === true) {
+        if (response.data.success === true) {
+          setIsLoading(false);
+          toast.success('Success! Password reset link sent to your email.');
+          return navigate('/signin');
+        }
+
         setIsLoading(false);
-        toast.success('Success!! Password reset successful.');
-        return navigate('/signin');
-      } else {
+        toast.error('Error while sending password reset link.');
+      } catch (error) {
+        console.log(error);
         setIsLoading(false);
-        toast.error('Error! Error while resetting password.');
+        toast.error('Error! Try again later.');
       }
     },
     validationSchema: ResetPasswordSchema,

@@ -57,20 +57,26 @@ const SignUp = () => {
       }
 
       // Making a User Registration Request
-      setIsLoading(true);
-      formData.email = formData.email.trim().toLowerCase();
-      const response: any = await registerUserApi(formData);
+      try {
+        setIsLoading(true);
+        formData.email = formData.email.trim().toLowerCase();
+        const response: any = await registerUserApi(formData);
 
-      if (response.data.success === true) {
-        setIsLoading(false);
-        toast.success('Registration Success! Please check your email inbox or spam folder with verification link.');
-        return navigate(endpoints.auth.signIn);
-      } else {
-        if (response.data.message === 'REGISTRATION.USER_ALREADY_REGISTERED') {
-          toast.error('The email is already used.');
+        if (response.data?.success === true) {
+          setIsLoading(false);
+          toast.success('Registration Success! Please check your email inbox or spam folder with verification link.');
+          return navigate(endpoints.auth.signIn);
+        }
+
+        if (response.data?.message === 'REGISTRATION.USER_ALREADY_REGISTERED') {
+          toast.error('The email is already used. Try another email.');
         } else {
           toast.error('Error while registering user.');
         }
+        setIsLoading(false);
+      } catch (error) {
+        console.log(error);
+        toast.error('Error while registering user.');
         setIsLoading(false);
       }
     },

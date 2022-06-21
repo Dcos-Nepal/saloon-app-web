@@ -43,23 +43,28 @@ const Signin = () => {
       userData.deviceToken = '0xr2ysf9a7sfdnk4537ndsakf7n7sdafn54x';
 
       // Making a User Login Request
-      setIsLoading(true);
-      userData.email = userData.email.trim().toLowerCase();
-      const response: any = await signInUserApi(userData);
+      try {
+        setIsLoading(true);
+        userData.email = userData.email.trim().toLowerCase();
+        const response: any = await signInUserApi(userData);
 
-      if (response.data.success === true) {
-        const {data: {token: { accessToken, refreshToken }, user}} = response.data;
+        if (response.data.success === true) {
+          const {data: {token: { accessToken, refreshToken }, user}} = response.data;
 
-         // Set data in the Local Storage
-        setData('user', user);
-        setData('accessToken', accessToken);
-        setData('refreshToken', refreshToken);
+          // Set data in the Local Storage
+          setData('user', user);
+          setData('accessToken', accessToken);
+          setData('refreshToken', refreshToken);
 
-        // Display success message
-        toast.success('Welcome! Login success.');
-
+          // Display success message
+          toast.success('Welcome! Login successful.');
+          return setIsLoading(false);
+        }
+        
+        toast.error('Invalid credentials provided.');
         setIsLoading(false);
-      } else {
+      } catch (error) {
+        console.log(error);
         toast.error('Invalid credentials provided.');
         setIsLoading(false);
       }

@@ -3,6 +3,7 @@ import { Route, Routes } from 'react-router-dom';
 
 import { endpoints } from 'common/config';
 import { Loader } from 'common/components/atoms/Loader';
+import PageNotFound from 'pages/NotFound';
 
 // Lazy loading the component
 const Summary = React.lazy(() => import('pages/dashboard/Summary'));
@@ -131,6 +132,7 @@ const AdminDashboard: FC<IProps> = (): JSX.Element => {
             </Suspense>
           }
         />
+        <Route path="*" element={<PageNotFound />} />
       </Routes>
     </>
   );

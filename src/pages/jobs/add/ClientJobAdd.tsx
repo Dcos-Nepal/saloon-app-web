@@ -1,5 +1,6 @@
 import { InfoIcon } from "@primer/octicons-react";
 import { useNavigate } from "react-router-dom";
+import RRule, { Frequency } from "rrule";
 
 import JobForm from "../JobForm";
 
@@ -26,7 +27,7 @@ const ClientAdd = () => {
         total: 0
       }
     ],
-    schedule: { rruleSet: '', startDate: '', startTime: '', endDate: '', endTime: '' },
+    schedule: { rruleSet: new RRule({ dtstart: new Date(), interval: 1, freq: Frequency.DAILY }).toString(), startDate: '', startTime: '', endDate: '', endTime: '' },
     oneOff: { rruleSet: '', startDate: '', startTime: '', endDate: '', endTime: '' },
     notifyTeam: false,
     notes: '',

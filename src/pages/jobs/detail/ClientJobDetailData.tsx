@@ -28,7 +28,6 @@ import { addVisitApi, updateStatus, updateVisitApi, deleteVisitApi, completeVisi
 import Modal from 'common/components/atoms/Modal';
 import InputField from 'common/components/form/Input';
 import TextArea from 'common/components/form/TextArea';
-import SelectAsync from 'common/components/form/AsyncSelect';
 import StarRating from 'common/components/StarRating';
 import VisitCompletedActions from './VisitCompletedActions';
 import { Loader } from 'common/components/atoms/Loader';

@@ -42,7 +42,6 @@ const JobForm = ({ isLoading, actions, initialValues }: IProps) => {
   const navigate = useNavigate();
   const [properties, setProperties] = useState<any[]>([]);
   const [clientDetails, setClientDetails] = useState(null);
-  const [rruleStr, setRruleStr] = useState(new RRule({ dtstart: new Date(), interval: 1, freq: Frequency.DAILY }).toString());
   const [activeTab, setActiveTab] = useState(initialValues.type ?? 'ONE-OFF');
   const [isUploadingImage, setIsUploadingImage] = useState(false);
 
@@ -156,10 +155,10 @@ const JobForm = ({ isLoading, actions, initialValues }: IProps) => {
    * Handles RRule
    * @param newRRule
    */
-  const handleRecurringChange = (newRRule: any) => {
-    setRruleStr(newRRule.rrule);
+  const handleRecurringChange = (newRRule: any, data: any) => {
     const startDateTime = DateTime.fromFormat(newRRule.data.start.onDate.date, 'yyyy-MM-dd HH:mm');
     const endDateTime = DateTime.fromFormat(newRRule.data.end.onDate.date, 'yyyy-MM-dd HH:mm');
+
     formik.setFieldValue('schedule', {
       startDate: startDateTime.toFormat('yyyy-MM-dd'),
       startTime: startDateTime.toFormat('HH:mm'),
@@ -505,9 +504,10 @@ const JobForm = ({ isLoading, actions, initialValues }: IProps) => {
               <div className="col-6 my-3 mx-1">
                 <ReactRRuleGenerator
                   onChange={handleRecurringChange as any}
-                  value={formik.values.schedule.rruleSet || rruleStr}
+                  value={formik.values.schedule.rruleSet}
                   config={
                     {
+                      repeat: [],
                       hideStart: false
                     } as any
                   }

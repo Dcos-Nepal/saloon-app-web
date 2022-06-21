@@ -1,15 +1,13 @@
 import 'boxicons';
-import { FC, useEffect } from 'react';
+import { FC } from 'react';
 
 import logo from 'assets/images/LogoLong.svg';
 import { clearData, getData } from 'utils/storage';
 import { GearIcon, LockIcon, PersonIcon } from '@primer/octicons-react';
 import { useNavigate } from 'react-router-dom';
-import { fetchEventSource } from '@microsoft/fetch-event-source';
 
 import { endpoints } from 'common/config';
 import { getNameInitials } from 'utils/name';
-import { getAccessToken } from 'utils/http';
 
 interface IProps {
   loggedIn?: boolean;
@@ -34,26 +32,6 @@ const TopNavbar: FC<IProps> = ({ loggedIn = true }) => {
   const getUserName = () => {
     return currentUser ? `${currentUser?.firstName} ${currentUser?.lastName}` : 'Guest';
   };
-
-  const fetchEvents = async () => {
-    const authToken = await getAccessToken();
-    fetchEventSource(process.env.REACT_APP_API + `v1/notifications/events/${currentUser._id}`, {
-      headers: {
-        'Authorization': `Bearer ${authToken}`,
-        'Content-type': 'text/event-stream'
-      },
-      onmessage: ({ data }) => {
-        console.log(data);
-      },
-      onerror(err) {
-        console.log(err);
-      },
-    });
-  }
-
-  useEffect(() => {
-    // fetchEvents()
-  }, [])
 
   return (
     <nav className="navbar navbar-expand-lg sticky-top">

@@ -54,12 +54,15 @@ class ReactRRuleGenerator extends PureComponent<Props> {
     }
   }
 
-  componentWillReceiveProps(nextProps: Props) {
-    if (nextProps.value) {
-      const data = computeRRuleFromString(this.state.data, nextProps.value);
-      this.setState({ data });
-    }
-  }
+  /**
+   * Maybe need to add this in the future
+   * componentWillReceiveProps(nextProps: Props) {
+   *   if (nextProps.value) {
+   *     const data = computeRRuleFromString(this.state.data, nextProps.value);
+   *     this.setState({ data });
+   *   }
+   * }
+   */
 
   handleChange = ({ target }: any) => {
     const newData = cloneDeep(this.state.data);
@@ -69,6 +72,10 @@ class ReactRRuleGenerator extends PureComponent<Props> {
     this.setState({ data: newData });
     this.props.onChange({ rrule, data: newData });
   };
+
+  componentWillUnmount() {
+    this.setState({ data: null });
+  }
 
   render() {
     const {

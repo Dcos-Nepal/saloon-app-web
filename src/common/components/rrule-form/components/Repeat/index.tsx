@@ -44,13 +44,18 @@ interface Props {
 
 const Repeat: React.FC<Props> = ({
   id,
-  repeat: { frequency, yearly, monthly, weekly, daily, hourly, options },
+  repeat: { frequency, yearly, monthly, weekly, daily, hourly },
   handleChange,
   translations
 }): React.ReactElement => {
-  const isOptionAvailable = (option: string) =>
-    !options.frequency || options.frequency.indexOf(option) !== -1;
-  const isOptionSelected = (option: string) => frequency === option;
+  /**
+   * Get the correct component to render based on the frequency
+   * @param option 
+   * @returns  Boolean
+   */
+  const isOptionSelected = (option: string) => {
+    return frequency === option;
+  }
 
   return (
     <div className='px-3'>
@@ -68,31 +73,21 @@ const Repeat: React.FC<Props> = ({
             value={frequency}
             onChange={handleChange}
           >
-            {isOptionAvailable('Yearly') && (
               <option value='Yearly'>
                 {translateLabel(translations, 'repeat.yearly.label')}
               </option>
-            )}
-            {isOptionAvailable('Monthly') && (
               <option value='Monthly'>
                 {translateLabel(translations, 'repeat.monthly.label')}
               </option>
-            )}
-            {isOptionAvailable('Weekly') && (
               <option value='Weekly'>
                 {translateLabel(translations, 'repeat.weekly.label')}
               </option>
-            )}
-            {isOptionAvailable('Daily') && (
               <option value='Daily'>
                 {translateLabel(translations, 'repeat.daily.label')}
               </option>
-            )}
-            {isOptionAvailable('Hourly') && (
               <option value='Hourly'>
                 {translateLabel(translations, 'repeat.hourly.label')}
               </option>
-            )}
           </select>
         </div>
       </div>

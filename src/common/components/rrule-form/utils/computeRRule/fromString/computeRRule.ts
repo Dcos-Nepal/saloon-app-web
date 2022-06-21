@@ -84,7 +84,10 @@ const computeRRule = (data: any, rrule: any) => {
         },
         hourly: {
           interval: computeHourlyInterval(data, rruleObj)
-        }
+        },
+        // options: {
+        //   frequency: computeFrequency(data, rruleObj)
+        // }
       },
       end: {
         ...data.end,

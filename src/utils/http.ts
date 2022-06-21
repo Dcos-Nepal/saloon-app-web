@@ -56,6 +56,7 @@ http.interceptors.response.use(
         isConnectionErrorNotified = true;
       }
 
+      window.location.href = '/connection-error';
       return Promise.reject(error);
     }
 

@@ -24,11 +24,11 @@ const ChangePassword = () => {
   const ChangePasswordSchema = Yup.object().shape({
     email: Yup.string().required('Please provide an email.').email('Invalid email provided'),
     newPassword: Yup.string()
-      .min(6, 'Password must be at least 6 characters')
+      .min(8, 'Password must be at least 8 characters')
       .max(24, 'Password can be maximum 24 characters')
       .required('New Password is required'),
     confirmPassword: Yup.string()
-      .min(6, 'Password must be at least 6 characters')
+      .min(8, 'Password must be at least 8 characters')
       .max(24, 'Password can be maximum 24 characters')
       .required('Confirm Password is required'),
   });

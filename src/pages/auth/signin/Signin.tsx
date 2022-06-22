@@ -30,9 +30,9 @@ const Signin = () => {
       .required("Please provide an email.")
       .email("Invalid email provided"),
     password: Yup.string()
-      .min(6, "Password must be at least 6 characters")
-      .max(24, "Password can be maximum 24 characters")
-      .required("Password is required"),
+      .min(8, 'Password must be at least 8 characters')
+      .max(24, 'Password can be maximum 24 characters')
+      .required('Password is required'),
   });
 
   const formik = useFormik({

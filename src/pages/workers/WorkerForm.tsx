@@ -152,7 +152,9 @@ const WorkerDetailForm: FC<IProps> = ({ id, actions, currentWorker, isWorkersLoa
     onSubmit: async (data: any) => {
 
       // Set type if no type is provided
-      if (!data.userData?.type) data.userData.type = 'WORKER';
+      if (!data.userData?.type) {
+        data.userData.type = 'WORKER';
+      }
 
       // Cleaning up data
       data.email = data.email.trim().toLowerCase();

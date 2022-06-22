@@ -1,10 +1,14 @@
 import { connect } from 'react-redux';
-import { FC, useEffect } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { Loader } from 'common/components/atoms/Loader';
 import * as workersActions from 'store/actions/workers.actions';
-import { PencilIcon, StopIcon } from '@primer/octicons-react';
+import { CheckCircleIcon, PencilIcon, StopIcon } from '@primer/octicons-react';
+import { approveWorkerApi } from 'services/users.service';
+import { toast } from 'react-toastify';
+import { getCurrentUser } from 'utils';
+import { DateTime } from 'luxon';
 
 interface IProps {
   actions: {
@@ -18,9 +22,45 @@ interface IProps {
 const WorkerDetail: FC<IProps> = ({ actions, currentWorker, isWorkersLoading }) => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [isApproving, setIsApproving] = useState(false);
+  const currentUser: { role: string; id: string } = getCurrentUser();
+
+  /**
+   * Approve Worker if its not already approved
+   * @param id String
+   * @return void
+   */
+  const approveWorker = async (id: string | undefined) => {
+    if (!id) {
+      throw new Error('Function not implemented.');
+    }
+
+    // Call User update API to update the isApproved property
+    try {
+      setIsApproving(true);
+      const {data}: any = await approveWorkerApi(id);
+
+      if (data?.data?.success === true) {
+        // Fetch Worker details
+        actions.fetchWorker(id);
+        // Display success message
+        toast.success('Worker approved successfully.');
+        return setIsApproving(false);
+      }
+      
+      toast.error('Error approving the Worker');
+      setIsApproving(false);
+    } catch (error) {
+      console.log(error);
+      toast.error('Error approving the Worker');
+      setIsApproving(false);
+    }
+  }
 
   useEffect(() => {
-    if (id) actions.fetchWorker(id);
+    if (id) {
+      actions.fetchWorker(id);
+    }
   }, [id, actions]);
 
   return (
@@ -40,7 +80,12 @@ const WorkerDetail: FC<IProps> = ({ actions, currentWorker, isWorkersLoading }) 
                 <h3 className="txt-bold extra mt-2">{currentWorker.fullName || `${currentWorker.firstName} ${currentWorker.lastName}`}</h3>
               </div>
               <div className="col">
-                <button onClick={() => id && navigate(`edit`)} type="button" className="btn btn-primary d-flex float-end me-2">
+                {(!currentWorker?.userData?.isApproved && currentUser.role === 'ADMIN') ? (
+                  <button onClick={() => approveWorker(id)} type="button" className="btn btn-success d-flex float-end me-2">
+                    {isApproving ? <span className="spinner-border spinner-border-sm mt-1" role="status" /> : <CheckCircleIcon className="mt-1" />}&nbsp;Approve Worker
+                  </button>
+                ) : null}
+                <button onClick={() => id && navigate(`edit`)} type="button" className="pt-2 btn btn-primary d-flex float-end me-2">
                   <PencilIcon className="mt-1" />
                   &nbsp; Edit Worker
                 </button>
@@ -78,12 +123,12 @@ const WorkerDetail: FC<IProps> = ({ actions, currentWorker, isWorkersLoading }) 
                 <div className="row mt-3">
                   <div className="col p-1 ps-4">
                     <div className="txt-grey">Working Hours</div>
-                    <div className="">Start: {currentWorker?.userData?.workingHours?.start || '-'}</div>
-                    <div className="">End: {currentWorker?.userData?.workingHours?.end || '-'}</div>
+                    <div className="">Start Time: {DateTime.fromISO(currentWorker?.userData?.workingHours?.start).toFormat('h:mm a') || '-'}</div>
+                    <div className="">End Time: {DateTime.fromISO(currentWorker?.userData?.workingHours?.end).toFormat('h:mm a') || '-'}</div>
                   </div>
                   <div className="col p-1 ps-4">
                     <div className="txt-grey">Working Days</div>
-                    <div className="">{currentWorker?.userData?.workingDays.toString() || '-'}</div>
+                    <div className="">{currentWorker?.userData?.workingDays.join(', ') || '-'}</div>
                   </div>
                 </div>
                 <div className="row mt-3">
@@ -93,7 +138,7 @@ const WorkerDetail: FC<IProps> = ({ actions, currentWorker, isWorkersLoading }) 
                       {currentWorker?.userData?.services.length
                         ? currentWorker?.userData?.services.map((service: string) => (
                             <div key={service}>
-                              <span className="badge rounded-pill bg-secondary p-1">{service}</span>&nbsp;
+                              <span className="badge rounded-pill bg-secondary p-2">{service}</span>&nbsp;
                             </div>
                           ))
                         : 'No services added yet.'}

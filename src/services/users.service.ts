@@ -28,6 +28,11 @@ export const updateUserApi = async (payload: any) => {
   return await http.put(url, payload);
 };
 
+export const approveWorkerApi = async (payload: string) => {
+  const url = '/v1/users/' + payload + '/approve';
+  return await http.get(url);
+};
+
 export const filterUsersApi = async (query: Record<string, any>) => {
   const url = '/v1/users' + (query ? `?${generateQueryParams(query)}` : '');
   return await http.get(url, {

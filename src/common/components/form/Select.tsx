@@ -13,10 +13,11 @@ const SelectField: FC<any> = ({
   className,
   isDisabled,
   helperComponent,
+  customOption,
   isMulti = false,
 }) => {
   return (
-    <div className={`mb-3 ${className}`}>
+    <div className={`${className}`}>
       {label ? (<label htmlFor={name} className="form-label txt-dark-grey">
         {label}
       </label>) : null}
@@ -32,6 +33,7 @@ const SelectField: FC<any> = ({
         classNamePrefix="form-control"
         placeholder={placeholder}
         isMulti={isMulti}
+        formatOptionLabel={customOption}
         menuPortalTarget={document.body}
         styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
       />

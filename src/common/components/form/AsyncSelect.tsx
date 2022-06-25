@@ -4,7 +4,7 @@ import { FC, useEffect, useState } from 'react';
 import AsyncSelect from 'react-select/async';
 import { filterApi } from 'services/common.service';
 
-const SelectAsync: FC<any> = ({ name, label, placeholder, onChange, value, resource, isDisabled, helperComponent, preload = false, closeOnSelect = true, isMulti = false }) => {
+const SelectAsync: FC<any> = ({ name, label, customOption, placeholder, onChange, value, resource, isDisabled, helperComponent, preload = false, closeOnSelect = true, isMulti = false }) => {
   const [query, setQuery] = useState('');
   const [defaultOptions, setDefaultOptions] = useState([]);
 
@@ -62,6 +62,7 @@ const SelectAsync: FC<any> = ({ name, label, placeholder, onChange, value, resou
         defaultOptions={defaultOptions}
         menuPlacement="auto"
         isDisabled={isDisabled}
+        formatOptionLabel={customOption}
         classNamePrefix={`form-control`}
         placeholder={placeholder}
         isMulti={isMulti}

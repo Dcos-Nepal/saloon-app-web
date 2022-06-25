@@ -1,3 +1,4 @@
+import { DateTime } from "luxon";
 import { getData } from "./storage";
 
 /**
@@ -70,7 +71,7 @@ export const getTodayStr = () => {
  * @param address  Address
  * @returns String
  */
-export const formatAddress = (address: { street1?: string; street2?: string; city?: string; postalCode?: string; country?: string }) => {
+export const formatAddress = (address: { street1?: string; street2?: string; city?: string; state?: string; postalCode?: string; country?: string }) => {
   if (!address) {
     return '';
   }
@@ -80,6 +81,7 @@ export const formatAddress = (address: { street1?: string; street2?: string; cit
   if (address?.street1) addressStack.push(address?.street1);
   if (address?.street2) addressStack.push(address?.street2);
   if (address?.city) addressStack.push(address?.city);
+  if (address?.state) addressStack.push(address?.state);
   if (address?.postalCode) addressStack.push(address?.postalCode);
   if (address?.country) addressStack.push(address?.country);
 
@@ -95,4 +97,18 @@ export const getJobAddress = (job: any) => {
   console.log(job?.property)
   let property = (job?.property) ? job?.property : job?.jobFor?.address;
   return formatAddress(property);
+}
+
+
+/**
+ * Format Time in AM/PM format
+ * @param time 
+ * @returns String
+ */
+export const formatTime = (time: string) => {
+  if (!time) {
+    return 'N/A'
+  }
+
+  return DateTime.fromISO(time).toFormat('h:mm a');
 }

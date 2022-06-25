@@ -17,7 +17,7 @@ import { deleteUserApi } from 'services/users.service';
 import { toast } from 'react-toastify';
 import DeleteConfirm from 'common/components/DeleteConfirm';
 
-interface IClient {
+interface IWorker {
   name: string;
   address: string;
   phoneNumber: string;
@@ -31,7 +31,7 @@ const WorkerList = (props: any) => {
   const [itemsPerPage] = useState(10);
   const [offset, setOffset] = useState(1);
   const [pageCount, setPageCount] = useState(0);
-  const [workers, setWorkers] = useState<IClient[]>([]);
+  const [workers, setWorkers] = useState<IWorker[]>([]);
   const [query, setQuery] = useState('');
   const [deleteInProgress, setDeleteInProgress] = useState('');
 
@@ -76,7 +76,7 @@ const WorkerList = (props: any) => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedChangeHandler = useCallback(debounce(handleWorkerSearch, 300), []);
 
-  const columns: Column<IClient>[] = useMemo(
+  const columns: Column<IWorker>[] = useMemo(
     () => [
       {
         Header: 'WORKER NAME',
@@ -116,7 +116,8 @@ const WorkerList = (props: any) => {
         Header: 'STATUS',
         accessor: (row: any) => (
           <label className="txt-grey ms-2">
-            {row.status ? <CheckCircleIcon className="txt-green" /> : <AlertIcon className="txt-red" />} &nbsp;{' '}
+            {row.auth.email.verified ? <><CheckCircleIcon className="txt-green" /> Email verified!</>: <><AlertIcon className="txt-red" /> Not verified!</>} <br/>
+            {row.userData.isApproved ? <><CheckCircleIcon className="txt-green" /> Worker approved!</>: <><AlertIcon className="txt-red" /> Not Approved!</>} <br/>
             {row.updatedAt ? new Date(row.updatedAt).toLocaleString() : new Date(row.createdAt).toLocaleString()}
           </label>
         )
@@ -179,7 +180,8 @@ const WorkerList = (props: any) => {
             : 'Address not added!',
           phoneNumber: row.phoneNumber,
           email: row.email,
-          status: row.auth.email,
+          auth: row.auth,
+          userData: row.userData,
           updatedAt: row.updatedAt
         }))
       );

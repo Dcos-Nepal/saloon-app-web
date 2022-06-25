@@ -137,9 +137,7 @@ const WorkerDetail: FC<IProps> = ({ actions, currentWorker, isWorkersLoading }) 
                     <div className="">
                       {currentWorker?.userData?.services.length
                         ? currentWorker?.userData?.services.map((service: string) => (
-                            <div key={service}>
-                              <span className="badge rounded-pill bg-secondary p-2">{service}</span>&nbsp;
-                            </div>
+                            <><span key={service} className="badge rounded-pill bg-secondary p-2 mr-3">{service}</span>&nbsp;</>
                           ))
                         : 'No services added yet.'}
                     </div>

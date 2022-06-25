@@ -27,6 +27,32 @@ const ScheduleEventDetail: FC<IProps> = ({ closeModal, markVisitCompleteHandler,
     setIsLoading(false);
   };
 
+  const getVisitWorker = (event: any) => {
+    if (event?.team) {
+      return  event?.team.map((mem: { fullName: string }) => (
+        <div key={mem.fullName}>
+          <span className="status status-blue p-2">
+            <PersonIcon /> {mem.fullName}
+          </span>{' '}
+          &nbsp;
+        </div>
+      ))
+    }
+  
+    return event.job?.team ? (
+      event.job?.team.map((mem: { fullName: string }) => (
+        <div key={mem.fullName}>
+          <span className="status status-blue p-2">
+            <PersonIcon /> {mem.fullName}
+          </span>{' '}
+          &nbsp;
+        </div>
+      ))
+    ) : (
+      <div>No Team Assigned for this visit</div>
+    )
+  }
+
   return (
     <div className={`modal fade show mt-5`} role="dialog" style={{ display: 'block' }}>
       <div className="modal-dialog">
@@ -94,18 +120,7 @@ const ScheduleEventDetail: FC<IProps> = ({ closeModal, markVisitCompleteHandler,
             <div className="row">
               <h5>Team</h5>
               <div>
-                {event.extendedProps?.meta?.job?.team ? (
-                  event.extendedProps?.meta?.job?.team.map((mem: { fullName: string }, index: number) => (
-                    <div key={mem.fullName + index}>
-                      <span className="status status-blue p-2">
-                        <PersonIcon /> {mem.fullName}
-                      </span>{' '}
-                      &nbsp;
-                    </div>
-                  ))
-                ) : (
-                  <div>No Team Assigned for this visit</div>
-                )}
+                {getVisitWorker(event.extendedProps?.meta)}
               </div>
             </div>
 

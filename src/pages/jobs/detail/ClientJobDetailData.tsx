@@ -219,7 +219,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
     enableReinitialize: true,
     initialValues: {
       ..._.cloneDeep(selectedVisit),
-      team: selectedVisit?.team ? selectedVisit?.team.map((t: any) => ({ _id: t._id, value: t._id, label: t.fullName })) : [],
+      team: selectedVisit?.team ? selectedVisit?.team.map((t: any) => ({ _id: t._id, value: t._id, label: t.fullName, meta: t })) : [],
       startDate: DateTime.fromJSDate(selectedVisit?.startDate).toFormat('yyyy-MM-dd'),
       endDate: DateTime.fromJSDate(selectedVisit?.endDate ? new Date(selectedVisit?.endDate) : selectedVisit?.startDate).toFormat('yyyy-MM-dd')
     },
@@ -402,7 +402,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
     (selected: any[]) => {
       visitEditForm.setFieldValue(
         `team`,
-        selected.map((worker) => ({ label: worker.label, value: worker.value }))
+        selected.map((worker) => ({ label: worker.label, value: worker.value, meta: worker.meta }))
       );
     },
     [visitEditForm]
@@ -680,7 +680,6 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
                                 <EyeIcon /> View Detail
                               </span>
                             </li>
-
                             {v.status.status !== 'COMPLETED' && (currUser.role === 'ADMIN' || currUser.role === 'WORKER') ? (
                               <>
                                 <li onClick={() => editVisit(v)}>
@@ -903,6 +902,7 @@ const ClientJobDetailData = ({ id, actions, job, jobVisits, isJobLoading, isVisi
                       </div>
                       <div className="row">
                         <RecommendWorker
+                          editMode={!!selectedVisit?._id}
                           startTime={visitEditForm.values.startTime}
                           endTime={visitEditForm.values.endTime}
                           jobFor={job?.jobFor}

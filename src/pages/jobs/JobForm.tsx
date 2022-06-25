@@ -1,4 +1,4 @@
-import { Fragment, useCallback, useState } from 'react';
+import { Fragment, useState } from 'react';
 import { connect } from 'react-redux';
 import RRule, { Frequency } from 'rrule';
 import { DateTime } from 'luxon';
@@ -6,7 +6,7 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FieldArray, FormikProvider, useFormik, getIn } from 'formik';
 import ReactRRuleGenerator, { translations } from 'common/components/rrule-form';
-import { InfoIcon, PlusCircleIcon, StopIcon, UploadIcon, XCircleIcon } from '@primer/octicons-react';
+import { EyeIcon, InfoIcon, PlusCircleIcon, StopIcon, UploadIcon, XCircleIcon } from '@primer/octicons-react';
 
 import InputField from 'common/components/form/Input';
 import TextArea from 'common/components/form/TextArea';
@@ -44,6 +44,7 @@ const JobForm = ({ isLoading, actions, initialValues }: IProps) => {
   const [clientDetails, setClientDetails] = useState(null);
   const [activeTab, setActiveTab] = useState(initialValues.type ?? 'ONE-OFF');
   const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [toggleOtherInfo, setToggleOtherInfo] = useState(false);
 
   const currentUser = getData('user');
   const isWorker = currentUser?.userData?.type === 'WORKER';
@@ -69,7 +70,9 @@ const JobForm = ({ isLoading, actions, initialValues }: IProps) => {
     initialValues: initialValues,
     validationSchema: JobFormSchema,
     validateOnChange: true,
-    onSubmit: async (job: any) => {
+    onSubmit: async (formData: any) => {
+      const job = {...formData};
+
       // Creating JobFor for API
       if (job.jobFor) {
         job.jobFor = job.jobFor.value;
@@ -143,13 +146,12 @@ const JobForm = ({ isLoading, actions, initialValues }: IProps) => {
   /**
    * Handles Assignees selection
    */
-  const handleWorkerSelection = useCallback((selected: any[]) => {
+  const handleWorkerSelection = (selected: any[]) => {
     formik.setFieldValue(
       `team`,
-      selected.map((worker) => ({_id: worker.meta?._id || worker.value, label: worker.label, value: worker.value}))
+      selected.map((worker) => ({_id: worker.meta?._id || worker.value, label: worker.label, value: worker.value, meta: worker.meta}))
     );
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  };
 
   /**
    * Handles RRule
@@ -523,11 +525,12 @@ const JobForm = ({ isLoading, actions, initialValues }: IProps) => {
                 </div>
               </div>
               <RecommendWorker
+                editMode={!!initialValues._id}
                 startTime={formik.values.oneOff?.startTime}
                 endTime={formik.values.oneOff?.endTime}
                 jobFor={formik.values.jobFor}
                 jobType={formik.values.jobType}
-                property={formik.values.property || formik.values.jobFor?.address}
+                property={formik.values.property ? properties.find(property => property._id === formik.values.property) : (clientDetails as any)?.address}
                 selectedWorkers={formik.values.team}
                 handleWorkerSelection={handleWorkerSelection}
               />
@@ -664,72 +667,81 @@ const JobForm = ({ isLoading, actions, initialValues }: IProps) => {
           </div>
         </div>
 
-        <div className="card mb-3">
-          <h6 className="txt-bold">Other Information</h6>
-          <small className="text-warning">
-            <InfoIcon size={14} /> Add any other notes for this job or any relevant documents.
-          </small>
-          <div className="mb-3">
-            <TextArea
-              rows={8}
-              label={'Notes:'}
-              placeholder="Required notes or description ..."
-              name="note"
-              value={formik.values.notes || ''}
-              onChange={({ target }: { target: { value: string } }) => {
-                if (target.value !== formik.values.notes) formik.setFieldValue('notes', target.value);
-              }}
-              helperComponent={<ErrorMessage name="note" />}
-              onBlur={formik.handleBlur}
-            />
+        {!toggleOtherInfo ? (
+          <div className="card mb-3 pointer" onClick={() => setToggleOtherInfo(!toggleOtherInfo)}>
+            <h6 className="txt-bold"><EyeIcon />&nbsp;Show Other Information</h6>
           </div>
-
-          <div className="mb-3">
-            <label htmlFor="additional-doc" className="form-label">
-              Files/Pictures:
-            </label>
-            <div className="mb-3 ps-1 d-flex flex-row justify-content-start">
-              {formik.values.docs.map((doc: any, index: number) => (
-                <div key={`~${index}`} className="mr-2 p-2" style={{ position: 'relative' }}>
-                  <div className="">
-                    <Image fileSrc={doc.url} className="rounded float-start" style={{ width: '150px', height: '150px' }} />
-                  </div>
-                  <div className="col mt-2"></div>
-                  <div
-                    className="col-2 mt-2 pointer text-center"
-                    style={{
-                      position: 'absolute',
-                      right: '10px',
-                      top: '5px',
-                      left: 'auto',
-                      bottom: 'auto'
-                    }}
-                  >
-                    <span onClick={() => handleFileDelete(doc.key)}>
-                      <XCircleIcon size={20} />
-                    </span>
-                  </div>
-                </div>
-              ))}
-
-              {isUploadingImage ? (
-                <div className="mr-2 p-2" style={{ position: 'relative' }}>
-                  <div className="">
-                    <Image fileSrc={Spinner} className="rounded float-start" style={{ width: '150px', height: '150px' }} />
-                  </div>
-                </div>
-              ) : null}
+        ) : null}
+        
+        {toggleOtherInfo ? (
+          <div className="card mb-3">
+            <h6 className="txt-bold">Other Information</h6>
+            <small className="text-warning">
+              <InfoIcon size={14} /> Add any other notes for this job or any relevant documents.
+            </small>
+            <div className="mb-3">
+              <TextArea
+                rows={8}
+                label={'Notes:'}
+                placeholder="Required notes or description ..."
+                name="note"
+                value={formik.values.notes || ''}
+                onChange={({ target }: { target: { value: string } }) => {
+                  if (target.value !== formik.values.notes) formik.setFieldValue('notes', target.value);
+                }}
+                helperComponent={<ErrorMessage name="note" />}
+                onBlur={formik.handleBlur}
+              />
             </div>
-            <div className="">
-              <input className="form-control hidden" id="file" type="file" value={undefined} onChange={handleFileUpload} />
-              <label htmlFor={'file'} className="txt-orange dashed mt-2">
-                <UploadIcon /> Select documents/pictures related to this Job
+
+            <div className="mb-3">
+              <label htmlFor="additional-doc" className="form-label">
+                Files/Pictures:
               </label>
+              <div className="mb-3 ps-1 d-flex flex-row justify-content-start">
+                {formik.values.docs.map((doc: any, index: number) => (
+                  <div key={`~${index}`} className="mr-2 p-2" style={{ position: 'relative' }}>
+                    <div className="">
+                      <Image fileSrc={doc.url} className="rounded float-start" style={{ width: '150px', height: '150px' }} />
+                    </div>
+                    <div className="col mt-2"></div>
+                    <div
+                      className="col-2 mt-2 pointer text-center"
+                      style={{
+                        position: 'absolute',
+                        right: '10px',
+                        top: '5px',
+                        left: 'auto',
+                        bottom: 'auto'
+                      }}
+                    >
+                      <span onClick={() => handleFileDelete(doc.key)}>
+                        <XCircleIcon size={20} />
+                      </span>
+                    </div>
+                  </div>
+                ))}
+
+                {isUploadingImage ? (
+                  <div className="mr-2 p-2" style={{ position: 'relative' }}>
+                    <div className="">
+                      <Image fileSrc={Spinner} className="rounded float-start" style={{ width: '150px', height: '150px' }} />
+                    </div>
+                  </div>
+                ) : null}
+              </div>
+              <div className="">
+                <input className="form-control hidden" id="file" type="file" value={undefined} onChange={handleFileUpload} />
+                <label htmlFor={'file'} className="txt-orange dashed mt-2">
+                  <UploadIcon /> Select documents/pictures related to this Job
+                </label>
+              </div>
             </div>
           </div>
-        </div>
+        ) : null}
+
         <div className="mb-3 mt-3">
-          <button type="submit" className="btn btn-primary">
+          <button type="submit" className="btn btn-primary" disabled={!formik.isValid}>
             {(initialValues?._id) ? 'Update' : 'Save'} Job
           </button>
           <button onClick={() => navigate(-1)} type="button" className="btn ms-3">

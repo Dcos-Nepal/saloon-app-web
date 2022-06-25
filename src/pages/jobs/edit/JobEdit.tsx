@@ -40,7 +40,7 @@ const EditJob = (props: IProps) => {
         property: job?.property?._id || null,
         type: job?.type,
         jobType: job?.jobType,
-        team: job?.team.map((t: any) => ({ value: t._id, label: t.fullName })),
+        team: job?.team.map((t: any) => ({ value: t._id, label: t.fullName, meta: t })),
         lineItems: job?.lineItems.map((lineItem: any) => ({
           name: {
             label: lineItem.name,

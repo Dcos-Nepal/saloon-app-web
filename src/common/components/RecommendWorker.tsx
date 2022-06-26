@@ -86,7 +86,7 @@ export const RecommendWorker = ({ editMode, startTime, endTime, jobType, jobFor,
 
   const formatOptionLabel = ({ label, meta }: any) => (
     <div>
-      <div><b>{label}</b> {!!meta ? ` || Around ${(meta?.distance || 0)/1000 < 1 ? 'less than 1 ' : ((meta?.distance || 0)/1000).toFixed(2)} km away` : ''}</div>
+      <div><b>{label}</b> {!!meta && meta?.distance > 0 ? ` || Around ${(meta?.distance || 0)/1000 < 1 ? 'less than 1 ' : ((meta?.distance || 0)/1000).toFixed(2)} km away` : ''}</div>
       {!!meta ? (
         <div>
           <div style={{color: "green"}}>{formatAddress({...meta?.address, city: ''})}</div>

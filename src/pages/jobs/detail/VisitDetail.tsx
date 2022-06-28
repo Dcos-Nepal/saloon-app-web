@@ -48,19 +48,6 @@ const VisitDetail: FC<IProps> = ({ closeModal, markVisitCompleteHandler, event }
             <button type="button" className="btn-close" onClick={closeModal} data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div className="modal-body" style={{ maxHeight: '600px', overflowY: 'scroll' }}>
-            {(currUser.role === 'ADMIN' || currUser.role === 'WORKER') && event.status?.status !== 'COMPLETED' && isDateBefore(event.startDate, new Date()) ? (
-              <>
-                <div className="row">
-                  <div>
-                    <button className="btn btn-primary" onClick={(e) => markVisitCompleteHandler(true, event)}>
-                      <ChecklistIcon /> &nbsp; Complete this Visit
-                    </button>
-                  </div>
-                </div>
-                <div className="hr mb-3"></div>
-              </>
-            ) : null}
-
             <div className="row">
               <h5>Details</h5>
               <div>{event.title}</div>
@@ -164,6 +151,11 @@ const VisitDetail: FC<IProps> = ({ closeModal, markVisitCompleteHandler, event }
             </div>
           </div>
           <div className="modal-footer">
+            {(currUser.role === 'ADMIN' || currUser.role === 'WORKER') && event.status?.status !== 'COMPLETED' && isDateBefore(event.startDate, new Date()) ? (
+              <button className="btn btn-primary" onClick={(e) => markVisitCompleteHandler(true, event)}>
+                <ChecklistIcon /> &nbsp; Complete this Visit
+              </button>
+            ) : null}
             <button type="button" className="btn btn-primary" onClick={closeModal}>
               Close
             </button>

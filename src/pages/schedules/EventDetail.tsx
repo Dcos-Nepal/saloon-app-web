@@ -63,31 +63,6 @@ const ScheduleEventDetail: FC<IProps> = ({ closeModal, markVisitCompleteHandler,
           </div>
           <div className="modal-body" style={{ maxHeight: '600px', overflowY: 'scroll' }}>
             <Loader isLoading={isLoading} />
-            {(currUser.role === 'ADMIN' || currUser.role === 'WORKER') && event.extendedProps?.meta?.status?.status !== 'COMPLETED' && isDateBefore(event.start, new Date()) ? (
-              <>
-                <div className="row">
-                  <div>
-                    <button
-                      className="btn btn-primary"
-                      onClick={(e) => {
-                        const visitObj = {
-                          ...event.extendedProps?.meta,
-                          title: event.title,
-                          startDate: event.start,
-                          endDate: event.end ? event.end : event.start
-                        };
-                        event.extendedProps?.meta?.status?.status !== 'COMPLETED' && markVisitComplete(visitObj);
-                      }}
-                    >
-                      {' '}
-                      <ChecklistIcon /> Complete this Visit
-                    </button>
-                  </div>
-                </div>
-                <div className="hr mb-3"></div>
-              </>
-            ) : null}
-
             <div className="row">
               <h5>Details</h5>
               <div>{event.title}</div>
@@ -196,6 +171,23 @@ const ScheduleEventDetail: FC<IProps> = ({ closeModal, markVisitCompleteHandler,
             </div>
           </div>
           <div className="modal-footer">
+            {(currUser.role === 'ADMIN' || currUser.role === 'WORKER') && event.extendedProps?.meta?.status?.status !== 'COMPLETED' && isDateBefore(event.start, new Date()) ? (
+              <button
+                className="btn btn-primary"
+                onClick={(e) => {
+                  const visitObj = {
+                    ...event.extendedProps?.meta,
+                    title: event.title,
+                    startDate: event.start,
+                    endDate: event.end ? event.end : event.start
+                  };
+                  event.extendedProps?.meta?.status?.status !== 'COMPLETED' && markVisitComplete(visitObj);
+                }}
+              >
+                {' '}
+                <ChecklistIcon /> Complete this Visit
+              </button>
+            ) : null}
             <button type="button" className="btn btn-secondary" onClick={() => navigate(`/dashboard/jobs/${event.extendedProps?.meta?.job?._id}`)}>
               View Details
             </button>

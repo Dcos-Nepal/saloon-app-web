@@ -155,7 +155,7 @@ const WorkSchedule = (props: any) => {
 
     setCurrentDateRange(rangeInfo);
 
-    props.fetchJobSchedule({ ...scheduleFor, startDate: rangeInfo.start.toISOString(), endDate: rangeInfo.end.toISOString() });
+    props.fetchJobSchedule({ ...scheduleFor, startDate: rangeInfo.start.toISOString(), endDate: rangeInfo.end.toISOString(), limit: (currUser.role === 'ADMIN' ? 1000 : 300) });
   };
 
   /**

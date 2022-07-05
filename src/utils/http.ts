@@ -64,6 +64,10 @@ http.interceptors.response.use(
 
     if (originalConfig.url !== "/login" && error.response) {
 
+      if (error.response.status === 403) {
+        toast.warn("You don't have access to perform this action. Make sure your account is approved.", {position: 'bottom-center'});
+      }
+
       // Access Token was expired
       if (error.response.status === 401 && !originalConfig._retry) {
         originalConfig._retry = true;

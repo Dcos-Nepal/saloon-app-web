@@ -1,14 +1,22 @@
-import { clearData, getData } from 'utils/storage';
+import { clearData, getData, setData } from 'utils/storage';
 import TopNavbar from '../../common/components/layouts/topNavbar';
 import AdminDashboard from 'common/components/layouts/AdminDashboard';
 import { useNavigate } from 'react-router-dom';
 import { endpoints } from 'common/config';
 import { Loader } from 'common/components/atoms/Loader';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { AlertFillIcon } from '@primer/octicons-react';
+import { meApi } from 'services/auth.service';
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const currentUser = getData('user');
+  const [currentUser, setCurrentUser] = useState(getData('user'));
+
+  const pullCurrentUserData = async () => {
+    const response = await meApi();
+    setData('user', response?.data?.data || null);
+    setCurrentUser(response?.data?.data || null);
+  }
 
   useEffect(() => {
     if (!currentUser || !currentUser?._id) {
@@ -18,11 +26,23 @@ const Dashboard = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUser?._id])
 
+  useEffect(() => {
+    pullCurrentUserData();
+  }, [])
+
   return (
     <>
       {!currentUser ? (<Loader isLoading={!currentUser} />) : (
         <>
           <TopNavbar />
+          {!currentUser?.userData.isApproved ? (
+            <div className="col-12">
+              <div className="alert alert-danger mb-0 text-center" role="alert">
+                <span><AlertFillIcon />&nbsp; <strong>Worker Approval Pending!</strong></span>
+                <div>It seems you have not filled all your details in your profile. Without approval you won't be able to create clients, Quotes or Jobs.</div>
+              </div>
+            </div>
+          ) : null }
           <div className="container-fluid">
             <div className="row flex-nowrap">
               <AdminDashboard />

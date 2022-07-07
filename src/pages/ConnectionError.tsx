@@ -14,7 +14,7 @@ const ConnectionError = () => {
           <div className="main-container card bg-white p-4">
             <div>
               <h4>Internet Connection error.</h4>
-              <label>The page you are looking for dis not loading..</label>
+              <label>Check your internet connection and click the button below to reload.</label>
             </div>
             <div className="d-flex justify-content-center mt-2">
               <button type="button" className="btn btn-primary btn-full" onClick={() => navigate(endpoints.admin.home)}>Reload Now</button>

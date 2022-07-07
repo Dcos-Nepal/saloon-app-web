@@ -35,7 +35,7 @@ const Dashboard = () => {
       {!currentUser ? (<Loader isLoading={!currentUser} />) : (
         <>
           <TopNavbar />
-          {!currentUser?.userData.isApproved ? (
+          {!currentUser?.userData.isApproved && currentUser.roles.includes('WORKER')? (
             <div className="col-12">
               <div className="alert alert-danger mb-0 text-center" role="alert">
                 <span><AlertFillIcon />&nbsp; <strong>Worker Approval Pending!</strong></span>

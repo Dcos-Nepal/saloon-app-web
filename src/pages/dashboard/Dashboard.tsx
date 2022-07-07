@@ -40,6 +40,7 @@ const Dashboard = () => {
               <div className="alert alert-danger mb-0 text-center" role="alert">
                 <span><AlertFillIcon />&nbsp; <strong>Worker Approval Pending!</strong></span>
                 <div>It seems you have not filled all your details in your profile. Without approval you won't be able to create clients, Quotes or Jobs.</div>
+                <div className="mt-2"><button onClick={() => window.location.reload()} className='btn btn-sm btn-primary'>CLick to Reload</button></div>
               </div>
             </div>
           ) : null }

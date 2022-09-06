@@ -14,8 +14,8 @@ import '../styles/index.css';
 export type Config = {
   frequency: 'Yearly' | 'Monthly' | 'Weekly' | 'Daily' | 'Hourly';
   yearly: 'on' | 'on the';
-  monthly: 'Never' | 'After' | 'On date';
-  end: 'Never' | 'After' | 'On date';
+  monthly: 'After' | 'On date';
+  end: 'After' | 'On date';
   hideStart: boolean;
   hideEnd: boolean;
   hideError: boolean;

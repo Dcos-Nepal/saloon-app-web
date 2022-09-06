@@ -41,11 +41,11 @@ const End: React.FC<Props> = ({
           value={mode}
           onChange={handleChange}
         >
-          {isOptionAvailable('Never') && (
+          {/* {isOptionAvailable('Never') && (
             <option value='Never'>
               {translateLabel(translations, 'end.never')}
             </option>
-          )}
+          )} */}
           {isOptionAvailable('After') && (
             <option value='After'>
               {translateLabel(translations, 'end.after')}
@@ -59,7 +59,8 @@ const End: React.FC<Props> = ({
         </select>
       </div>
 
-      {isOptionSelected('After') && (
+      {/* isOptionSelected('After') &&  */}
+      {!isOptionSelected('On date') && (
         <EndAfter
           id={`${id}-after`}
           after={after}

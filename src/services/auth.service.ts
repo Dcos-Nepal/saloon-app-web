@@ -2,7 +2,7 @@ import { http } from "utils/http";
 import { IForgotPassword, IResetPassword, IUserLogin, IUserRegister } from "common/interfaces/auth.interface";
 
 export const meApi = async () => {
-  return await http.get(`/v1/auth/me`, {
+  return await http.get(`/v1/users/me`, {
     headers: { "Accept": "application/json" }
   });
 }

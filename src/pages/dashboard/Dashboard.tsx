@@ -14,8 +14,8 @@ const Dashboard = () => {
 
   const pullCurrentUserData = async () => {
     const response = await meApi();
-    setData('user', response?.data?.data || null);
-    setCurrentUser(response?.data?.data || null);
+    setData('user', response?.data?.data?.data || null);
+    setCurrentUser(response?.data?.data?.data || null);
   }
 
   useEffect(() => {

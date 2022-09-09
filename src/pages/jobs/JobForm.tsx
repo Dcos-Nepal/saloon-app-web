@@ -281,7 +281,7 @@ const JobForm = ({ isLoading, actions, initialValues }: IProps) => {
       handleWorkerSelection([{ label: `${currentUser.firstName} ${currentUser.lastName}`, value: currentUser._id, meta: currentUser }]);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isWorker, handleWorkerSelection]);
+  }, [isWorker]);
 
   useEffect(() => {
     if (initialValues?.jobFor?.meta && initialValues?.jobFor?.value) {

@@ -139,9 +139,11 @@ const ClientsList = (props: any) => {
             <div>
               <div>
                 Phone: <b>{row.contact}</b>
+                {!row.contact ? <label><i>[Phone Number not added]</i></label> : null}
               </div>
               <small>
                 Email: <b>{row.email}</b>
+                {!row.email ? <label><i>[Email not added]</i></label> : null}
               </small>
             </div>
           );
@@ -150,8 +152,8 @@ const ClientsList = (props: any) => {
       {
         Header: 'STATUS',
         accessor: (row: any) => (
-          <label className="txt-grey ms-2">
-            {row.status ? <CheckCircleIcon className="txt-green" /> : <AlertIcon className="txt-red" />} &nbsp;{' '}
+          <label className="txt-grey ms-2" title={row.status ? "Client is verified" : "Client is not verified yet"}>
+            {row.status ? <CheckCircleIcon className="txt-green"/> : <AlertIcon className="txt-red" />} &nbsp;{' '}
             {row.updatedAt ? new Date(row.updatedAt).toLocaleString() : new Date(row.createdAt).toLocaleString()}
           </label>
         )

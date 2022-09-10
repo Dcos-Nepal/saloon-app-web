@@ -319,11 +319,11 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient, quotes, properties, 
                 <div className="row mt-2">
                   <div className="col p-2 ps-4">
                     <div className="txt-grey">Email</div>
-                    <div className="">{currentClient.email}</div>
+                    <div className="">{currentClient.email || '[Email not added]'}</div>
                   </div>
                   <div className="col p-2 ps-4">
                     <div className="txt-grey">Phone</div>
-                    <div className="">{currentClient.phoneNumber}</div>
+                    <div className="">{currentClient.phoneNumber || '[Phone Number not added]'}</div>
                   </div>
                 </div>
                 <div className="row mt-2">

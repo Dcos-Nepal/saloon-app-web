@@ -31,17 +31,29 @@ const SignUp = () => {
     userType: Yup.string().required('Please select a User Type'),
     firstName: Yup.string().min(2, 'Too Short!').max(20, 'Too Long!').required('First Name is required'),
     lastName: Yup.string().min(2, 'Too Short!').max(20, 'Too Long!').required('Last Name is required'),
-    email: Yup.string().required('Email is required').email('Invalid email'),
-    password: Yup.string()
-      .min(8, 'Password must be at least 8 characters')
-      .max(24, 'Password can be maximum 24 characters')
-      .required('Password is required'),
-    phoneNumber: Yup.string().label('Phone Number')
-      .required('Phone Number is required')
-      .matches(
-        /^\+(?:[0-9] ?){6,14}[0-9]$/,
-        "Phone number must be at least 6 numbers to 14 numbers starting with '+'"
-      ),
+    phoneNumber : Yup.string().when('userType', {
+      is: (userType: string)=> userType ==='WORKER', 
+      then: Yup.string()
+        .required('Phone Number is required')
+        .matches(
+          /^\+(?:[0-9] ?){6,14}[0-9]$/,
+          "Phone number must be at least 6 numbers to 14 numbers starting with '+'"
+        ),
+      otherwise: Yup.string().notRequired()
+    }),
+    email: Yup.string().when('userType', {
+      is: (userType: string)=> userType === 'WORKER', 
+      then: Yup.string().required('Email is required').email('Invalid email provided'),
+      otherwise: Yup.string().notRequired()
+    }),
+    password: Yup.string().when('email', {
+      is: (email: string)=> email === '',
+      then: Yup.string()
+        .min(8, 'Password must be at least 8 characters')
+        .max(24, 'Password can be maximum 24 characters')
+        .required('Password is required'),
+      otherwise: Yup.string().notRequired()
+    }),
   });
 
   const formik = useFormik({
@@ -104,12 +116,12 @@ const SignUp = () => {
               <div className="row mt-3 mb-3">
                 <div className="btn-group" role="group" aria-label="Basic radio toggle button group">
                   <input name="userType" onChange={formik.handleChange} type="radio" value="CLIENT" className="btn-check" id="client" autoComplete="off" />
-                  <label className="btn btn-outline-dangerr" htmlFor="client">
+                  <label className="btn btn-outline-danger-c" htmlFor="client">
                     I am a Client
                   </label>
 
                   <input name="userType" onChange={formik.handleChange} type="radio" value="WORKER" className="btn-check" id="worker" autoComplete="off" />
-                  <label className="btn btn-outline-dangerr" htmlFor="worker">
+                  <label className="btn btn-outline-danger-c" htmlFor="worker">
                     I am a Worker
                   </label>
                 </div>
@@ -152,6 +164,9 @@ const SignUp = () => {
                     onBlur={formik.handleBlur}
                   />
                 </div>
+              </div>
+              <div className='row'>
+                <h6>Login Credentials</h6>
               </div>
               <div className="row">
                 <InputField

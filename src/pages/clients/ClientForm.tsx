@@ -58,7 +58,7 @@ const ClientForm: FC<IProps> = ({ id, isClientsLoading, isPropertiesLoading, act
       street2: '',
       city: '',
       state: '',
-      postalCode: undefined,
+      postalCode: '',
       country: DEFAULT_COUNTRY.value
     },
     userData: {
@@ -73,10 +73,10 @@ const ClientForm: FC<IProps> = ({ id, isClientsLoading, isPropertiesLoading, act
   const ClientSchema = Yup.object().shape({
     firstName: Yup.string().required(`First name is required`).min(2, 'Too Short!').max(20, 'Too Long!'),
     lastName: Yup.string().required(`Last name is required`).min(2, 'Too Short!').max(20, 'Too Long!'),
-    email: Yup.string().required(`Email is required`).email('Invalid email'),
+    email: Yup.string().notRequired().email('Invalid email'),
     phoneNumber: Yup.string()
       .label('Phone Number')
-      .required(`Phone number is required`)
+      .notRequired()
       .matches(/^\+(?:[0-9] ?){6,14}[0-9]$/, "Phone number must be at least 6 numbers to 14 numbers starting with '+'"),
     address: Yup.object().shape({
       street1: Yup.string().required(`Street 1 is required`),
@@ -219,7 +219,7 @@ const ClientForm: FC<IProps> = ({ id, isClientsLoading, isPropertiesLoading, act
                     value={formik.values.firstName}
                     placeholder="Enter first name"
                     name="firstName"
-                    helperComponent={formik.errors.firstName && formik.touched.firstName ? <div className="txt-red">{formik.errors.firstName}</div> : null}
+                    helperComponent={formik.errors.firstName && formik.touched.firstName ? <div className="txt-red"><StopIcon size={14} /> {formik.errors.firstName}</div> : null}
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
                   />
@@ -230,7 +230,7 @@ const ClientForm: FC<IProps> = ({ id, isClientsLoading, isPropertiesLoading, act
                     label="Last name"
                     placeholder="Enter last name"
                     name="lastName"
-                    helperComponent={formik.errors.lastName && formik.touched.lastName ? <div className="txt-red">{formik.errors.lastName}</div> : null}
+                    helperComponent={formik.errors.lastName && formik.touched.lastName ? <div className="txt-red"><StopIcon size={14} /> {formik.errors.lastName}</div> : null}
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
                   />
@@ -242,7 +242,7 @@ const ClientForm: FC<IProps> = ({ id, isClientsLoading, isPropertiesLoading, act
                 placeholder="Enter email address"
                 type="email"
                 name="email"
-                helperComponent={formik.errors.email && formik.touched.email ? <div className="txt-red">{formik.errors.email}</div> : null}
+                helperComponent={formik.errors.email && formik.touched.email ? <div className="txt-red"><StopIcon size={14} /> {formik.errors.email}</div> : null}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
               />
@@ -295,7 +295,7 @@ const ClientForm: FC<IProps> = ({ id, isClientsLoading, isPropertiesLoading, act
                       placeholder="Enter phone number"
                       name="phoneNumber"
                       helperComponent={
-                        formik.errors.phoneNumber && formik.touched.phoneNumber ? <div className="txt-red">{formik.errors.phoneNumber}</div> : null
+                        formik.errors.phoneNumber && formik.touched.phoneNumber ? <div className="txt-red"><StopIcon size={14} /> {formik.errors.phoneNumber}</div> : null
                       }
                       value={formik.values.phoneNumber}
                       onChange={formik.handleChange}
@@ -309,7 +309,6 @@ const ClientForm: FC<IProps> = ({ id, isClientsLoading, isPropertiesLoading, act
                   <div className="mb-3">
                     <SearchLocation formikForm={formik} addressPath={'address'} />
                   </div>
-
                   <InputField
                     label="Street 1"
                     placeholder="Enter street 1"
@@ -423,6 +422,8 @@ const ClientForm: FC<IProps> = ({ id, isClientsLoading, isPropertiesLoading, act
               </div>
             </div>
           </div>
+
+          {/* Required Modals for the Client Form */}
           <Modal isOpen={!!addProperty} onRequestClose={() => setAddProperty(false)}>
             <div className={`modal fade show mt-3 mb-3`} role="dialog" style={{ display: 'block' }}>
               <div className="modal-dialog mt-5">

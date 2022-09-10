@@ -427,12 +427,12 @@ tr {
 }
 
 /* Overrides */
-.btn-check:checked+.btn-outline-dangerr {
+.btn-check:checked+.btn-outline-danger-c {
     color: white;
     background-color: #F47321;
 }
 
-.btn-outline-dangerr {
+.btn-outline-danger-c {
     color: #F47321;
     border-color: #F47321;
 }

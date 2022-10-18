@@ -39,7 +39,7 @@ const SideNavbar: FC<IProps> = ({ active }) => {
               <span className="ms-2 d-none d-sm-inline">Overview</span>
             </span>
           </li>
-          <li>
+          {/* <li>
             <span
               onClick={() => navigate('/dashboard/' + endpoints.admin.schedules.calendar)}
               className={active === 'Schedule' ? 'nav-link nav-link-active align-middle px-0' : 'nav-link align-middle px-0'}
@@ -49,11 +49,11 @@ const SideNavbar: FC<IProps> = ({ active }) => {
               </span>
               <span className="ms-2 d-none d-sm-inline">Schedule</span>
             </span>
-          </li>
+          </li> */}
 
           <div className="hr mt-2 mb-2"></div>
 
-          {currUser.role === 'ADMIN' || currUser.role === 'WORKER' ? (
+          {currUser.role === 'SHOP_ADMIN' || currUser.role === 'ADMIN' ? (
             <li>
               <span
                 onClick={() => navigate('/dashboard/' + endpoints.admin.client.list)}
@@ -67,7 +67,7 @@ const SideNavbar: FC<IProps> = ({ active }) => {
             </li>
           ) : null}
 
-          {currUser.role === 'ADMIN' || currUser.role === 'CLIENT' ? (
+          {/* {currUser.role === 'SHOP_ADMIN' || currUser.role === 'CLIENT' ? (
             <li>
               <span
                 onClick={() => navigate('/dashboard/' + endpoints.admin.requests.list)}
@@ -79,9 +79,9 @@ const SideNavbar: FC<IProps> = ({ active }) => {
                 <span className="ms-2 d-none d-sm-inline">Requests</span>
               </span>
             </li>
-          ) :  null}
+          ) :  null} */}
 
-          {currUser.role === 'ADMIN' || currUser.role === 'WORKER' ? (
+          {/* {currUser.role === 'SHOP_ADMIN' || currUser.role === 'WORKER' ? (
             <li>
               <span
                 onClick={() => navigate('/dashboard/' + endpoints.admin.quotes.list)}
@@ -90,12 +90,12 @@ const SideNavbar: FC<IProps> = ({ active }) => {
                 <span className="mt-2">
                   <FileBadgeIcon size={'small'} />
                 </span>
-                <span className="ms-2 d-none d-sm-inline">Quotes</span>
+                <span className="ms-2 d-none d-sm-inline">Appointments</span>
               </span>
             </li>
-          ) : null}
+          ) : null} */}
 
-          {currUser.role === 'ADMIN' || currUser.role === 'WORKER' ? (
+          {/* {currUser.role === 'SHOP_ADMIN' || currUser.role === 'WORKER' ? (
             <li>
               <span
                 onClick={() => navigate('/dashboard/' + endpoints.admin.invoices.list)}
@@ -107,9 +107,9 @@ const SideNavbar: FC<IProps> = ({ active }) => {
                 <span className="ms-2 d-none d-sm-inline">Invoices</span>
               </span>
             </li>
-          ) : null}
+          ) : null} */}
 
-          <li>
+          {/* <li>
             <span
               onClick={() => navigate('/dashboard/' + endpoints.admin.jobs.list)}
               className={active === 'Jobs' ? 'nav-link nav-link-active align-middle px-0' : 'nav-link align-middle px-0'}
@@ -119,9 +119,9 @@ const SideNavbar: FC<IProps> = ({ active }) => {
               </span>
               <span className="ms-2 d-none d-sm-inline">Jobs</span>
             </span>
-          </li>
+          </li> */}
 
-          {currUser.role === 'ADMIN' ? (
+          {/* {currUser.role === 'SHOP_ADMIN' ? (
             <li>
               <span
                 onClick={() => navigate('/dashboard/' + endpoints.admin.worker.list)}
@@ -133,9 +133,9 @@ const SideNavbar: FC<IProps> = ({ active }) => {
                 <span className="ms-2 d-none d-sm-inline">Workers</span>
               </span>
             </li>
-          ) : null}
+          ) : null} */}
 
-          {currUser.role === 'ADMIN' ? (
+          {/* {currUser.role === 'SHOP_ADMIN' ? (
             <>
               <li>
                 <span
@@ -148,7 +148,7 @@ const SideNavbar: FC<IProps> = ({ active }) => {
                   <span className="ms-2 d-none d-sm-inline">Line Items</span>
                 </span>
               </li>
-              {/* <li>
+              <li>
                 <span
                   onClick={() => navigate('/dashboard/' + endpoints.admin.services.list)}
                   className={active === 'Services' ? 'nav-link nav-link-active align-middle px-0' : 'nav-link align-middle px-0'}
@@ -158,11 +158,11 @@ const SideNavbar: FC<IProps> = ({ active }) => {
                   </span>
                   <span className="ms-2 d-none d-sm-inline">Services</span>
                 </span>
-              </li> */}
+              </li>
             </>
-          ) : null}
+          ) : null} */}
 
-          {!(currUser.role === 'ADMIN') ? (
+          {/* {!(currUser.role === 'SHOP_ADMIN') ? (
             <>
               <div className="hr mt-2 mb-2"></div>
               <li>
@@ -177,7 +177,7 @@ const SideNavbar: FC<IProps> = ({ active }) => {
                 </span>
               </li>
             </>
-          ) : null}
+          ) : null} */}
         </ul>
       </div>
     </div>

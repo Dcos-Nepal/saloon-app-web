@@ -11,10 +11,11 @@ const InputField: FC<any> = ({
   onBlur,
   disabled = false,
   helperComponent,
+  isRequired = false
 }) => {
   return (
     <div className="mb-3">
-      {label ? (<label htmlFor={name} className="form-label txt-dark-grey">{label}</label>) : null}
+      {label ? (<label htmlFor={name} className="form-label txt-dark-grey">{label}{isRequired ? (<span className='text-danger'>*</span>) : ''}</label>) : null}
       <input
         type={type}
         id={name}

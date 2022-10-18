@@ -33,12 +33,13 @@ const SearchLocation: FC<any> = ({ label, formikForm, addressPath }) => {
       }
 
       if (component.types.includes('locality')) {
-        street2 = component.long_name;
-      }
-
-      if (component.types.includes('administrative_area_level_2')) {
         city = component.long_name;
       }
+
+      // TODO later
+      // if (component.types.includes('administrative_area_level_2')) {
+      //   city = component.long_name;
+      // }
 
       if (component.types.includes('administrative_area_level_1')) {
         state = component.short_name;
@@ -53,12 +54,14 @@ const SearchLocation: FC<any> = ({ label, formikForm, addressPath }) => {
       }
     });
 
-    formikForm.setFieldValue(`${addressPath ? addressPath + '.' : ''}street1`, street1);
-    formikForm.setFieldValue(`${addressPath ? addressPath + '.' : ''}street2`, street2);
-    formikForm.setFieldValue(`${addressPath ? addressPath + '.' : ''}city`, city);
-    formikForm.setFieldValue(`${addressPath ? addressPath + '.' : ''}state`, state);
-    formikForm.setFieldValue(`${addressPath ? addressPath + '.' : ''}postalCode`, postalCode);
-    formikForm.setFieldValue(`${addressPath ? addressPath + '.' : ''}country`, country);
+    const addr = addressPath ? `${addressPath}.` : '';
+
+    formikForm.setFieldValue(`${addr}street1`, street1);
+    formikForm.setFieldValue(`${addr}street2`, street2);
+    formikForm.setFieldValue(`${addr}city`, city);
+    formikForm.setFieldValue(`${addr}state`, state);
+    formikForm.setFieldValue(`${addr}postalCode`, postalCode);
+    formikForm.setFieldValue(`${addr}country`, country);
   };
 
   useEffect(() => {

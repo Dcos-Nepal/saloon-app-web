@@ -1,32 +1,22 @@
 import * as Yup from 'yup';
 import { useFormik, getIn } from 'formik';
-import React, { Suspense, FC, useEffect, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
-import { IOption } from 'common/types/form';
-import PropertyDetail from './PropertyDetail';
 import { IClient } from 'common/types/client';
-import { InfoIcon, StopIcon } from '@primer/octicons-react';
+import { InfoIcon, StopIcon, UploadIcon, XCircleIcon } from '@primer/octicons-react';
 import InputField from 'common/components/form/Input';
 import { Loader } from 'common/components/atoms/Loader';
-import SelectField from 'common/components/form/Select';
+
 import * as clientsActions from 'store/actions/clients.actions';
 import * as propertiesActions from 'store/actions/properties.actions';
-import { COUNTRIES_OPTIONS, DEFAULT_COUNTRY, PREFERRED_TIME_OPTIONS, STATES_OPTIONS } from 'common/constants';
-import Modal from 'common/components/atoms/Modal';
-import DeleteConfirm from 'common/components/DeleteConfirm';
-import SearchLocation from 'common/components/form/SearchLocation';
-import { deletePropertyApi } from 'services/properties.service';
-import { toast } from 'react-toastify';
-
-const PropertyForm = React.lazy(() => import('./PropertyForm'));
 
 interface IProps {
   actions: {
-    addClient: (data: IClient) => void;
+    addClient: (data: any) => void;
     fetchClient: (id: string) => void;
-    updateClient: (data: IClient) => void;
+    updateClient: (data: any) => void;
     addProperty: (data: any) => void;
     fetchProperties: (filter: any) => void;
     updateProperty: (data: any) => void;
@@ -40,34 +30,16 @@ interface IProps {
   properties: any[];
 }
 
-const ClientForm: FC<IProps> = ({ id, isClientsLoading, isPropertiesLoading, actions, currentClient, properties }) => {
+const ClientForm: FC<IProps> = ({ id, isClientsLoading, actions, currentClient }) => {
   const navigate = useNavigate();
-  const [addProperty, setAddProperty] = useState(false);
-  const [editPropertyFor, setEditPropertyFor] = useState<any>(null);
-  const [deletePropertyFor, setDeletePropertyFor] = useState<any>(null);
 
   const [initialValues, setInitialValues] = useState<IClient>({
     firstName: '',
     lastName: '',
     email: '',
-    roles: ['CLIENT'],
     phoneNumber: '',
-    password: '',
-    address: {
-      street1: '',
-      street2: '',
-      city: '',
-      state: '',
-      postalCode: '',
-      country: DEFAULT_COUNTRY.value
-    },
-    userData: {
-      type: 'CLIENT',
-      company: '',
-      preferredTime: '',
-      isCompanyNamePrimary: false
-    },
-    avatar: ''
+    address: '',
+    photo: undefined
   });
 
   const ClientSchema = Yup.object().shape({
@@ -78,20 +50,8 @@ const ClientForm: FC<IProps> = ({ id, isClientsLoading, isPropertiesLoading, act
       .label('Phone Number')
       .notRequired()
       .matches(/^\+(?:[0-9] ?){6,14}[0-9]$/, "Phone number must be at least 6 numbers to 14 numbers starting with '+'"),
-    address: Yup.object().shape({
-      street1: Yup.string().required(`Street 1 is required`),
-      street2: Yup.string(),
-      city: Yup.string().required(`Suburb is required`),
-      state: Yup.string().required(`State is required`),
-      postalCode: Yup.number().required(`Postal Code is required`),
-      country: Yup.string().required(`Country is required`)
-    }),
-    userData: Yup.object().shape({
-      type: Yup.string(),
-      preferredTime: Yup.string().notRequired(),
-      companyName: Yup.string(),
-      isCompanyNamePrimary: Yup.boolean().notRequired()
-    })
+    address: Yup.string(),
+    photo: Yup.object().nullable()
   });
 
   const formik = useFormik({
@@ -101,14 +61,22 @@ const ClientForm: FC<IProps> = ({ id, isClientsLoading, isPropertiesLoading, act
     onSubmit: (data: any) => {
       // Cleaning up data
       data.email = data.email.trim().toLowerCase();
+
+      // const formData = new FormData();
+
+      // Add additional info to the Form Data
+      // formData.append('firstName', data.firstName);
+      // formData.append('lastName', data.lastName);
+      // formData.append('email', data.email);
+      // formData.append('phoneNumber', data.phoneNumber);
+      // formData.append('address', data.address);
+
+      // !!data.photo && formData.append('photo', data.photo);
       
       if (id) {
         // Update client
         actions.updateClient(data);
       } else {
-        // Set default password as phone number
-        data.password = data.phoneNumber;
-
         // Add new client
         actions.addClient(data);
       }
@@ -117,47 +85,6 @@ const ClientForm: FC<IProps> = ({ id, isClientsLoading, isPropertiesLoading, act
       setTimeout(() => navigate(-1), 800);
     }
   });
-
-  /**
-   * Save Property
-   * @param data
-   */
-  const savePropertyHandler = async (data: any) => {
-    if (currentClient?._id) {
-      await actions.addProperty({ ...data, user: currentClient._id });
-
-      actions.fetchProperties({ user: currentClient._id });
-      setAddProperty(false);
-    }
-  };
-
-  /**
-   * Update Property
-   * @param data
-   */
-  const updatePropertyHandler = async (data: any) => {
-    if (currentClient?._id) {
-      await actions.updateProperty({ ...data, user: currentClient._id });
-
-      setEditPropertyFor(null);
-    }
-  };
-
-  /**
-   * Deletes the selected property from the list.
-   */
-  const deletePropertyHandler = async () => {
-    try {
-      if (!!deletePropertyFor) {
-        await deletePropertyApi(deletePropertyFor);
-        toast.success('Property deleted successfully');
-        actions.deleteProperty(deletePropertyFor);
-        setDeletePropertyFor('');
-      }
-    } catch (ex) {
-      toast.error('Failed to delete property');
-    }
-  };
 
   /**
    * Custom Error Message
@@ -187,9 +114,6 @@ const ClientForm: FC<IProps> = ({ id, isClientsLoading, isPropertiesLoading, act
 
   useEffect(() => {
     if (currentClient && id) {
-      if (!currentClient.userData) {
-        currentClient.userData = { type: 'CLIENT' };
-      }
       setInitialValues(currentClient);
     }
   }, [currentClient, id]);
@@ -211,7 +135,10 @@ const ClientForm: FC<IProps> = ({ id, isClientsLoading, isPropertiesLoading, act
           <div className={`${currentClient && currentClient._id && id ? '' : 'row'} m-1`}>
             <Loader isLoading={isClientsLoading} />
             <div className="col card">
-              <h5>Client Details</h5>
+              <div>
+                <h5>Client Details</h5>
+                <small>Please note all fields with <span className='text-danger'>*</span> are required.</small>
+              </div>
               <div className="row mt-3">
                 <div className="col">
                   <InputField
@@ -222,6 +149,7 @@ const ClientForm: FC<IProps> = ({ id, isClientsLoading, isPropertiesLoading, act
                     helperComponent={formik.errors.firstName && formik.touched.firstName ? <div className="txt-red"><StopIcon size={14} /> {formik.errors.firstName}</div> : null}
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
+                    isRequired={true}
                   />
                 </div>
                 <div className="col">
@@ -233,11 +161,12 @@ const ClientForm: FC<IProps> = ({ id, isClientsLoading, isPropertiesLoading, act
                     helperComponent={formik.errors.lastName && formik.touched.lastName ? <div className="txt-red"><StopIcon size={14} /> {formik.errors.lastName}</div> : null}
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
+                    isRequired={true}
                   />
                 </div>
               </div>
               <InputField
-                label={<span>Email address &nbsp; {id ? <><br/><small><InfoIcon /> Client will receive a verification email with password.</small></> : null}</span>}
+                label={<span>Email address</span>}
                 value={formik.values.email}
                 placeholder="Enter email address"
                 type="email"
@@ -245,41 +174,8 @@ const ClientForm: FC<IProps> = ({ id, isClientsLoading, isPropertiesLoading, act
                 helperComponent={formik.errors.email && formik.touched.email ? <div className="txt-red"><StopIcon size={14} /> {formik.errors.email}</div> : null}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
+                isRequired={false}
               />
-              <InputField
-                label="Company Name"
-                name="userData.company"
-                value={formik.values?.userData?.company || ''}
-                placeholder="Enter company name"
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-              />
-              <div className="mb-3">
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  checked={formik.values?.userData?.isCompanyNamePrimary}
-                  id="flexCheckDefault"
-                  name="userData.isCompanyNamePrimary"
-                  onChange={formik.handleChange}
-                />
-                <label className="ms-2 form-check-label" htmlFor="flexCheckDefault">
-                  Use company name as the primary name
-                </label>
-              </div>
-              <div className="mb-3">
-                <SelectField
-                  label="Preferred Time"
-                  name="userData.preferredTime"
-                  options={PREFERRED_TIME_OPTIONS}
-                  helperComponent={<ErrorMessage name="userData.preferredTime" />}
-                  value={PREFERRED_TIME_OPTIONS.find((option) => option.value === formik.values.userData.preferredTime)}
-                  handleChange={(selectedOption: IOption) => {
-                    formik.setFieldValue('userData.preferredTime', selectedOption.value);
-                  }}
-                  onBlur={formik.handleBlur}
-                />
-              </div>
             </div>
             <div className={`${currentClient && currentClient._id && id ? '' : 'ms-2'} col card`}>
               <div className="mb-3">
@@ -287,12 +183,8 @@ const ClientForm: FC<IProps> = ({ id, isClientsLoading, isPropertiesLoading, act
                 <div className="row">
                   <div className="col">
                     <InputField
-                      label={
-                        <span>
-                          Phone Number: <i>[eg. +61 1234567890]</i> &nbsp; <br/><small className="text-primary">[Client needs to verify this phone number from profile page]</small>
-                        </span>
-                      }
-                      placeholder="Enter phone number"
+                      label={<label>Phone Number:</label>}
+                      placeholder="eg. +977 1234567890"
                       name="phoneNumber"
                       helperComponent={
                         formik.errors.phoneNumber && formik.touched.phoneNumber ? <div className="txt-red"><StopIcon size={14} /> {formik.errors.phoneNumber}</div> : null
@@ -300,88 +192,58 @@ const ClientForm: FC<IProps> = ({ id, isClientsLoading, isPropertiesLoading, act
                       value={formik.values.phoneNumber}
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
+                      isRequired={true}
                     />
                   </div>
                 </div>
 
-                <div className="mb-3">
-                  <label className="txt-bold mt-2 mb-2">Address Section</label>
-                  <div className="mb-3">
-                    <SearchLocation formikForm={formik} addressPath={'address'} />
-                  </div>
-                  <InputField
-                    label="Street 1"
-                    placeholder="Enter street 1"
-                    name="address.street1"
-                    helperComponent={<ErrorMessage name="address.street1" />}
-                    value={formik.values.address?.street1 || ''}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                  />
-                  <InputField
-                    label="Street 2"
-                    placeholder="Enter street 2"
-                    name="address.street2"
-                    helperComponent={<ErrorMessage name="address.street2" />}
-                    value={formik.values.address?.street2 || ''}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                  />
-                  <div className="mb-3 row">
-                    <div className="col">
-                      <InputField
-                        label="Suburb"
-                        placeholder="Enter suburb"
-                        name="address.city"
-                        value={formik.values.address?.city}
-                        helperComponent={<ErrorMessage name="address.city" />}
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                      />
-                    </div>
-                    <div className="col">
-                      <SelectField
-                        label="State"
-                        name="address.state"
-                        options={STATES_OPTIONS}
-                        helperComponent={<ErrorMessage name="address.state" />}
-                        value={STATES_OPTIONS.find((option) => option.value === formik.values.address?.state) || null}
-                        handleChange={(selectedOption: IOption) => {
-                          formik.setFieldValue('address.state', selectedOption.value);
-                        }}
-                        onBlur={formik.handleBlur}
-                      />
-                    </div>
-                    <div className="txt-red"></div>
-                  </div>
-                  <div className="mb-3 row">
-                    <div className="col">
-                      <InputField
-                        type="text"
-                        label="Post code"
-                        placeholder="Enter post code"
-                        name="address.postalCode"
-                        value={formik.values.address?.postalCode || ''}
-                        helperComponent={<ErrorMessage name="address.postalCode" />}
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                      />
-                    </div>
-                    <div className="col">
-                      <SelectField
-                        label="Country"
-                        name="address.country"
-                        options={COUNTRIES_OPTIONS}
-                        helperComponent={<ErrorMessage name="address.country" />}
-                        value={COUNTRIES_OPTIONS.find((option) => option.value === formik.values.address?.country)}
-                        handleChange={(selectedOption: IOption) => {
-                          formik.setFieldValue('address.country', selectedOption.value);
-                        }}
-                        onBlur={formik.handleBlur}
-                      />
-                    </div>
+                <div className='row'>
+                  <div className="col">
+                    {/* <label className="txt-bold mt-2 mb-2">Address Section</label> */}
+                    <InputField
+                      label="Address/Location"
+                      placeholder="Enter your address"
+                      name="address"
+                      helperComponent={<ErrorMessage name="address" />}
+                      value={formik.values.address}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      isRequired={true}
+                    />
                   </div>
                 </div>
+
+                {(!!formik.values?.photo) ? (
+                  <div className="row mb-3 ps-1">
+                    <div className="col-9">
+                      <span className="mt-1 btn btn-secondary btn-sm">{(formik.values?.photo as File).name}</span>
+                    </div>
+                    <div className="col mt-2"></div>
+                    <div className="col-2 mt-2 pointer text-center">
+                      <span onClick={() => { formik.setFieldValue('photo', ''); }}>
+                        <XCircleIcon size={20} />
+                      </span>
+                    </div>
+                  </div>
+                ) : null}
+                {!(!!formik.values?.photo) ? (
+                  <div className="">
+                    <input
+                      className="form-control hidden"
+                      id="file"
+                      type="file"
+                      onChange={(event) => {
+                        debugger
+                        if (event.target.files?.length) {
+                          formik.setFieldValue(`photo`, event.target.files[0]);
+                        }
+                      }}
+                    />
+                    <label htmlFor={'file'} className="txt-orange dashed mt-2">
+                      <UploadIcon /> Select Picture of a customer
+                    </label>
+                  </div>
+                ) : null}
               </div>
             </div>
           </div>
@@ -395,93 +257,6 @@ const ClientForm: FC<IProps> = ({ id, isClientsLoading, isPropertiesLoading, act
           </div>
         </form>
       </div>
-
-      {currentClient && currentClient._id && id ? (
-        <div className="col pt-3">
-          <div className="row">
-            <div className="col card ms-3">
-              <h5>{properties.length ? 'Listed Properties' : 'Properties'}</h5>
-              <Loader isLoading={isPropertiesLoading} />
-              {properties.length
-                ? properties.map((property) => (
-                    <PropertyDetail
-                      key={property?._id}
-                      setEditPropertyFor={setEditPropertyFor}
-                      setDeletePropertyFor={setDeletePropertyFor}
-                      property={property}
-                    />
-                  ))
-                : null}
-              <div
-                onClick={() => {
-                  if (currentClient && currentClient._id) setAddProperty(true);
-                }}
-                className="dashed bold txt-orange pointer mt-2"
-              >
-                + {properties.length ? 'Additional' : 'Add'} property details
-              </div>
-            </div>
-          </div>
-
-          {/* Required Modals for the Client Form */}
-          <Modal isOpen={!!addProperty} onRequestClose={() => setAddProperty(false)}>
-            <div className={`modal fade show mt-3 mb-3`} role="dialog" style={{ display: 'block' }}>
-              <div className="modal-dialog mt-5">
-                <div className="modal-content">
-                  <div className="modal-header row border-bottom">
-                    <h5 className="col">Property details</h5>
-                    <div className="col">
-                      <span onClick={() => setAddProperty(false)} className="pointer d-flex float-end">
-                        <box-icon name="x" />
-                      </span>
-                    </div>
-                  </div>
-                  <div className="p-3">
-                    <Suspense fallback={<Loader isLoading={true} />}>
-                      <PropertyForm
-                        cleanForm={() => setAddProperty(false)}
-                        saveProperty={savePropertyHandler}
-                        updateProperty={updatePropertyHandler}
-                        closeModal={() => setAddProperty(false)}
-                      />
-                    </Suspense>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </Modal>
-          <Modal isOpen={!!editPropertyFor} onRequestClose={() => setEditPropertyFor(null)}>
-            <div className={`modal fade show mt-5`} role="dialog" style={{ display: 'block' }}>
-              <div className="modal-dialog mt-5">
-                <div className="modal-content">
-                  <div className="modal-header row border-bottom">
-                    <h5 className="col">Property details</h5>
-                    <div className="col">
-                      <span onClick={() => setEditPropertyFor(null)} className="pointer d-flex float-end">
-                        <box-icon name="x" />
-                      </span>{' '}
-                    </div>
-                  </div>
-                  <div className="p-3">
-                    <Suspense fallback={<Loader isLoading={true} />}>
-                      <PropertyForm
-                        currentProperty={editPropertyFor}
-                        saveProperty={savePropertyHandler}
-                        updateProperty={updatePropertyHandler}
-                        cleanForm={() => setEditPropertyFor(null)}
-                        closeModal={() => setEditPropertyFor(null)}
-                      />
-                    </Suspense>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </Modal>
-          <Modal isOpen={!!deletePropertyFor} onRequestClose={() => setDeletePropertyFor('')}>
-            <DeleteConfirm onDelete={deletePropertyHandler} closeModal={() => setDeletePropertyFor('')} />
-          </Modal>
-        </div>
-      ) : null}
     </div>
   );
 };
@@ -498,13 +273,13 @@ const mapStateToProps = (state: any) => {
 
 const mapDispatchToProps = (dispatch: any) => ({
   actions: {
-    addClient: (data: IClient) => {
+    addClient: (data: any) => {
       dispatch(clientsActions.addClient(data));
     },
     fetchClient: (id: string) => {
       dispatch(clientsActions.fetchClient(id));
     },
-    updateClient: (data: IClient) => {
+    updateClient: (data: any) => {
       dispatch(clientsActions.updateClient(data));
     },
     addProperty: (data: any) => {

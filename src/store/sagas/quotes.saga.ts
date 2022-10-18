@@ -119,10 +119,11 @@ function* updateQuoteStatus(action: any): any {
             updateQuoteStatusApi,
             action.payload
         );
-        if (quoteRequest?.data?.success) {
+        
+        if (quoteRequest?.success) {
             return yield put({
                 type: actionType.UPDATE_QUOTE_STATUS_SUCCESS,
-                payload: quoteRequest?.data?.data,
+                payload: quoteRequest?.data,
             });
         }
         yield put({

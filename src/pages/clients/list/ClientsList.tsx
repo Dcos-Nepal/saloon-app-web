@@ -11,12 +11,14 @@ import ReactPaginate from 'react-paginate';
 import { Loader } from 'common/components/atoms/Loader';
 import debounce from 'lodash/debounce';
 import EmptyState from 'common/components/EmptyState';
-import { AlertIcon, CheckCircleIcon, EyeIcon, PencilIcon, PersonAddIcon, SyncIcon, TrashIcon } from '@primer/octicons-react';
+import { AlertIcon, CheckCircleIcon, ClockIcon, EyeIcon, PencilIcon, PersonAddIcon, SyncIcon, TrashIcon } from '@primer/octicons-react';
 import Modal from 'common/components/atoms/Modal';
 import { deleteUserApi } from 'services/users.service';
 import { toast } from 'react-toastify';
 import DeleteConfirm from 'common/components/DeleteConfirm';
-import { getCurrentUser } from 'utils';
+import { formatAddress, getCurrentUser } from 'utils';
+import AppointmentAddForm from 'pages/appointments/add';
+import { createQuotesApi } from 'services/quotes.service';
 
 interface IClient {
   name: string;
@@ -35,6 +37,8 @@ const ClientsList = (props: any) => {
   const [pageCount, setPageCount] = useState(0);
   const [clients, setClients] = useState<IClient[]>([]);
   const [deleteInProgress, setDeleteInProgress] = useState('');
+  const [addLineItemOpen, setAddLineItemOpen] = useState<boolean>(false);
+
 
   const deleteClientHandler = async () => {
     try {
@@ -59,12 +63,11 @@ const ClientsList = (props: any) => {
     const currUser = getCurrentUser();
     const clientQuery: { createdBy?: string; } = {};
 
-    if (currUser.role === 'WORKER') clientQuery.createdBy = currUser.id;
+    if (currUser.role === 'SHOP_ADMIN') clientQuery.createdBy = currUser.id;
 
     props.actions.fetchClients({
       q: query,
       ...clientQuery,
-      roles: 'CLIENT',
       page: offset,
       limit: itemsPerPage
     });
@@ -92,11 +95,11 @@ const ClientsList = (props: any) => {
           name: row.userData?.isCompanyNamePrimary ? (row.userData?.company || "-") : `${row?.firstName} ${row?.lastName}`,
           email: row.email,
           address: row?.address
-            ? `${row.address?.street1}, ${row.address?.street2}, ${row.address?.city}, ${row.address?.state}, ${row.address?.postalCode}, ${row.address?.country}`
+            ? formatAddress(row?.address)
             : 'Address not added!',
           contact: row.phoneNumber,
           status: row.auth?.email?.verified,
-          updatedAt: row.updatedAt,
+          createdAt: row.createdAt,
           _id: row._id
         }))
       );
@@ -150,11 +153,10 @@ const ClientsList = (props: any) => {
         }
       },
       {
-        Header: 'STATUS',
+        Header: 'Created At',
         accessor: (row: any) => (
-          <label className="txt-grey ms-2" title={row.status ? "Client is verified" : "Client is not verified yet"}>
-            {row.status ? <CheckCircleIcon className="txt-green"/> : <AlertIcon className="txt-red" />} &nbsp;{' '}
-            {row.updatedAt ? new Date(row.updatedAt).toLocaleString() : new Date(row.createdAt).toLocaleString()}
+          <label className="txt-grey ms-2">
+            {new Date(row.createdAt).toLocaleString()}
           </label>
         )
       },
@@ -182,6 +184,9 @@ const ClientsList = (props: any) => {
                   <TrashIcon /> Delete
                 </span>
               </li>
+              <li onClick={() => {setAddLineItemOpen(row)}}>
+                <span className="dropdown-item pointer"><ClockIcon /> Schedule</span>
+              </li>
             </ul>
           </div>
         )
@@ -192,6 +197,20 @@ const ClientsList = (props: any) => {
   );
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({ columns, data: clients });
+
+  /**
+   * Handles Appointment Save
+   * @param data 
+   */
+  const scheduleHandler = async (data: any) => {
+    try {
+      await createQuotesApi(data);
+      toast.success('Appointment added successfully');
+      setAddLineItemOpen(false);
+    } catch (ex) {
+      toast.error('Failed to add appointment');
+    }
+  };
 
   return (
     <>
@@ -273,8 +292,12 @@ const ClientsList = (props: any) => {
         ) : null}
       </div>
 
+      {/* Modals */}
       <Modal isOpen={!!deleteInProgress} onRequestClose={() => setDeleteInProgress('')}>
         <DeleteConfirm onDelete={deleteClientHandler} closeModal={() => setDeleteInProgress('')} />
+      </Modal>
+      <Modal isOpen={!!addLineItemOpen} onRequestClose={() => setAddLineItemOpen(false)}>
+        <AppointmentAddForm client={addLineItemOpen} closeModal={() => setAddLineItemOpen(false)} saveHandler={scheduleHandler} />
       </Modal>
     </>
   );

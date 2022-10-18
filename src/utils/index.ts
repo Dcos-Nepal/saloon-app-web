@@ -77,7 +77,7 @@ export const formatAddress = (address: { street1?: string; street2?: string; cit
   }
 
   const addressStack = [];
-
+  debugger
   if (address?.street1) addressStack.push(address?.street1);
   if (address?.street2) addressStack.push(address?.street2);
   if (address?.city) addressStack.push(address?.city);

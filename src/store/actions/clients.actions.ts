@@ -1,4 +1,3 @@
-import { IClient } from "common/types/client";
 import {
   ADD_CLIENT,
   FETCH_CLIENT,
@@ -13,7 +12,7 @@ export const fetchClients = (data: any) => {
   };
 };
 
-export const addClient = (data: IClient) => {
+export const addClient = (data: any) => {
   return {
     type: ADD_CLIENT,
     payload: data,
@@ -27,7 +26,7 @@ export const fetchClient = (id: string) => {
   };
 };
 
-export const updateClient = (data: IClient) => {
+export const updateClient = (data: any) => {
   return {
     type: UPDATE_CLIENT,
     payload: data,

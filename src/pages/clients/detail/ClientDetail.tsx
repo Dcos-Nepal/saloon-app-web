@@ -60,7 +60,7 @@ interface IProps {
     fetchClient: (id: string) => void;
     fetchInvoices: (filter: any) => void;
     fetchJobRequests: (query: any) => any;
-    updateClient: (data: IClient) => void;
+    updateClient: (data: FormData) => void;
     fetchProperties: (filter: any) => void;
   };
   id?: string;
@@ -297,24 +297,14 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient, quotes, properties, 
                   </div>
                 </div>
                 <div className="row mt-2">
-                  {currentClient.userData?.isCompanyNamePrimary ? (
-                    <div className="col p-2 ps-4">
-                      <div className="txt-grey">Company Name</div>
-                      <div className="">{currentClient.userData?.company || "-"}</div>
-                    </div>
-                  ) : (
-                    <>
-                      <div className="col p-2 ps-4">
-                        <div className="txt-grey">First Name</div>
-                        <div className="">{currentClient.firstName}</div>
-                      </div>
-                      <div className="col p-2 ps-4">
-                        <div className="txt-grey">Last Name</div>
-                        <div className="">{currentClient.lastName}</div>
-                      </div>
-                    </>
-                  )}
-                  
+                  <div className="col p-2 ps-4">
+                    <div className="txt-grey">First Name</div>
+                    <div className="">{currentClient.firstName}</div>
+                  </div>
+                  <div className="col p-2 ps-4">
+                    <div className="txt-grey">Last Name</div>
+                    <div className="">{currentClient.lastName}</div>
+                  </div>
                 </div>
                 <div className="row mt-2">
                   <div className="col p-2 ps-4">
@@ -330,7 +320,7 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient, quotes, properties, 
                   <div className="col p-2 ps-4">
                     <div className="txt-grey">Client's Address</div>
                     <div className="">
-                      {currentClient?.address ? formatAddress(currentClient?.address) : null}
+                      {currentClient?.address}
                       </div>
                   </div>
                 </div>
@@ -452,7 +442,7 @@ const mapDispatchToProps = (dispatch: any) => ({
     fetchInvoices: (payload: any) => {
       dispatch(invoicesActions.fetchInvoices(payload));
     },
-    updateClient: (data: IClient) => {
+    updateClient: (data: FormData) => {
       dispatch(clientsActions.updateClient(data));
     }
   }

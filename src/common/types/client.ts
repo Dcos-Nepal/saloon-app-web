@@ -5,22 +5,6 @@ export interface IClient {
   fullName?: string;
   email: string;
   phoneNumber: string;
-  address?: {
-    street1?: string;
-    street2?: string;
-    city?: string;
-    state?: string;
-    postalCode?: string;
-    country?: string;
-  };
-  userData: {
-    type: string;
-    company?: string;
-    referredBy?: string;
-    preferredTime?: string;
-    isCompanyNamePrimary?: boolean;
-  },
-  roles: string[];
-  password?: string;
-  avatar?: string;
+  address?: string;
+  photo?: object | string;
 }

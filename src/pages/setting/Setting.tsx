@@ -1,5 +1,5 @@
 import * as Yup from 'yup';
-import { Suspense, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { getIn, useFormik } from 'formik';
 import { connect } from 'react-redux';
 import { toast } from 'react-toastify';
@@ -17,15 +17,10 @@ import SelectField from 'common/components/form/Select';
 import { COUNTRIES_OPTIONS, DAYS_OF_WEEK, STATES_OPTIONS } from 'common/constants';
 import { IOption } from 'common/types/form';
 import { updateUserApi } from 'services/users.service';
-import PropertyForm from 'pages/clients/PropertyForm';
-import Modal from 'common/components/atoms/Modal';
-import PropertyDetail from 'pages/clients/PropertyDetail';
 import * as propertiesActions from 'store/actions/properties.actions';
 import { deletePublicFile, uploadPublicFile } from 'services/files.service';
 import { getServices } from 'data';
 import SearchLocation from 'common/components/form/SearchLocation';
-import DeleteConfirm from 'common/components/DeleteConfirm';
-import { deletePropertyApi } from 'services/properties.service';
 
 const Setting = ({
   actions,
@@ -43,9 +38,6 @@ const Setting = ({
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isPCLoading, setIsPCLoading] = useState<boolean>(false);
-  const [addProperty, setAddProperty] = useState(false);
-  const [editPropertyFor, setEditPropertyFor] = useState<any>(null);
-  const [deletePropertyFor, setDeletePropertyFor] = useState<any>(null);
 
   const [isUploading, setIsUploading] = useState({
     idCard: false,
@@ -80,32 +72,6 @@ const Setting = ({
   };
 
   const profileInitialValues = currentUser;
-
-  /**
-   * Save Property
-   * @param data
-   */
-  const savePropertyHandler = async (data: any) => {
-    if (currentUser?._id) {
-      await actions.addProperty({ ...data, user: currentUser._id });
-
-      actions.fetchProperties({ user: currentUser._id });
-      setAddProperty(false);
-    }
-  };
-
-  /**
-   * Update Property
-   * @param data
-   */
-  const updatePropertyHandler = async (data: any) => {
-    if (currentUser?._id) {
-      await actions.updateProperty({ ...data, user: currentUser._id });
-
-      actions.fetchProperties({ user: currentUser._id });
-      setEditPropertyFor(null);
-    }
-  };
 
   /**
    * Handle File Upload
@@ -157,22 +123,6 @@ const Setting = ({
       }
     }
     setDocument({ ...getDocument, [docKey]: null });
-  };
-
-  /**
-   * Deletes the selected property from the list.
-   */
-  const deletePropertyHandler = async () => {
-    try {
-      if (!!deletePropertyFor) {
-        await deletePropertyApi(deletePropertyFor);
-        toast.success('Property deleted successfully');
-        actions.deleteProperty(deletePropertyFor);
-        setDeletePropertyFor('');
-      }
-    } catch (ex) {
-      toast.error('Failed to delete property');
-    }
   };
 
   /**
@@ -537,84 +487,6 @@ const Setting = ({
                       </div>
                     </div>
                   </div>
-
-                  {currentUser?.userData?.type === 'CLIENT' ? (
-                    <div className="col">
-                      <div className="row">
-                        <div className="col">
-                          <h5>{properties.length ? 'Listed Properties' : 'Properties'}</h5>
-                          {properties.length
-                            ? properties.map((property) => <PropertyDetail key={property._id} setEditPropertyFor={setEditPropertyFor} setDeletePropertyFor={setDeletePropertyFor} property={property} />)
-                            : null}
-
-                          <div
-                            onClick={() => {
-                              if (currentUser && currentUser._id) setAddProperty(true);
-                            }}
-                            className="dashed bold txt-orange pointer mt-2"
-                          >
-                            + {properties.length ? 'Additional' : 'Add'} property details
-                          </div>
-                        </div>
-                      </div>
-                      <Modal isOpen={!!addProperty} onRequestClose={() => setAddProperty(false)}>
-                        <div className={`modal fade show mt-5`} role="dialog" style={{ display: 'block' }}>
-                          <div className="modal-dialog mt-5">
-                            <div className="modal-content">
-                              <div className="modal-header row border-bottom">
-                                <h5 className="col">Property details</h5>
-                                <div className="col">
-                                  <span onClick={() => setAddProperty(false)} className="pointer d-flex float-end">
-                                    <box-icon name="x" />
-                                  </span>
-                                </div>
-                              </div>
-                              <div className="p-3">
-                                <Suspense fallback={<Loader isLoading={true} />}>
-                                  <PropertyForm
-                                    cleanForm={() => setAddProperty(false)}
-                                    saveProperty={savePropertyHandler}
-                                    updateProperty={updatePropertyHandler}
-                                    closeModal={() => setAddProperty(false)}
-                                  />
-                                </Suspense>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </Modal>
-                      <Modal isOpen={!!editPropertyFor} onRequestClose={() => setEditPropertyFor(null)}>
-                        <div className={`modal fade show mt-5`} role="dialog" style={{ display: 'block' }}>
-                          <div className="modal-dialog mt-5">
-                            <div className="modal-content">
-                              <div className="modal-header row border-bottom">
-                                <h5 className="col">Property details</h5>
-                                <div className="col">
-                                  <span onClick={() => setEditPropertyFor(null)} className="pointer d-flex float-end">
-                                    <box-icon name="x" />
-                                  </span>{' '}
-                                </div>
-                              </div>
-                              <div className="p-3">
-                                <Suspense fallback={<Loader isLoading={true} />}>
-                                  <PropertyForm
-                                    currentProperty={editPropertyFor}
-                                    saveProperty={savePropertyHandler}
-                                    updateProperty={updatePropertyHandler}
-                                    cleanForm={() => setEditPropertyFor(null)}
-                                    closeModal={() => setEditPropertyFor(null)}
-                                  />
-                                </Suspense>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </Modal>
-                      <Modal isOpen={!!deletePropertyFor} onRequestClose={() => setDeletePropertyFor('')}>
-                        <DeleteConfirm onDelete={deletePropertyHandler} closeModal={() => setDeletePropertyFor('')} />
-                      </Modal>
-                    </div>
-                  ) : null}
 
                   {currentUser?.userData?.type === 'WORKER' ? (
                     <>

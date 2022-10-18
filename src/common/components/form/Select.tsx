@@ -15,12 +15,11 @@ const SelectField: FC<any> = ({
   helperComponent,
   customOption,
   isMulti = false,
+  isRequired = false
 }) => {
   return (
     <div className={`${className}`}>
-      {label ? (<label htmlFor={name} className="form-label txt-dark-grey">
-        {label}
-      </label>) : null}
+      {label ? (<label htmlFor={name} className="form-label txt-dark-grey">{label}{isRequired ? (<span className='text-danger'>*</span>) : ''}</label>) : null}
       <Select
         id={name}
         value={value}

@@ -2,29 +2,13 @@ import { createStore, applyMiddleware, compose } from 'redux';
 
 import rootReducer from './reducers/index';
 import createSagaMiddleware from 'redux-saga';
-import { addJobRequestSaga, fetchJobRequestSaga, fetchJobRequestsSaga, updateJobRequestSaga } from './sagas/job-reqs.saga';
 import { addQuoteSaga, fetchQuoteSaga, fetchQuotesSaga, updateQuoteSaga, updateQuoteStatusSaga } from './sagas/quotes.saga';
 import {
   addClientSaga,
-  addWorkerSaga,
-  addPropertySaga,
-  fetchWorkerSaga,
   fetchClientSaga,
-  updateWorkerSaga,
-  updateClientSaga,
-  fetchClientsSaga,
-  fetchWorkersSaga,
-  fetchPropertySaga,
-  updatePropertySaga,
-  fetchPropertiesSaga,
-  verifyUserEmailSaga,
-  fetchServicesSaga
+  fetchClientsSaga
 } from './sagas';
-import { addJobSaga, fetchJobsSaga, fetchJobSaga, updateJobSaga } from './sagas/jobs.saga';
-import { addLineItemSaga, fetchLineItemsSaga, fetchLineItemSaga, updateLineItemSaga } from './sagas/lineItems.saga';
-import { addInvoiceSaga, fetchInvoiceSaga, fetchInvoicesSaga, updateInvoiceSaga } from './sagas/invoices.saga';
-import { fetchSchedulesSaga } from './sagas/schedules.saga';
-import { fetchVisitsSaga } from './sagas/visits.saga';
+import { fetchLineItemsSaga, fetchLineItemSaga, updateLineItemSaga } from './sagas/lineItems.saga';
 
 declare global {
   interface Window {
@@ -46,40 +30,14 @@ const middleware =
 export const store = createStore(rootReducer, middleware);
 
 // Run defined Sagas here
-sagaMiddleware.run(addWorkerSaga);
-sagaMiddleware.run(updateWorkerSaga);
-sagaMiddleware.run(fetchWorkerSaga);
-sagaMiddleware.run(verifyUserEmailSaga);
-sagaMiddleware.run(addJobRequestSaga);
-sagaMiddleware.run(fetchJobRequestSaga);
-sagaMiddleware.run(updateJobRequestSaga);
-sagaMiddleware.run(fetchJobRequestsSaga);
-sagaMiddleware.run(addPropertySaga);
-sagaMiddleware.run(fetchPropertySaga);
-sagaMiddleware.run(updatePropertySaga);
-sagaMiddleware.run(fetchPropertiesSaga);
-sagaMiddleware.run(addLineItemSaga);
-sagaMiddleware.run(fetchServicesSaga);
 sagaMiddleware.run(fetchLineItemsSaga);
 sagaMiddleware.run(fetchLineItemSaga);
 sagaMiddleware.run(updateLineItemSaga);
 sagaMiddleware.run(addClientSaga);
 sagaMiddleware.run(fetchClientsSaga);
-sagaMiddleware.run(updateClientSaga);
 sagaMiddleware.run(fetchClientSaga);
-sagaMiddleware.run(fetchWorkersSaga);
 sagaMiddleware.run(fetchQuotesSaga);
 sagaMiddleware.run(addQuoteSaga);
 sagaMiddleware.run(fetchQuoteSaga);
 sagaMiddleware.run(updateQuoteSaga);
 sagaMiddleware.run(updateQuoteStatusSaga);
-sagaMiddleware.run(addJobSaga);
-sagaMiddleware.run(fetchJobsSaga);
-sagaMiddleware.run(updateJobSaga);
-sagaMiddleware.run(fetchJobSaga);
-sagaMiddleware.run(fetchInvoicesSaga);
-sagaMiddleware.run(addInvoiceSaga);
-sagaMiddleware.run(fetchInvoiceSaga);
-sagaMiddleware.run(updateInvoiceSaga);
-sagaMiddleware.run(fetchSchedulesSaga);
-sagaMiddleware.run(fetchVisitsSaga);

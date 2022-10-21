@@ -9,7 +9,7 @@ const PageNotFound = () => {
       <div className="vh-100 d-flex justify-content-center align-items-center">
         <div className="mt-5">
           <div className="d-flex justify-content-center mb-4">
-            <img src={LogoFull} alt="Orange Cleaning" style={{height: '145px'}} />
+            <img src={LogoFull} alt="Cilnic App" style={{height: '145px'}} />
           </div>
           <div className="main-container card bg-white p-4">
             <div>
@@ -21,7 +21,7 @@ const PageNotFound = () => {
             </div>
           </div>
           <div className='mb-5 mt-5 text-center pb-5'>
-            Copyright &copy; {new Date().getFullYear()} <b>Orange Cleaning</b>, All Rights Reserved.
+            Copyright &copy; {new Date().getFullYear()} <b>Cilnic App</b>, All Rights Reserved.
           </div>
         </div>
       </div>

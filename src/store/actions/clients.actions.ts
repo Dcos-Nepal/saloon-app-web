@@ -26,9 +26,9 @@ export const fetchClient = (id: string) => {
   };
 };
 
-export const updateClient = (data: any) => {
+export const updateClient = (id: string, data: any) => {
   return {
     type: UPDATE_CLIENT,
-    payload: data,
+    payload: {id, data },
   };
 };

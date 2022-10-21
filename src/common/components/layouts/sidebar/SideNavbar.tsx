@@ -11,10 +11,11 @@ import {
   BriefcaseIcon,
   FileBadgeIcon,
   PersonFillIcon,
-  AccessibilityIcon
+  LockIcon
 } from '@primer/octicons-react';
 import { useNavigate } from 'react-router-dom';
 import { getCurrentUser } from 'utils';
+import { clearData } from 'utils/storage';
 
 interface IProps {
   active: string;
@@ -23,6 +24,14 @@ interface IProps {
 const SideNavbar: FC<IProps> = ({ active }) => {
   const navigate = useNavigate();
   const currUser: { role: string; id: string } = getCurrentUser();
+
+  /**
+   * Logs out user
+   */
+  const logout = async () => {
+    await clearData();
+    navigate(endpoints.auth.signIn);
+  };
 
   return (
     <div className="sidebar col-auto col-md-3 col-xl-2 px-sm-2 px-0">
@@ -39,17 +48,6 @@ const SideNavbar: FC<IProps> = ({ active }) => {
               <span className="ms-2 d-none d-sm-inline">Overview</span>
             </span>
           </li>
-          {/* <li>
-            <span
-              onClick={() => navigate('/dashboard/' + endpoints.admin.schedules.calendar)}
-              className={active === 'Schedule' ? 'nav-link nav-link-active align-middle px-0' : 'nav-link align-middle px-0'}
-            >
-              <span className="mt-1">
-                <CalendarIcon size={'small'} />
-              </span>
-              <span className="ms-2 d-none d-sm-inline">Schedule</span>
-            </span>
-          </li> */}
 
           <div className="hr mt-2 mb-2"></div>
 
@@ -67,21 +65,19 @@ const SideNavbar: FC<IProps> = ({ active }) => {
             </li>
           ) : null}
 
-          {/* {currUser.role === 'SHOP_ADMIN' || currUser.role === 'CLIENT' ? (
-            <li>
-              <span
-                onClick={() => navigate('/dashboard/' + endpoints.admin.requests.list)}
-                className={active === 'Requests' ? 'nav-link nav-link-active align-middle px-0' : 'nav-link align-middle px-0'}
-              >
-                <span className="mt-2">
-                  <InboxIcon size={'small'} />
-                </span>
-                <span className="ms-2 d-none d-sm-inline">Requests</span>
+          <li className="nav-item">
+            <span
+              onClick={() => navigate('/dashboard')}
+              className={active === 'Overview' ? 'nav-link nav-link-active align-middle px-0' : 'nav-link align-middle px-0'}
+            >
+              <span className="mt-1">
+                <HomeIcon size={'small'} />
               </span>
-            </li>
-          ) :  null} */}
+              <span className="ms-2 d-none d-sm-inline">Appointments</span>
+            </span>
+          </li>
 
-          {/* {currUser.role === 'SHOP_ADMIN' || currUser.role === 'WORKER' ? (
+          {currUser.role === 'SHOP_ADMIN' || currUser.role === 'ADMIN' ? (
             <li>
               <span
                 onClick={() => navigate('/dashboard/' + endpoints.admin.quotes.list)}
@@ -90,94 +86,20 @@ const SideNavbar: FC<IProps> = ({ active }) => {
                 <span className="mt-2">
                   <FileBadgeIcon size={'small'} />
                 </span>
-                <span className="ms-2 d-none d-sm-inline">Appointments</span>
+                <span className="ms-2 d-none d-sm-inline">Visits</span>
               </span>
             </li>
-          ) : null} */}
+          ) : null}
 
-          {/* {currUser.role === 'SHOP_ADMIN' || currUser.role === 'WORKER' ? (
-            <li>
-              <span
-                onClick={() => navigate('/dashboard/' + endpoints.admin.invoices.list)}
-                className={active === 'Invoices' ? 'nav-link nav-link-active align-middle px-0' : 'nav-link align-middle px-0'}
-              >
-                <span className="pt-2">
-                  <box-icon color={active === 'Invoices' ? '#f47321' : '#161C21'} size="15px" name="dollar-circle" />
-                </span>
-                <span className="ms-2 d-none d-sm-inline">Invoices</span>
-              </span>
-            </li>
-          ) : null} */}
-
-          {/* <li>
-            <span
-              onClick={() => navigate('/dashboard/' + endpoints.admin.jobs.list)}
-              className={active === 'Jobs' ? 'nav-link nav-link-active align-middle px-0' : 'nav-link align-middle px-0'}
-            >
+          <div className="hr mt-2 mb-2"></div>
+          <li>
+            <span onClick={() => logout()} className={'nav-link align-middle px-0'}>
               <span className="mt-2">
-                <BriefcaseIcon size={'small'} />
+                <LockIcon size={'small'} />
               </span>
-              <span className="ms-2 d-none d-sm-inline">Jobs</span>
+              <span className="ms-2 d-none d-sm-inline">Logout</span>
             </span>
-          </li> */}
-
-          {/* {currUser.role === 'SHOP_ADMIN' ? (
-            <li>
-              <span
-                onClick={() => navigate('/dashboard/' + endpoints.admin.worker.list)}
-                className={active === 'Workers' ? 'nav-link nav-link-active align-middle px-0' : 'nav-link align-middle px-0'}
-              >
-                <span className="mt-2">
-                  <AccessibilityIcon size={'small'} />
-                </span>
-                <span className="ms-2 d-none d-sm-inline">Workers</span>
-              </span>
-            </li>
-          ) : null} */}
-
-          {/* {currUser.role === 'SHOP_ADMIN' ? (
-            <>
-              <li>
-                <span
-                  onClick={() => navigate('/dashboard/' + endpoints.admin.lineItems.list)}
-                  className={active === 'LineItems' ? 'nav-link nav-link-active align-middle px-0' : 'nav-link align-middle px-0'}
-                >
-                  <span className="mt-2">
-                    <LogIcon size={'small'} />
-                  </span>
-                  <span className="ms-2 d-none d-sm-inline">Line Items</span>
-                </span>
-              </li>
-              <li>
-                <span
-                  onClick={() => navigate('/dashboard/' + endpoints.admin.services.list)}
-                  className={active === 'Services' ? 'nav-link nav-link-active align-middle px-0' : 'nav-link align-middle px-0'}
-                >
-                  <span className="mt-2">
-                    <GearIcon size={'small'} />
-                  </span>
-                  <span className="ms-2 d-none d-sm-inline">Services</span>
-                </span>
-              </li>
-            </>
-          ) : null} */}
-
-          {/* {!(currUser.role === 'SHOP_ADMIN') ? (
-            <>
-              <div className="hr mt-2 mb-2"></div>
-              <li>
-                <span
-                  onClick={() => navigate('/dashboard/' + endpoints.admin.referral.program)}
-                  className={active === 'Referral' ? 'nav-link nav-link-active align-middle px-0' : 'nav-link align-middle px-0'}
-                >
-                  <span className="mt-2">
-                    <PeopleIcon size={'small'} />
-                  </span>
-                  <span className="ms-2 d-none d-sm-inline">Refer a Friend</span>
-                </span>
-              </li>
-            </>
-          ) : null} */}
+          </li>
         </ul>
       </div>
     </div>

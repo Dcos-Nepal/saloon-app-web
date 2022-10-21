@@ -6,5 +6,8 @@ export interface IClient {
   email: string;
   phoneNumber: string;
   address?: string;
+  gender?: string;
+  dateOfBirth?: string;
   photo?: object | string;
+  referredBy?: string;
 }

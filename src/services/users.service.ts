@@ -24,8 +24,8 @@ export const fetchUserApi = async (id: string) => {
 };
 
 export const updateUserApi = async (payload: any) => {
-  const url = '/v1/customers/' + payload._id;
-  return await http.put(url, payload);
+  const url = '/v1/customers/' + payload.id;
+  return await http.patch(url, payload.data);
 };
 
 export const approveWorkerApi = async (payload: string) => {

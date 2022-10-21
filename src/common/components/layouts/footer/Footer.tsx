@@ -2,7 +2,7 @@ const Footer = () => {
   return (
     <div className="footer rounded-radius mt-3">
       <div className="row">
-        <div className="col copy-right">Copyright &copy; {new Date().getFullYear()} <b>Orange Cleaning</b>, All Rights Reserved.</div>
+        <div className="col copy-right">Copyright &copy; {new Date().getFullYear()} <b>Cilnic App</b>, All Rights Reserved.</div>
         <div className="col mr-auto">
           <ul className="mr-auto float-end social">
             <li className="pointer">

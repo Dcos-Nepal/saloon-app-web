@@ -3,7 +3,7 @@ import pinterpolate from 'pinterpolate';
 import { FC, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { getCurrentUser, formatAddress } from 'utils';
+import { getCurrentUser } from 'utils';
 import { IClient } from 'common/types/client';
 import { Loader } from 'common/components/atoms/Loader';
 import * as jobsActions from 'store/actions/job.actions';
@@ -13,6 +13,7 @@ import * as invoicesActions from 'store/actions/invoices.actions';
 import * as jobReqActions from 'store/actions/job-requests.actions';
 import * as propertiesActions from 'store/actions/properties.actions';
 import { PencilIcon } from '@primer/octicons-react';
+import { DateTime } from 'luxon';
 
 interface IRequest {
   id: string;
@@ -60,7 +61,6 @@ interface IProps {
     fetchClient: (id: string) => void;
     fetchInvoices: (filter: any) => void;
     fetchJobRequests: (query: any) => any;
-    updateClient: (data: FormData) => void;
     fetchProperties: (filter: any) => void;
   };
   id?: string;
@@ -282,7 +282,7 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient, quotes, properties, 
         {currentClient ? (
           <div>
             <div className="d-flex flex-row mt-2">
-              <h3 className="txt-bold extra">{currentClient?.fullName || `${currentClient?.firstName} ${currentClient?.lastName}`}</h3>
+              <h3 className="txt-bold extra">{currentClient?.fullName || `${currentClient?.firstName} ${currentClient?.lastName}` || ' - - '}</h3>
               <div className="col">
                 <button onClick={() => id && navigate(`edit`)} type="button" className="btn btn-primary d-flex float-end me-2">
                   <PencilIcon className='mt-1' /> &nbsp; Edit Client Details
@@ -293,17 +293,22 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient, quotes, properties, 
               <div className="col card">
                 <div className="row">
                   <div className="col d-flex flex-row">
-                    <h5 className="txt-bold">Contact info</h5>
+                    <h5 className="txt-bold">Client Details</h5>
                   </div>
                 </div>
                 <div className="row mt-2">
-                  <div className="col p-2 ps-4">
-                    <div className="txt-grey">First Name</div>
-                    <div className="">{currentClient.firstName}</div>
+                  <img src={'http://localhost:8000/api/v1/customers/avatars/' + currentClient.photo} style={{'width': "250px"}}/>
+                  <div className="col-6 p-2 ps-4">
+                    <div className="txt-grey">Gender</div>
+                    <div className="">{currentClient.gender}</div>
                   </div>
-                  <div className="col p-2 ps-4">
-                    <div className="txt-grey">Last Name</div>
-                    <div className="">{currentClient.lastName}</div>
+                  <div className="col-6 p-2 ps-4">
+                    <div className="txt-grey">Date Of Birth</div>
+                    <div className="">{DateTime.fromISO(currentClient.dateOfBirth as string).toFormat('yyyy-MM-dd') }</div>
+                  </div>
+                  <div className="col-6 p-2 ps-4">
+                    <div className="txt-grey">Referred By</div>
+                    <div className="">{currentClient.referredBy}</div>
                   </div>
                 </div>
                 <div className="row mt-2">
@@ -325,47 +330,6 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient, quotes, properties, 
                   </div>
                 </div>
               </div>
-              <div className="col card ms-3">
-                <div className="row">
-                  <div className="col d-flex flex-row">
-                    <h5 className="txt-bold">Properties</h5>
-                  </div>
-                </div>
-                {properties.length ? (
-                  properties.map((property: any, index) => (
-                    <div key={property._id + '~'} className={`row ${index === 0 ? 'mt-4' : 'mt-2'}`}>
-                      <div className="col-2 mt-2">
-                        <button className="btn btn-secondary d-flex float-end">
-                          <box-icon name="map" color="#EC7100" />
-                        </button>
-                      </div>
-                      <div className="col p-2 ps-4">
-                        <div className="txt-grey">{property.name}</div>
-                        <div className="">
-                          {formatAddress(property)}
-                        </div>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="row d-flex mt-4 align-items-center">
-                    <div className="col-2 mt-2">
-                      <button className="btn btn-secondary d-flex float-end">
-                        <box-icon name="map" color="#EC7100" />
-                      </button>
-                    </div>
-                    <div className="col p-2 ps-4">
-                      <div className="txt-grey">No additional properties added.</div>
-                    </div>
-                  </div>
-                )}
-                <div className="row mt-4">
-                  <div className="col p-2 ps-4">
-                    <div className="txt-grey"></div>
-                    <div className="">Tax rate GST (10%) Default</div>
-                  </div>
-                </div>
-              </div>
             </div>
             <div className="row card m-1 mt-3">
               <div className="row">
@@ -376,23 +340,19 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient, quotes, properties, 
               <div className="">
                 <div className="row mt-3">
                   <div className={`col tab me-1 ${tab === Tabs.ActiveJob ? 'active-tab' : ''}`} onClick={() => setTab(Tabs.ActiveJob)}>
-                    Active jobs
+                    Client's Details
                   </div>
-                  {currentUser.role !== 'WORKER' ? (
-                    <>
-                      <div className={`col tab me-1 ${tab === Tabs.Requests ? 'active-tab' : ''}`} onClick={() => setTab(Tabs.Requests)}>
-                        Requests
-                      </div>
-                      <div className={`col tab me-1 ${tab === Tabs.Quotes ? 'active-tab' : ''}`} onClick={() => setTab(Tabs.Quotes)}>
-                        Quotes
-                      </div>
-                      <div className={`col tab me-1 ${tab === Tabs.Invoices ? 'active-tab' : ''}`} onClick={() => setTab(Tabs.Invoices)}>
-                        Invoices
-                      </div>
-                    </>
-                  ) : null}
                   <div className={`col tab me-1 ${tab === Tabs.Jobs ? 'active-tab' : ''}`} onClick={() => setTab(Tabs.Jobs)}>
-                    Jobs
+                    Client's Sessions
+                  </div>
+                  <div className={`col tab me-1 ${tab === Tabs.Jobs ? 'active-tab' : ''}`} onClick={() => setTab(Tabs.Jobs)}>
+                    Client's Pictures
+                  </div>
+                  <div className={`col tab me-1 ${tab === Tabs.Jobs ? 'active-tab' : ''}`} onClick={() => setTab(Tabs.Jobs)}>
+                    Client used Products
+                  </div>
+                  <div className={`col tab me-1 ${tab === Tabs.Jobs ? 'active-tab' : ''}`} onClick={() => setTab(Tabs.Jobs)}>
+                    Client's Orders
                   </div>
                 </div>
               </div>
@@ -441,9 +401,6 @@ const mapDispatchToProps = (dispatch: any) => ({
     },
     fetchInvoices: (payload: any) => {
       dispatch(invoicesActions.fetchInvoices(payload));
-    },
-    updateClient: (data: FormData) => {
-      dispatch(clientsActions.updateClient(data));
     }
   }
 });

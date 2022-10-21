@@ -1,15 +1,18 @@
 export const getServices = () => {
   return [
-    { label: 'Service One', value: 'Service One', isActive: true },
-    { label: 'Service Two', value: 'Service Two', isActive: true },
-    { label: 'Service Three', value: 'Service Three', isActive: true }
+    { label: 'Melasma Treatment', value: 'Melasma Treatment', isActive: true },
+    { label: 'Acne Treatment', value: 'Acne Treatment', isActive: true },
+    { label: 'Freckles', value: 'Freckles', isActive: true },
+    { label: 'Microblading', value: 'Microblading', isActive: true },
+    { label: 'Hair Transplant', value: 'Hair Transplant', isActive: true }
   ]
 };
 
 export const getAppointmentTypes = () => {
   return [
-    { label: 'Consultation', value: 'Consultation', isActive: true },
-    { label: 'Service', value: 'Service', isActive: true },
-    { label: 'Follow Up', value: 'Follow Up', isActive: true }
+    { label: 'CONSULTATION', value: 'CONSULTATION', isActive: true },
+    { label: 'TREATMENT', value: 'TREATMENT', isActive: true },
+    { label: 'FOLLOW UP', value: 'FOLLOW UP', isActive: true },
+    { label: 'MAINTAINANCE', value: 'MAINTAINANCE', isActive: true }
   ]
 };

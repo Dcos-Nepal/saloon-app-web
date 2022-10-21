@@ -12,12 +12,14 @@ import { getAppointmentTypes, getServices } from 'data';
 
 const AppointmentAddForm = ({ closeModal, client, saveHandler }: { client?: any; closeModal: () => void; saveHandler: (data: any) => any }) => {
   const initialValues = {
-        customer: client._id,
-        type: 'CONSULTATION',
-        services: [],
-        dateTime: "2018-06-12T19:30",
-        notes: ''
-      };
+    customer: client._id,
+    type: 'CONSULTATION',
+    services: [],
+    dateTime: '',
+    notes: '',
+    session: '0',
+    interval: 'REGULAR'
+  };
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -25,8 +27,25 @@ const AppointmentAddForm = ({ closeModal, client, saveHandler }: { client?: any;
     customer: Yup.string().required('Customer is required'),
     type: Yup.string().required('Type is required'),
     notes: Yup.string().optional(),
-    services: Yup.array().required('Services Required'),
-    dateTime: Yup.string().required('Date Time is required')
+    dateTime: Yup.string().required('Date Time is required'),
+    services: Yup
+        .array()
+        .when("type", {
+          is: 'CONSULTATION' || 'TREATMENT',
+          then: Yup.array().required("Please select the services")
+        }),
+    interval: Yup
+      .string()
+      .when("type", {
+        is: 'MAINTAINANCE',
+        then: Yup.string().required("Please select the interval")
+      }),
+    session: Yup
+      .string()
+      .when("type", {
+        is: 'MAINTAINANCE',
+        then: Yup.string().nullable()
+      }).required('Session is required')
   });
 
   const formik = useFormik({
@@ -74,32 +93,6 @@ const AppointmentAddForm = ({ closeModal, client, saveHandler }: { client?: any;
             </div>
             <div className="modal-body">
               <Loader isLoading={isLoading} />
-              {/* <InputField
-                label="Name"
-                type="text"
-                placeholder="Enter name"
-                name={`name`}
-                value={formik.values.name}
-                onChange={formik.handleChange}
-                helperComponent={<ErrorMessage name="name" />}
-              /> */}
-
-              <SelectField
-                label="Tags/Services"
-                name="services"
-                isMulti={true}
-                value={getServices().find((service) => formik.values.services?.find((tag: string) => tag === service.value))}
-                options={getServices().filter((service) => service.isActive)}
-                helperComponent={<ErrorMessage name="services" />}
-                handleChange={(selectedTags: IOption[]) => {
-                  formik.setFieldValue(
-                    'services',
-                    selectedTags.map((tagOption) => tagOption.value)
-                  );
-                }}
-                onBlur={formik.handleBlur}
-              />
-
               <SelectField
                 label="Appointment Type"
                 name="type"
@@ -113,16 +106,32 @@ const AppointmentAddForm = ({ closeModal, client, saveHandler }: { client?: any;
                 onBlur={formik.handleBlur}
               />
 
+              {formik.values.type !== 'CONSULTATION' ? (
+                <SelectField
+                  label="Tags/Services"
+                  name="services"
+                  isMulti={true}
+                  value={getServices().find((service) => formik.values.services?.find((tag: string) => tag === service.value))}
+                  options={getServices().filter((service) => service.isActive)}
+                  helperComponent={<ErrorMessage name="services" />}
+                  handleChange={(selectedTags: IOption[]) => {
+                    formik.setFieldValue(
+                      'services',
+                      selectedTags.map((tagOption) => tagOption.value)
+                    );
+                  }}
+                  onBlur={formik.handleBlur}
+                />
+              ): null}
+
               <InputField
                 label="Date and Time"
                 type="datetime-local"
                 placeholder="Select Date and Time"
-                name={`dateTime`}
+                name="dateTime"
                 value={formik.values.dateTime}
                 onChange={formik.handleChange}
                 helperComponent={<ErrorMessage name="dateTime"/>}
-                min="2018-06-07T00:00"
-                max="2018-06-14T00:00"
               />
 
               <TextArea

@@ -1,3 +1,4 @@
 import QuoteList from "./QuoteList";
+import VisitList from "./VisitList";
 
-export default QuoteList;
+export { VisitList, QuoteList };

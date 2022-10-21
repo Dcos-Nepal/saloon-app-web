@@ -49,7 +49,7 @@ const Dashboard: FC<IProps> = (): JSX.Element => {
           path={endpoints.admin.quotes.list + '/*'}
           element={
             <Suspense fallback={<Loader isLoading={true} />}>
-              <Quotes />
+              <Quotes/>
             </Suspense>
           }
         />

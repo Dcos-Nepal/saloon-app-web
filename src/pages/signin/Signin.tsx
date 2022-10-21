@@ -90,14 +90,14 @@ const Signin = () => {
       <div className="vh-100 d-flex justify-content-center align-items-center">
         <div className="mt-5">
           <div className="d-flex justify-content-center mt-5 mb-4">
-            <img src={LogoFull} alt="Orange Cleaning" style={{height: '145px'}}/>
+            <img src={LogoFull} alt="Cilnic App" style={{height: '145px'}}/>
           </div>
 
           <div className="main-container card bg-white p-4">
             <Loader isLoading={isLoading} />
             <div>
               <h4>Welcome</h4>
-              <label>Fill your details or continue with Orange Cleaning</label>
+              <label>Fill your details or continue with Cilnic App</label>
             </div>
 
             <form noValidate onSubmit={formik.handleSubmit}>
@@ -141,7 +141,7 @@ const Signin = () => {
             </form>
           </div>
           <div className='mb-5 mt-5 text-center pb-5'>
-            Copyright &copy; {new Date().getFullYear()} <b>Orange Cleaning</b>, All Rights Reserved.
+            Copyright &copy; {new Date().getFullYear()} <b>Cilnic App</b>, All Rights Reserved.
             <br/>
             <span className='cursor-pointer' onClick={() => navigate('/' + endpoints.privacy)}>Privacy Policy</span>
           </div>

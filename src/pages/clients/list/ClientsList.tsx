@@ -11,12 +11,12 @@ import ReactPaginate from 'react-paginate';
 import { Loader } from 'common/components/atoms/Loader';
 import debounce from 'lodash/debounce';
 import EmptyState from 'common/components/EmptyState';
-import { AlertIcon, CheckCircleIcon, ClockIcon, EyeIcon, PencilIcon, PersonAddIcon, SyncIcon, TrashIcon } from '@primer/octicons-react';
+import { ClockIcon, EyeIcon, PencilIcon, PersonAddIcon, SyncIcon, TrashIcon } from '@primer/octicons-react';
 import Modal from 'common/components/atoms/Modal';
 import { deleteUserApi } from 'services/users.service';
 import { toast } from 'react-toastify';
 import DeleteConfirm from 'common/components/DeleteConfirm';
-import { formatAddress, getCurrentUser } from 'utils';
+import { getCurrentUser } from 'utils';
 import AppointmentAddForm from 'pages/appointments/add';
 import { createQuotesApi } from 'services/quotes.service';
 
@@ -92,12 +92,11 @@ const ClientsList = (props: any) => {
     if (props.clients?.data?.rows) {
       setClients(
         props.clients.data?.rows.map((row: any) => ({
-          name: row.userData?.isCompanyNamePrimary ? (row.userData?.company || "-") : `${row?.firstName} ${row?.lastName}`,
+          name: row.fullName || `${row?.firstName} ${row?.lastName}`,
           email: row.email,
-          address: row?.address
-            ? formatAddress(row?.address)
-            : 'Address not added!',
+          address: row?.address,
           contact: row.phoneNumber,
+          photo: row.photo,
           status: row.auth?.email?.verified,
           createdAt: row.createdAt,
           _id: row._id
@@ -126,11 +125,16 @@ const ClientsList = (props: any) => {
         Header: 'CLIENT NAME',
         accessor: (row: any) => {
           return (
-            <div className="cursor-pointer" onClick={() => navigate(pinterpolate(endpoints.admin.client.detail, { id: row._id }))}>
-              <div>
-                <b>{row.name}</b>
+            <div className='row'>
+              <div className='col-4'>
+                <img src={'http://localhost:8000/api/v1/customers/avatars/' + row.photo} style={{'width': "100px"}}/>
               </div>
-              <small>{row.address || 'Address not added.'}</small>
+              <div className='col-8'>
+                <div className="cursor-pointer" onClick={() => navigate(pinterpolate(endpoints.admin.client.detail, { id: row._id }))}>
+                  <div><b>{row.name}</b></div>
+                  <small>{row.address || 'Address not added.'}</small>
+                </div>
+              </div>
             </div>
           );
         }
@@ -153,7 +157,7 @@ const ClientsList = (props: any) => {
         }
       },
       {
-        Header: 'Created At',
+        Header: 'CREATED DATE',
         accessor: (row: any) => (
           <label className="txt-grey ms-2">
             {new Date(row.createdAt).toLocaleString()}

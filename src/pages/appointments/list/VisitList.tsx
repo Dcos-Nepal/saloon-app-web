@@ -17,10 +17,10 @@ import { toast } from 'react-toastify';
 import DeleteConfirm from 'common/components/DeleteConfirm';
 import { deleteQuoteApi } from 'services/quotes.service';
 import StatusChangeWithReason from './StatusChangeWithReason';
-import { EyeIcon, PencilIcon, TrashIcon } from '@primer/octicons-react';
+import { EyeIcon, PencilIcon, SyncIcon, TrashIcon } from '@primer/octicons-react';
 import { getCurrentUser } from 'utils';
 import { DateTime } from 'luxon';
-import { calculateJobDuration } from 'utils/timer';
+import { getElapsedTime } from 'utils/timer';
 
 interface IQuote {
   id: string;
@@ -40,7 +40,7 @@ const quoteStatusOptions = [
   { label: 'COMPLETED', value: 'COMPLETED' }
 ];
 
-const QuotesList = (props: any) => {
+const VisitList = (props: any) => {
   const navigate = useNavigate();
   const currentUser = getCurrentUser();
   const [query, setQuery] = useState('');
@@ -74,60 +74,14 @@ const QuotesList = (props: any) => {
     setQuery(query);
   };
 
-  const handleStatusChange = async (id: string, status: { label: string; value: string }, reason: string) => {
-    await props.actions.updateQuoteStatus({ id, status: status.value });
-  };
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const handleSearch = useCallback(debounce(handleQuotesSearch, 300), []);
 
-  const Status = ({ row }: { row: IQuote }) => {
-    const [statusChangeInProgress, setStatusChangeInProgress] = useState('');
-
-    return (
-      <div style={{ minWidth: '150px' }}>
-        <SelectField
-          label=""
-          options={quoteStatusOptions}
-          value={{ label: row.status, value: row.status }}
-          placeholder="All"
-          handleChange={(selected: { label: string; value: string }) => {
-            // if (selected.value === 'COMPLETED') setStatusChangeInProgress(selected.value);
-            handleStatusChange(row.id, selected, '');
-          }}
-          helperComponent={<div className="">{row.status?.reason || ''}</div>}
-        />
-        <Modal isOpen={!!statusChangeInProgress} onRequestClose={() => setStatusChangeInProgress('')}>
-          <StatusChangeWithReason
-            id={row.id}
-            status={quoteStatusOptions.find((statusLabelValue) => statusLabelValue.value === statusChangeInProgress)}
-            onSave={handleStatusChange}
-            closeModal={() => setStatusChangeInProgress('')}
-          />
-        </Modal>
-      </div>
-    );
-  };
-
-  const Timer = (props: any) => {
-    const [timer, setTimer] = useState('calculating...');
-  
-    useEffect(() => {
-      setInterval(() => {
-        setTimer(calculateJobDuration({
-          startDate: new Date(props.date).toISOString(),
-          endDate: new Date().toISOString()
-        }));
-      }, 1000);
-    }, []);
-
-    return <div style={{'fontSize': 18, fontWeight: '600'}}>{timer}</div>;
-  }
-
   const columns: Column<IQuote>[] = useMemo(
     () => [
       {
-        Header: 'APPOINTMENT INFO',
+        Header: 'CLIENT INFO',
         accessor: (row: IQuote) => {
           return (
             <div>
@@ -138,23 +92,14 @@ const QuotesList = (props: any) => {
         }
       },
       {
-        Header: 'WAITING TIME',
-        accessor: (row: IQuote) => {
-          return <Timer date={row.createdAt} />;
-        }
-      },
-      {
         Header: 'APPOINTMENT DATE',
         accessor: (row: IQuote) => {
-          return (<>
-            <div style={{'fontSize': 16}}>{DateTime.fromISO(row.dateTime).toFormat('yyyy LLL dd hh:mm:ss a')}</div>
-            {row.type === 'TREATMENT' ? <div className='text-primary'>Services: {row.services.join(', ')}</div> : null}
-          </>);
+          return <div>{DateTime.fromISO(row.dateTime).toFormat('yyyy LLL dd hh:mm:ss a')}</div>
         }
       },
       {
         Header: 'STATUS',
-        accessor: (row: IQuote) => <Status row={row} />
+        accessor: (row: IQuote) => (<div>{row.status}</div>)
       },
       {
         Header: ' ',
@@ -197,14 +142,13 @@ const QuotesList = (props: any) => {
     }
 
     props.actions.fetchQuotes({ q: query, ...quoteQuery, page: offset, limit: itemsPerPage });
-  }, [offset, itemsPerPage, query, currentUser.id, currentUser.role]);
+  }, [offset, itemsPerPage, props.actions, query, currentUser.id, currentUser.role]);
 
   useEffect(() => {
     if (props.itemList?.data?.rows) {
       setQuotes(
         props.itemList.data?.rows
-          .filter((row: any) => props?.appointmentType ? props.appointmentType?.toLowerCase() === row.type?.toLowerCase() :  true)
-          // .filter((row: any) => props?.isToday ? DateTime.fromJSDate(new Date()).toFormat('yyyy LLL dd') ===  DateTime.fromISO(row.dateTime).toFormat('yyyy LLL dd') : true)
+          .filter((row: any) => props?.isToday ? DateTime.fromJSDate(new Date()).toFormat('yyyy LLL dd') ===  DateTime.fromISO(row.dateTime).toFormat('yyyy LLL dd') : true)
           .map((row: IQuote) => ({
             id: row.id,
             customer: row.customer,
@@ -213,7 +157,7 @@ const QuotesList = (props: any) => {
             status: row.status,
             type: row.type,
             dateTime: row.dateTime,
-            createdAt: row.createdAt,
+            createdAt: new Date(row.createdAt).toDateString(),
             updatedAt: new Date(row.updatedAt).toDateString()
           }))
       );
@@ -227,16 +171,13 @@ const QuotesList = (props: any) => {
       <div className="card">
         <div className="row">
           <div className="col">
-            <h5 className="extra">{props.appointmentType}</h5>
+            <h5 className="extra">Today's Visiting List</h5>
           </div>
         </div>
         <div className="row pt-2 m-1 rounded-top bg-grey">
           <Loader isLoading={props.isLoading} />
-          <div className="col-8">
-            <InputField label="Search" placeholder="Search quotes" className="search-input" onChange={handleSearch} />
-          </div>
-          <div className="col-4">
-            <InputField type="date" label="Search" placeholder="Search Date" className="search-input" onChange={handleSearch} />
+          <div className="col-12">
+            <InputField label="Search" placeholder="Search visits" className="search-input" onChange={handleSearch} />
           </div>
           {!quotes.length ? (
             <EmptyState />
@@ -313,4 +254,4 @@ const mapDispatchToProps = (dispatch: any) => ({
   }
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(QuotesList);
+export default connect(mapStateToProps, mapDispatchToProps)(VisitList);

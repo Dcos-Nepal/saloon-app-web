@@ -296,37 +296,42 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient, quotes, properties, 
                     <h5 className="txt-bold">Client Details</h5>
                   </div>
                 </div>
+                <div className="hr mb-2" />
                 <div className="row mt-2">
-                  <img src={'http://localhost:8000/api/v1/customers/avatars/' + currentClient.photo} style={{'width': "250px"}}/>
-                  <div className="col-6 p-2 ps-4">
-                    <div className="txt-grey">Gender</div>
-                    <div className="">{currentClient.gender}</div>
+                  <div className="col-4">
+                    <img src={'http://localhost:8000/api/v1/customers/avatars/' + currentClient.photo} style={{'width': "100px", 'borderRadius': '5px', borderWidth: '20px', borderColor: 'red'}}/>
                   </div>
-                  <div className="col-6 p-2 ps-4">
-                    <div className="txt-grey">Date Of Birth</div>
-                    <div className="">{DateTime.fromISO(currentClient.dateOfBirth as string).toFormat('yyyy-MM-dd') }</div>
-                  </div>
-                  <div className="col-6 p-2 ps-4">
-                    <div className="txt-grey">Referred By</div>
-                    <div className="">{currentClient.referredBy}</div>
-                  </div>
-                </div>
-                <div className="row mt-2">
-                  <div className="col p-2 ps-4">
-                    <div className="txt-grey">Email</div>
-                    <div className="">{currentClient.email || '[Email not added]'}</div>
-                  </div>
-                  <div className="col p-2 ps-4">
-                    <div className="txt-grey">Phone</div>
-                    <div className="">{currentClient.phoneNumber || '[Phone Number not added]'}</div>
-                  </div>
-                </div>
-                <div className="row mt-2">
-                  <div className="col p-2 ps-4">
-                    <div className="txt-grey">Client's Address</div>
-                    <div className="">
-                      {currentClient?.address}
+                  <div className="col-8">
+                    <div className="row mt-4">
+                      <div className="col">
+                        <div className="txt-grey">Gender</div>
+                        <div className="">{currentClient.gender}</div>
                       </div>
+                      <div className="col">
+                        <div className="txt-grey">Date Of Birth</div>
+                        <div className="">{DateTime.fromISO(currentClient.dateOfBirth as string).toFormat('yyyy-MM-dd') }</div>
+                      </div>
+                    </div>
+                    <div className="row mt-4">
+                      <div className="col">
+                        <div className="txt-grey">Referred By</div>
+                        <div className="">{currentClient.referredBy}</div>
+                      </div>
+                      <div className="col">
+                        <div className="txt-grey">Email</div>
+                        <div className="">{currentClient.email || '[Email not added]'}</div>
+                      </div>
+                    </div>
+                    <div className="row mt-4">
+                      <div className="col">
+                        <div className="txt-grey">Phone</div>
+                        <div className="">{currentClient.phoneNumber || '[Phone Number not added]'}</div>
+                      </div>
+                      <div className="col">
+                        <div className="txt-grey">Client's Address</div>
+                        <div className="">{currentClient?.address}</div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>

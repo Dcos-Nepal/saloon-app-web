@@ -19,6 +19,7 @@ import DeleteConfirm from 'common/components/DeleteConfirm';
 import { getCurrentUser } from 'utils';
 import AppointmentAddForm from 'pages/appointments/add';
 import { createQuotesApi } from 'services/quotes.service';
+import { DateTime } from 'luxon';
 
 interface IClient {
   name: string;
@@ -38,7 +39,6 @@ const ClientsList = (props: any) => {
   const [clients, setClients] = useState<IClient[]>([]);
   const [deleteInProgress, setDeleteInProgress] = useState('');
   const [addLineItemOpen, setAddLineItemOpen] = useState<boolean>(false);
-
 
   const deleteClientHandler = async () => {
     try {
@@ -97,6 +97,8 @@ const ClientsList = (props: any) => {
           address: row?.address,
           contact: row.phoneNumber,
           photo: row.photo,
+          gender: row.gender,
+          dob: row.dateOfBirth,
           status: row.auth?.email?.verified,
           createdAt: row.createdAt,
           _id: row._id
@@ -127,12 +129,13 @@ const ClientsList = (props: any) => {
           return (
             <div className='row'>
               <div className='col-4'>
-                <img src={'http://localhost:8000/api/v1/customers/avatars/' + row.photo} style={{'width': "100px"}}/>
+                <img src={'http://localhost:8000/api/v1/customers/avatars/' + row.photo} style={{'width': "72px", borderRadius: '5px'}} />
               </div>
               <div className='col-8'>
                 <div className="cursor-pointer" onClick={() => navigate(pinterpolate(endpoints.admin.client.detail, { id: row._id }))}>
-                  <div><b>{row.name}</b></div>
-                  <small>{row.address || 'Address not added.'}</small>
+                  <div><b>{row.name}</b> ({row.gender})</div>
+                  <div>Date of Birth: <b>{DateTime.fromISO(row.dob).toFormat('yyyy-MM-dd')}</b></div>
+                  <div>Address: <b>{row.address || 'Address not added.'}</b></div>
                 </div>
               </div>
             </div>
@@ -148,10 +151,10 @@ const ClientsList = (props: any) => {
                 Phone: <b>{row.contact}</b>
                 {!row.contact ? <label><i>[Phone Number not added]</i></label> : null}
               </div>
-              <small>
+              <div>
                 Email: <b>{row.email}</b>
                 {!row.email ? <label><i>[Email not added]</i></label> : null}
-              </small>
+              </div>
             </div>
           );
         }

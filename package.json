@@ -12,6 +12,7 @@
     "@fullcalendar/timegrid": "^5.10.1",
     "@microsoft/fetch-event-source": "^2.0.1",
     "@primer/octicons-react": "^16.3.0",
+    "@types/react-tooltip": "^4.2.4",
     "autoprefixer": "^10.0.2",
     "axios": "^0.24.0",
     "bootstrap": "^5.1.3",
@@ -40,8 +41,8 @@
     "react-simple-wysiwyg": "^2.0.2",
     "react-table": "^7.7.0",
     "react-toastify": "^8.1.0",
+    "react-tooltip": "^4.4.2",
     "react-transition-group": "^4.4.2",
-    "react-truncate": "^2.4.0",
     "redux": "^4.1.2",
     "redux-saga": "^1.1.3",
     "reselect": "^4.1.5",
@@ -90,7 +91,6 @@
     "@types/react-dom": "^17.0.9",
     "@types/react-modal": "^3.13.1",
     "@types/react-router-dom": "^5.3.2",
-    "@types/react-table": "^7.7.9",
-    "@types/react-truncate": "^2.3.4"
+    "@types/react-table": "^7.7.9"
   }
 }

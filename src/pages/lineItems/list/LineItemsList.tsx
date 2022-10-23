@@ -3,7 +3,6 @@ import { toast } from 'react-toastify';
 import ReactPaginate from 'react-paginate';
 import { Column, useTable } from 'react-table';
 import { useEffect, useMemo, useState } from 'react';
-import Truncate from 'react-truncate';
 
 import LineItemAdd from '../add';
 import LineItemEdit from '../edit';
@@ -76,9 +75,7 @@ const LineItemsList = (props: IProps) => {
       {
         Header: 'DESCRIPTION',
         accessor: ((row: any) => {
-          return (<Truncate lines={1} ellipsis={<span>...</span>}>
-            {row.description}
-          </Truncate>)
+          return (<div>{row.description}</div>)
         })
       },
       {

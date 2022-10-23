@@ -1,7 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { Column, useTable } from 'react-table';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import Truncate from 'react-truncate';
 
 import * as quotesActions from '../../../store/actions/quotes.actions';
 
@@ -21,6 +20,7 @@ import { EyeIcon, PencilIcon, TrashIcon } from '@primer/octicons-react';
 import { getCurrentUser } from 'utils';
 import { DateTime } from 'luxon';
 import { calculateJobDuration } from 'utils/timer';
+import ReactTooltip from 'react-tooltip';
 
 interface IQuote {
   id: string;
@@ -74,8 +74,8 @@ const QuotesList = (props: any) => {
     setQuery(query);
   };
 
-  const handleStatusChange = async (id: string, status: { label: string; value: string }, reason: string) => {
-    await props.actions.updateQuoteStatus({ id, status: status.value });
+  const handleStatusChange = async (id: string, data: any) => {
+    await props.actions.updateQuoteStatus({ id, data });
   };
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -87,15 +87,23 @@ const QuotesList = (props: any) => {
     return (
       <div style={{ minWidth: '150px' }}>
         <SelectField
+          isDisabled={row.status.name === 'COMPLETED'}
           label=""
           options={quoteStatusOptions}
-          value={{ label: row.status, value: row.status }}
+          value={{ label: row.status.name, value: row.status.name }}
           placeholder="All"
           handleChange={(selected: { label: string; value: string }) => {
-            // if (selected.value === 'COMPLETED') setStatusChangeInProgress(selected.value);
-            handleStatusChange(row.id, selected, '');
+            handleStatusChange(row.id, {
+              status: {
+                name: selected.value,
+                duration: calculateJobDuration({
+                  startDate: new Date(row.status.date).toISOString(),
+                  endDate: new Date().toISOString()
+                })
+              }
+            })
           }}
-          helperComponent={<div className="">{row.status?.reason || ''}</div>}
+          helperComponent={<div className="">{''}</div>}
         />
         <Modal isOpen={!!statusChangeInProgress} onRequestClose={() => setStatusChangeInProgress('')}>
           <StatusChangeWithReason
@@ -110,16 +118,23 @@ const QuotesList = (props: any) => {
   };
 
   const Timer = (props: any) => {
-    const [timer, setTimer] = useState('calculating...');
+    const [timer, setTimer] = useState(calculateJobDuration({
+      startDate: new Date(props.date).toISOString(),
+      endDate: new Date().toISOString()
+    }));
   
     useEffect(() => {
-      setInterval(() => {
+      const inte = setInterval(() => {
         setTimer(calculateJobDuration({
           startDate: new Date(props.date).toISOString(),
           endDate: new Date().toISOString()
         }));
       }, 1000);
-    }, []);
+
+      return () => {
+        clearInterval(inte);
+      } 
+    }, [props.status]);
 
     return <div style={{'fontSize': 18, fontWeight: '600'}}>{timer}</div>;
   }
@@ -130,7 +145,7 @@ const QuotesList = (props: any) => {
         Header: 'APPOINTMENT INFO',
         accessor: (row: IQuote) => {
           return (
-            <div>
+            <div onClick={() => navigate('/dashboard/clients/' + row.customer.id)}>
               <div>{row.customer?.fullName || ' Not Entered '}</div>
               <div>{row.customer?.phoneNumber} {row.customer?.email ? `(${row.customer?.email})` : ''} </div>
             </div>
@@ -140,17 +155,31 @@ const QuotesList = (props: any) => {
       {
         Header: 'WAITING TIME',
         accessor: (row: IQuote) => {
-          return <Timer date={row.createdAt} />;
+          return row.status.name === 'COMPLETED'
+            ? <div>Completed on: <br/> <span style={{'fontSize': 16, 'fontWeight': 600}}>{DateTime.fromISO(row.status.date).toFormat('yyyy-MM-dd HH:mm a')}</span></div>
+            : <>Currently {(row.status.name).toLowerCase().split('_').join(' ')} <br/> <Timer date={row.status.date} status={row.status.name}/></>;
         }
       },
       {
         Header: 'APPOINTMENT DATE',
         accessor: (row: IQuote) => {
           return (<>
-            <div style={{'fontSize': 16}}>{DateTime.fromISO(row.dateTime).toFormat('yyyy LLL dd hh:mm:ss a')}</div>
+            Scheduled for: <br/>
+            <div style={{'fontSize': 16, 'fontWeight': 600}}>{DateTime.fromISO(row.dateTime).toFormat('yyyy LLL dd hh:mm:ss a')}</div>
             {row.type === 'TREATMENT' ? <div className='text-primary'>Services: {row.services.join(', ')}</div> : null}
           </>);
         }
+      },
+      {
+        Header: 'Notes',
+        accessor: ((row: IQuote) => {
+          return <>
+            <a data-tip data-for='global'> <button className='btn btn-secondary'>Hover Me</button></a>
+            <ReactTooltip id='global' aria-haspopup='true' role='example'>
+            <p>{row.notes}</p>
+            </ReactTooltip>
+          </>
+        })
       },
       {
         Header: 'STATUS',
@@ -204,7 +233,6 @@ const QuotesList = (props: any) => {
       setQuotes(
         props.itemList.data?.rows
           .filter((row: any) => props?.appointmentType ? props.appointmentType?.toLowerCase() === row.type?.toLowerCase() :  true)
-          // .filter((row: any) => props?.isToday ? DateTime.fromJSDate(new Date()).toFormat('yyyy LLL dd') ===  DateTime.fromISO(row.dateTime).toFormat('yyyy LLL dd') : true)
           .map((row: IQuote) => ({
             id: row.id,
             customer: row.customer,
@@ -233,7 +261,7 @@ const QuotesList = (props: any) => {
         <div className="row pt-2 m-1 rounded-top bg-grey">
           <Loader isLoading={props.isLoading} />
           <div className="col-8">
-            <InputField label="Search" placeholder="Search quotes" className="search-input" onChange={handleSearch} />
+            <InputField label="Search" placeholder="Search appointments" className="search-input" onChange={handleSearch} />
           </div>
           <div className="col-4">
             <InputField type="date" label="Search" placeholder="Search Date" className="search-input" onChange={handleSearch} />
@@ -308,7 +336,7 @@ const mapDispatchToProps = (dispatch: any) => ({
       dispatch(quotesActions.fetchQuotes(payload));
     },
     updateQuoteStatus: (payload: any) => {
-      dispatch(quotesActions.updateQuoteStatus(payload.id, { status: payload.status, reason: payload.reason }));
+      dispatch(quotesActions.updateQuoteStatus(payload.id, payload.data));
     }
   }
 });

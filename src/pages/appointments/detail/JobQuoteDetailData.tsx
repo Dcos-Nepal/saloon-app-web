@@ -3,7 +3,6 @@ import { Loader } from "common/components/atoms/Loader";
 import { FC, useEffect } from "react";
 import { connect } from "react-redux";
 import { useParams } from "react-router-dom";
-import Truncate from 'react-truncate';
 import * as quotesActions from "store/actions/quotes.actions";
 
 interface IProps {
@@ -136,9 +135,7 @@ const JobQuoteDetailData: FC<IProps> = ({isLoading, actions, currentQuote}) => {
                   <td>
                     <div><strong>{item.name}</strong></div>
                     <div><small>
-                        <Truncate lines={1} ellipsis={<span>...</span>}>
                           {item.description}
-                        </Truncate>
                     </small></div>
                   </td>
                   <td><strong>{item.quantity}</strong></td>

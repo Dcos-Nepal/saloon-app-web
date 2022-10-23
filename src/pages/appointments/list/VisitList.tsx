@@ -1,12 +1,10 @@
 import { useNavigate } from 'react-router-dom';
 import { Column, useTable } from 'react-table';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import Truncate from 'react-truncate';
 
 import * as quotesActions from '../../../store/actions/quotes.actions';
 
 import InputField from 'common/components/form/Input';
-import SelectField from 'common/components/form/Select';
 import ReactPaginate from 'react-paginate';
 import { connect } from 'react-redux';
 import { Loader } from 'common/components/atoms/Loader';
@@ -16,11 +14,9 @@ import Modal from 'common/components/atoms/Modal';
 import { toast } from 'react-toastify';
 import DeleteConfirm from 'common/components/DeleteConfirm';
 import { deleteQuoteApi } from 'services/quotes.service';
-import StatusChangeWithReason from './StatusChangeWithReason';
-import { EyeIcon, PencilIcon, SyncIcon, TrashIcon } from '@primer/octicons-react';
+import { EyeIcon, PencilIcon, TrashIcon } from '@primer/octicons-react';
 import { getCurrentUser } from 'utils';
 import { DateTime } from 'luxon';
-import { getElapsedTime } from 'utils/timer';
 
 interface IQuote {
   id: string;
@@ -33,12 +29,6 @@ interface IQuote {
   createdAt: string;
   updatedAt: string;
 }
-
-const quoteStatusOptions = [
-  { label: 'WAITING', value: 'WAITING' },
-  { label: 'IN PROCESS', value: 'IN_PROGRESS' },
-  { label: 'COMPLETED', value: 'COMPLETED' }
-];
 
 const VisitList = (props: any) => {
   const navigate = useNavigate();
@@ -99,7 +89,7 @@ const VisitList = (props: any) => {
       },
       {
         Header: 'STATUS',
-        accessor: (row: IQuote) => (<div>{row.status}</div>)
+        accessor: (row: IQuote) => (<div>{row.status.name}</div>)
       },
       {
         Header: ' ',

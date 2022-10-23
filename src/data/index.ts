@@ -5,7 +5,7 @@ export const getServices = () => {
     { label: 'Freckles', value: 'Freckles', isActive: true },
     { label: 'Microblading', value: 'Microblading', isActive: true },
     { label: 'Hair Transplant', value: 'Hair Transplant', isActive: true }
-  ]
+  ];
 };
 
 export const getAppointmentTypes = () => {
@@ -14,5 +14,13 @@ export const getAppointmentTypes = () => {
     { label: 'TREATMENT', value: 'TREATMENT', isActive: true },
     { label: 'FOLLOW UP', value: 'FOLLOW UP', isActive: true },
     { label: 'MAINTAINANCE', value: 'MAINTAINANCE', isActive: true }
-  ]
+  ];
 };
+
+export const getAppoinmentVeriation = () => {
+  return [
+    { label: 'REGULAR', value: 'REGULAR', isActive: true },
+    { label: 'IN 15 DAYS', value: 'IN 15 DAYS', isActive: true },
+    { label: 'MONTHLY', value: 'MONTHLY', isActive: true }
+  ];
+}

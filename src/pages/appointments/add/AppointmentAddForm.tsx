@@ -8,7 +8,7 @@ import InputField from 'common/components/form/Input';
 import SelectField from 'common/components/form/Select';
 import { IOption } from 'common/types/form';
 import { Loader } from 'common/components/atoms/Loader';
-import { getAppointmentTypes, getServices } from 'data';
+import { getAppoinmentVeriation, getAppointmentTypes, getServices } from 'data';
 
 const AppointmentAddForm = ({ closeModal, client, saveHandler }: { client?: any; closeModal: () => void; saveHandler: (data: any) => any }) => {
   const initialValues = {
@@ -29,11 +29,11 @@ const AppointmentAddForm = ({ closeModal, client, saveHandler }: { client?: any;
     notes: Yup.string().optional(),
     dateTime: Yup.string().required('Date Time is required'),
     services: Yup
-        .array()
-        .when("type", {
-          is: 'CONSULTATION' || 'TREATMENT',
-          then: Yup.array().required("Please select the services")
-        }),
+      .array()
+      .when("type", {
+        is: 'TREATMENT',
+        then: Yup.array().min(1).of(Yup.string()).required("Please select the services")
+      }),
     interval: Yup
       .string()
       .when("type", {
@@ -102,13 +102,13 @@ const AppointmentAddForm = ({ closeModal, client, saveHandler }: { client?: any;
                 helperComponent={<ErrorMessage name="type" />}
                 handleChange={(selectedTag: IOption) => {
                   formik.setFieldValue('type', selectedTag.value);
-                }}
+                }}getAppoinmentVeriation
                 onBlur={formik.handleBlur}
               />
 
-              {formik.values.type !== 'CONSULTATION' ? (
+              {formik.values.type === 'TREATMENT' ? (
                 <SelectField
-                  label="Tags/Services"
+                  label="Products or Services"
                   name="services"
                   isMulti={true}
                   value={getServices().find((service) => formik.values.services?.find((tag: string) => tag === service.value))}
@@ -123,6 +123,33 @@ const AppointmentAddForm = ({ closeModal, client, saveHandler }: { client?: any;
                   onBlur={formik.handleBlur}
                 />
               ): null}
+
+              {formik.values.type == 'MAINTAINANCE' ? (
+                <SelectField
+                  label="Appointment Interval"
+                  name="interval"
+                  isMulti={true}
+                  value={getAppoinmentVeriation().find((service) => formik.values.interval === service.value)}
+                  options={getAppoinmentVeriation().filter((service) => service.isActive)}
+                  helperComponent={<ErrorMessage name="interval" />}
+                  handleChange={(selectedTags: IOption) => {
+                    formik.setFieldValue('interval', selectedTags.value);
+                  }}
+                  onBlur={formik.handleBlur}
+                />
+              ): null}
+
+              {formik.values.type == 'TREATMENT' ? (
+                <InputField
+                  label="Session Name"
+                  type="text"
+                  placeholder="Select Session"
+                  name="session"
+                  value={formik.values.session}
+                  onChange={formik.handleChange}
+                  helperComponent={<ErrorMessage name="session"/>}
+                />
+              ) : null}
 
               <InputField
                 label="Date and Time"

@@ -51,6 +51,7 @@ const quotesReducer = (state = initialState, action: any) => {
 
     case actionType.UPDATE_QUOTE_SUCCESS: {
       state.isLoading = false;
+
       state.itemList.data.rows = state.itemList?.data?.rows.filter((item: any) => {
         if ((item as any)._id === action.payload._id) {
           item = action.payload;
@@ -64,7 +65,7 @@ const quotesReducer = (state = initialState, action: any) => {
       state.isLoading = false;
       state.itemList.data.rows = state.itemList?.data?.rows.filter((item: any) => {
         if ((item as any)._id === action.payload._id) {
-          (item as any).status = action.payload.status;
+          (item as any).status = {...action.payload.status};
         }
         return item;
       });

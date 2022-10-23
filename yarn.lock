@@ -2585,17 +2585,17 @@
   dependencies:
     "@types/react" "*"
 
+"@types/react-tooltip@^4.2.4":
+  version "4.2.4"
+  resolved "https://registry.yarnpkg.com/@types/react-tooltip/-/react-tooltip-4.2.4.tgz#d0acad2a3061806e10aab91dd26a95a77fd35125"
+  integrity sha512-UzjzmgY/VH3Str6DcAGTLMA1mVVhGOyARNTANExrirtp+JgxhaIOVDxq4TIRmpSi4voLv+w4HA9CC5GvhhCA0A==
+  dependencies:
+    react-tooltip "*"
+
 "@types/react-transition-group@^4.4.0":
   version "4.4.4"
   resolved "https://registry.yarnpkg.com/@types/react-transition-group/-/react-transition-group-4.4.4.tgz#acd4cceaa2be6b757db61ed7b432e103242d163e"
   integrity sha512-7gAPz7anVK5xzbeQW9wFBDg7G++aPLAFY0QaSMOou9rJZpbuI58WAuJrgu+qR92l61grlnCUe7AFX8KGahAgug==
-  dependencies:
-    "@types/react" "*"
-
-"@types/react-truncate@^2.3.4":
-  version "2.3.4"
-  resolved "https://registry.yarnpkg.com/@types/react-truncate/-/react-truncate-2.3.4.tgz#1d5002e71e393b81b7877a147992a050f40075fa"
-  integrity sha512-+ugDlho66dRn7Sw/lPkE/wlOi0KUIRwY2KOiUiehWjFf7EmiMDjMpHqrBhiLJfH2Z9EC+qRBHC9o7iZoEmmWQw==
   dependencies:
     "@types/react" "*"
 
@@ -8300,7 +8300,7 @@ prompts@^2.0.1, prompts@^2.4.2:
     kleur "^3.0.3"
     sisteransi "^1.0.5"
 
-prop-types@^15.0.0, prop-types@^15.5.8, prop-types@^15.6.0, prop-types@^15.6.1, prop-types@^15.6.2, prop-types@^15.7.2:
+prop-types@^15.0.0, prop-types@^15.5.8, prop-types@^15.6.0, prop-types@^15.6.1, prop-types@^15.6.2, prop-types@^15.7.2, prop-types@^15.8.1:
   version "15.8.1"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.8.1.tgz#67d87bf1a694f48435cf332c24af10214a3140b5"
   integrity sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==
@@ -8697,6 +8697,14 @@ react-toastify@^8.1.0:
   dependencies:
     clsx "^1.1.1"
 
+react-tooltip@*, react-tooltip@^4.4.2:
+  version "4.4.2"
+  resolved "https://registry.yarnpkg.com/react-tooltip/-/react-tooltip-4.4.2.tgz#e81659b07bc9f08081b12366aecb389a9d8fc424"
+  integrity sha512-VncdQWS6wfTZK/J1xW9PLCfKwmeNcxDGZ6mC8ZE7V3UUyNRw/ZpzcqQZm84WWKptAiBwyKL0PgCRrKJk3N440Q==
+  dependencies:
+    prop-types "^15.8.1"
+    uuid "^7.0.3"
+
 react-transition-group@^4.3.0, react-transition-group@^4.4.2:
   version "4.4.2"
   resolved "https://registry.yarnpkg.com/react-transition-group/-/react-transition-group-4.4.2.tgz#8b59a56f09ced7b55cbd53c36768b922890d5470"
@@ -8706,11 +8714,6 @@ react-transition-group@^4.3.0, react-transition-group@^4.4.2:
     dom-helpers "^5.0.1"
     loose-envify "^1.4.0"
     prop-types "^15.6.2"
-
-react-truncate@^2.4.0:
-  version "2.4.0"
-  resolved "https://registry.yarnpkg.com/react-truncate/-/react-truncate-2.4.0.tgz#3cf5ff09ab86f93e3c078d359f4de6d75aa60510"
-  integrity sha512-3QW11/COYwi6iPUaunUhl06DW5NJBJD1WkmxW5YxqqUu6kvP+msB3jfoLg8WRbu57JqgebjVW8Lknw6T5/QZdA==
 
 react@^16.0.0:
   version "16.14.0"
@@ -10103,6 +10106,11 @@ utils-merge@1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/utils-merge/-/utils-merge-1.0.1.tgz#9f95710f50a267947b2ccc124741c1028427e713"
   integrity sha1-n5VxD1CiZ5R7LMwSR0HBAoQn5xM=
+
+uuid@^7.0.3:
+  version "7.0.3"
+  resolved "https://registry.yarnpkg.com/uuid/-/uuid-7.0.3.tgz#c5c9f2c8cf25dc0a372c4df1441c41f5bd0c680b"
+  integrity sha512-DPSke0pXhTZgoF/d+WSt2QaKMCFSfx7QegxEWT+JOuHF5aWrKEn0G+ztjuJg/gG8/ItK+rbPCD/yNv8yyih6Cg==
 
 uuid@^8.3.2:
   version "8.3.2"

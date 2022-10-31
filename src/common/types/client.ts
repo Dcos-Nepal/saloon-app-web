@@ -9,5 +9,6 @@ export interface IClient {
   gender?: string;
   dateOfBirth?: string;
   photo?: object | string;
+  photos?: string[];
   referredBy?: string;
 }

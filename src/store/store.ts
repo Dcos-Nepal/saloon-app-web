@@ -7,6 +7,7 @@ import {
   addClientSaga,
   fetchClientSaga,
   fetchClientsSaga,
+  fetchSchedulesSaga,
   updateClientSaga
 } from './sagas';
 import { fetchLineItemsSaga, fetchLineItemSaga, updateLineItemSaga } from './sagas/lineItems.saga';
@@ -43,3 +44,4 @@ sagaMiddleware.run(fetchQuoteSaga);
 sagaMiddleware.run(fetchQuotesSaga);
 sagaMiddleware.run(updateQuoteSaga);
 sagaMiddleware.run(updateQuoteStatusSaga);
+sagaMiddleware.run(fetchSchedulesSaga);

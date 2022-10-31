@@ -1,3 +1,4 @@
+import * as Yup from 'yup';
 import { connect } from 'react-redux';
 import pinterpolate from 'pinterpolate';
 import { FC, useEffect, useState } from 'react';
@@ -12,8 +13,11 @@ import * as clientsActions from 'store/actions/clients.actions';
 import * as invoicesActions from 'store/actions/invoices.actions';
 import * as jobReqActions from 'store/actions/job-requests.actions';
 import * as propertiesActions from 'store/actions/properties.actions';
-import { PencilIcon } from '@primer/octicons-react';
+import { PencilIcon, StopIcon, UploadIcon, XCircleIcon } from '@primer/octicons-react';
 import { DateTime } from 'luxon';
+import { useFormik } from 'formik';
+import { uploadPhotosApi } from 'services/users.service';
+import InputField from 'common/components/form/Input';
 
 interface IRequest {
   id: string;
@@ -56,12 +60,7 @@ interface IInvoice {
 
 interface IProps {
   actions: {
-    fetchJobs: (query: any) => any;
-    fetchQuotes: (query: any) => any;
     fetchClient: (id: string) => void;
-    fetchInvoices: (filter: any) => void;
-    fetchJobRequests: (query: any) => any;
-    fetchProperties: (filter: any) => void;
   };
   id?: string;
   jobs: any[];
@@ -73,72 +72,26 @@ interface IProps {
   currentClient: IClient;
 }
 
-const ClientDetail: FC<IProps> = ({ actions, currentClient, quotes, properties, requests, invoices, jobs }) => {
+const ClientDetail: FC<IProps> = ({ actions, currentClient, quotes, requests, invoices, jobs }) => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const currentUser = getCurrentUser();
 
   const Tabs = {
-    ActiveJob: 'ActiveJob',
+    ClientDetails: 'ClientDetails',
     Requests: 'Requests',
     Quotes: 'Quotes',
     Jobs: 'Jobs',
     Invoices: 'Invoices'
   };
 
-  const [tab, setTab] = useState(Tabs.ActiveJob);
-
-  useEffect(() => {
-    if (id) actions.fetchClient(id);
-  }, [id, actions]);
-
-  useEffect(() => {
-    const jobQuery: { createdBy?: string; team?: string; jobFor?: string } = {};
-
-    if (currentUser.role === 'WORKER') {
-      jobQuery.team = currentUser.id;
-    }
-
-    actions.fetchJobs({ ...jobQuery, jobFor: id });
-
-    if (currentUser.role !== 'WORKER') {
-      actions.fetchQuotes({ quoteFor: id });
-      actions.fetchJobRequests({ client: id });
-      actions.fetchInvoices({ invoiceFor: id });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id, actions]);
-
-  useEffect(() => {
-    if (currentClient?._id && id) actions.fetchProperties({ user: currentClient._id });
-  }, [id, currentClient?._id, actions]);
+  const [tab, setTab] = useState(Tabs.ClientDetails);
 
   const Quotes = () => {
     return (
       <div className="row mt-4">
-        {quotes.length ? (
-          <>
-            {quotes.map((quote: IQuote) => (
-              <div
-                onClick={() => navigate(pinterpolate('/dashboard/quotes/:id', { id: quote.id }))}
-                key={quote.id}
-                className="pointer hover-grey row mb-3 border-bottom"
-              >
-                <div className="col p-2 ps-4">
-                  <div className="txt-grey">{quote.title}</div>
-                  <div className="">{quote.description}</div>
-                </div>
-                <div className="col p-2 ps-4">
-                  <span className="d-flex status status-blue float-end">{quote.status?.status}</span>
-                </div>
-              </div>
-            ))}
-          </>
-        ) : (
-          <div className="col p-2 ps-4">
-            <div className="txt-grey">There are no Job Quotes to this client.</div>
-          </div>
-        )}
+        <div className="col p-2 ps-4">
+          <div className="txt-grey">There are no Invoices assigned to this client.</div>
+        </div>
       </div>
     );
   };
@@ -146,29 +99,9 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient, quotes, properties, 
   const Requests = () => {
     return (
       <div className="row mt-4">
-        {requests.length ? (
-          <>
-            {requests.map((request: IRequest) => (
-              <div
-                onClick={() => navigate(pinterpolate('/dashboard/requests/:id', { id: request.id }))}
-                key={request.id}
-                className="pointer hover-grey row mb-3 border-bottom"
-              >
-                <div className="col p-2 ps-4">
-                  <div className="txt-grey">{request.name}</div>
-                  <div className="">{request.description}</div>
-                </div>
-                <div className="col p-2 ps-4">
-                  <span className="d-flex status status-blue float-end">{request.status}</span>
-                </div>
-              </div>
-            ))}
-          </>
-        ) : (
-          <div className="col p-2 ps-4">
-            <div className="txt-grey">There are no Job Requests to this client.</div>
-          </div>
-        )}
+        <div className="col p-2 ps-4">
+          <div className="txt-grey">There are no Invoices assigned to this client.</div>
+        </div>
       </div>
     );
   };
@@ -176,80 +109,135 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient, quotes, properties, 
   const Invoices = () => {
     return (
       <div className="row mt-4">
-        {invoices.length ? (
-          <>
-            {invoices.map((invoice: IInvoice) => (
-              <div
-                onClick={() => navigate(pinterpolate('/dashboard/invoices/:id', { id: invoice.id }))}
-                key={invoice.id}
-                className="pointer hover-grey row mb-3 border-bottom"
-              >
-                <div className="col p-2 ps-4">
-                  <div className="txt-grey">{invoice.subject}</div>
-                  <div className="">{invoice.message}</div>
-                </div>
-                <div className="col p-2 ps-4">
-                  {invoice.isPaid ? (
-                    <span className="d-flex status status-green float-end">Paid</span>
-                  ) : (
-                    <span className="d-flex status status-blue float-end">Pending</span>
-                  )}
-                </div>
-              </div>
-            ))}
-          </>
-        ) : (
-          <div className="col p-2 ps-4">
-            <div className="txt-grey">There are no Invoices assigned to this client.</div>
-          </div>
-        )}
+        <div className="col p-2 ps-4">
+          <div className="txt-grey">There are no Invoices assigned to this client.</div>
+        </div>
       </div>
     );
   };
 
-  const Jobs = ({ activeOnly = false }) => {
-    let activeTabJobs = jobs;
-    if (activeOnly) {
-      const nowTime = new Date().getTime();
-
-      activeTabJobs = jobs.filter((job) => {
-        return !job.isCompleted && job.startDate && new Date(job.startDate).getTime() < nowTime;
-      });
+  const Jobs = () => {
+    const [initialValues,] = useState<any>({
+      caption: '',
+      type: ''
+    });
+  
+    const opts: any = {
+      caption: Yup.string().required(`Caption is required`),
+      type: Yup.string().required(`Type is required`),
     }
+  
+    const ClientSchema = Yup.object().shape(opts);
+  
+    const formik = useFormik({
+      enableReinitialize: true,
+      initialValues: initialValues,
+      validationSchema: ClientSchema,
+      onSubmit: async (data: any) => {
+        // Preparing FormData
+        const formData = new FormData();
+  
+        // Add additional info to the Form Data
+        formData.append('caption', data.caption);
+        formData.append('type', data.type);
+  
+        !!data.photo && formData.append('photo', data.photo);
+  
+        // Update client
+        await uploadPhotosApi(id as string, formData);
+      }
+    });
 
     return (
       <div className="row mt-4">
-        {activeTabJobs.length ? (
-          <>
-            {activeTabJobs.map((job: any) => (
-              <div
-                onClick={() => navigate(pinterpolate('/dashboard/jobs/:id', { id: job.id }))}
-                key={job.id}
-                className="pointer hover-grey row mb-3 border-bottom"
-              >
-                <div className="col p-2 ps-4">
-                  <div className="txt-grey">{job.title}</div>
-                  <div className="">{job.instruction}</div>
-                </div>
-                <div className="col p-2 ps-4">
-                  <span className="d-flex status status-blue float-end">{job.type}</span>
-                </div>
+        {(currentClient as any).photos.map((photo: any) => {
+          return (
+            <div className='row mb-2' key={photo.caption}>
+              <div className="col-4">
+                <img src={'http://localhost:8000/api/v1/customers/avatars/' + photo.photo} style={{'width': "100px"}} />
               </div>
-            ))}
-          </>
-        ) : (
-          <div className="col p-2 ps-4">
-            <div className="txt-grey">There are no {activeOnly ? ' Active' : ''} Jobs assigned to this client.</div>
+              <div className="row col-8">
+                <div className="col-6">Caption: {photo.caption} </div>
+                <div className="col-6">Type: {photo.type}</div>
+              </div>
+            </div>
+          );
+        })}
+        
+        <form noValidate onSubmit={formik.handleSubmit}>
+          <h6 className='mt-3'>Add new picture:</h6>
+          {(!!formik.values?.photo) ? (
+            <div className="row mb-3 ps-1">
+              <div className="col-3 mt-2 pointer text-center">
+                {(typeof formik.values.photo) ? <img src={URL.createObjectURL(formik.values.photo as any)} style={{'width': "100px"}} /> : null}
+              </div>
+              {!id ? (
+                <div className="col-2 mt-2 pointer text-center">
+                  <span onClick={() => { formik.setFieldValue('photo', ''); }}>
+                    <XCircleIcon size={20} />
+                  </span>
+                </div>
+              ) : null}
+            </div>
+          ) : null}
+
+          {!(!!formik.values?.photo) ? (
+            <div className="row mb-3 mt-2 px-3">
+              <input
+                className="form-control hidden"
+                id="file"
+                type="file"
+                onChange={(event) => {
+                  if (event.target.files?.length) {
+                    formik.setFieldValue(`photo`, event.target.files[0]);
+                  }
+                }}
+              />
+              <label htmlFor={'file'} className="txt-orange dashed mt-2">
+                <UploadIcon /> Select Picture of a customer
+              </label>
+            </div>
+          ) : null}
+
+          <div className="col">
+            <InputField
+              label="Caption"
+              value={formik.values.caption}
+              placeholder="Enter Caption"
+              name="caption"
+              helperComponent={formik.errors.caption && formik.touched.caption ? <div className="txt-red"><StopIcon size={14} /> {formik.errors.caption}</div> : null}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              isRequired={true}
+            />
           </div>
-        )}
+          <div className="col">
+            <InputField
+              value={formik.values.type}
+              label="Type"
+              placeholder="Enter Type"
+              name="type"
+              helperComponent={formik.errors.type && formik.touched.type ? <div className="txt-red"><StopIcon size={14} /> {formik.errors.type}</div> : null}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              isRequired={true}
+            />
+          </div>
+
+          <div className="mb-3 mt-2 m-1">
+            <button type="submit" className="btn btn-primary">
+              {id ? 'Update' : 'Save'} Client Info
+            </button>
+          </div>
+        </form>
       </div>
     );
   };
 
   const TabContent = () => {
     switch (tab) {
-      case Tabs.ActiveJob:
-        return <Jobs activeOnly={true} />;
+      case Tabs.ClientDetails:
+        return <Jobs />;
       case Tabs.Invoices:
         return <Invoices />;
       case Tabs.Jobs:
@@ -269,6 +257,10 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient, quotes, properties, 
         );
     }
   };
+
+  useEffect(() => {
+    if (id) actions.fetchClient(id);
+  }, [id]);
 
   return (
     <>
@@ -344,19 +336,19 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient, quotes, properties, 
               </div>
               <div className="">
                 <div className="row mt-3">
-                  <div className={`col tab me-1 ${tab === Tabs.ActiveJob ? 'active-tab' : ''}`} onClick={() => setTab(Tabs.ActiveJob)}>
+                  <div className={`col tab me-1 ${tab === Tabs.ClientDetails ? 'active-tab' : ''}`} onClick={() => setTab(Tabs.ClientDetails)}>
                     Client's Details
                   </div>
-                  <div className={`col tab me-1 ${tab === Tabs.Jobs ? 'active-tab' : ''}`} onClick={() => setTab(Tabs.Jobs)}>
+                  <div className={`col tab me-1 ${tab === Tabs.Invoices ? 'active-tab' : ''}`} onClick={() => setTab(Tabs.Invoices)}>
                     Client's Sessions
                   </div>
                   <div className={`col tab me-1 ${tab === Tabs.Jobs ? 'active-tab' : ''}`} onClick={() => setTab(Tabs.Jobs)}>
                     Client's Pictures
                   </div>
-                  <div className={`col tab me-1 ${tab === Tabs.Jobs ? 'active-tab' : ''}`} onClick={() => setTab(Tabs.Jobs)}>
+                  <div className={`col tab me-1 ${tab === Tabs.Quotes ? 'active-tab' : ''}`} onClick={() => setTab(Tabs.Quotes)}>
                     Client used Products
                   </div>
-                  <div className={`col tab me-1 ${tab === Tabs.Jobs ? 'active-tab' : ''}`} onClick={() => setTab(Tabs.Jobs)}>
+                  <div className={`col tab me-1 ${tab === Tabs.Requests ? 'active-tab' : ''}`} onClick={() => setTab(Tabs.Requests)}>
                     Client's Orders
                   </div>
                 </div>
@@ -375,37 +367,14 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient, quotes, properties, 
 const mapStateToProps = (state: any) => {
   return {
     currentClient: state.clients.currentUser,
-    isClientsLoading: state.clients.isLoading,
-    jobs: state.jobs.jobs?.data?.rows || [],
-    properties: state.properties.properties || [],
-    quotes: state.quotes.itemList?.data?.rows || [],
-    invoices: state.invoices.itemList?.data?.rows || [],
-    requests: state.jobRequests.itemList?.data?.rows || []
+    isClientsLoading: state.clients.isLoading
   };
 };
 
 const mapDispatchToProps = (dispatch: any) => ({
   actions: {
-    fetchQuotes: (payload: any) => {
-      dispatch(quotesActions.fetchQuotes(payload));
-    },
-    addProperty: (data: any) => {
-      dispatch(propertiesActions.addProperty(data));
-    },
-    fetchProperties: (filter: any) => {
-      dispatch(propertiesActions.fetchProperties(filter));
-    },
-    fetchJobRequests: (payload: any) => {
-      dispatch(jobReqActions.fetchJobRequests(payload));
-    },
-    fetchJobs: (payload: any) => {
-      dispatch(jobsActions.fetchJobs(payload));
-    },
     fetchClient: (id: string) => {
       dispatch(clientsActions.fetchClient(id));
-    },
-    fetchInvoices: (payload: any) => {
-      dispatch(invoicesActions.fetchInvoices(payload));
     }
   }
 });

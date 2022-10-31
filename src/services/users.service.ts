@@ -13,6 +13,11 @@ export const addUserApi = async (payload: any) => {
   return await http.post(url, payload);
 };
 
+export const uploadPhotosApi = async (id: string, payload: any) => {
+  const url = '/v1/customers/' + id + '/images';
+  return await http.post(url, payload);
+};
+
 export const deleteUserApi = async (id: string) => {
   const url = '/v1/customers/' + id;
   return await http.delete(url);

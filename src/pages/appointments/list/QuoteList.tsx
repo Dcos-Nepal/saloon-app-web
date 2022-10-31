@@ -28,7 +28,8 @@ interface IQuote {
   notes: string;
   type: any;
   status: any;
-  dateTime: any;
+  appointmentDate: string;
+  appointmentTime: string;
   services: any[];
   createdAt: string;
   updatedAt: string;
@@ -44,6 +45,7 @@ const QuotesList = (props: any) => {
   const navigate = useNavigate();
   const currentUser = getCurrentUser();
   const [query, setQuery] = useState('');
+  const [queryDate, setQueryDate] = useState('');
   const [itemsPerPage] = useState(10);
   const [offset, setOffset] = useState(1);
   const [pageCount, setPageCount] = useState(0);
@@ -72,6 +74,11 @@ const QuotesList = (props: any) => {
   const handleQuotesSearch = (event: any) => {
     const query = event.target.value;
     setQuery(query);
+  };
+
+  const handleQuotesFilter = (event: any) => {
+    const query = event.target.value;
+    setQueryDate(query);
   };
 
   const handleStatusChange = async (id: string, data: any) => {
@@ -165,7 +172,7 @@ const QuotesList = (props: any) => {
         accessor: (row: IQuote) => {
           return (<>
             Scheduled for: <br/>
-            <div style={{'fontSize': 16, 'fontWeight': 600}}>{DateTime.fromISO(row.dateTime).toFormat('yyyy LLL dd hh:mm:ss a')}</div>
+            <div style={{'fontSize': 16, 'fontWeight': 600}}>{row.appointmentDate} {DateTime.fromISO(row.appointmentTime).toFormat('h:mm a') }</div>
             {row.type === 'TREATMENT' ? <div className='text-primary'>Services: {row.services.join(', ')}</div> : null}
           </>);
         }
@@ -219,14 +226,22 @@ const QuotesList = (props: any) => {
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({ columns, data: quotes });
 
   useEffect(() => {
-    const quoteQuery: { quoteFor?: string; createdBy?: string;} = {}
+    const quoteQuery: { q?: string; appointmentDate?: string; createdBy?: string;} = {}
 
     if (currentUser.role === 'SHOP_ADMIN') {
       quoteQuery.createdBy = currentUser.id;
     }
 
-    props.actions.fetchQuotes({ q: query, ...quoteQuery, page: offset, limit: itemsPerPage });
-  }, [offset, itemsPerPage, query, currentUser.id, currentUser.role]);
+    if (queryDate) {
+      quoteQuery.appointmentDate = queryDate;
+    }
+
+    if (query) {
+      quoteQuery.q = query;
+    }
+
+    props.actions.fetchQuotes({ ...quoteQuery, page: offset, limit: itemsPerPage });
+  }, [offset, itemsPerPage, query, queryDate, currentUser.id, currentUser.role]);
 
   useEffect(() => {
     if (props.itemList?.data?.rows) {
@@ -240,7 +255,8 @@ const QuotesList = (props: any) => {
             services: row?.services,
             status: row.status,
             type: row.type,
-            dateTime: row.dateTime,
+            appointmentDate: row.appointmentDate,
+            appointmentTime: row.appointmentTime,
             createdAt: row.createdAt,
             updatedAt: new Date(row.updatedAt).toDateString()
           }))
@@ -264,7 +280,7 @@ const QuotesList = (props: any) => {
             <InputField label="Search" placeholder="Search appointments" className="search-input" onChange={handleSearch} />
           </div>
           <div className="col-4">
-            <InputField type="date" label="Search" placeholder="Search Date" className="search-input" onChange={handleSearch} />
+            <InputField type="date" label="Search" placeholder="Search Date" className="search-input" onChange={handleQuotesFilter} />
           </div>
           {!quotes.length ? (
             <EmptyState />

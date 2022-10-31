@@ -65,6 +65,18 @@ const SideNavbar: FC<IProps> = ({ active }) => {
             </li>
           ) : null}
 
+          <li>
+            <span
+              onClick={() => navigate('/dashboard/' + endpoints.admin.schedules.calendar)}
+              className={active === 'Schedule' ? 'nav-link nav-link-active align-middle px-0' : 'nav-link align-middle px-0'}
+            >
+              <span className="mt-1">
+                <CalendarIcon size={'small'} />
+              </span>
+              <span className="ms-2 d-none d-sm-inline">Booking</span>
+            </span>
+          </li>
+
           <li className="nav-item">
             <span
               onClick={() => navigate('/dashboard')}

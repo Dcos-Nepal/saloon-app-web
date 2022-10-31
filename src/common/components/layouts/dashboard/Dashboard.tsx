@@ -12,6 +12,7 @@ const Quotes = React.lazy(() => import('pages/appointments'));
 const LineItems = React.lazy(() => import('pages/lineItems'));
 const Profile = React.lazy(() => import('pages/profile'));
 const Setting = React.lazy(() => import('pages/setting'));
+const Schedules = React.lazy(() => import('pages/bookings'));
 
 interface IProps {
   location?: any;
@@ -66,6 +67,14 @@ const Dashboard: FC<IProps> = (): JSX.Element => {
           element={
             <Suspense fallback={<Loader isLoading={true} />}>
               <Setting />
+            </Suspense>
+          }
+        />
+        <Route
+          path={endpoints.admin.schedules.calendar}
+          element={
+            <Suspense fallback={<Loader isLoading={true} />}>
+              <Schedules />
             </Suspense>
           }
         />

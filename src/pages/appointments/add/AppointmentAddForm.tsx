@@ -15,7 +15,8 @@ const AppointmentAddForm = ({ closeModal, client, saveHandler }: { client?: any;
     customer: client._id,
     type: 'CONSULTATION',
     services: [],
-    dateTime: '',
+    appointmentDate: '',
+    appointmentTime: '',
     notes: '',
     session: '0',
     interval: 'REGULAR'
@@ -26,8 +27,8 @@ const AppointmentAddForm = ({ closeModal, client, saveHandler }: { client?: any;
   const LineItemFormSchema = Yup.object().shape({
     customer: Yup.string().required('Customer is required'),
     type: Yup.string().required('Type is required'),
-    notes: Yup.string().optional(),
-    dateTime: Yup.string().required('Date Time is required'),
+    appointmentDate: Yup.string().required('Date is required'),
+    appointmentTime: Yup.string().required('Time is required'),
     services: Yup
       .array()
       .when("type", {
@@ -45,7 +46,8 @@ const AppointmentAddForm = ({ closeModal, client, saveHandler }: { client?: any;
       .when("type", {
         is: 'MAINTAINANCE',
         then: Yup.string().nullable()
-      }).required('Session is required')
+      }).required('Session is required'),
+    notes: Yup.string().optional(),
   });
 
   const formik = useFormik({
@@ -124,7 +126,7 @@ const AppointmentAddForm = ({ closeModal, client, saveHandler }: { client?: any;
                 />
               ): null}
 
-              {formik.values.type == 'MAINTAINANCE' ? (
+              {formik.values.type === 'MAINTAINANCE' ? (
                 <SelectField
                   label="Appointment Interval"
                   name="interval"
@@ -139,7 +141,7 @@ const AppointmentAddForm = ({ closeModal, client, saveHandler }: { client?: any;
                 />
               ): null}
 
-              {formik.values.type == 'TREATMENT' ? (
+              {formik.values.type === 'TREATMENT' ? (
                 <InputField
                   label="Session Name"
                   type="text"
@@ -152,13 +154,23 @@ const AppointmentAddForm = ({ closeModal, client, saveHandler }: { client?: any;
               ) : null}
 
               <InputField
-                label="Date and Time"
-                type="datetime-local"
-                placeholder="Select Date and Time"
-                name="dateTime"
-                value={formik.values.dateTime}
+                label="Appointment Date"
+                type="date"
+                placeholder="Select Date"
+                name="appointmentDate"
+                value={formik.values.appointmentDate}
                 onChange={formik.handleChange}
-                helperComponent={<ErrorMessage name="dateTime"/>}
+                helperComponent={<ErrorMessage name="appointmentDate"/>}
+              />
+
+              <InputField
+                label="Appointment Time"
+                type="time"
+                placeholder="Select Time"
+                name="appointmentTime"
+                value={formik.values.appointmentTime}
+                onChange={formik.handleChange}
+                helperComponent={<ErrorMessage name="appointmentTime"/>}
               />
 
               <TextArea

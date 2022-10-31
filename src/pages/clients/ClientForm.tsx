@@ -171,6 +171,7 @@ const ClientForm: FC<IProps> = ({ id, isClientsLoading, actions, currentClient }
                     </label>
                   </div>
                 ) : null}
+
                 <div className="col">
                   <InputField
                     label="First name"

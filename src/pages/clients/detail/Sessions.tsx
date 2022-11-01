@@ -1,11 +1,9 @@
-import { useNavigate } from 'react-router-dom';
 import { Column, useTable } from 'react-table';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import * as quotesActions from '../../../store/actions/quotes.actions';
 
 import InputField from 'common/components/form/Input';
-import SelectField from 'common/components/form/Select';
 import ReactPaginate from 'react-paginate';
 import { connect } from 'react-redux';
 import { Loader } from 'common/components/atoms/Loader';
@@ -15,12 +13,9 @@ import Modal from 'common/components/atoms/Modal';
 import { toast } from 'react-toastify';
 import DeleteConfirm from 'common/components/DeleteConfirm';
 import { deleteQuoteApi } from 'services/quotes.service';
-import StatusChangeWithReason from './StatusChangeWithReason';
-import { EyeIcon, PencilIcon, TrashIcon } from '@primer/octicons-react';
+import { TrashIcon } from '@primer/octicons-react';
 import { getCurrentUser } from 'utils';
 import { DateTime } from 'luxon';
-import { calculateJobDuration } from 'utils/timer';
-import ReactTooltip from 'react-tooltip';
 
 interface IQuote {
   id: string;
@@ -36,14 +31,7 @@ interface IQuote {
   updatedAt: string;
 }
 
-const quoteStatusOptions = [
-  { label: 'WAITING', value: 'WAITING' },
-  { label: 'IN PROCESS', value: 'IN_PROGRESS' },
-  { label: 'COMPLETED', value: 'COMPLETED' }
-];
-
-const AppointmentList = (props: any) => {
-  const navigate = useNavigate();
+const Sessions = (props: any) => {
   const currentUser = getCurrentUser();
   const [query, setQuery] = useState('');
   const [queryDate, setQueryDate] = useState('');
@@ -82,122 +70,27 @@ const AppointmentList = (props: any) => {
     setQueryDate(query);
   };
 
-  const handleStatusChange = async (id: string, data: any) => {
-    await props.actions.updateQuoteStatus({ id, data });
-  };
-
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const handleSearch = useCallback(debounce(handleQuotesSearch, 300), []);
-
-  const Status = ({ row }: { row: IQuote }) => {
-    const [statusChangeInProgress, setStatusChangeInProgress] = useState('');
-
-    return (
-      <div style={{ minWidth: '150px' }}>
-        <SelectField
-          isDisabled={row.status.name === 'COMPLETED'}
-          label=""
-          options={quoteStatusOptions}
-          value={{ label: row.status.name, value: row.status.name }}
-          placeholder="All"
-          handleChange={(selected: { label: string; value: string }) => {
-            handleStatusChange(row.id, {
-              status: {
-                name: selected.value,
-                duration: calculateJobDuration({
-                  startDate: new Date(row.status.date).toISOString(),
-                  endDate: new Date().toISOString()
-                })
-              }
-            })
-          }}
-          helperComponent={<div className="">{''}</div>}
-        />
-        <Modal isOpen={!!statusChangeInProgress} onRequestClose={() => setStatusChangeInProgress('')}>
-          <StatusChangeWithReason
-            id={row.id}
-            status={quoteStatusOptions.find((statusLabelValue) => statusLabelValue.value === statusChangeInProgress)}
-            onSave={handleStatusChange}
-            closeModal={() => setStatusChangeInProgress('')}
-          />
-        </Modal>
-      </div>
-    );
-  };
-
-  const Timer = (props: any) => {
-    const [timer, setTimer] = useState(calculateJobDuration({
-      startDate: new Date(props.date).toISOString(),
-      endDate: new Date().toISOString()
-    }));
-  
-    useEffect(() => {
-      const inte = setInterval(() => {
-        setTimer(calculateJobDuration({
-          startDate: new Date(props.date).toISOString(),
-          endDate: new Date().toISOString()
-        }));
-      }, 1000);
-
-      return () => {
-        clearInterval(inte);
-      } 
-    }, [props.status]);
-
-    return <div style={{'fontSize': 18, fontWeight: '600'}}>{timer}</div>;
-  }
 
   const columns: Column<IQuote>[] = useMemo(
     () => [
       {
-        Header: 'APPOINTMENT INFO',
+        Header: 'APPOINTMENT DATE',
         accessor: (row: IQuote) => {
-          return (
-            <div onClick={() => navigate('/dashboard/clients/' + row.customer.id)}>
-              <div>{row.customer?.fullName || ' Not Entered '}</div>
-              <div>{row.customer?.phoneNumber}</div>
-            </div>
-          );
+          return <>
+            <div>{row.appointmentDate} {DateTime.fromISO(row.appointmentTime).toFormat('h:mm a') }</div>
+            {row.type === 'TREATMENT' ? <div className='text-primary'>Services: {row.services.join(', ')}</div> : null}
+          </>;
         }
       },
       {
         Header: 'SESSION INFO',
-        accessor: (row: IQuote) => {
-          return (<div>{row.session || ' Not Entered '}</div>);
-        }
-      },
-      {
-        Header: 'WAITING TIME',
-        accessor: (row: IQuote) => {
-          return row.status.name === 'COMPLETED'
-            ? <div>Completed on: <br/> <span style={{'fontSize': 16, 'fontWeight': 600}}>{DateTime.fromISO(row.status.date).toFormat('yyyy-MM-dd HH:mm a')}</span></div>
-            : <>Currently {(row.status.name).toLowerCase().split('_').join(' ')} <br/> <Timer date={row.status.date} status={row.status.name}/></>;
-        }
-      },
-      {
-        Header: 'APPOINTMENT DATE',
-        accessor: (row: IQuote) => {
-          return (<>
-            Scheduled for: <br/>
-            <div style={{'fontSize': 16, 'fontWeight': 600}}>{row.appointmentDate} {DateTime.fromISO(row.appointmentTime).toFormat('h:mm a') }</div>
-            {row.type === 'TREATMENT' ? <div className='text-primary'>Services: {row.services.join(', ')}</div> : null}
-          </>);
-        }
-      },
-      {
-        Header: 'Notes',
-        accessor: ((row: IQuote) => {
-          return <>
-            <a data-tip data-for='global'> <button className='btn btn-secondary'>Hover Me</button></a>
-            <ReactTooltip id='global' aria-haspopup='true' role='example'>
-            <p>{row.notes}</p>
-            </ReactTooltip>
-          </>
-        })
+        accessor: (row: IQuote) => (<div>{row.session}</div>)
       },
       {
         Header: 'STATUS',
-        accessor: (row: IQuote) => <Status row={row} />
+        accessor: (row: IQuote) => (<div>{row.status.name}</div>)
       },
       {
         Header: ' ',
@@ -208,18 +101,10 @@ const AppointmentList = (props: any) => {
               <box-icon name="dots-vertical-rounded" />
             </span>
             <ul className="dropdown-menu" aria-labelledby="dropdownMenuLink">
-              <li onClick={() => navigate(row.id)}>
-                <span className="dropdown-item cursor-pointer"><EyeIcon /> View Detail</span>
-              </li>
               {(currentUser.role === 'ADMIN' || currentUser.role === 'SHOP_ADMIN') ? (
-                <>
-                  <li onClick={() => navigate(row.id + '/edit')}>
-                    <span className="dropdown-item cursor-pointer"><PencilIcon /> Edit</span>
-                  </li>
-                  <li onClick={() => setDeleteInProgress(row.id)}>
-                    <span className="dropdown-item cursor-pointer"><TrashIcon /> Delete</span>
-                  </li>
-                </>
+                <li onClick={() => setDeleteInProgress(row.id)}>
+                  <span className="dropdown-item cursor-pointer"><TrashIcon /> Delete</span>
+                </li>
               ) : null}
             </ul>
           </div>
@@ -233,11 +118,13 @@ const AppointmentList = (props: any) => {
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({ columns, data: quotes });
 
   useEffect(() => {
-    const quoteQuery: { q?: string; appointmentDate?: string; createdBy?: string;} = {}
-
-    if (currentUser.role === 'SHOP_ADMIN') {
-      quoteQuery.createdBy = currentUser.id;
-    }
+    const quoteQuery: {
+        q?: string;
+        appointmentDate?: string;
+        createdBy?: string;
+        status?: string,
+        customer?: string;
+    } = {}
 
     if (queryDate) {
       quoteQuery.appointmentDate = queryDate;
@@ -247,6 +134,10 @@ const AppointmentList = (props: any) => {
       quoteQuery.q = query;
     }
 
+    if (props.customer) {
+        quoteQuery.customer = props.customer;
+    }
+
     props.actions.fetchQuotes({ ...quoteQuery, page: offset, limit: itemsPerPage });
   }, [offset, itemsPerPage, query, queryDate, currentUser.id, currentUser.role]);
 
@@ -254,7 +145,6 @@ const AppointmentList = (props: any) => {
     if (props.itemList?.data?.rows) {
       setQuotes(
         props.itemList.data?.rows
-          .filter((row: any) => props?.appointmentType ? props.appointmentType?.toLowerCase() === row.type?.toLowerCase() :  true)
           .map((row: IQuote) => ({
             id: row.id,
             customer: row.customer,
@@ -262,10 +152,9 @@ const AppointmentList = (props: any) => {
             services: row?.services,
             status: row.status,
             type: row.type,
-            session: row.session,
             appointmentDate: row.appointmentDate,
             appointmentTime: row.appointmentTime,
-            createdAt: row.createdAt,
+            createdAt: new Date(row.createdAt).toDateString(),
             updatedAt: new Date(row.updatedAt).toDateString()
           }))
       );
@@ -277,18 +166,13 @@ const AppointmentList = (props: any) => {
   return (
     <>
       <div className="card">
-        <div className="row">
-          <div className="col">
-            <h5 className="extra">{props.appointmentType}</h5>
-          </div>
-        </div>
         <div className="row pt-2 m-1 rounded-top bg-grey">
           <Loader isLoading={props.isLoading} />
           <div className="col-8">
-            <InputField label="Search" placeholder="Search appointments" className="search-input" onChange={handleSearch} />
+            <InputField label="Search" placeholder="Search visits" className="search-input" onChange={handleSearch} />
           </div>
           <div className="col-4">
-            <InputField type="date" label="Search" placeholder="Search Date" className="search-input" onChange={handleQuotesFilter} />
+            <InputField  type="date" label="Search" placeholder="Search visits" className="search-input" onChange={handleQuotesFilter} />
           </div>
           {!quotes.length ? (
             <EmptyState />
@@ -358,11 +242,8 @@ const mapDispatchToProps = (dispatch: any) => ({
   actions: {
     fetchQuotes: (payload: any) => {
       dispatch(quotesActions.fetchQuotes(payload));
-    },
-    updateQuoteStatus: (payload: any) => {
-      dispatch(quotesActions.updateQuoteStatus(payload.id, payload.data));
     }
   }
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(AppointmentList);
+export default connect(mapStateToProps, mapDispatchToProps)(Sessions);

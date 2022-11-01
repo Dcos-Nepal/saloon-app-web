@@ -92,8 +92,8 @@ const SideNavbar: FC<IProps> = ({ active }) => {
           {currUser.role === 'SHOP_ADMIN' || currUser.role === 'ADMIN' ? (
             <li>
               <span
-                onClick={() => navigate('/dashboard/' + endpoints.admin.quotes.list)}
-                className={active === 'Quotes' ? 'nav-link nav-link-active align-middle px-0' : 'nav-link align-middle px-0'}
+                onClick={() => navigate('/dashboard/visits')}
+                className={active === 'visits' ? 'nav-link nav-link-active align-middle px-0' : 'nav-link align-middle px-0'}
               >
                 <span className="mt-2">
                   <FileBadgeIcon size={'small'} />

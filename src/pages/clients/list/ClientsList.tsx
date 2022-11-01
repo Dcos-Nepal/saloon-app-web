@@ -20,6 +20,7 @@ import { getCurrentUser } from 'utils';
 import AppointmentAddForm from 'pages/appointments/add';
 import { createQuotesApi } from 'services/quotes.service';
 import { DateTime } from 'luxon';
+import DummyImage from '../../../assets/images/dummy.png';
 
 interface IClient {
   name: string;
@@ -129,7 +130,9 @@ const ClientsList = (props: any) => {
           return (
             <div className='row'>
               <div className='col-4'>
-                <img src={'http://localhost:8000/api/v1/customers/avatars/' + row.photo} style={{'width': "72px", borderRadius: '5px'}} />
+                <object data={process.env.REACT_APP_API +'v1/customers/avatars/' + row.photo} style={{'width': '100px'}}>
+                  <img src={DummyImage} alt="Stack Overflow logo and icons and such" style={{'width': '100px'}}/>
+                </object>
               </div>
               <div className='col-8'>
                 <div className="cursor-pointer" onClick={() => navigate(pinterpolate(endpoints.admin.client.detail, { id: row._id }))}>

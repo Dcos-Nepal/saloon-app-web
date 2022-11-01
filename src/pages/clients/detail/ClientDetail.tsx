@@ -1,23 +1,19 @@
 import * as Yup from 'yup';
 import { connect } from 'react-redux';
-import pinterpolate from 'pinterpolate';
 import { FC, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import { getCurrentUser } from 'utils';
 import { IClient } from 'common/types/client';
 import { Loader } from 'common/components/atoms/Loader';
-import * as jobsActions from 'store/actions/job.actions';
-import * as quotesActions from 'store/actions/quotes.actions';
 import * as clientsActions from 'store/actions/clients.actions';
-import * as invoicesActions from 'store/actions/invoices.actions';
-import * as jobReqActions from 'store/actions/job-requests.actions';
-import * as propertiesActions from 'store/actions/properties.actions';
 import { PencilIcon, StopIcon, UploadIcon, XCircleIcon } from '@primer/octicons-react';
 import { DateTime } from 'luxon';
 import { useFormik } from 'formik';
 import { uploadPhotosApi } from 'services/users.service';
 import InputField from 'common/components/form/Input';
+import DummyImage from '../../../assets/images/dummy.png';
+import Sessions from './Sessions';
+import { toast } from 'react-toastify';
 
 interface IRequest {
   id: string;
@@ -109,8 +105,19 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient, quotes, requests, in
   const Invoices = () => {
     return (
       <div className="row mt-4">
+        <Sessions customer={currentClient?._id}/>
         <div className="col p-2 ps-4">
           <div className="txt-grey">There are no Invoices assigned to this client.</div>
+        </div>
+      </div>
+    );
+  };
+
+  const ClientDetails = () => {
+    return (
+      <div className="row mt-4">
+        <div className="col p-2 ps-4">
+          <div className="txt-grey">There are no info in this section.</div>
         </div>
       </div>
     );
@@ -145,6 +152,9 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient, quotes, requests, in
   
         // Update client
         await uploadPhotosApi(id as string, formData);
+
+        formik.resetForm();
+        toast.success('File uploaded successfully!')
       }
     });
 
@@ -154,7 +164,9 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient, quotes, requests, in
           return (
             <div className='row mb-2' key={photo.caption}>
               <div className="col-4">
-                <img src={'http://localhost:8000/api/v1/customers/avatars/' + photo.photo} style={{'width': "100px"}} />
+                <object data={process.env.REACT_APP_API +'v1/customers/avatars/' + photo.photo} style={{'width': '100px'}}>
+                  <img src={DummyImage} alt="Stack Overflow logo and icons and such" style={{'width': '100px'}}/>
+                </object>
               </div>
               <div className="row col-8">
                 <div className="col-6">Caption: {photo.caption} </div>
@@ -237,7 +249,7 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient, quotes, requests, in
   const TabContent = () => {
     switch (tab) {
       case Tabs.ClientDetails:
-        return <Jobs />;
+        return <ClientDetails />;
       case Tabs.Invoices:
         return <Invoices />;
       case Tabs.Jobs:
@@ -291,7 +303,9 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient, quotes, requests, in
                 <div className="hr mb-2" />
                 <div className="row mt-2">
                   <div className="col-4">
-                    <img src={'http://localhost:8000/api/v1/customers/avatars/' + currentClient.photo} style={{'width': "100px", 'borderRadius': '5px', borderWidth: '20px', borderColor: 'red'}}/>
+                    <object data={process.env.REACT_APP_API +'v1/customers/avatars/' + currentClient.photo} style={{'width': '100px'}}>
+                      <img src={DummyImage} alt="Stack Overflow logo and icons and such" style={{'width': '100px'}}/>
+                    </object>
                   </div>
                   <div className="col-8">
                     <div className="row mt-4">

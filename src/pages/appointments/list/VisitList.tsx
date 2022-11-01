@@ -1,4 +1,3 @@
-import { useNavigate } from 'react-router-dom';
 import { Column, useTable } from 'react-table';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
@@ -14,7 +13,7 @@ import Modal from 'common/components/atoms/Modal';
 import { toast } from 'react-toastify';
 import DeleteConfirm from 'common/components/DeleteConfirm';
 import { deleteQuoteApi } from 'services/quotes.service';
-import { EyeIcon, PencilIcon, TrashIcon } from '@primer/octicons-react';
+import { TrashIcon } from '@primer/octicons-react';
 import { getCurrentUser } from 'utils';
 import { DateTime } from 'luxon';
 
@@ -24,6 +23,7 @@ interface IQuote {
   notes: string;
   type: any;
   status: any;
+  session: string;
   appointmentDate: string;
   appointmentTime: string;
   services: any[];
@@ -32,7 +32,6 @@ interface IQuote {
 }
 
 const VisitList = (props: any) => {
-  const navigate = useNavigate();
   const currentUser = getCurrentUser();
   const [query, setQuery] = useState('');
   const [queryDate, setQueryDate] = useState('');
@@ -82,7 +81,7 @@ const VisitList = (props: any) => {
           return (
             <div>
               <div>{row.customer?.fullName || ' Not Entered '}</div>
-              <div>{row.customer?.phoneNumber} {row.customer?.email ? `(${row.customer?.email})` : ''} </div>
+              <div>{row.customer?.phoneNumber} </div>
             </div>
           );
         }
@@ -90,7 +89,10 @@ const VisitList = (props: any) => {
       {
         Header: 'APPOINTMENT DATE',
         accessor: (row: IQuote) => {
-          return <div>{row.appointmentDate} {DateTime.fromISO(row.appointmentTime).toFormat('h:mm a') }</div>
+          return <>
+            <div>{row.appointmentDate} {DateTime.fromISO(row.appointmentTime).toFormat('h:mm a') }</div>
+            {row.type === 'TREATMENT' ? <div className='text-primary'>Services: {row.services.join(', ')}</div> : null}
+          </>;
         }
       },
       {
@@ -106,18 +108,10 @@ const VisitList = (props: any) => {
               <box-icon name="dots-vertical-rounded" />
             </span>
             <ul className="dropdown-menu" aria-labelledby="dropdownMenuLink">
-              <li onClick={() => navigate(row.id)}>
-                <span className="dropdown-item cursor-pointer"><EyeIcon /> View Detail</span>
-              </li>
               {(currentUser.role === 'ADMIN' || currentUser.role === 'SHOP_ADMIN') ? (
-                <>
-                  <li onClick={() => navigate(row.id + '/edit')}>
-                    <span className="dropdown-item cursor-pointer"><PencilIcon /> Edit</span>
-                  </li>
-                  <li onClick={() => setDeleteInProgress(row.id)}>
-                    <span className="dropdown-item cursor-pointer"><TrashIcon /> Delete</span>
-                  </li>
-                </>
+                <li onClick={() => setDeleteInProgress(row.id)}>
+                  <span className="dropdown-item cursor-pointer"><TrashIcon /> Delete</span>
+                </li>
               ) : null}
             </ul>
           </div>
@@ -131,11 +125,7 @@ const VisitList = (props: any) => {
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({ columns, data: quotes });
 
   useEffect(() => {
-    const quoteQuery: { q?: string; appointmentDate?: string; createdBy?: string;} = {}
-
-    if (currentUser.role === 'SHOP_ADMIN') {
-      quoteQuery.createdBy = currentUser.id;
-    }
+    const quoteQuery: { q?: string; appointmentDate?: string; createdBy?: string; status?: string} = {}
 
     if (queryDate) {
       quoteQuery.appointmentDate = queryDate;
@@ -145,6 +135,8 @@ const VisitList = (props: any) => {
       quoteQuery.q = query;
     }
 
+    quoteQuery.status = 'COMPLETED'
+
     props.actions.fetchQuotes({ ...quoteQuery, page: offset, limit: itemsPerPage });
   }, [offset, itemsPerPage, props.actions, query, queryDate, currentUser.id, currentUser.role]);
 
@@ -152,7 +144,7 @@ const VisitList = (props: any) => {
     if (props.itemList?.data?.rows) {
       setQuotes(
         props.itemList.data?.rows
-          .filter((row: any) => props?.isToday && !(!!queryDate) ? DateTime.fromJSDate(new Date()).toFormat('yyyy LLL dd') ===  DateTime.fromISO(row.dateTime).toFormat('yyyy LLL dd') : true)
+          .filter((row: any) => props?.appointmentType ? props.appointmentType?.toLowerCase() === row.type?.toLowerCase() :  true)
           .map((row: IQuote) => ({
             id: row.id,
             customer: row.customer,

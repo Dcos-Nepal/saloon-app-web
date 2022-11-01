@@ -7,8 +7,8 @@ import PageNotFound from 'pages/NotFound';
 
 // Lazy loading the component
 const Summary = React.lazy(() => import('pages/dashboard/Summary'));
+const Visits = React.lazy(() => import('pages/dashboard/Visits'));
 const Clients = React.lazy(() => import('pages/clients/index'));
-const Quotes = React.lazy(() => import('pages/appointments'));
 const LineItems = React.lazy(() => import('pages/lineItems'));
 const Profile = React.lazy(() => import('pages/profile'));
 const Setting = React.lazy(() => import('pages/setting'));
@@ -47,10 +47,10 @@ const Dashboard: FC<IProps> = (): JSX.Element => {
           }
         />
         <Route
-          path={endpoints.admin.quotes.list + '/*'}
+          path={'/visits'}
           element={
             <Suspense fallback={<Loader isLoading={true} />}>
-              <Quotes/>
+              <Visits/>
             </Suspense>
           }
         />

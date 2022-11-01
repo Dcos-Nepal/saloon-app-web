@@ -50,7 +50,7 @@ const ClientForm: FC<IProps> = ({ id, isClientsLoading, actions, currentClient }
     phoneNumber: Yup.string()
       .label('Phone Number')
       .notRequired()
-      .matches(/^\+(?:[0-9] ?){6,14}[0-9]$/, "Phone number must be at least 6 numbers to 14 numbers starting with '+'"),
+      .matches(/^(?:[0-9] ?){6,14}[0-9]$/, "Phone number must be at least 6 numbers to 14 numbers"),
     address: Yup.string(),
     gender: Yup.string(),
     dateOfBirth: Yup.object().nullable(),

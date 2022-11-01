@@ -87,11 +87,12 @@ const WorkSchedule = (props: any) => {
 
     return (
       <div className={backgroundClass}>
-        <div title={eventInfo.event.title + ' - ' + meta?.job?.jobFor?.fullName}>
-          {eventInfo.event.title} - {meta?.job?.jobFor?.fullName}
+        <div title={eventInfo.event.title}>
+          <small>{meta.type}</small><br/>
+          <div>{eventInfo.event.title} - {meta?.fullName}</div>
         </div>
         <div>
-          <ClockIcon size={12} /> {new Date(eventInfo.event.start).toLocaleTimeString('en-AU')}
+          <ClockIcon size={12} /> {new Date(eventInfo.event.start).toLocaleTimeString()}
         </div>
       </div>
     );

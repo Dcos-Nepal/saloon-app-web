@@ -31,6 +31,7 @@ interface IQuote {
   session: string;
   appointmentDate: string;
   appointmentTime: string;
+  createdDate: string;
   services: any[];
   createdAt: string;
   updatedAt: string;
@@ -265,6 +266,7 @@ const AppointmentList = (props: any) => {
             session: row.session,
             appointmentDate: row.appointmentDate,
             appointmentTime: row.appointmentTime,
+            createdDate: row.createdDate,
             createdAt: row.createdAt,
             updatedAt: new Date(row.updatedAt).toDateString()
           }))

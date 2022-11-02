@@ -157,7 +157,7 @@ const WorkSchedule = (props: any) => {
           </div>
           <div className='col-2 pt-2'>
             <button onClick={() => setAddLineItemOpen(true)} type="button" className="btn btn-primary d-flex float-end">
-              Create Line Item
+              Add Booking
             </button>
           </div>
           <label className="txt-grey">

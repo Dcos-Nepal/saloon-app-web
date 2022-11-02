@@ -50,9 +50,9 @@ export const endpoints = {
       list: 'quotes',
       edit: ':id/edit'
     },
-    jobs: {
+    visits: {
       add: 'add',
-      list: 'jobs',
+      list: 'visits',
       detail: ':id',
       edit: ':id/edit'
     },

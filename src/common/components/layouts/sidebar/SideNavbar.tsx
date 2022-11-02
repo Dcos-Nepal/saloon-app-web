@@ -3,12 +3,8 @@ import { FC } from 'react';
 import { endpoints } from 'common/config';
 
 import {
-  LogIcon,
   HomeIcon,
-  InboxIcon,
-  PeopleIcon,
   CalendarIcon,
-  BriefcaseIcon,
   FileBadgeIcon,
   PersonFillIcon,
   LockIcon
@@ -26,7 +22,7 @@ const SideNavbar: FC<IProps> = ({ active }) => {
   const currUser: { role: string; id: string } = getCurrentUser();
 
   /**
-   * Logs out user
+   * Logs user out
    */
   const logout = async () => {
     await clearData();
@@ -65,22 +61,10 @@ const SideNavbar: FC<IProps> = ({ active }) => {
             </li>
           ) : null}
 
-          <li>
-            <span
-              onClick={() => navigate('/dashboard/' + endpoints.admin.schedules.calendar)}
-              className={active === 'Schedule' ? 'nav-link nav-link-active align-middle px-0' : 'nav-link align-middle px-0'}
-            >
-              <span className="mt-1">
-                <CalendarIcon size={'small'} />
-              </span>
-              <span className="ms-2 d-none d-sm-inline">Booking</span>
-            </span>
-          </li>
-
           <li className="nav-item">
             <span
-              onClick={() => navigate('/dashboard')}
-              className={active === 'Overview' ? 'nav-link nav-link-active align-middle px-0' : 'nav-link align-middle px-0'}
+              onClick={() => navigate('/dashboard/' + endpoints.admin.quotes.list)}
+              className={active === 'Quotes' ? 'nav-link nav-link-active align-middle px-0' : 'nav-link align-middle px-0'}
             >
               <span className="mt-1">
                 <HomeIcon size={'small'} />
@@ -93,7 +77,7 @@ const SideNavbar: FC<IProps> = ({ active }) => {
             <li>
               <span
                 onClick={() => navigate('/dashboard/visits')}
-                className={active === 'visits' ? 'nav-link nav-link-active align-middle px-0' : 'nav-link align-middle px-0'}
+                className={active === 'Visits' ? 'nav-link nav-link-active align-middle px-0' : 'nav-link align-middle px-0'}
               >
                 <span className="mt-2">
                   <FileBadgeIcon size={'small'} />
@@ -102,6 +86,18 @@ const SideNavbar: FC<IProps> = ({ active }) => {
               </span>
             </li>
           ) : null}
+
+          <li>
+            <span
+              onClick={() => navigate('/dashboard/' + endpoints.admin.schedules.calendar)}
+              className={active === 'Schedule' ? 'nav-link nav-link-active align-middle px-0' : 'nav-link align-middle px-0'}
+            >
+              <span className="mt-1">
+                <CalendarIcon size={'small'} />
+              </span>
+              <span className="ms-2 d-none d-sm-inline">Booking</span>
+            </span>
+          </li>
 
           <div className="hr mt-2 mb-2"></div>
           <li>

@@ -4,6 +4,7 @@ import { Route, Routes } from 'react-router-dom';
 import { endpoints } from 'common/config';
 import { Loader } from 'common/components/atoms/Loader';
 import PageNotFound from 'pages/NotFound';
+import Appointments from 'pages/appointments/list/Appointments';
 
 // Lazy loading the component
 const Summary = React.lazy(() => import('pages/dashboard/Summary'));
@@ -39,6 +40,14 @@ const Dashboard: FC<IProps> = (): JSX.Element => {
           }
         />
         <Route
+          path={endpoints.admin.quotes.list + '/*'}
+          element={
+            <Suspense fallback={<Loader isLoading={true} />}>
+              <Appointments />
+            </Suspense>
+          }
+        />
+        <Route
           path={endpoints.admin.lineItems.list + '/*'}
           element={
             <Suspense fallback={<Loader isLoading={true} />}>
@@ -47,7 +56,7 @@ const Dashboard: FC<IProps> = (): JSX.Element => {
           }
         />
         <Route
-          path={'/visits'}
+          path={endpoints.admin.visits.list + '/*'}
           element={
             <Suspense fallback={<Loader isLoading={true} />}>
               <Visits/>

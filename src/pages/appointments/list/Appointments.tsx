@@ -1,9 +1,9 @@
 import SideNavbar from 'common/components/layouts/sidebar';
 import Footer from 'common/components/layouts/footer';
-import VisitList from 'pages/appointments/list/VisitList';
+import { QuoteList } from 'pages/appointments/list';
 import { useState } from 'react';
 
-const Summary = () => {
+const Appointments = () => {
   const Tabs = {
     Consultation: 'Consultation',
     Treatment: 'Treatment'
@@ -31,7 +31,7 @@ const Summary = () => {
   const Consultants = () => {
     return (
       <div className="row">
-        <VisitList appointmentType={'CONSULTATION'}/>
+        <QuoteList appointmentType={'CONSULTATION'}/>
       </div>
     );
   };
@@ -39,20 +39,20 @@ const Summary = () => {
   const Treatments = () => {
     return (
       <div className="row">
-         <VisitList appointmentType={'TREATMENT'}/>
+         <QuoteList appointmentType={'TREATMENT'}/>
       </div>
     );
   };
 
   return (
     <>
-      <SideNavbar active="Visits" />
+      <SideNavbar active="Quotes" />
       <div className="col main-container" style={{ position: 'relative', minHeight: '700px' }}>
         <div className="row">
           <div className="col">
-            <h3 className="extra">Visits</h3>
+            <h3 className="extra">Appointments</h3>
           </div>
-          <label className="txt-grey">List of visits so far. Both the consultations and treatments</label>
+          <label className="txt-grey">List of appontments scheduled so far. Both the consultations and treatments</label>
         </div>
         <div className="">
           <div className="row mt-3">
@@ -71,4 +71,4 @@ const Summary = () => {
   );
 };
 
-export default Summary;
+export default Appointments;

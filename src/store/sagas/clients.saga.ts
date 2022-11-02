@@ -57,7 +57,9 @@ function* addClient(action: any): any {
       payload: newClient.data,
     });
 
-    return toast.error(getMessage(newClient.data?.message));
+    console.log(newClient.data?.message);
+
+    return toast.error('Error while creating a client');
   } catch (err: any) {
     if (err.exception) toast.error(err.exception.message);
     yield put({ type: actionType.ADD_CLIENT_ERROR, payload: err });

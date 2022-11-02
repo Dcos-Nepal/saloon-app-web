@@ -151,6 +151,7 @@ const Sessions = (props: any) => {
             notes: row.notes,
             services: row?.services,
             status: row.status,
+            session: row.session,
             type: row.type,
             appointmentDate: row.appointmentDate,
             appointmentTime: row.appointmentTime,
@@ -169,10 +170,10 @@ const Sessions = (props: any) => {
         <div className="row pt-2 m-1 rounded-top bg-grey">
           <Loader isLoading={props.isLoading} />
           <div className="col-8">
-            <InputField label="Search" placeholder="Search visits" className="search-input" onChange={handleSearch} />
+            <InputField label="Search" placeholder="Search sessions" className="search-input" onChange={handleSearch} />
           </div>
           <div className="col-4">
-            <InputField  type="date" label="Search" placeholder="Search visits" className="search-input" onChange={handleQuotesFilter} />
+            <InputField  type="date" label="Search" className="search-input" onChange={handleQuotesFilter} />
           </div>
           {!quotes.length ? (
             <EmptyState />

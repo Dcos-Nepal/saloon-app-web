@@ -57,6 +57,13 @@ const AppointmentAddForm = ({ closeModal, client, saveHandler }: { client?: any;
     validateOnChange: true,
     onSubmit: async (data: any) => {
       // Preparing the data
+      data.createdDate = new Date().toISOString();
+      data.status = {
+        name: 'WAITING',
+        date: new Date().toISOString(),
+        duration: ''
+      };
+
       setIsLoading(true);
       await saveHandler(data);
       setIsLoading(false);
@@ -153,26 +160,31 @@ const AppointmentAddForm = ({ closeModal, client, saveHandler }: { client?: any;
                 />
               ) : null}
 
-              <InputField
-                label="Appointment Date"
-                type="date"
-                placeholder="Select Date"
-                name="appointmentDate"
-                value={formik.values.appointmentDate}
-                onChange={formik.handleChange}
-                helperComponent={<ErrorMessage name="appointmentDate"/>}
-              />
-
-              <InputField
-                label="Appointment Time"
-                type="time"
-                placeholder="Select Time"
-                name="appointmentTime"
-                value={formik.values.appointmentTime}
-                onChange={formik.handleChange}
-                helperComponent={<ErrorMessage name="appointmentTime"/>}
-              />
-
+              <div className='row'>
+                <div className='col'>
+                  <InputField
+                    label="Appointment Date"
+                    type="date"
+                    placeholder="Select Date"
+                    name="appointmentDate"
+                    value={formik.values.appointmentDate}
+                    onChange={formik.handleChange}
+                    helperComponent={<ErrorMessage name="appointmentDate"/>}
+                  />
+                </div>
+                <div className='col'>
+                  <InputField
+                    label="Appointment Time"
+                    type="time"
+                    placeholder="Select Time"
+                    name="appointmentTime"
+                    value={formik.values.appointmentTime}
+                    onChange={formik.handleChange}
+                    helperComponent={<ErrorMessage name="appointmentTime"/>}
+                  />
+                </div>
+              </div>
+              
               <TextArea
                 rows={5}
                 label={'Appointment Notes:'}

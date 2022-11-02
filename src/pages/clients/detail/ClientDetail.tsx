@@ -76,7 +76,7 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient, quotes, requests, in
     ClientDetails: 'ClientDetails',
     Requests: 'Requests',
     Quotes: 'Quotes',
-    Jobs: 'Jobs',
+    ClientPictures: 'ClientPictures',
     Invoices: 'Invoices'
   };
 
@@ -123,7 +123,8 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient, quotes, requests, in
     );
   };
 
-  const Jobs = () => {
+  const ClientPictures = () => {
+    const [clientPictures, setClientPictures] = useState<any>(currentClient.photos);
     const [initialValues,] = useState<any>({
       caption: '',
       type: ''
@@ -151,31 +152,52 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient, quotes, requests, in
         !!data.photo && formData.append('photo', data.photo);
   
         // Update client
-        await uploadPhotosApi(id as string, formData);
+        const uploaded = await uploadPhotosApi(id as string, formData);
+
+        if (!!uploaded) {
+          setClientPictures([...clientPictures, {
+            caption: data.caption,
+            type: data.type,
+            photo: uploaded.data.data.photos
+          }]);
+          toast.success('File uploaded successfully!')
+        }
 
         formik.resetForm();
-        toast.success('File uploaded successfully!')
       }
     });
 
     return (
       <div className="row mt-4">
-        {(currentClient as any).photos.map((photo: any) => {
-          return (
-            <div className='row mb-2' key={photo.caption}>
-              <div className="col-4">
-                <object data={process.env.REACT_APP_API +'v1/customers/avatars/' + photo.photo} style={{'width': '100px'}}>
-                  <img src={DummyImage} alt="Stack Overflow logo and icons and such" style={{'width': '100px'}}/>
-                </object>
-              </div>
-              <div className="row col-8">
-                <div className="col-6">Caption: {photo.caption} </div>
-                <div className="col-6">Type: {photo.type}</div>
-              </div>
-            </div>
-          );
-        })}
-        
+        <div className='card mb-2'>
+          <table className="table txt-dark-grey">
+            <thead>
+              <tr className="rt-head">
+                <th>PHOTO</th>
+                <th>CAPTION</th>
+                <th>TYPE</th>
+                <th>ACTION</th>
+              </tr>
+            </thead>
+            <tbody className="rt-tbody">
+              {clientPictures.map((photo: any) => {
+                return (
+                  <tr className="rt-head" key={photo.photo}>
+                    <td>
+                      <object data={process.env.REACT_APP_API +'v1/customers/avatars/' + photo.photo} style={{'width': '100px'}}>
+                        <img src={DummyImage} alt="Stack Overflow logo and icons and such" style={{'width': '100px'}}/>
+                      </object>
+                    </td>
+                    <td>{photo.caption}</td>
+                    <td>{photo.type}</td>
+                    <td><XCircleIcon /></td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+
         <form noValidate onSubmit={formik.handleSubmit}>
           <h6 className='mt-3'>Add new picture:</h6>
           {(!!formik.values?.photo) ? (
@@ -252,8 +274,8 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient, quotes, requests, in
         return <ClientDetails />;
       case Tabs.Invoices:
         return <Invoices />;
-      case Tabs.Jobs:
-        return <Jobs />;
+      case Tabs.ClientPictures:
+        return <ClientPictures />;
       case Tabs.Quotes:
         return <Quotes />;
       case Tabs.Requests:
@@ -356,7 +378,7 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient, quotes, requests, in
                   <div className={`col tab me-1 ${tab === Tabs.Invoices ? 'active-tab' : ''}`} onClick={() => setTab(Tabs.Invoices)}>
                     Client's Sessions
                   </div>
-                  <div className={`col tab me-1 ${tab === Tabs.Jobs ? 'active-tab' : ''}`} onClick={() => setTab(Tabs.Jobs)}>
+                  <div className={`col tab me-1 ${tab === Tabs.ClientPictures ? 'active-tab' : ''}`} onClick={() => setTab(Tabs.ClientPictures)}>
                     Client's Pictures
                   </div>
                   <div className={`col tab me-1 ${tab === Tabs.Quotes ? 'active-tab' : ''}`} onClick={() => setTab(Tabs.Quotes)}>

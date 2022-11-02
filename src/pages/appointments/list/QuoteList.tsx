@@ -22,7 +22,7 @@ import { DateTime } from 'luxon';
 import { calculateJobDuration } from 'utils/timer';
 import ReactTooltip from 'react-tooltip';
 
-interface IQuote {
+interface IAppointment {
   id: string;
   customer: any;
   notes: string;
@@ -51,7 +51,7 @@ const AppointmentList = (props: any) => {
   const [itemsPerPage] = useState(10);
   const [offset, setOffset] = useState(1);
   const [pageCount, setPageCount] = useState(0);
-  const [quotes, setQuotes] = useState<IQuote[]>([]);
+  const [quotes, setQuotes] = useState<IAppointment[]>([]);
   const [deleteInProgress, setDeleteInProgress] = useState('');
 
   const deleteQuoteHandler = async () => {
@@ -90,7 +90,7 @@ const AppointmentList = (props: any) => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const handleSearch = useCallback(debounce(handleQuotesSearch, 300), []);
 
-  const Status = ({ row }: { row: IQuote }) => {
+  const Status = ({ row }: { row: IAppointment }) => {
     const [statusChangeInProgress, setStatusChangeInProgress] = useState('');
 
     return (
@@ -148,11 +148,11 @@ const AppointmentList = (props: any) => {
     return <div style={{'fontSize': 18, fontWeight: '600'}}>{timer}</div>;
   }
 
-  const columns: Column<IQuote>[] = useMemo(
+  const columns: Column<IAppointment>[] = useMemo(
     () => [
       {
         Header: 'APPOINTMENT INFO',
-        accessor: (row: IQuote) => {
+        accessor: (row: IAppointment) => {
           return (
             <div onClick={() => navigate('/dashboard/clients/' + row.customer.id)}>
               <div>{row.customer?.fullName || ' Not Entered '}</div>
@@ -163,13 +163,13 @@ const AppointmentList = (props: any) => {
       },
       {
         Header: 'SESSION INFO',
-        accessor: (row: IQuote) => {
-          return (<div>{row.session || ' Not Entered '}</div>);
+        accessor: (row: IAppointment) => {
+          return (<div>{row.session || 'N/A'}</div>);
         }
       },
       {
         Header: 'WAITING TIME',
-        accessor: (row: IQuote) => {
+        accessor: (row: IAppointment) => {
           return row.status.name === 'COMPLETED'
             ? <div>Completed on: <br/> <span style={{'fontSize': 16, 'fontWeight': 600}}>{DateTime.fromISO(row.status.date).toFormat('yyyy-MM-dd HH:mm a')}</span></div>
             : <>Currently {(row.status.name).toLowerCase().split('_').join(' ')} <br/> <Timer date={row.status.date} status={row.status.name}/></>;
@@ -177,7 +177,7 @@ const AppointmentList = (props: any) => {
       },
       {
         Header: 'APPOINTMENT DATE',
-        accessor: (row: IQuote) => {
+        accessor: (row: IAppointment) => {
           return (<>
             Scheduled for: <br/>
             <div style={{'fontSize': 16, 'fontWeight': 600}}>{row.appointmentDate} {DateTime.fromISO(row.appointmentTime).toFormat('h:mm a') }</div>
@@ -187,7 +187,7 @@ const AppointmentList = (props: any) => {
       },
       {
         Header: 'Notes',
-        accessor: ((row: IQuote) => {
+        accessor: ((row: IAppointment) => {
           return <>
             <a data-tip data-for='global'> <button className='btn btn-secondary'>Hover Me</button></a>
             <ReactTooltip id='global' aria-haspopup='true' role='example'>
@@ -198,12 +198,12 @@ const AppointmentList = (props: any) => {
       },
       {
         Header: 'STATUS',
-        accessor: (row: IQuote) => <Status row={row} />
+        accessor: (row: IAppointment) => <Status row={row} />
       },
       {
         Header: ' ',
         maxWidth: 40,
-        accessor: (row: IQuote) => (
+        accessor: (row: IAppointment) => (
           <div className="dropdown">
             <span role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
               <box-icon name="dots-vertical-rounded" />
@@ -256,7 +256,7 @@ const AppointmentList = (props: any) => {
       setQuotes(
         props.itemList.data?.rows
           .filter((row: any) => props?.appointmentType ? props.appointmentType?.toLowerCase() === row.type?.toLowerCase() :  true)
-          .map((row: IQuote) => ({
+          .map((row: IAppointment) => ({
             id: row.id,
             customer: row.customer,
             notes: row.notes,

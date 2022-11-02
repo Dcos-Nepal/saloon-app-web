@@ -86,7 +86,7 @@ const Sessions = (props: any) => {
       },
       {
         Header: 'SESSION INFO',
-        accessor: (row: IQuote) => (<div>{row.session}</div>)
+        accessor: (row: IQuote) => (<div>{row.session || 'N/A'}</div>)
       },
       {
         Header: 'STATUS',

@@ -42,11 +42,13 @@ const AppointmentAddForm = ({ closeModal, client, saveHandler }: { client?: any;
         then: Yup.string().required("Please select the interval")
       }),
     session: Yup
-      .string()
+      .number()
       .when("type", {
         is: 'MAINTAINANCE',
         then: Yup.string().nullable()
-      }).required('Session is required'),
+      })
+      .min(0, 'Session should be greater than 0')
+      .required('Session is required'),
     notes: Yup.string().optional(),
   });
 
@@ -137,7 +139,7 @@ const AppointmentAddForm = ({ closeModal, client, saveHandler }: { client?: any;
                 <SelectField
                   label="Appointment Interval"
                   name="interval"
-                  isMulti={true}
+                  isMulti={false}
                   value={getAppoinmentVeriation().find((service) => formik.values.interval === service.value)}
                   options={getAppoinmentVeriation().filter((service) => service.isActive)}
                   helperComponent={<ErrorMessage name="interval" />}
@@ -151,7 +153,7 @@ const AppointmentAddForm = ({ closeModal, client, saveHandler }: { client?: any;
               {formik.values.type === 'TREATMENT' ? (
                 <InputField
                   label="Session Name"
-                  type="text"
+                  type="number"
                   placeholder="Select Session"
                   name="session"
                   value={formik.values.session}

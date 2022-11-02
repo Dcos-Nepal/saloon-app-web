@@ -6798,11 +6798,6 @@ lru-cache@^6.0.0:
   dependencies:
     yallist "^4.0.0"
 
-luxon@^1.21.3:
-  version "1.28.0"
-  resolved "https://registry.yarnpkg.com/luxon/-/luxon-1.28.0.tgz#e7f96daad3938c06a62de0fb027115d251251fbf"
-  integrity sha512-TfTiyvZhwBYM/7QdAVDh+7dBTBA29v4ik0Ce9zda3Mnf8on1S5KJI8P2jKFZ8+5C0jhmr0KwJEO/Wdpm0VeWJQ==
-
 luxon@^2.3.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/luxon/-/luxon-2.3.0.tgz#bf16a7e642513c2a20a6230a6a41b0ab446d0045"
@@ -8999,15 +8994,6 @@ rollup@^2.43.1:
   integrity sha512-1Sbcs4OuW+aD+hhqpIRl+RqooIpF6uQcfzU/QSI7vGkwADY6cM4iLsBGRM2CGLXDTDN5y/yShohFmnKegSPWzg==
   optionalDependencies:
     fsevents "~2.3.2"
-
-rrule@^2.6.9:
-  version "2.6.9"
-  resolved "https://registry.yarnpkg.com/rrule/-/rrule-2.6.9.tgz#8ee4ee261451e84852741f92ded769245580744a"
-  integrity sha512-PE4ErZDMfAcRnc1B35bZgPGS9mbn7Z9bKDgk6+XgrIwvBjeWk7JVEYsqKwHYTrDGzsHPtZTpaon8IyeKzAhj5w==
-  dependencies:
-    tslib "^1.10.0"
-  optionalDependencies:
-    luxon "^1.21.3"
 
 run-parallel@^1.1.9:
   version "1.2.0"

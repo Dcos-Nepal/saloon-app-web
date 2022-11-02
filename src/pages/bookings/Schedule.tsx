@@ -4,7 +4,6 @@ import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
-import rrulePlugin from '@fullcalendar/rrule';
 import luxonPlugin from '@fullcalendar/luxon2';
 import EventActions from 'store/actions/events.actions';
 import { IEvent } from 'common/types/events';
@@ -167,7 +166,7 @@ const WorkSchedule = (props: any) => {
         <div className="card pt-4">
           <div style={{ position: 'relative' }}>
             <FullCalendar
-              plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, rrulePlugin, luxonPlugin]}
+              plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, luxonPlugin]}
               headerToolbar={{
                 left: 'prev,next today',
                 center: 'title',

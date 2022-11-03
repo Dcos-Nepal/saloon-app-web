@@ -16,11 +16,15 @@ import { toast } from 'react-toastify';
 import DeleteConfirm from 'common/components/DeleteConfirm';
 import { deleteQuoteApi } from 'services/quotes.service';
 import StatusChangeWithReason from './StatusChangeWithReason';
-import { EyeIcon, PencilIcon, TrashIcon } from '@primer/octicons-react';
+import { EyeIcon, InfoIcon, NoteIcon, PencilIcon, TrashIcon } from '@primer/octicons-react';
 import { getCurrentUser } from 'utils';
 import { DateTime } from 'luxon';
 import { calculateJobDuration } from 'utils/timer';
 import ReactTooltip from 'react-tooltip';
+import DummyImage from '../../../assets/images/dummy.png';
+import pinterpolate from 'pinterpolate';
+import { endpoints } from 'common/config';
+
 
 interface IAppointment {
   id: string;
@@ -102,20 +106,15 @@ const AppointmentList = (props: any) => {
           value={{ label: row.status.name, value: row.status.name }}
           placeholder="All"
           handleChange={(selected: { label: string; value: string }) => {
-            handleStatusChange(row.id, {
-              status: {
-                name: selected.value,
-                duration: calculateJobDuration({
-                  startDate: new Date(row.status.date).toISOString(),
-                  endDate: new Date().toISOString()
-                })
-              }
-            })
+            if (selected.value === 'IN_PROGRESS' || selected.value === 'COMPLETED') {
+              setStatusChangeInProgress(selected.value);
+            }
           }}
           helperComponent={<div className="">{''}</div>}
         />
         <Modal isOpen={!!statusChangeInProgress} onRequestClose={() => setStatusChangeInProgress('')}>
           <StatusChangeWithReason
+            row={row}
             id={row.id}
             status={quoteStatusOptions.find((statusLabelValue) => statusLabelValue.value === statusChangeInProgress)}
             onSave={handleStatusChange}
@@ -154,9 +153,18 @@ const AppointmentList = (props: any) => {
         Header: 'APPOINTMENT INFO',
         accessor: (row: IAppointment) => {
           return (
-            <div onClick={() => navigate('/dashboard/clients/' + row.customer.id)}>
-              <div>{row.customer?.fullName || ' Not Entered '}</div>
-              <div>{row.customer?.phoneNumber}</div>
+            <div className='row'>
+              <div className='col-4'>
+                <object data={process.env.REACT_APP_API +'v1/customers/avatars/' + row.customer?.photo} style={{'width': '100px'}}>
+                  <img src={DummyImage} alt="Stack Overflow logo and icons and such" style={{'width': '100px'}}/>
+                </object>
+              </div>
+              <div className='col-8'>
+                <div className="cursor-pointer" onClick={() => navigate(pinterpolate(endpoints.admin.client.detail, { id: row.id }))}>
+                  <div>{row.customer?.fullName || ' Not Entered '}</div>
+                  <div>{row.customer?.phoneNumber}</div>
+                </div>
+              </div>
             </div>
           );
         }
@@ -186,14 +194,25 @@ const AppointmentList = (props: any) => {
         }
       },
       {
-        Header: 'Notes',
+        Header: 'Notes/Reasons',
         accessor: ((row: IAppointment) => {
-          return <>
-            <a data-tip data-for='global'> <button className='btn btn-secondary'>Hover Me</button></a>
-            <ReactTooltip id='global' aria-haspopup='true' role='example'>
-            <p>{row.notes}</p>
-            </ReactTooltip>
-          </>
+          return (<div className='row'>
+            <div className='col-2'>
+              <a data-tip data-for='notes'><NoteIcon /></a>
+              <ReactTooltip id='notes' aria-haspopup='true'>
+                <p>{row.notes}</p>
+              </ReactTooltip>
+            </div>
+            {(!!row.status?.reason) ? (
+              <div className='col-2'>
+                <a data-tip data-for='reason'><InfoIcon /></a>
+                <ReactTooltip id='reason' aria-haspopup='true'>
+                  <p>{row.status.reason}</p>
+                </ReactTooltip>
+              </div>
+            ): null}
+            
+          </div>)
         })
       },
       {

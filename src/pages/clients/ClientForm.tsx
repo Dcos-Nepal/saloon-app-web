@@ -82,7 +82,7 @@ const ClientForm: FC<IProps> = ({ id, isClientsLoading, actions, currentClient }
         actions.updateClient(id, data);
       } else {
         // Add new client
-        !!data.photo && formData.append('photo', data.photo);
+        formData.append('photo', new Blob());
         actions.addClient(formData);
       }
 
@@ -167,7 +167,7 @@ const ClientForm: FC<IProps> = ({ id, isClientsLoading, actions, currentClient }
                       }}
                     />
                     <label htmlFor={'file'} className="txt-orange dashed mt-2">
-                      <UploadIcon /> Select Picture of a customer
+                      <UploadIcon /> Select picture of a customer
                     </label>
                   </div>
                 ) : null}
@@ -244,7 +244,7 @@ const ClientForm: FC<IProps> = ({ id, isClientsLoading, actions, currentClient }
                   <div className="col">
                     <InputField
                       label={<label>Phone Number:</label>}
-                      placeholder="eg. +977 1234567890"
+                      placeholder="eg. 1234567890"
                       name="phoneNumber"
                       helperComponent={
                         formik.errors.phoneNumber && formik.touched.phoneNumber ? <div className="txt-red"><StopIcon size={14} /> {formik.errors.phoneNumber}</div> : null

@@ -44,6 +44,7 @@ export function* addClientSaga(): any {
 function* addClient(action: any): any {
   try {
     const { data: newClient } = yield call(addUserApi, action.payload);
+
     if (newClient?.data?.success) {
       yield put({
         type: actionType.ADD_CLIENT_SUCCESS,
@@ -52,6 +53,7 @@ function* addClient(action: any): any {
 
       return toast.success('Client Created successfully.');
     }
+
     yield put({
       type: actionType.ADD_CLIENT_ERROR,
       payload: newClient.data,

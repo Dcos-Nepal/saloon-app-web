@@ -16,6 +16,10 @@ import { deleteQuoteApi } from 'services/quotes.service';
 import { TrashIcon } from '@primer/octicons-react';
 import { getCurrentUser } from 'utils';
 import { DateTime } from 'luxon';
+import DummyImage from '../../../assets/images/dummy.png';
+import pinterpolate from 'pinterpolate';
+import { endpoints } from 'common/config';
+import { useNavigate } from 'react-router-dom';
 
 interface IQuote {
   id: string;
@@ -32,6 +36,7 @@ interface IQuote {
 }
 
 const VisitList = (props: any) => {
+  const navigate = useNavigate();
   const currentUser = getCurrentUser();
   const [query, setQuery] = useState('');
   const [queryDate, setQueryDate] = useState('');
@@ -79,9 +84,18 @@ const VisitList = (props: any) => {
         Header: 'CLIENT INFO',
         accessor: (row: IQuote) => {
           return (
-            <div>
-              <div>{row.customer?.fullName || ' Not Entered '}</div>
-              <div>{row.customer?.phoneNumber} </div>
+            <div className='row'>
+              <div className='col-4'>
+                <object data={process.env.REACT_APP_API +'v1/customers/avatars/' + row.customer?.photo} style={{'width': '100px'}}>
+                  <img src={DummyImage} alt="Stack Overflow logo and icons and such" style={{'width': '100px'}}/>
+                </object>
+              </div>
+              <div className='col-8'>
+                <div className="cursor-pointer" onClick={() => navigate(pinterpolate(endpoints.admin.client.detail, { id: row.id }))}>
+                  <div>{row.customer?.fullName || ' Not Entered '}</div>
+                  <div>{row.customer?.phoneNumber}</div>
+                </div>
+              </div>
             </div>
           );
         }

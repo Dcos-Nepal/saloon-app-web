@@ -2,12 +2,11 @@ import * as Yup from 'yup';
 import { getIn, useFormik } from 'formik';
 import { StopIcon } from '@primer/octicons-react';
 import TextArea from 'common/components/form/TextArea';
+import { calculateJobDuration } from 'utils/timer';
 
-const StatusChangeWithReason = ({ id, status, onSave, closeModal }: any) => {
+const StatusChangeWithReason = ({ id, row, status, onSave, closeModal }: any) => {
   const InitialValues = {
-    id: id,
-    reason: '',
-    status: status
+    reason: ''
   };
 
   const StatusReasonSchema = Yup.object().shape({
@@ -18,7 +17,18 @@ const StatusChangeWithReason = ({ id, status, onSave, closeModal }: any) => {
     enableReinitialize: true,
     initialValues: InitialValues,
     onSubmit: async (data: any) => {
-      await onSave(data.id, data.status, data.reason);
+      // Prepare Payload
+      data.id = id;
+      data.status = {
+        name: status.value,
+        reason: data.reason,
+        duration: calculateJobDuration({
+          startDate: new Date(row.status.date).toISOString(),
+          endDate: new Date().toISOString()
+        })
+      };
+      delete data.reason;
+      await onSave(data.id, data);
       closeModal();
     },
     validationSchema: StatusReasonSchema
@@ -64,7 +74,7 @@ const StatusChangeWithReason = ({ id, status, onSave, closeModal }: any) => {
 
               <div className="mb-3">
                 <TextArea
-                  rows={8}
+                  rows={4}
                   label={'Reason/Notes:'}
                   placeholder={`Add reasons for the status change`}
                   name="reason"

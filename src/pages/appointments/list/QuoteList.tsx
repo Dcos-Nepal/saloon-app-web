@@ -51,7 +51,7 @@ const AppointmentList = (props: any) => {
   const navigate = useNavigate();
   const currentUser = getCurrentUser();
   const [query, setQuery] = useState('');
-  const [queryDate, setQueryDate] = useState('');
+  const [queryDate, setQueryDate] = useState(DateTime.fromJSDate(new Date()).toFormat('yyyy-MM-dd'));
   const [itemsPerPage] = useState(10);
   const [offset, setOffset] = useState(1);
   const [pageCount, setPageCount] = useState(0);
@@ -309,7 +309,7 @@ const AppointmentList = (props: any) => {
             <InputField label="Search" placeholder="Search appointments" className="search-input" onChange={handleSearch} />
           </div>
           <div className="col-4">
-            <InputField type="date" label="Search" placeholder="Search Date" className="search-input" onChange={handleQuotesFilter} />
+            <InputField type="date" value={queryDate} label="Search" placeholder="Search Date" className="search-input" onChange={handleQuotesFilter} />
           </div>
           {!quotes.length ? (
             <EmptyState />

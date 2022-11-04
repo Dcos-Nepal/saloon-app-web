@@ -16,7 +16,7 @@ import { InfoIcon, StopIcon, UploadIcon, XCircleIcon } from '@primer/octicons-re
 import SelectField from 'common/components/form/Select';
 import { COUNTRIES_OPTIONS, DAYS_OF_WEEK, STATES_OPTIONS } from 'common/constants';
 import { IOption } from 'common/types/form';
-import { updateUserApi } from 'services/users.service';
+import { updateUserApi } from 'services/customers.service';
 import * as propertiesActions from 'store/actions/properties.actions';
 import { deletePublicFile, uploadPublicFile } from 'services/files.service';
 import { getServices } from 'data';

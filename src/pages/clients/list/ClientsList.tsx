@@ -13,7 +13,7 @@ import debounce from 'lodash/debounce';
 import EmptyState from 'common/components/EmptyState';
 import { ClockIcon, EyeIcon, PencilIcon, PersonAddIcon, SyncIcon, TrashIcon } from '@primer/octicons-react';
 import Modal from 'common/components/atoms/Modal';
-import { deleteUserApi } from 'services/users.service';
+import { deleteUserApi } from 'services/customers.service';
 import { toast } from 'react-toastify';
 import DeleteConfirm from 'common/components/DeleteConfirm';
 import { getCurrentUser } from 'utils';

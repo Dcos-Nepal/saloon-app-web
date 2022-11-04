@@ -39,7 +39,6 @@ const ClientForm: FC<IProps> = ({ id, isClientsLoading, actions, currentClient }
     address: '',
     gender: '',
     dateOfBirth: '',
-    photo: undefined,
     referredBy: ''
   });
 
@@ -64,26 +63,12 @@ const ClientForm: FC<IProps> = ({ id, isClientsLoading, actions, currentClient }
     initialValues: initialValues,
     validationSchema: ClientSchema,
     onSubmit: (data: any) => {
-      // Preparing FormData
-      const formData = new FormData();
-
-      // Add additional info to the Form Data
-      formData.append('firstName', data.firstName);
-      formData.append('lastName', data.lastName);
-      formData.append('email',data.email.trim().toLowerCase());
-      formData.append('phoneNumber', data.phoneNumber);
-      formData.append('address', data.address);
-      formData.append('gender', data.gender);
-      formData.append('dateOfBirth', data.dateOfBirth);
-      formData.append('referredBy', data.referredBy);
-
       if (id) {
         // Update client
         actions.updateClient(id, data);
       } else {
         // Add new client
-        formData.append('photo', new Blob());
-        actions.addClient(formData);
+        actions.addClient(data);
       }
 
       // Redirect to previous page

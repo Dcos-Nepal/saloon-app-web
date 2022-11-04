@@ -7,7 +7,7 @@ import {
   addUserApi,
   fetchUserApi,
   updateUserApi,
-} from "services/users.service";
+} from "services/customers.service";
 
 /**
  * Saga Definitions
@@ -45,10 +45,10 @@ function* addClient(action: any): any {
   try {
     const { data: newClient } = yield call(addUserApi, action.payload);
 
-    if (newClient?.data?.success) {
+    if (newClient?.success) {
       yield put({
         type: actionType.ADD_CLIENT_SUCCESS,
-        payload: newClient?.data?.data?.data,
+        payload: newClient?.data
       });
 
       return toast.success('Client Created successfully.');

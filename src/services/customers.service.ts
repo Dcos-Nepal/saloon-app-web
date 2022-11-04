@@ -1,6 +1,13 @@
 import { generateQueryParams } from 'utils';
 import { http } from 'utils/http';
 
+export const usersAvatarApi = async (query: Record<string, any>) => {
+  const url = '/v1/customers' + (query ? `?${generateQueryParams(query)}` : '');
+  return await http.post(url, {
+    headers: { Accept: 'application/json' }
+  });
+};
+
 export const fetchUsersApi = async (query: Record<string, any>) => {
   const url = '/v1/customers' + (query ? `?${generateQueryParams(query)}` : '');
   return await http.get(url, {

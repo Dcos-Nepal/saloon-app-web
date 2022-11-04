@@ -9,7 +9,7 @@ import * as clientsActions from 'store/actions/clients.actions';
 import { PencilIcon, StopIcon, UploadIcon, XCircleIcon } from '@primer/octicons-react';
 import { DateTime } from 'luxon';
 import { useFormik } from 'formik';
-import { uploadPhotosApi } from 'services/users.service';
+import { uploadPhotosApi } from 'services/customers.service';
 import InputField from 'common/components/form/Input';
 import DummyImage from '../../../assets/images/dummy.png';
 import Sessions from './Sessions';

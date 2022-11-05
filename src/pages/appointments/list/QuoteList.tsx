@@ -14,7 +14,7 @@ import EmptyState from 'common/components/EmptyState';
 import Modal from 'common/components/atoms/Modal';
 import { toast } from 'react-toastify';
 import DeleteConfirm from 'common/components/DeleteConfirm';
-import { deleteQuoteApi } from 'services/quotes.service';
+import { deleteQuoteApi } from 'services/appointments.service';
 import StatusChangeWithReason from './StatusChangeWithReason';
 import { EyeIcon, InfoIcon, NoteIcon, PencilIcon, TrashIcon } from '@primer/octicons-react';
 import { getCurrentUser } from 'utils';
@@ -44,7 +44,8 @@ interface IAppointment {
 const quoteStatusOptions = [
   { label: 'WAITING', value: 'WAITING' },
   { label: 'IN PROCESS', value: 'IN_PROGRESS' },
-  { label: 'COMPLETED', value: 'COMPLETED' }
+  { label: 'COMPLETED', value: 'COMPLETED' },
+  { label: 'CANCELED', value: 'CANCELED' }
 ];
 
 const AppointmentList = (props: any) => {
@@ -155,12 +156,12 @@ const AppointmentList = (props: any) => {
           return (
             <div className='row'>
               <div className='col-4'>
-                <object data={process.env.REACT_APP_API +'v1/customers/avatars/' + row.customer?.photo} style={{'width': '100px'}}>
+                <object data={process.env.REACT_APP_API +'v1/customers/avatars/' + row.customer?.photo} style={{'width': '80px'}}>
                   <img src={DummyImage} alt="Stack Overflow logo and icons and such" style={{'width': '100px'}}/>
                 </object>
               </div>
               <div className='col-8'>
-                <div className="cursor-pointer" onClick={() => navigate(pinterpolate(endpoints.admin.client.detail, { id: row.id }))}>
+                <div className="cursor-pointer" onClick={() => navigate('/dashboard/clients/' + row.customer.id )}>
                   <div>{row.customer?.fullName || ' Not Entered '}</div>
                   <div>{row.customer?.phoneNumber}</div>
                 </div>

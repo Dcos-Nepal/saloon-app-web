@@ -12,7 +12,7 @@ import EmptyState from 'common/components/EmptyState';
 import Modal from 'common/components/atoms/Modal';
 import { toast } from 'react-toastify';
 import DeleteConfirm from 'common/components/DeleteConfirm';
-import { deleteQuoteApi } from 'services/quotes.service';
+import { deleteQuoteApi } from 'services/appointments.service';
 import { TrashIcon } from '@primer/octicons-react';
 import { getCurrentUser } from 'utils';
 import { DateTime } from 'luxon';
@@ -79,6 +79,7 @@ const Sessions = (props: any) => {
         Header: 'APPOINTMENT DATE',
         accessor: (row: IQuote) => {
           return <>
+            <small><b>{row.type}</b></small><br/>
             <div>{row.appointmentDate} {DateTime.fromISO(row.appointmentTime).toFormat('h:mm a') }</div>
             {row.type === 'TREATMENT' ? <div className='text-primary'>Services: {row.services.join(', ')}</div> : null}
           </>;
@@ -86,7 +87,7 @@ const Sessions = (props: any) => {
       },
       {
         Header: 'SESSION INFO',
-        accessor: (row: IQuote) => (<div>{row.session || 'N/A'}</div>)
+        accessor: (row: IQuote) => (<div>{row.session || '--'}</div>)
       },
       {
         Header: 'STATUS',

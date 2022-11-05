@@ -14,6 +14,7 @@ import InputField from 'common/components/form/Input';
 import DummyImage from '../../../assets/images/dummy.png';
 import Sessions from './Sessions';
 import { toast } from 'react-toastify';
+import Modal from 'common/components/atoms/Modal';
 
 interface IRequest {
   id: string;
@@ -124,23 +125,26 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient, quotes, requests, in
   };
 
   const ClientPictures = () => {
-    const [clientPictures, setClientPictures] = useState<any>(currentClient.photos);
+    const [selectedPicture, setSelectedPicture] = useState('');
+    const [isFileUploading, setIsFileUploading] = useState<boolean>(false);
+    const [clientPictures, setClientPictures] = useState<any>(currentClient.photos || []);
     const [initialValues,] = useState<any>({
       caption: '',
-      type: ''
+      type: '',
+      data: ''
     });
   
-    const opts: any = {
+    const ClientPhotoOptions: any = {
       caption: Yup.string().required(`Caption is required`),
       type: Yup.string().required(`Type is required`),
     }
   
-    const ClientSchema = Yup.object().shape(opts);
+    const ClientPhotoSchema = Yup.object().shape(ClientPhotoOptions);
   
     const formik = useFormik({
       enableReinitialize: true,
       initialValues: initialValues,
-      validationSchema: ClientSchema,
+      validationSchema: ClientPhotoSchema,
       onSubmit: async (data: any) => {
         // Preparing FormData
         const formData = new FormData();
@@ -149,17 +153,21 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient, quotes, requests, in
         formData.append('caption', data.caption);
         formData.append('type', data.type);
   
-        !!data.photo && formData.append('photo', data.photo);
+        !!data.photo && formData.append('file', data.photo);
   
         // Update client
+        setIsFileUploading(true);
         const uploaded = await uploadPhotosApi(id as string, formData);
 
         if (!!uploaded) {
+          const {data: { data : { photo }}} = uploaded;
+          setClientPictures([]);
           setClientPictures([...clientPictures, {
             caption: data.caption,
             type: data.type,
-            photo: uploaded.data.data.photos
+            photo: photo
           }]);
+          setIsFileUploading(false);
           toast.success('File uploaded successfully!')
         }
 
@@ -168,102 +176,118 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient, quotes, requests, in
     });
 
     return (
-      <div className="row mt-4">
-        <div className='card mb-2'>
-          <table className="table txt-dark-grey">
-            <thead>
-              <tr className="rt-head">
-                <th>PHOTO</th>
-                <th>CAPTION</th>
-                <th>TYPE</th>
-                <th>ACTION</th>
-              </tr>
-            </thead>
-            <tbody className="rt-tbody">
-              {clientPictures.map((photo: any) => {
-                return (
-                  <tr className="rt-head" key={photo.photo}>
-                    <td>
-                      <object data={process.env.REACT_APP_API +'v1/customers/avatars/' + photo.photo} style={{'width': '100px'}}>
-                        <img src={DummyImage} alt="Stack Overflow logo and icons and such" style={{'width': '100px'}}/>
-                      </object>
-                    </td>
-                    <td>{photo.caption}</td>
-                    <td>{photo.type}</td>
-                    <td><XCircleIcon /></td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-
-        <form noValidate onSubmit={formik.handleSubmit}>
-          <h6 className='mt-3'>Add new picture:</h6>
-          {(!!formik.values?.photo) ? (
-            <div className="row mb-3 ps-1">
-              <div className="col-3 mt-2 pointer text-center">
-                {(typeof formik.values.photo) ? <img src={URL.createObjectURL(formik.values.photo as any)} style={{'width': "100px"}} /> : null}
+      <div className="card mt-4">
+        <div className='row'>
+          {clientPictures.length && clientPictures.map((picture: any) => {
+            return (
+              <div className="col-2" key={picture.photo}>
+                <div>
+                  <object data={process.env.REACT_APP_API +'v1/customers/avatars/' + picture.photo} style={{'width': '100px'}} onClick={() => setSelectedPicture(picture.photo)}>
+                    <img src={DummyImage} alt="Stack Overflow logo and icons and such" style={{'width': '100px'}}/>
+                  </object>
+                </div>
+                <div>{picture.caption}</div>
+                <div>{picture.type}</div>
               </div>
-              {!id ? (
+            );
+          })}
+        </div>
+        <div className='row'>
+          <form noValidate onSubmit={formik.handleSubmit} style={{'position': 'relative'}}>
+            <Loader isLoading={isFileUploading} />
+            <h6 className='mt-3'>Add new picture:</h6>
+            {(!!formik.values?.photo) ? (
+              <div className="row mb-3 ps-1">
+                <div className="col-3 mt-2 pointer text-center">
+                  {(formik.values.photo) ? <img src={URL.createObjectURL(formik.values.photo as any)} style={{'width': "100px"}} /> : null}
+                </div>
                 <div className="col-2 mt-2 pointer text-center">
                   <span onClick={() => { formik.setFieldValue('photo', ''); }}>
                     <XCircleIcon size={20} />
                   </span>
                 </div>
-              ) : null}
-            </div>
-          ) : null}
+              </div>
+            ) : null}
 
-          {!(!!formik.values?.photo) ? (
-            <div className="row mb-3 mt-2 px-3">
-              <input
-                className="form-control hidden"
-                id="file"
-                type="file"
-                onChange={(event) => {
-                  if (event.target.files?.length) {
-                    formik.setFieldValue(`photo`, event.target.files[0]);
-                  }
-                }}
+            {!(!!formik.values?.photo) ? (
+              <div className="row mb-3 mt-2 px-3">
+                <input
+                  className="form-control hidden"
+                  id="file"
+                  type="file"
+                  onChange={(event) => {
+                    if (event.target.files?.length) {
+                      formik.setFieldValue(`photo`, event.target.files[0]);
+                    }
+                  }}
+                />
+                <label htmlFor={'file'} className="txt-orange dashed mt-2">
+                  <UploadIcon /> Select Picture of a customer
+                </label>
+              </div>
+            ) : null}
+
+            <div className="col">
+              <InputField
+                label="Caption"
+                value={formik.values.caption}
+                placeholder="Enter Caption"
+                name="caption"
+                helperComponent={formik.errors.caption && formik.touched.caption ? <div className="txt-red"><StopIcon size={14} /> {formik.errors.caption}</div> : null}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                isRequired={true}
               />
-              <label htmlFor={'file'} className="txt-orange dashed mt-2">
-                <UploadIcon /> Select Picture of a customer
-              </label>
             </div>
-          ) : null}
+            <div className="col">
+              <InputField
+                value={formik.values.type}
+                label="Type"
+                placeholder="Enter Type"
+                name="type"
+                helperComponent={formik.errors.type && formik.touched.type ? <div className="txt-red"><StopIcon size={14} /> {formik.errors.type}</div> : null}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                isRequired={true}
+              />
+            </div>
 
-          <div className="col">
-            <InputField
-              label="Caption"
-              value={formik.values.caption}
-              placeholder="Enter Caption"
-              name="caption"
-              helperComponent={formik.errors.caption && formik.touched.caption ? <div className="txt-red"><StopIcon size={14} /> {formik.errors.caption}</div> : null}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              isRequired={true}
-            />
-          </div>
-          <div className="col">
-            <InputField
-              value={formik.values.type}
-              label="Type"
-              placeholder="Enter Type"
-              name="type"
-              helperComponent={formik.errors.type && formik.touched.type ? <div className="txt-red"><StopIcon size={14} /> {formik.errors.type}</div> : null}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              isRequired={true}
-            />
-          </div>
+            <div className="mb-3 mt-2 m-1">
+              <button type="submit" className="btn btn-primary">
+                {id ? 'Update' : 'Save'} Client Info
+              </button>
+            </div>
+          </form>
+        </div>
 
-          <div className="mb-3 mt-2 m-1">
-            <button type="submit" className="btn btn-primary">
-              {id ? 'Update' : 'Save'} Client Info
-            </button>
+        <Modal isOpen={!!selectedPicture} onRequestClose={() => setSelectedPicture('')}>
+          <div className={`modal fade show mt-5`} role="dialog" style={{ display: 'block' }}>
+            <div className="modal-dialog mt-5">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h5 className="col">View Photo</h5>
+                  <div className="col">
+                    <span onClick={() => setSelectedPicture('')} className="pointer d-flex float-end">
+                      <box-icon name="x" />
+                    </span>
+                  </div>
+                </div>
+                <div className="modal-body text-center">
+                  {selectedPicture ? (
+                    <object data={process.env.REACT_APP_API +'v1/customers/avatars/' + selectedPicture} style={{'minWidth': '250px', 'maxWidth': '300px'}}>
+                      <img src={DummyImage} alt="Stack Overflow logo and icons and such" style={{'width': '100px'}}/>
+                    </object>
+                  ) : null}
+                </div>
+                <div className="modal-footer">
+                  <button onClick={() => setSelectedPicture('')} type="button" className="ms-2 btn btn-secondary" data-bs-dismiss="modal">
+                    Close
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
-        </form>
+        </Modal>
       </div>
     );
   };

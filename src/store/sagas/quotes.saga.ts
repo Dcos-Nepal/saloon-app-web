@@ -2,7 +2,7 @@ import { toast } from 'react-toastify';
 import * as actionType from '../constants';
 import { getMessage } from 'common/messages';
 import { call, put, takeEvery } from 'redux-saga/effects';
-import { createQuotesApi, fetchQuotesApi, fetchJobQuoteApi, updateQuoteApi, updateQuoteStatusApi } from 'services/quotes.service';
+import { createQuotesApi, fetchQuotesApi, fetchJobQuoteApi, updateQuoteApi, updateQuoteStatusApi } from 'services/appointments.service';
 
 /**
  * Saga Definitions

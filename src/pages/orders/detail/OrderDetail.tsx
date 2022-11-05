@@ -1,7 +1,7 @@
 import { InfoIcon, PencilIcon } from "@primer/octicons-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getCurrentUser } from "utils";
-import ClientJobDetailData from "./JobQuoteDetailData";
+import ClientJobDetailData from "./OrderDetailData";
 
 const JobQuoteDetail = () => {
   const navigate = useNavigate();

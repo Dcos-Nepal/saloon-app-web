@@ -18,7 +18,7 @@ import { toast } from 'react-toastify';
 import DeleteConfirm from 'common/components/DeleteConfirm';
 import { getCurrentUser } from 'utils';
 import AppointmentAddForm from 'pages/appointments/add';
-import { createQuotesApi } from 'services/quotes.service';
+import { createQuotesApi } from 'services/appointments.service';
 import { DateTime } from 'luxon';
 import DummyImage from '../../../assets/images/dummy.png';
 

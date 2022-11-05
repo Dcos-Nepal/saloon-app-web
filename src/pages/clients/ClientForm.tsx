@@ -39,7 +39,8 @@ const ClientForm: FC<IProps> = ({ id, isClientsLoading, actions, currentClient }
     address: '',
     gender: '',
     dateOfBirth: '',
-    referredBy: ''
+    referredBy: '',
+    photo: '',
   });
 
   const opts: any = {
@@ -63,12 +64,24 @@ const ClientForm: FC<IProps> = ({ id, isClientsLoading, actions, currentClient }
     initialValues: initialValues,
     validationSchema: ClientSchema,
     onSubmit: (data: any) => {
+      const formData =  new FormData();
+
+      formData.append('photo', !!data.photo ? data.photo : null)
+      formData.append('firstName', data.firstName);
+      formData.append('lastName', data.lastName);
+      formData.append('email', data.email);
+      formData.append('phoneNumber', data.phoneNumber);
+      formData.append('address', data.address);
+      formData.append('gender', data.gender);
+      formData.append('dateOfBirth', data.dateOfBirth);
+      formData.append('referredBy', data.referredBy);
+
       if (id) {
         // Update client
-        actions.updateClient(id, data);
+        actions.updateClient(id, formData);
       } else {
         // Add new client
-        actions.addClient(data);
+        actions.addClient(formData);
       }
 
       // Redirect to previous page
@@ -99,11 +112,8 @@ const ClientForm: FC<IProps> = ({ id, isClientsLoading, actions, currentClient }
   };
 
   useEffect(() => {
-    if (id) {
-      opts.photo = Yup.object().required('Photo is required');
-      actions.fetchClient(id);
-    }
-  }, [id, actions]);
+    if (id) { actions.fetchClient(id); }
+  }, [id]);
 
   useEffect(() => {
     if (currentClient && id) {
@@ -120,23 +130,21 @@ const ClientForm: FC<IProps> = ({ id, isClientsLoading, actions, currentClient }
             <div className="col card">
               <div>
                 <h5>Client Details</h5>
-                <small>Please note all fields with <span className='text-danger'>*</span> are required.</small>
+                <small>Please note all fields with <span className='text-danger'>*</span> are required. And for photo <b>jpg</b>, <b>png</b>, and <b>gif</b>, are only supported.</small>
               </div>
               <div className="row">
                 {(!!formik.values?.photo) ? (
                   <div className="row mb-3 ps-1">
                     <div className="col-3 mt-2 pointer text-center">
                       {(typeof formik.values.photo === 'string')
-                        ? <img src={'http://localhost:8000/api/v1/customers/avatars/' + formik.values?.photo} style={{'width': "250px"}} />
-                        : <img src={URL.createObjectURL(formik.values.photo as any)} style={{'width': "250px"}} />}
+                        ? <img alt="Profile Image" src={'http://localhost:8000/api/v1/customers/avatars/' + formik.values?.photo} style={{'width': "250px"}} />
+                        : <img alt="Profile Image" src={URL.createObjectURL(formik.values.photo as any)} style={{'width': "250px"}} />}
                     </div>
-                    {!id ? (
-                      <div className="col-2 mt-2 pointer text-center">
-                        <span onClick={() => { formik.setFieldValue('photo', ''); }}>
-                          <XCircleIcon size={20} />
-                        </span>
-                      </div>
-                    ) : null}
+                    <div className="col-2 mt-2 pointer text-center">
+                      <span onClick={() => { formik.setFieldValue('photo', ''); }}>
+                        <XCircleIcon size={20} />
+                      </span>
+                    </div>
                   </div>
                 ) : null}
                 {!(!!formik.values?.photo) ? (

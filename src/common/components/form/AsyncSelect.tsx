@@ -21,7 +21,7 @@ const SelectAsync: FC<any> = ({ name, label, customOption, placeholder, onChange
       });
   };
 
-    const handleInputChange = (inputValue: string) => {
+  const handleInputChange = (inputValue: string) => {
     setQuery(inputValue);
   };
 

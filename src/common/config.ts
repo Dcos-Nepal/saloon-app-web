@@ -20,6 +20,12 @@ export const endpoints = {
       detail: ':id',
       edit: ':id/edit'
     },
+    order: {
+      list: 'orders',
+      add: 'add',
+      detail: ':id',
+      edit: ':id/edit'
+    },
     worker: {
       add: 'add',
       detail: ':id',

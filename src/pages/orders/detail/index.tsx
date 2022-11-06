@@ -1,3 +1,3 @@
-import JobQuoteDetail from "./OrderDetail";
+import OrderDetail from "./OrderDetail";
 
-export default JobQuoteDetail;
+export default OrderDetail;

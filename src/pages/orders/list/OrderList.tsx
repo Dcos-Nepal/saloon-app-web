@@ -2,10 +2,11 @@ import { useNavigate } from 'react-router-dom';
 import { Column, useTable } from 'react-table';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import * as quotesActions from '../../../store/actions/quotes.actions';
+import * as ordersAction from '../../../store/actions/orders.actions';
 
 import InputField from 'common/components/form/Input';
 import SelectField from 'common/components/form/Select';
+import { endpoints } from 'common/config';
 import ReactPaginate from 'react-paginate';
 import { connect } from 'react-redux';
 import { Loader } from 'common/components/atoms/Loader';
@@ -14,61 +15,69 @@ import EmptyState from 'common/components/EmptyState';
 import Modal from 'common/components/atoms/Modal';
 import { toast } from 'react-toastify';
 import DeleteConfirm from 'common/components/DeleteConfirm';
-import { deleteQuoteApi } from 'services/appointments.service';
+import { deleteOrderApi } from 'services/orders.service';
 import StatusChangeWithReason from './StatusChangeWithReason';
-import { EyeIcon, InfoIcon, NoteIcon, PencilIcon, TrashIcon } from '@primer/octicons-react';
+import { EyeIcon, FileBadgeIcon, PencilIcon, SyncIcon, TrashIcon } from '@primer/octicons-react';
 import { getCurrentUser } from 'utils';
-import { DateTime } from 'luxon';
-import { calculateJobDuration } from 'utils/timer';
-import ReactTooltip from 'react-tooltip';
-import DummyImage from '../../../assets/images/dummy.png';
-import pinterpolate from 'pinterpolate';
-import { endpoints } from 'common/config';
 
-
-interface IAppointment {
-  id: string;
-  customer: any;
-  notes: string;
-  type: any;
-  status: any;
-  session: string;
-  appointmentDate: string;
-  appointmentTime: string;
-  createdDate: string;
-  services: any[];
-  createdAt: string;
-  updatedAt: string;
+export interface OrderStatus {
+  name: string;
+  date: Date;
+  reason?: string;
 }
 
-const quoteStatusOptions = [
-  { label: 'WAITING', value: 'WAITING' },
-  { label: 'IN PROCESS', value: 'IN_PROGRESS' },
-  { label: 'COMPLETED', value: 'COMPLETED' }
+export interface OrderProduct {
+  product: any;
+  unitPrice: number;
+  quantity: number;
+  notes: string;
+}
+
+export interface IOrder {
+  _id?: string;
+  id: string;
+  title: string;
+  customer: any;
+  orderNotes: string;
+  status: OrderStatus;
+  prevStatus: OrderStatus[];
+  products: OrderProduct[];
+  orderDate: string;
+  isActive: boolean;
+  isDeleted: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+const orderStatusOptions = [
+  { label: 'PENDING', value: 'PENDING' },
+  { label: 'ACCEPTED', value: 'ACCEPTED' },
+  { label: 'REJECTED', value: 'REJECTED' },
+  { label: 'ARCHIVED', value: 'ARCHIVED' },
+  { label: 'RE-REQUESTED', value: 'CHANGE_REQUESTED' }
 ];
 
-const AppointmentList = (props: any) => {
+const OrdersList = (props: any) => {
   const navigate = useNavigate();
   const currentUser = getCurrentUser();
   const [query, setQuery] = useState('');
-  const [queryDate, setQueryDate] = useState(DateTime.fromJSDate(new Date()).toFormat('yyyy-MM-dd'));
   const [itemsPerPage] = useState(10);
   const [offset, setOffset] = useState(1);
   const [pageCount, setPageCount] = useState(0);
-  const [quotes, setQuotes] = useState<IAppointment[]>([]);
+  const [orders, setOrders] = useState<IOrder[]>([]);
   const [deleteInProgress, setDeleteInProgress] = useState('');
 
-  const deleteQuoteHandler = async () => {
+  const deleteOrderHandler = async () => {
     try {
       if (deleteInProgress) {
-        await deleteQuoteApi(deleteInProgress);
-        toast.success('Quote deleted successfully');
+        await deleteOrderApi(deleteInProgress);
+        toast.success('Order deleted successfully');
         setDeleteInProgress('');
 
-        props.actions.fetchQuotes({ q: query, page: offset, limit: itemsPerPage });
+        props.actions.fetchOrders({ q: query, page: offset, limit: itemsPerPage });
       }
     } catch (ex) {
-      toast.error('Failed to delete quote');
+      toast.error('Failed to delete order');
     }
   };
 
@@ -77,46 +86,62 @@ const AppointmentList = (props: any) => {
     setOffset(selectedPage + 1);
   };
 
-  const handleQuotesSearch = (event: any) => {
+  const handleRefresh = () => {
+    const orderQuery: { orderFor?: string; createdBy?: string;} = {}
+
+    if (currentUser.role === 'SHOP_ADMIN') {
+      orderQuery.createdBy = currentUser.id;
+    }
+
+    props.actions.fetchOrders({ q: query, ...orderQuery, page: offset, limit: itemsPerPage });
+  }
+
+  const handleOrdersSearch = (event: any) => {
     const query = event.target.value;
     setQuery(query);
   };
 
-  const handleQuotesFilter = (event: any) => {
-    const query = event.target.value;
-    setQueryDate(query);
-  };
-
-  const handleStatusChange = async (id: string, data: any) => {
-    await props.actions.updateQuoteStatus({ id, data });
-  };
-
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const handleSearch = useCallback(debounce(handleQuotesSearch, 300), []);
+  const handleSearch = useCallback(debounce(handleOrdersSearch, 300), []);
 
-  const Status = ({ row }: { row: IAppointment }) => {
+  const handleStatusChange = async (id: string, status: { label: string; value: string }, reason: string) => {
+    await props.actions.updateOrderStatus({ id, status: status.value, reason: reason });
+  };
+
+  /**
+   * GeneunitPrice Order
+   *
+   * @param order
+   * @returns JSX
+   */
+  const calculateOrderTotal = (order: IOrder) => {
+    return (
+      <div>
+        <strong>${order.products.reduce((sum, current) => (sum += current.quantity * current.unitPrice), 0)}</strong>
+      </div>
+    );
+  };
+
+  const Status = ({ row }: { row: IOrder }) => {
     const [statusChangeInProgress, setStatusChangeInProgress] = useState('');
 
     return (
       <div style={{ minWidth: '150px' }}>
         <SelectField
-          isDisabled={row.status.name === 'COMPLETED'}
           label=""
-          options={quoteStatusOptions}
+          options={orderStatusOptions}
           value={{ label: row.status.name, value: row.status.name }}
           placeholder="All"
           handleChange={(selected: { label: string; value: string }) => {
-            if (selected.value === 'IN_PROGRESS' || selected.value === 'COMPLETED') {
-              setStatusChangeInProgress(selected.value);
-            }
+            if (selected.value === 'REJECTED' || selected.value === 'CHANGE_REQUESTED') setStatusChangeInProgress(selected.value);
+            else handleStatusChange(row.id, selected, '');
           }}
-          helperComponent={<div className="">{''}</div>}
+          helperComponent={<div className="">{row.status?.reason || ''}</div>}
         />
         <Modal isOpen={!!statusChangeInProgress} onRequestClose={() => setStatusChangeInProgress('')}>
           <StatusChangeWithReason
-            row={row}
             id={row.id}
-            status={quoteStatusOptions.find((statusLabelValue) => statusLabelValue.value === statusChangeInProgress)}
+            status={orderStatusOptions.find((statusLabelValue) => statusLabelValue.value === statusChangeInProgress)}
             onSave={handleStatusChange}
             closeModal={() => setStatusChangeInProgress('')}
           />
@@ -125,104 +150,66 @@ const AppointmentList = (props: any) => {
     );
   };
 
-  const Timer = (props: any) => {
-    const [timer, setTimer] = useState(calculateJobDuration({
-      startDate: new Date(props.date).toISOString(),
-      endDate: new Date().toISOString()
-    }));
-  
-    useEffect(() => {
-      const inte = setInterval(() => {
-        setTimer(calculateJobDuration({
-          startDate: new Date(props.date).toISOString(),
-          endDate: new Date().toISOString()
-        }));
-      }, 1000);
-
-      return () => {
-        clearInterval(inte);
-      } 
-    }, [props.status]);
-
-    return <div style={{'fontSize': 18, fontWeight: '600'}}>{timer}</div>;
-  }
-
-  const columns: Column<IAppointment>[] = useMemo(
+  const columns: Column<IOrder>[] = useMemo(
     () => [
       {
-        Header: 'APPOINTMENT INFO',
-        accessor: (row: IAppointment) => {
+        Header: 'ORDER INFO',
+        accessor: (row: IOrder) => {
           return (
-            <div className='row'>
-              <div className='col-4'>
-                <object data={process.env.REACT_APP_API +'v1/customers/avatars/' + row.customer?.photo} style={{'width': '100px'}}>
-                  <img src={DummyImage} alt="Stack Overflow logo and icons and such" style={{'width': '100px'}}/>
-                </object>
+            <div className="cursor-pointer" onClick={() => navigate(`/dashboard/orders/${row.id}`)}>
+              <div>
+                <strong>{row.title}</strong>
               </div>
-              <div className='col-8'>
-                <div className="cursor-pointer" onClick={() => navigate(pinterpolate(endpoints.admin.client.detail, { id: row.id }))}>
-                  <div>{row.customer?.fullName || ' Not Entered '}</div>
-                  <div>{row.customer?.phoneNumber}</div>
-                </div>
+              <div>
+                <i>{row.orderNotes}</i>
+              </div>
+              <div>
+                <span className="badge rounded-pill bg-secondary">Total Products ({row.products.length})</span>
               </div>
             </div>
           );
         }
       },
       {
-        Header: 'SESSION INFO',
-        accessor: (row: IAppointment) => {
-          return (<div>{row.session || 'N/A'}</div>);
-        }
-      },
-      {
-        Header: 'WAITING TIME',
-        accessor: (row: IAppointment) => {
-          return row.status.name === 'COMPLETED'
-            ? <div>Completed on: <br/> <span style={{'fontSize': 16, 'fontWeight': 600}}>{DateTime.fromISO(row.status.date).toFormat('yyyy-MM-dd HH:mm a')}</span></div>
-            : <>Currently {(row.status.name).toLowerCase().split('_').join(' ')} <br/> <Timer date={row.status.date} status={row.status.name}/></>;
-        }
-      },
-      {
-        Header: 'APPOINTMENT DATE',
-        accessor: (row: IAppointment) => {
-          return (<>
-            Scheduled for: <br/>
-            <div style={{'fontSize': 16, 'fontWeight': 600}}>{row.appointmentDate} {DateTime.fromISO(row.appointmentTime).toFormat('h:mm a') }</div>
-            {row.type === 'TREATMENT' ? <div className='text-primary'>Services: {row.services.join(', ')}</div> : null}
-          </>);
-        }
-      },
-      {
-        Header: 'Notes/Reasons',
-        accessor: ((row: IAppointment) => {
-          return (<div className='row'>
-            <div className='col-2'>
-              <a data-tip data-for='notes'><NoteIcon /></a>
-              <ReactTooltip id='notes' aria-haspopup='true'>
-                <p>{row.notes}</p>
-              </ReactTooltip>
-            </div>
-            {(!!row.status?.reason) ? (
-              <div className='col-2'>
-                <a data-tip data-for='reason'><InfoIcon /></a>
-                <ReactTooltip id='reason' aria-haspopup='true'>
-                  <p>{row.status.reason}</p>
-                </ReactTooltip>
+        Header: 'CLIENT NAME',
+        accessor: (row: IOrder) => {
+          return (
+            <div>
+              <div>
+                {row.customer?.fullName}
               </div>
-            ): null}
-            
-          </div>)
-        })
+              <div>
+                {row.customer?.phoneNumber} / {row.customer?.email}
+              </div>
+            </div>
+          );
+        }
+      },
+      {
+        Header: 'CREATED DATE',
+        accessor: (row: IOrder) => {
+          return (
+            <div style={{ width: '150px' }}>
+              <div>
+                <strong>{row.updatedAt}</strong>
+              </div>
+              <div>{row.createdAt}</div>
+            </div>
+          );
+        }
       },
       {
         Header: 'STATUS',
-        accessor: (row: IAppointment) => <Status row={row} />
+        accessor: (row: IOrder) => <Status row={row} />
+      },
+      {
+        Header: 'TOTAL',
+        accessor: (row: IOrder) => calculateOrderTotal(row)
       },
       {
         Header: ' ',
         maxWidth: 40,
-        accessor: (row: IAppointment) => (
+        accessor: (row: IOrder) => (
           <div className="dropdown">
             <span role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
               <box-icon name="dots-vertical-rounded" />
@@ -231,7 +218,7 @@ const AppointmentList = (props: any) => {
               <li onClick={() => navigate(row.id)}>
                 <span className="dropdown-item cursor-pointer"><EyeIcon /> View Detail</span>
               </li>
-              {(currentUser.role === 'ADMIN' || currentUser.role === 'SHOP_ADMIN') ? (
+              {(currentUser.role === 'ADMIN') ? (
                 <>
                   <li onClick={() => navigate(row.id + '/edit')}>
                     <span className="dropdown-item cursor-pointer"><PencilIcon /> Edit</span>
@@ -250,45 +237,32 @@ const AppointmentList = (props: any) => {
     []
   );
 
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({ columns, data: quotes });
+  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({ columns, data: orders });
 
   useEffect(() => {
-    const quoteQuery: { q?: string; appointmentDate?: string; createdBy?: string;} = {}
+    const orderQuery: { customer?: string; createdBy?: string;} = {}
 
-    if (currentUser.role === 'SHOP_ADMIN') {
-      quoteQuery.createdBy = currentUser.id;
-    }
+    if (props.customer) {
+      orderQuery.customer = props.customer;
+  } 
 
-    if (queryDate) {
-      quoteQuery.appointmentDate = queryDate;
-    }
-
-    if (query) {
-      quoteQuery.q = query;
-    }
-
-    props.actions.fetchQuotes({ ...quoteQuery, page: offset, limit: itemsPerPage });
-  }, [offset, itemsPerPage, query, queryDate, currentUser.id, currentUser.role]);
+    props.actions.fetchOrders({ q: query, ...orderQuery, page: offset, limit: itemsPerPage });
+  }, [offset, itemsPerPage, props.actions, query, currentUser.id, currentUser.role]);
 
   useEffect(() => {
     if (props.itemList?.data?.rows) {
-      setQuotes(
-        props.itemList.data?.rows
-          .filter((row: any) => props?.appointmentType ? props.appointmentType?.toLowerCase() === row.type?.toLowerCase() :  true)
-          .map((row: IAppointment) => ({
-            id: row.id,
-            customer: row.customer,
-            notes: row.notes,
-            services: row?.services,
-            status: row.status,
-            type: row.type,
-            session: row.session,
-            appointmentDate: row.appointmentDate,
-            appointmentTime: row.appointmentTime,
-            createdDate: row.createdDate,
-            createdAt: row.createdAt,
-            updatedAt: new Date(row.updatedAt).toDateString()
-          }))
+      setOrders(
+        props.itemList.data?.rows.map((row: IOrder) => ({
+          id: row.id,
+          title: row.title,
+          description: row.orderNotes,
+          customer: row.customer,
+          products: row.products,
+          status: row.status,
+          total: '',
+          createdAt: new Date(row.createdAt).toDateString(),
+          updatedAt: new Date(row.updatedAt).toDateString()
+        }))
       );
       setPageCount(Math.ceil(props.itemList.data.totalCount / itemsPerPage));
     }
@@ -297,21 +271,36 @@ const AppointmentList = (props: any) => {
 
   return (
     <>
-      <div className="card">
+      {(!props.customer) ? (
         <div className="row">
           <div className="col">
-            <h5 className="extra">{props.appointmentType}</h5>
+            <h3 className="extra">Orders</h3>
           </div>
+          <div className="col-3 d-flex flex-row-reverse">
+            <div
+              onClick={() => handleRefresh()}
+              className="btn btn-secondary"
+            >
+              <SyncIcon />&nbsp;Refresh
+            </div>
+            &nbsp;&nbsp;
+            <div
+              onClick={() => { navigate(endpoints.admin.order.add);}}
+              className="btn btn-primary"
+            >
+              <FileBadgeIcon />&nbsp; New Order
+            </div>
+          </div>
+          <label className="txt-grey">There are {orders.length} no. of orders created so far.</label>
         </div>
+      ) : null}
+      <div className="card">
         <div className="row pt-2 m-1 rounded-top bg-grey">
           <Loader isLoading={props.isLoading} />
-          <div className="col-8">
-            <InputField label="Search" placeholder="Search appointments" className="search-input" onChange={handleSearch} />
+          <div className="col-12">
+            <InputField label="Search" placeholder="Search orders" className="search-input" onChange={handleSearch} />
           </div>
-          <div className="col-4">
-            <InputField type="date" value={queryDate} label="Search" placeholder="Search Date" className="search-input" onChange={handleQuotesFilter} />
-          </div>
-          {!quotes.length ? (
+          {!orders.length ? (
             <EmptyState />
           ) : (
             <table {...getTableProps()} className="table txt-dark-grey">
@@ -346,7 +335,7 @@ const AppointmentList = (props: any) => {
             </table>
           )}
         </div>
-        {quotes.length ? (
+        {orders.length ? (
           <div className="row pt-2 m-1 rounded-top">
             <ReactPaginate
               previousLabel={'Previous'}
@@ -362,7 +351,7 @@ const AppointmentList = (props: any) => {
         ) : null}
       </div>
       <Modal isOpen={!!deleteInProgress} onRequestClose={() => setDeleteInProgress('')}>
-        <DeleteConfirm onDelete={deleteQuoteHandler} closeModal={() => setDeleteInProgress('')} />
+        <DeleteConfirm onDelete={deleteOrderHandler} closeModal={() => setDeleteInProgress('')} />
       </Modal>
     </>
   );
@@ -370,20 +359,20 @@ const AppointmentList = (props: any) => {
 
 const mapStateToProps = (state: any) => {
   return {
-    itemList: state.quotes.itemList,
-    isLoading: state.quotes.isLoading
+    itemList: state.orders.itemList,
+    isLoading: state.orders.isLoading
   };
 };
 
 const mapDispatchToProps = (dispatch: any) => ({
   actions: {
-    fetchQuotes: (payload: any) => {
-      dispatch(quotesActions.fetchQuotes(payload));
+    fetchOrders: (payload: any) => {
+      dispatch(ordersAction.fetchOrders(payload));
     },
-    updateQuoteStatus: (payload: any) => {
-      dispatch(quotesActions.updateQuoteStatus(payload.id, payload.data));
+    updateOrderStatus: (payload: any) => {
+      dispatch(ordersAction.updateOrderStatus(payload.id, { status: payload.status, reason: payload.reason }));
     }
   }
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(AppointmentList);
+export default connect(mapStateToProps, mapDispatchToProps)(OrdersList);

@@ -30,6 +30,12 @@ export const deleteUserApi = async (id: string) => {
   return await http.delete(url);
 };
 
+export const deleteUserPhotoApi = async (id: string, fileId: string) => {
+  const url = '/v1/customers/' + id + '/images/' + fileId;
+  return await http.delete(url);
+};
+
+
 export const fetchUserApi = async (id: string) => {
   const url = '/v1/customers/' + id;
   return await http.get(url);

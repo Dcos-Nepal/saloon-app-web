@@ -1,21 +1,22 @@
 import { Route, Routes } from 'react-router-dom';
 
-import OrderDetail from './detail';
+import OrdersList from './list';
+import ClientQuoteAdd from './add';
+import ClientQuoteDetail from './detail';
 import { endpoints } from 'common/config';
 import Footer from 'common/components/layouts/footer';
 import SideNavbar from 'common/components/layouts/sidebar';
-import { OrderList } from './list';
 
-const Quotes = () => {
+const Orders = () => {
   return (
     <>
-      <SideNavbar active="Quotes" />
+      <SideNavbar active="Orders" />
       <div className="col main-container" style={{ position: 'relative', minHeight: '700px' }}>
         <Routes>
-          <Route path="/" element={<OrderList isToday={true} />} />
-          {/* <Route path={endpoints.admin.quotes.add} element={<ClientQuoteAdd />} /> */}
-          {/* <Route path={endpoints.admin.quotes.edit} element={<ClientQuoteAdd />} /> */}
-          <Route path={endpoints.admin.quotes.detail} element={<OrderDetail />} />
+          <Route path="/" element={<OrdersList />} />
+          <Route path={endpoints.admin.order.add} element={<ClientQuoteAdd />} />
+          <Route path={endpoints.admin.order.edit} element={<ClientQuoteAdd />} />
+          <Route path={endpoints.admin.order.detail} element={<ClientQuoteDetail />} />
         </Routes>
         <Footer />
       </div>
@@ -23,4 +24,4 @@ const Quotes = () => {
   );
 };
 
-export default Quotes;
+export default Orders;

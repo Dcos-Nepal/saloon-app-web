@@ -5,6 +5,7 @@ import { endpoints } from 'common/config';
 import { Loader } from 'common/components/atoms/Loader';
 import PageNotFound from 'pages/NotFound';
 import Appointments from 'pages/appointments/list/Appointments';
+import Orders from 'pages/orders';
 
 // Lazy loading the component
 const Summary = React.lazy(() => import('pages/dashboard/Summary'));
@@ -60,6 +61,14 @@ const Dashboard: FC<IProps> = (): JSX.Element => {
           element={
             <Suspense fallback={<Loader isLoading={true} />}>
               <Visits/>
+            </Suspense>
+          }
+        />
+         <Route
+          path={endpoints.admin.order.list + '/*'}
+          element={
+            <Suspense fallback={<Loader isLoading={true} />}>
+              <Orders/>
             </Suspense>
           }
         />

@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { getCurrentUser } from "utils";
 import ClientJobDetailData from "./OrderDetailData";
 
-const JobQuoteDetail = () => {
+const OrderDetail = () => {
   const navigate = useNavigate();
   const currUser: { role: string; id: string } = getCurrentUser();
   const { id } = useParams();
@@ -19,14 +19,14 @@ const JobQuoteDetail = () => {
         </div>
         <div className="d-flex flex-row justify-content-between mt-2">
           <div className='mt-2'>
-            <h3 className="txt-bold extra">Quote Detail</h3>
-            <p className="text-secondary"><InfoIcon /> This is the Quote Details view. In contains the all the information for the quote.</p>
+            <h3 className="txt-bold extra">Order Detail</h3>
+            <p className="text-secondary"><InfoIcon /> This is the Order Details view. In contains the all the information for the quote.</p>
           </div>
-          {currUser.role === 'ADMIN' || currUser.role === 'WORKER' ? (
+          {currUser.role === 'ADMIN' || currUser.role === 'SHOP_ADMIN' ? (
             <div className="d-flex flex-row align-items-center mt-2">
               <button onClick={() => id && navigate(`edit`)} type="button" className="btn btn-primary d-flex float-end me-2">
                 <PencilIcon className="mt-1" />
-                &nbsp; Edit Quote Details
+                &nbsp; Edit Order Details
               </button>
             </div>
           ) : null}
@@ -39,4 +39,4 @@ const JobQuoteDetail = () => {
   );
 };
 
-export default JobQuoteDetail;
+export default OrderDetail;

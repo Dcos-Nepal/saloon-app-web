@@ -1,5 +1,5 @@
 import * as Yup from 'yup';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { getIn, useFormik } from 'formik';
 import { connect } from 'react-redux';
 import { toast } from 'react-toastify';
@@ -11,55 +11,18 @@ import { Loader } from 'common/components/atoms/Loader';
 import SideNavbar from 'common/components/layouts/sidebar';
 import InputField from 'common/components/form/Input';
 import { changePasswordApi } from 'services/auth.service';
-import * as workersActions from 'store/actions/workers.actions';
-import { InfoIcon, StopIcon, UploadIcon, XCircleIcon } from '@primer/octicons-react';
+import { InfoIcon, StopIcon } from '@primer/octicons-react';
 import SelectField from 'common/components/form/Select';
 import { COUNTRIES_OPTIONS, DAYS_OF_WEEK, STATES_OPTIONS } from 'common/constants';
 import { IOption } from 'common/types/form';
 import { updateUserApi } from 'services/customers.service';
-import * as propertiesActions from 'store/actions/properties.actions';
-import { deletePublicFile, uploadPublicFile } from 'services/files.service';
 import { getServices } from 'data';
 import SearchLocation from 'common/components/form/SearchLocation';
 
-const Setting = ({
-  actions,
-  properties
-}: {
-  actions: {
-    updateWorker: (data: any) => void;
-    addProperty: (data: any) => void;
-    fetchProperties: (filter: any) => void;
-    updateProperty: (data: any) => void;
-    deleteProperty: (data: any) => void;
-  };
-  properties: any[];
-}) => {
+const Setting = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isPCLoading, setIsPCLoading] = useState<boolean>(false);
-
-  const [isUploading, setIsUploading] = useState({
-    idCard: false,
-    cleaningCert: false,
-    policeCert: false
-  });
-
-  const [isDeleting, setIsDeleting] = useState({
-    idCard: false,
-    cleaningCert: false,
-    policeCert: false
-  });
-
-  const [getDocument, setDocument] = useState<{
-    idCard: File | null;
-    cleaningCert: File | null;
-    policeCert: File | null;
-  }>({
-    idCard: null,
-    cleaningCert: null,
-    policeCert: null
-  });
 
   // Get Currently logged in user
   const currentUser = getData('user');
@@ -72,112 +35,6 @@ const Setting = ({
   };
 
   const profileInitialValues = currentUser;
-
-  /**
-   * Handle File Upload
-   * @param event
-   * @param docKey
-   * @param type
-   */
-  const handleFileUpload = async (event: any, docKey: string, type: string) => {
-    const formData = new FormData();
-    const file = event.target.files[0];
-
-    formData.append('file', file, file.name);
-
-    setDocument({ ...getDocument, [docKey]: file });
-    setIsUploading({ ...isUploading, [docKey]: true });
-
-    try {
-      const uploadedFile = await uploadPublicFile(formData);
-
-      // Setting Formik form document properties
-      profileFormik.setFieldValue(`userData.documents[${docKey}].key`, uploadedFile.data.data.key);
-      profileFormik.setFieldValue(`userData.documents[${docKey}].url`, uploadedFile.data.data.url);
-      profileFormik.setFieldValue(`userData.documents[${docKey}].type`, type);
-
-      setIsUploading({ ...isUploading, [docKey]: false });
-    } catch (error) {
-      setIsUploading({ ...isUploading, [docKey]: false });
-    }
-  };
-
-  /**
-   * Handles file delete
-   * @param docKey
-   */
-  const handleFileDelete = async (docKey: string) => {
-    if ((profileFormik.values.userData.documents as any)[docKey].key) {
-      setIsDeleting({ ...isDeleting, [docKey]: true });
-      try {
-        await deletePublicFile((profileFormik.values.userData.documents as any)[docKey].key);
-
-        // Setting Formik form document properties
-        profileFormik.setFieldValue(`userData.documents[${docKey}].key`, '');
-        profileFormik.setFieldValue(`userData.documents[${docKey}].url`, '');
-
-        setIsDeleting({ ...isDeleting, [docKey]: false });
-      } catch (error) {
-        console.log('Error: ', error);
-        setIsDeleting({ ...isDeleting, [docKey]: false });
-      }
-    }
-    setDocument({ ...getDocument, [docKey]: null });
-  };
-
-  /**
-   *  Display DOC Select Section
-   *
-   * @param label
-   * @param name
-   * @param id
-   * @param dropText
-   * @returns JSX
-   */
-  const generateDocSelect = (label: string, name: string, id: string, dropText: string, type: string) => {
-    const documents = profileFormik.values.userData?.documents as any;
-    return (
-      <div className="mb-3">
-        <label className="form-label txt-dark-grey">{label}</label>
-        {(documents && documents[id]?.key) || (getDocument as any)[id]?.name ? (
-          <div className="row">
-            <div className="col-3">
-              {(isUploading as any)[id] ?
-                <div className="d-flex justify-content-center">
-                  <div className="spinner-border" role="status">
-                    <span className="visually-hidden">Loading...</span>
-                  </div>
-                </div>
-                : null
-              }
-              {documents && documents[id]?.url ? (<img src={documents[id]?.url} className="rounded float-start" alt="" style={{ width: '150px', height: '150px' }} />) : null}
-            </div>
-            {!(isUploading as any)[id] ? (
-              <div className="col-9 d-flex align-items-center">
-                <button
-                  type="button"
-                  title="Delete"
-                  className="btn btn-danger btn-sm"
-                  onClick={() => {
-                    handleFileDelete(id);
-                  }}
-                >
-                  {(isDeleting as any)[id] ? 'Deleting...' : <XCircleIcon size={16} />}
-                </button>
-              </div>
-            ) : null}
-          </div>
-        ) : null}
-
-        <input className="form-control hidden" type="file" id={id} name={name} onChange={(event) => handleFileUpload(event, id, type)} onBlur={formik.handleBlur} />
-        {!(getDocument as any)[id] && !(documents && documents[id]?.key) ? (
-          <label htmlFor={id} className="txt-orange dashed-file">
-            <UploadIcon /> {dropText}
-          </label>
-        ) : null}
-      </div>
-    );
-  };
 
   const ChangePasswordSchema = Yup.object().shape({
     email: Yup.string().required('Please provide an email.').email('Invalid email provided'),
@@ -199,26 +56,7 @@ const Setting = ({
           "Both password need to be the same"
         )
       })
-      .required('Confirm Password is required'),
-    userData: Yup.object().shape({
-      documents: Yup.object().shape({
-        idCard: Yup.object().shape({
-          key: Yup.string(),
-          url: Yup.string(),
-          type: Yup.string()
-        }),
-        cleaningCert: Yup.object().shape({
-          key: Yup.string(),
-          url: Yup.string(),
-          type: Yup.string()
-        }),
-        policeCert: Yup.object().shape({
-          key: Yup.string(),
-          url: Yup.string(),
-          type: Yup.string()
-        })
-      })
-    })
+      .required('Confirm Password is required')
   });
 
   const ProfileUpdateSchema = Yup.object().shape({
@@ -238,15 +76,7 @@ const Setting = ({
       .matches(
         /^\+(?:[0-9] ?){6,14}[0-9]$/,
         "Phone number must be at least 6 numbers to 14 numbers starting with '+'"
-      ),
-    userData: Yup.object().shape({
-      workingHours: Yup.object().shape({
-        start: Yup.string(),
-        end: Yup.string()
-      }),
-      workingDays: Yup.array(Yup.string()),
-      services: Yup.array(Yup.string())
-    })
+      )
   });
 
   const formik = useFormik({
@@ -301,20 +131,6 @@ const Setting = ({
     validationSchema: ProfileUpdateSchema
   });
 
-  const onWorkingDaysChange = (day: string) => {
-    if (profileFormik.values.userData?.workingDays?.length && profileFormik.values.userData?.workingDays.find((selectedDay: string) => selectedDay === day)) {
-      profileFormik.setFieldValue(
-        'userData.workingDays',
-        profileFormik.values.userData?.workingDays.filter((selectedDay: string) => selectedDay !== day)
-      );
-    } else {
-      profileFormik.setFieldValue(
-        'userData.workingDays',
-        profileFormik.values.userData?.workingDays ? [...profileFormik.values.userData?.workingDays, day] : [day]
-      );
-    }
-  };
-
   /**
    * Custom Error Message
    * @param param0 Props Object
@@ -335,12 +151,6 @@ const Setting = ({
       </div>
     ) : null;
   };
-
-  useEffect(() => {
-    if (currentUser?._id && currentUser?.userData?.type === 'CLIENT') {
-      actions.fetchProperties({ user: currentUser._id });
-    }
-  }, [currentUser?._id, currentUser?.userData?.type, actions]);
 
   return (
     <>
@@ -511,70 +321,6 @@ const Setting = ({
                             onBlur={profileFormik.handleBlur}
                           />
                         </div>
-                        <div className="col week-list">
-                          <label className="form-label txt-dark-grey">Available working days and time</label>
-                          <ul>
-                            {DAYS_OF_WEEK.map((day) => (
-                              <li
-                                key={day}
-                                className={`${profileFormik.values.userData?.workingDays?.length &&
-                                    profileFormik.values.userData?.workingDays.find((selectedDay: string) => selectedDay === day)
-                                    ? 'selected'
-                                    : null
-                                  }`}
-                                onClick={() => onWorkingDaysChange(day)}
-                              >
-                                <span className="item">{day[0]?.toString().toUpperCase()}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      </div>
-
-                      <SelectField
-                        label="Services"
-                        name="userData.services"
-                        isMulti={true}
-                        placeholder="Search available services..."
-                        options={getServices().filter((service) => service.isActive)}
-                        value={getServices().filter((tagOption) =>
-                          profileFormik.values.userData?.services?.find((service: string) => service === tagOption.value)
-                        )}
-                        handleChange={(selectedTags: IOption[]) => {
-                          profileFormik.setFieldValue(
-                            'userData.services',
-                            selectedTags.map((tagOption) => tagOption.value)
-                          );
-                        }}
-                        onBlur={profileFormik.handleBlur}
-                      />
-                      <div className="col">
-                        <h5>Documents</h5>
-                        <div className="text-success">
-                          <StopIcon size={16} /> Make sure to upload each document before saving.
-                        </div>
-                        <div className="mt-3" />
-                        {generateDocSelect(
-                          '1. ID CARD/DRIVING LICENSE:',
-                          "userData.documents['idCard'].url",
-                          'idCard',
-                          'Click to browse or drag and drop your file to upload ID card.',
-                          'ID_CARD'
-                        )}
-                        {generateDocSelect(
-                          '2. CLEANING CERTIFICATE:',
-                          "userData.documents['cleaningCert'].url",
-                          'cleaningCert',
-                          'Click to browse or drag and drop your file to upload clinic certificate.',
-                          'VACCINATION_CERTIFICATE'
-                        )}
-                        {generateDocSelect(
-                          '3. VACCINATION CERTIFICATE:',
-                          "userData.documents['policeCert'].url",
-                          'policeCert',
-                          'Click to browse or drag and drop your file to upload police check.',
-                          'POLICE_CERTIFICATE'
-                        )}
                       </div>
                     </>
                   ) : null}
@@ -647,10 +393,6 @@ const Setting = ({
         </div>
         <Footer />
       </div>
-      <script
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB41DRUbKWJHPxaFjMAwdrzWzbVKartNGg&callback=initAutocomplete&libraries=places&v=weekly"
-        defer
-      ></script>
     </>
   );
 };
@@ -664,23 +406,7 @@ const mapStateToProps = (state: any) => {
 };
 
 const mapDispatchToProps = (dispatch: any) => ({
-  actions: {
-    updateWorker: (data: any) => {
-      dispatch(workersActions.updateWorker(data));
-    },
-    addProperty: (data: any) => {
-      dispatch(propertiesActions.addProperty(data));
-    },
-    fetchProperties: (filter: any) => {
-      dispatch(propertiesActions.fetchProperties(filter));
-    },
-    updateProperty: (data: any) => {
-      dispatch(propertiesActions.updateProperty(data));
-    },
-    deleteProperty: (data: any) => {
-      dispatch(propertiesActions.deleteProperty(data));
-    }
-  }
+  actions: {}
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Setting);

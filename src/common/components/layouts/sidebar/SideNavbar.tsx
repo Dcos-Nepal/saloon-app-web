@@ -87,6 +87,20 @@ const SideNavbar: FC<IProps> = ({ active }) => {
             </li>
           ) : null}
 
+          {currUser.role === 'SHOP_ADMIN' || currUser.role === 'ADMIN' ? (
+            <li>
+              <span
+                onClick={() => navigate('/dashboard/orders')}
+                className={active === 'Orders' ? 'nav-link nav-link-active align-middle px-0' : 'nav-link align-middle px-0'}
+              >
+                <span className="mt-2">
+                  <FileBadgeIcon size={'small'} />
+                </span>
+                <span className="ms-2 d-none d-sm-inline">Orders</span>
+              </span>
+            </li>
+          ) : null}
+
           <li>
             <span
               onClick={() => navigate('/dashboard/' + endpoints.admin.schedules.calendar)}

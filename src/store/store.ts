@@ -11,6 +11,7 @@ import {
   updateClientSaga
 } from './sagas';
 import { fetchLineItemsSaga, fetchLineItemSaga, updateLineItemSaga } from './sagas/lineItems.saga';
+import { addOrderSaga, fetchOrderSaga, fetchOrdersSaga, updateOrderSaga, updateOrderStatusSaga } from './sagas/orders.saga';
 
 declare global {
   interface Window {
@@ -44,4 +45,9 @@ sagaMiddleware.run(fetchQuoteSaga);
 sagaMiddleware.run(fetchQuotesSaga);
 sagaMiddleware.run(updateQuoteSaga);
 sagaMiddleware.run(updateQuoteStatusSaga);
+sagaMiddleware.run(addOrderSaga);
+sagaMiddleware.run(fetchOrderSaga);
+sagaMiddleware.run(fetchOrdersSaga);
+sagaMiddleware.run(updateOrderSaga);
+sagaMiddleware.run(updateOrderStatusSaga);
 sagaMiddleware.run(fetchSchedulesSaga);

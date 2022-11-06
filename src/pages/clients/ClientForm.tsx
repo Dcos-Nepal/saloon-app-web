@@ -23,9 +23,6 @@ interface IProps {
   id?: string;
   isClientsLoading: boolean;
   currentClient: IClient;
-  isPropertiesLoading: boolean;
-  currentProperty: any;
-  properties: any[];
 }
 
 const ClientForm: FC<IProps> = ({ id, isClientsLoading, actions, currentClient }) => {
@@ -296,10 +293,7 @@ const ClientForm: FC<IProps> = ({ id, isClientsLoading, actions, currentClient }
 const mapStateToProps = (state: any) => {
   return {
     isClientsLoading: state.clients.isLoading,
-    currentClient: state.clients.currentUser,
-    isPropertiesLoading: state.properties.isLoading,
-    currentProperty: state.properties.currentItem,
-    properties: state.properties.properties
+    currentClient: state.clients.currentUser
   };
 };
 

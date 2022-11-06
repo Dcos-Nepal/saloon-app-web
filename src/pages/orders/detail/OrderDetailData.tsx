@@ -134,9 +134,7 @@ const JobQuoteDetailData: FC<IProps> = ({isLoading, actions, currentQuote}) => {
                   <th scope="row">#00{index + 1}</th>
                   <td>
                     <div><strong>{item.name}</strong></div>
-                    <div><small>
-                          {item.description}
-                    </small></div>
+                    <div><small>{item.description}</small></div>
                   </td>
                   <td><strong>{item.quantity}</strong></td>
                   <td><strong>${item.unitPrice}</strong></td>

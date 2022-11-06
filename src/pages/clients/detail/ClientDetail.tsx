@@ -8,13 +8,17 @@ import { Loader } from 'common/components/atoms/Loader';
 import * as clientsActions from 'store/actions/clients.actions';
 import { PencilIcon, StopIcon, UploadIcon, XCircleIcon } from '@primer/octicons-react';
 import { DateTime } from 'luxon';
-import { useFormik } from 'formik';
-import { uploadPhotosApi } from 'services/customers.service';
+import { getIn, useFormik } from 'formik';
+import { deleteUserPhotoApi, uploadPhotosApi } from 'services/customers.service';
 import InputField from 'common/components/form/Input';
 import DummyImage from '../../../assets/images/dummy.png';
-import Sessions from './Sessions';
+import SessionList from './Sessions';
 import { toast } from 'react-toastify';
 import Modal from 'common/components/atoms/Modal';
+import SelectField from 'common/components/form/Select';
+import { IOption } from 'common/types/form';
+import { getPhotoTypes } from 'data';
+import OrderList from 'pages/orders/list';
 
 interface IRequest {
   id: string;
@@ -56,29 +60,24 @@ interface IInvoice {
 }
 
 interface IProps {
+  id?: string;
+  isClientsLoading: boolean;
+  currentClient: IClient;
   actions: {
     fetchClient: (id: string) => void;
   };
-  id?: string;
-  jobs: any[];
-  quotes: IQuote[];
-  properties: any[];
-  invoices: IInvoice[];
-  requests: IRequest[];
-  isClientsLoading: boolean;
-  currentClient: IClient;
 }
 
-const ClientDetail: FC<IProps> = ({ actions, currentClient, quotes, requests, invoices, jobs }) => {
+const ClientDetail: FC<IProps> = ({ actions, currentClient }) => {
   const { id } = useParams();
   const navigate = useNavigate();
 
   const Tabs = {
     ClientDetails: 'ClientDetails',
-    Requests: 'Requests',
+    Orders: 'Orders',
     Quotes: 'Quotes',
     ClientPictures: 'ClientPictures',
-    Invoices: 'Invoices'
+    Sessions: 'Sessions'
   };
 
   const [tab, setTab] = useState(Tabs.ClientDetails);
@@ -87,29 +86,24 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient, quotes, requests, in
     return (
       <div className="row mt-4">
         <div className="col p-2 ps-4">
-          <div className="txt-grey">There are no Invoices assigned to this client.</div>
+          <div className="txt-grey">There are no Sessions assigned to this client.</div>
         </div>
       </div>
     );
   };
 
-  const Requests = () => {
+  const Orders = () => {
     return (
       <div className="row mt-4">
-        <div className="col p-2 ps-4">
-          <div className="txt-grey">There are no Invoices assigned to this client.</div>
-        </div>
+        <OrderList customer={currentClient?._id}/>
       </div>
     );
   };
 
-  const Invoices = () => {
+  const Sessions = () => {
     return (
       <div className="row mt-4">
-        <Sessions customer={currentClient?._id}/>
-        <div className="col p-2 ps-4">
-          <div className="txt-grey">There are no Invoices assigned to this client.</div>
-        </div>
+        <SessionList customer={currentClient?._id}/>
       </div>
     );
   };
@@ -127,19 +121,18 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient, quotes, requests, in
   const ClientPictures = () => {
     const [selectedPicture, setSelectedPicture] = useState('');
     const [isFileUploading, setIsFileUploading] = useState<boolean>(false);
+    const [isDeleteInProgress, setIsDeleteInProgress] = useState<boolean>(false);
     const [clientPictures, setClientPictures] = useState<any>(currentClient.photos || []);
     const [initialValues,] = useState<any>({
       caption: '',
       type: '',
       data: ''
     });
-  
-    const ClientPhotoOptions: any = {
-      caption: Yup.string().required(`Caption is required`),
-      type: Yup.string().required(`Type is required`),
-    }
-  
-    const ClientPhotoSchema = Yup.object().shape(ClientPhotoOptions);
+
+    const ClientPhotoSchema = Yup.object().shape({
+      caption: Yup.string().required(`Caption is required.`),
+      type: Yup.string().required(`Type is required.`),
+    });
   
     const formik = useFormik({
       enableReinitialize: true,
@@ -160,38 +153,86 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient, quotes, requests, in
         const uploaded = await uploadPhotosApi(id as string, formData);
 
         if (!!uploaded) {
-          const {data: { data : { photo }}} = uploaded;
-          setClientPictures([]);
-          setClientPictures([...clientPictures, {
-            caption: data.caption,
-            type: data.type,
-            photo: photo
-          }]);
-          setIsFileUploading(false);
+          setClientPictures([...uploaded.data.data.photos]);
           toast.success('File uploaded successfully!')
+          setIsFileUploading(false);
         }
 
         formik.resetForm();
       }
     });
 
+    /**
+     * Remove Image
+     * @param id String
+     * @param fileId String
+     */
+    const removeImage = async (id: string, fileId: string) => {
+      setIsDeleteInProgress(true);
+      const updatedCustomer = await deleteUserPhotoApi(id, fileId);
+
+      if (!!updatedCustomer) {
+        setClientPictures([...updatedCustomer.data.data.photos]);
+        toast.success('Photo deleted successfully!');
+        setIsDeleteInProgress(false);
+      }
+    }
+
+    /**
+     * Renders the list of given pictures
+     * @param pictures 
+     * @returns JSX
+     */
+    const renderPictures = (pictures: any[]) => {
+      return pictures.map((pic: any) => {
+        return (
+          <div className="col-2 text-center" key={pic.photo}>
+            <div style={{'position': 'relative'}}>
+              <Loader isLoading={isDeleteInProgress} />
+              <object
+                style={{'width': '100px'}}
+                onClick={() => setSelectedPicture(pic.photo)}
+                data={process.env.REACT_APP_API + 'v1/customers/avatars/' + pic.photo}>
+                <img src={DummyImage} style={{'width': '100px'}} />
+              </object>
+              <span style={{ 'position': 'absolute', 'right': '10px', 'top': '10px'}} onClick={() => {removeImage(id as string, pic.photo)}}>
+                <XCircleIcon size={20} />
+              </span>
+            </div>
+            <div>{pic.caption}</div>
+            <div>{pic.type}</div>
+          </div>
+        );
+      });
+    }
+
+    /**
+     * Custom Error Message
+     *
+     * @param param Props Object
+     * @returns JSX
+     */
+    const ErrorMessage = ({ name }: any) => {
+      if (!name) return <></>;
+
+      const error = getIn(formik.errors, name);
+      const touch = getIn(formik.touched, name);
+
+      return (touch && error) || error ? (
+        <div className="row txt-red">
+          <div className="col-1" style={{ width: '20px' }}>
+            <StopIcon size={14} />
+          </div>
+          <div className="col">{error}</div>
+        </div>
+      ) : null;
+    };
+
+
     return (
       <div className="card mt-4">
-        <div className='row'>
-          {clientPictures.length && clientPictures.map((picture: any) => {
-            return (
-              <div className="col-2" key={picture.photo}>
-                <div>
-                  <object data={process.env.REACT_APP_API +'v1/customers/avatars/' + picture.photo} style={{'width': '100px'}} onClick={() => setSelectedPicture(picture.photo)}>
-                    <img src={DummyImage} alt="Stack Overflow logo and icons and such" style={{'width': '100px'}}/>
-                  </object>
-                </div>
-                <div>{picture.caption}</div>
-                <div>{picture.type}</div>
-              </div>
-            );
-          })}
-        </div>
+        {clientPictures.length !== 0 ? (<h6>Client Pictures:</h6>) : null}
+        <div className='row'>{renderPictures(clientPictures)}</div>
         <div className='row'>
           <form noValidate onSubmit={formik.handleSubmit} style={{'position': 'relative'}}>
             <Loader isLoading={isFileUploading} />
@@ -212,9 +253,9 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient, quotes, requests, in
             {!(!!formik.values?.photo) ? (
               <div className="row mb-3 mt-2 px-3">
                 <input
-                  className="form-control hidden"
                   id="file"
                   type="file"
+                  className="form-control hidden"
                   onChange={(event) => {
                     if (event.target.files?.length) {
                       formik.setFieldValue(`photo`, event.target.files[0]);
@@ -229,10 +270,10 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient, quotes, requests, in
 
             <div className="col">
               <InputField
+                name="caption"
                 label="Caption"
                 value={formik.values.caption}
                 placeholder="Enter Caption"
-                name="caption"
                 helperComponent={formik.errors.caption && formik.touched.caption ? <div className="txt-red"><StopIcon size={14} /> {formik.errors.caption}</div> : null}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
@@ -240,15 +281,17 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient, quotes, requests, in
               />
             </div>
             <div className="col">
-              <InputField
-                value={formik.values.type}
-                label="Type"
-                placeholder="Enter Type"
+              <SelectField
+                label="Select Photo Type"
                 name="type"
-                helperComponent={formik.errors.type && formik.touched.type ? <div className="txt-red"><StopIcon size={14} /> {formik.errors.type}</div> : null}
-                onChange={formik.handleChange}
+                isMulti={false}
+                value={getPhotoTypes().find((service) => formik.values.type === service.value)}
+                options={getPhotoTypes().filter((service) => service.isActive)}
+                helperComponent={<ErrorMessage name="type" />}
+                handleChange={(selectedTag: IOption) => {
+                  formik.setFieldValue('type', selectedTag.value);
+                }}
                 onBlur={formik.handleBlur}
-                isRequired={true}
               />
             </div>
 
@@ -296,14 +339,14 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient, quotes, requests, in
     switch (tab) {
       case Tabs.ClientDetails:
         return <ClientDetails />;
-      case Tabs.Invoices:
-        return <Invoices />;
+      case Tabs.Sessions:
+        return <Sessions />;
       case Tabs.ClientPictures:
         return <ClientPictures />;
       case Tabs.Quotes:
         return <Quotes />;
-      case Tabs.Requests:
-        return <Requests />;
+      case Tabs.Orders:
+        return <Orders />;
 
       default:
         return (
@@ -399,7 +442,7 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient, quotes, requests, in
                   <div className={`col tab me-1 ${tab === Tabs.ClientDetails ? 'active-tab' : ''}`} onClick={() => setTab(Tabs.ClientDetails)}>
                     Client's Details
                   </div>
-                  <div className={`col tab me-1 ${tab === Tabs.Invoices ? 'active-tab' : ''}`} onClick={() => setTab(Tabs.Invoices)}>
+                  <div className={`col tab me-1 ${tab === Tabs.Sessions ? 'active-tab' : ''}`} onClick={() => setTab(Tabs.Sessions)}>
                     Client's Sessions
                   </div>
                   <div className={`col tab me-1 ${tab === Tabs.ClientPictures ? 'active-tab' : ''}`} onClick={() => setTab(Tabs.ClientPictures)}>
@@ -408,7 +451,7 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient, quotes, requests, in
                   <div className={`col tab me-1 ${tab === Tabs.Quotes ? 'active-tab' : ''}`} onClick={() => setTab(Tabs.Quotes)}>
                     Client used Products
                   </div>
-                  <div className={`col tab me-1 ${tab === Tabs.Requests ? 'active-tab' : ''}`} onClick={() => setTab(Tabs.Requests)}>
+                  <div className={`col tab me-1 ${tab === Tabs.Orders ? 'active-tab' : ''}`} onClick={() => setTab(Tabs.Orders)}>
                     Client's Orders
                   </div>
                 </div>

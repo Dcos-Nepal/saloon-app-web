@@ -1,3 +1,3 @@
-import AppointmentAddForm from "./OrderCreateForm";
+import OrderAdd from "./OrderAdd";
 
-export default AppointmentAddForm;
+export default OrderAdd;

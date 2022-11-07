@@ -24,8 +24,8 @@ export const updateOrder = (id: string, data: any) => {
   };
 };
 
-export const updateOrderStatus = (id: string, data: any) => {
+export const updateOrderStatus = (payload: any) => {
   return {
-    type: UPDATE_ORDER_STATUS, payload: {id, data}
+    type: UPDATE_ORDER_STATUS, payload
   };
 };

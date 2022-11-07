@@ -89,7 +89,7 @@ const StatusChangeWithReason = ({ id, row, status, onSave, closeModal }: any) =>
             </div>
             <div className="modal-footer">
               <button type="submit" className="btn btn-primary">
-                Change Status
+                Update Status
               </button>
               <button type="button" className="btn btn-secondary" onClick={closeModal}>
                 Close

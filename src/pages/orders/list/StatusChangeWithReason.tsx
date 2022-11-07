@@ -5,9 +5,7 @@ import TextArea from 'common/components/form/TextArea';
 
 const StatusChangeWithReason = ({ id, status, onSave, closeModal }: any) => {
   const InitialValues = {
-    id: id,
-    reason: '',
-    status: status
+    reason: ''
   };
 
   const StatusReasonSchema = Yup.object().shape({
@@ -18,7 +16,15 @@ const StatusChangeWithReason = ({ id, status, onSave, closeModal }: any) => {
     enableReinitialize: true,
     initialValues: InitialValues,
     onSubmit: async (data: any) => {
-      await onSave(data.id, data.status, data.reason);
+      // Prepare Payload
+      data.id = id;
+      data.status = {
+        name: status.value,
+        reason: data.reason
+      };
+
+      delete data.reason;
+      await onSave(data.id, data);
       closeModal();
     },
     validationSchema: StatusReasonSchema
@@ -53,7 +59,7 @@ const StatusChangeWithReason = ({ id, status, onSave, closeModal }: any) => {
             <h5 className="modal-title">Update Status</h5>
             <button type="button" className="btn-close" onClick={closeModal} data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
-          <form className="was-validated" onSubmit={formik.handleSubmit}>
+          <form no-validate="true" onSubmit={formik.handleSubmit}>
             <div className="modal-body">
               <div className="mb-3">
                 <label htmlFor="validationTextarea" className="form-label">
@@ -79,7 +85,7 @@ const StatusChangeWithReason = ({ id, status, onSave, closeModal }: any) => {
             </div>
             <div className="modal-footer">
               <button type="submit" className="btn btn-primary">
-                Change Status
+                Update Status
               </button>
               <button type="button" className="btn btn-secondary" onClick={closeModal}>
                 Close

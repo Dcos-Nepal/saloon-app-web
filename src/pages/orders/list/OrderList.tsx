@@ -50,11 +50,12 @@ export interface IOrder {
 }
 
 const orderStatusOptions = [
-  { label: 'PENDING', value: 'PENDING' },
-  { label: 'ACCEPTED', value: 'ACCEPTED' },
-  { label: 'REJECTED', value: 'REJECTED' },
-  { label: 'ARCHIVED', value: 'ARCHIVED' },
-  { label: 'RE-REQUESTED', value: 'CHANGE_REQUESTED' }
+  {label: "ORDER_PENDING", value: "ORDER_PENDING"},
+  {label: "NOT_ON_STOCK", value: "NOT_ON_STOCK"},
+  {label: "NOT_PACKED", value: "NOT_PACKED"},
+  {label: "NOT_DELIVERED", value: "NOT_DELIVERED"},
+  {label: "PACKED", value: "PACKED"},
+  {label: "DELIVERED", value: "DELIVERED"}
 ];
 
 const OrdersList = (props: any) => {
@@ -104,8 +105,8 @@ const OrdersList = (props: any) => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const handleSearch = useCallback(debounce(handleOrdersSearch, 300), []);
 
-  const handleStatusChange = async (id: string, status: { label: string; value: string }, reason: string) => {
-    await props.actions.updateOrderStatus({ id, status: status.value, reason: reason });
+  const handleStatusChange = async (id: string, data: any) => {
+    await props.actions.updateOrderStatus({ id, data });
   };
 
   /**
@@ -133,8 +134,7 @@ const OrdersList = (props: any) => {
           value={{ label: row.status.name, value: row.status.name }}
           placeholder="All"
           handleChange={(selected: { label: string; value: string }) => {
-            if (selected.value === 'REJECTED' || selected.value === 'CHANGE_REQUESTED') setStatusChangeInProgress(selected.value);
-            else handleStatusChange(row.id, selected, '');
+            setStatusChangeInProgress(selected.value);
           }}
           helperComponent={<div className="">{row.status?.reason || ''}</div>}
         />
@@ -156,7 +156,7 @@ const OrdersList = (props: any) => {
         Header: 'ORDER INFO',
         accessor: (row: IOrder) => {
           return (
-            <div className="cursor-pointer" onClick={() => navigate(`/dashboard/orders/${row.id}`)}>
+            <div className="cursor-pointer" onClick={() => {}}>
               <div>
                 <strong>{row.title}</strong>
               </div>
@@ -370,7 +370,7 @@ const mapDispatchToProps = (dispatch: any) => ({
       dispatch(ordersAction.fetchOrders(payload));
     },
     updateOrderStatus: (payload: any) => {
-      dispatch(ordersAction.updateOrderStatus(payload.id, { status: payload.status, reason: payload.reason }));
+      dispatch(ordersAction.updateOrderStatus(payload));
     }
   }
 });

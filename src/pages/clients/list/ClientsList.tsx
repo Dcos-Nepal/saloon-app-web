@@ -130,9 +130,11 @@ const ClientsList = (props: any) => {
           return (
             <div className='row'>
               <div className='col-4'>
-                <object data={process.env.REACT_APP_API +'v1/customers/avatars/' + row.photo} style={{'width': '100px'}}>
-                  <img src={DummyImage} alt="Stack Overflow logo and icons and such" style={{'width': '100px'}}/>
-                </object>
+                {row.photo ? (
+                  <object data={process.env.REACT_APP_API +'v1/customers/avatars/' + row.photo} style={{'width': '72px'}}>
+                    <img src={DummyImage} alt="Profile Picture" style={{'width': '72px'}}/>
+                  </object>
+                ) : <img src={DummyImage} alt="Profile Picture" style={{'width': '72px'}}/>}
               </div>
               <div className='col-8'>
                 <div className="cursor-pointer" onClick={() => navigate(pinterpolate(endpoints.admin.client.detail, { id: row._id }))}>

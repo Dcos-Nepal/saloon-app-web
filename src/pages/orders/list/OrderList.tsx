@@ -20,7 +20,6 @@ import StatusChangeWithReason from './StatusChangeWithReason';
 import { EyeIcon, FileBadgeIcon, InfoIcon, PencilIcon, SyncIcon, TrashIcon } from '@primer/octicons-react';
 import { getCurrentUser } from 'utils';
 import DummyImage from '../../../assets/images/dummy.png';
-import pinterpolate from 'pinterpolate';
 import { DateTime } from 'luxon';
 
 export interface OrderStatus {
@@ -65,7 +64,6 @@ const OrdersList = (props: any) => {
   const navigate = useNavigate();
   const currentUser = getCurrentUser();
   const [query, setQuery] = useState('');
-  const [show, setShow] = useState('');
   const [itemsPerPage] = useState(10);
   const [offset, setOffset] = useState(1);
   const [pageCount, setPageCount] = useState(0);
@@ -161,11 +159,13 @@ const OrdersList = (props: any) => {
         Header: 'CLIENT NAME',
         accessor: (row: IOrder) => {
           return (
-            <div className='row'>
-              <div className='col-4' onClick={() => setSelectedOrder(row)}>
-                <object data={process.env.REACT_APP_API +'v1/customers/avatars/' + row.customer.photo} style={{'width': '72px'}}>
-                  <img src={DummyImage} alt="Stack Overflow logo and icons and such" style={{'width': '72px'}}/>
-                </object>
+            <div className='row' onClick={() => setSelectedOrder(row)}>
+              <div className='col-4'>
+                {row.customer.photo ? (
+                  <object data={process.env.REACT_APP_API +'v1/customers/avatars/' + row.customer.photo} style={{'width': '72px'}}>
+                    <img src={DummyImage} alt="Profile Picture" style={{'width': '72px'}}/>
+                  </object>
+                ) : <img src={DummyImage} alt="Profile Picture" style={{'width': '72px'}}/>}
               </div>
               <div className='col-8'>
                 <div className="cursor-pointer" onClick={() => navigate('/dashboard/clients/' + row.customer.id )}>
@@ -398,15 +398,17 @@ const OrdersList = (props: any) => {
                 <div className='row'>
                   <h6>Client Details</h6>
                   <div className='col-3'>
-                    <object data={process.env.REACT_APP_API +'v1/customers/avatars/' + selectedOrder?.customer.photo} style={{'width': '100px'}}>
-                      <img src={DummyImage} alt="Stack Overflow logo and icons and such" style={{'width': '100px'}}/>
-                    </object>
+                    {selectedOrder?.customer.photo ? (
+                      <object data={process.env.REACT_APP_API +'v1/customers/avatars/' + selectedOrder?.customer.photo} style={{'width': '72px'}}>
+                        <img src={DummyImage} alt="Profile Picture" style={{'width': '72px'}}/>
+                      </object>
+                    ) : <img src={DummyImage} alt="Profile Picture" style={{'width': '72px'}}/>}
                   </div>
                   <div className='col-9'>
                     <div>
                       <div><b>{selectedOrder?.customer.fullName}</b></div>
-                      <div>Phone: <b>{DateTime.fromISO(selectedOrder?.customer.phoneNumber).toFormat('yyyy-MM-dd')}</b></div>
-                      <div>Address: <b>{selectedOrder?.customer.address || 'Address not added.'}</b></div>
+                      <div>Phone: <b>{selectedOrder?.customer?.phoneNumber || 'N/A'}</b></div>
+                      <div>Address: <b>{selectedOrder?.customer.address || 'N/A'}</b></div>
                     </div>
                   </div>
                 </div>
@@ -417,7 +419,7 @@ const OrdersList = (props: any) => {
                     <h6>Products:</h6>
                     <ol>
                       {selectedOrder?.products.map((product) => {
-                        return <li>{product?.name} Qty. {product.quantity} Rate: Rs.{product.unitPrice} Total: Rs.{(+product.quantity) * (+product.unitPrice)}</li>;
+                        return <li key={product.name}>{product?.name} Qty. {product.quantity} Rate: Rs.{product.unitPrice} Total: Rs.{(+product.quantity) * (+product.unitPrice)}</li>;
                       })}
                     </ol>
                   </div>

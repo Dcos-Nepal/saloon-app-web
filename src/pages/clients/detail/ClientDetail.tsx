@@ -317,10 +317,10 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient }) => {
                 </div>
                 <div className="modal-body text-center">
                   {selectedPicture ? (
-                    <object data={process.env.REACT_APP_API +'v1/customers/avatars/' + selectedPicture} style={{'minWidth': '250px', 'maxWidth': '300px'}}>
-                      <img src={DummyImage} alt="Stack Overflow logo and icons and such" style={{'width': '100px'}}/>
+                    <object data={process.env.REACT_APP_API +'v1/customers/avatars/' + selectedPicture} style={{'width': '72px'}}>
+                      <img src={DummyImage} alt="Profile Picture" style={{'width': '72px'}}/>
                     </object>
-                  ) : null}
+                  ) : <img src={DummyImage} alt="Profile Picture" style={{'width': '72px'}}/>}
                 </div>
                 <div className="modal-footer">
                   <button onClick={() => setSelectedPicture('')} type="button" className="ms-2 btn btn-secondary" data-bs-dismiss="modal">
@@ -392,9 +392,11 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient }) => {
                 <div className="hr mb-2" />
                 <div className="row mt-2">
                   <div className="col-4">
-                    <object data={process.env.REACT_APP_API +'v1/customers/avatars/' + currentClient.photo} style={{'width': '100px'}}>
-                      <img src={DummyImage} alt="Stack Overflow logo and icons and such" style={{'width': '100px'}}/>
-                    </object>
+                    {currentClient.photo ? (
+                      <object data={process.env.REACT_APP_API +'v1/customers/avatars/' + currentClient.photo} style={{'width': '72px'}}>
+                        <img src={DummyImage} alt="Profile Picture" style={{'width': '72px'}}/>
+                      </object>
+                    ) : <img src={DummyImage} alt="Profile Picture" style={{'width': '72px'}}/>}
                   </div>
                   <div className="col-8">
                     <div className="row mt-4">

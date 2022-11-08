@@ -17,8 +17,11 @@ import { toast } from 'react-toastify';
 import DeleteConfirm from 'common/components/DeleteConfirm';
 import { deleteOrderApi } from 'services/orders.service';
 import StatusChangeWithReason from './StatusChangeWithReason';
-import { EyeIcon, FileBadgeIcon, PencilIcon, SyncIcon, TrashIcon } from '@primer/octicons-react';
+import { EyeIcon, FileBadgeIcon, InfoIcon, PencilIcon, SyncIcon, TrashIcon } from '@primer/octicons-react';
 import { getCurrentUser } from 'utils';
+import DummyImage from '../../../assets/images/dummy.png';
+import pinterpolate from 'pinterpolate';
+import { DateTime } from 'luxon';
 
 export interface OrderStatus {
   name: string;
@@ -27,7 +30,7 @@ export interface OrderStatus {
 }
 
 export interface OrderProduct {
-  product: any;
+  name: any;
   unitPrice: number;
   quantity: number;
   notes: string;
@@ -62,10 +65,12 @@ const OrdersList = (props: any) => {
   const navigate = useNavigate();
   const currentUser = getCurrentUser();
   const [query, setQuery] = useState('');
+  const [show, setShow] = useState('');
   const [itemsPerPage] = useState(10);
   const [offset, setOffset] = useState(1);
   const [pageCount, setPageCount] = useState(0);
   const [orders, setOrders] = useState<IOrder[]>([]);
+  const [selectedOrder, setSelectedOrder] = useState<IOrder>();
   const [deleteInProgress, setDeleteInProgress] = useState('');
 
   const deleteOrderHandler = async () => {
@@ -136,7 +141,7 @@ const OrdersList = (props: any) => {
           handleChange={(selected: { label: string; value: string }) => {
             setStatusChangeInProgress(selected.value);
           }}
-          helperComponent={<div className="">{row.status?.reason || ''}</div>}
+          helperComponent={<div className="">{row.status?.reason ? <><InfoIcon className='mt-2'/> <span>{row.status?.reason || ''}</span></> : null}</div>}
         />
         <Modal isOpen={!!statusChangeInProgress} onRequestClose={() => setStatusChangeInProgress('')}>
           <StatusChangeWithReason
@@ -153,34 +158,46 @@ const OrdersList = (props: any) => {
   const columns: Column<IOrder>[] = useMemo(
     () => [
       {
-        Header: 'ORDER INFO',
+        Header: 'CLIENT NAME',
         accessor: (row: IOrder) => {
           return (
-            <div className="cursor-pointer" onClick={() => {}}>
-              <div>
-                <strong>{row.title}</strong>
+            <div className='row'>
+              <div className='col-4' onClick={() => setSelectedOrder(row)}>
+                <object data={process.env.REACT_APP_API +'v1/customers/avatars/' + row.customer.photo} style={{'width': '100px'}}>
+                  <img src={DummyImage} alt="Stack Overflow logo and icons and such" style={{'width': '100px'}}/>
+                </object>
               </div>
-              <div>
-                <i>{row.orderNotes}</i>
-              </div>
-              <div>
-                <span className="badge rounded-pill bg-secondary">Total Products ({row.products.length})</span>
+              <div className='col-8'>
+                <div className="cursor-pointer" onClick={() => navigate('/dashboard/clients/' + row.customer.id )}>
+                  <div>Name: {row.customer?.fullName}</div>
+                  <div>Phone: {row.customer?.phoneNumber}</div>
+                </div>
               </div>
             </div>
           );
         }
       },
       {
-        Header: 'CLIENT NAME',
+        Header: 'ORDER INFO',
         accessor: (row: IOrder) => {
           return (
-            <div>
+            <div className="cursor-pointer">
               <div>
-                {row.customer?.fullName}
+                <strong>{row.title}</strong>
               </div>
-              <div>
-                {row.customer?.phoneNumber} / {row.customer?.email}
-              </div>
+              <div><i>{row.orderNotes}</i></div>
+            </div>
+          );
+        }
+      },
+      {
+        Header: 'ORDER PRODUCTS',
+        accessor: (row: IOrder) => {
+          return (
+            <div className="cursor-pointer">
+              <span className="badge rounded-pill bg-secondary pointer">
+                Total Products ({row.products.length})
+              </span>
             </div>
           );
         }
@@ -191,9 +208,8 @@ const OrdersList = (props: any) => {
           return (
             <div style={{ width: '150px' }}>
               <div>
-                <strong>{row.updatedAt}</strong>
+                <strong>{row.createdAt}</strong>
               </div>
-              <div>{row.createdAt}</div>
             </div>
           );
         }
@@ -215,10 +231,10 @@ const OrdersList = (props: any) => {
               <box-icon name="dots-vertical-rounded" />
             </span>
             <ul className="dropdown-menu" aria-labelledby="dropdownMenuLink">
-              <li onClick={() => navigate(row.id)}>
+              <li onClick={() => setSelectedOrder(row)}>
                 <span className="dropdown-item cursor-pointer"><EyeIcon /> View Detail</span>
               </li>
-              {(currentUser.role === 'ADMIN') ? (
+              {(currentUser.role === 'SHOP_ADMIN') ? (
                 <>
                   <li onClick={() => navigate(row.id + '/edit')}>
                     <span className="dropdown-item cursor-pointer"><PencilIcon /> Edit</span>
@@ -297,8 +313,19 @@ const OrdersList = (props: any) => {
       <div className="card">
         <div className="row pt-2 m-1 rounded-top bg-grey">
           <Loader isLoading={props.isLoading} />
-          <div className="col-12">
+          <div className="col-6">
             <InputField label="Search" placeholder="Search orders" className="search-input" onChange={handleSearch} />
+          </div>
+          <div className="col-3">
+            <InputField label="Select Date" type="date" className="search-input" onChange={() => {}} />
+          </div>
+          <div className="col-3">
+            <SelectField
+              label="Select Status"
+              options={orderStatusOptions}
+              placeholder="All"
+              handleChange={(selected: { label: string; value: string }) => {}}
+            />
           </div>
           {!orders.length ? (
             <EmptyState />
@@ -350,8 +377,55 @@ const OrdersList = (props: any) => {
           </div>
         ) : null}
       </div>
+
       <Modal isOpen={!!deleteInProgress} onRequestClose={() => setDeleteInProgress('')}>
         <DeleteConfirm onDelete={deleteOrderHandler} closeModal={() => setDeleteInProgress('')} />
+      </Modal>
+
+      <Modal isOpen={!!selectedOrder} onRequestClose={() => setSelectedOrder(undefined)}>
+        <div className={`modal fade show mt-5`} role="dialog" style={{ display: 'block' }}>
+          <div className="modal-dialog mt-5">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="col">Order Detail</h5>
+                <div className="col">
+                  <span onClick={() => setSelectedOrder(undefined)} className="pointer d-flex float-end">
+                    <box-icon name="x" />
+                  </span>
+                </div>
+              </div>
+              <div className="modal-body text-center">
+                <div className='row'>
+                  <div className='col-5'>
+                    <h6>Client Details</h6>
+                    <object data={process.env.REACT_APP_API +'v1/customers/avatars/' + selectedOrder?.customer.photo} style={{'width': '100px'}}>
+                      <img src={DummyImage} alt="Stack Overflow logo and icons and such" style={{'width': '100px'}}/>
+                    </object>
+                    <hr/>
+                    <div>
+                      <div><b>{selectedOrder?.customer.fullName}</b></div>
+                      <div>DOB: <b>{DateTime.fromISO(selectedOrder?.customer.dob).toFormat('yyyy-MM-dd')}</b></div>
+                      <div>Address: <b>{selectedOrder?.customer.address || 'Address not added.'}</b></div>
+                    </div>
+                  </div>
+                  <div className='col-7'>
+                    <h6>Order Details</h6>
+                    <ol>
+                      {selectedOrder?.products.map((product) => {
+                        return <li>{product?.name} Qty. {product.quantity} Rate: Rs.{product.unitPrice} Total: Rs.{(+product.quantity) * (+product.unitPrice)}</li>;
+                      })}
+                    </ol>
+                  </div>
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button onClick={() => setSelectedOrder(undefined)} type="button" className="ms-2 btn btn-secondary" data-bs-dismiss="modal">
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       </Modal>
     </>
   );

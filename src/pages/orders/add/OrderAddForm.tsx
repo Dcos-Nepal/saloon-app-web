@@ -190,10 +190,10 @@ const OrderAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => {
           <div className="row mb-3">
             <div className="col pb-3">
               <div className="card" style={{ height: '100%' }}>
-                <h6 className="txt-bold">Order Details</h6>
                 <div className="col">
                   <div className="row">
-                    <div className="col-12">
+                    <div className="col">
+                      <h6 className="txt-bold">Order Details</h6>
                       <InputField
                         label="Order Title"
                         type="text"
@@ -204,43 +204,33 @@ const OrderAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => {
                         helperComponent={formik.errors.title && formik.touched.title ? <div className="txt-red">{formik.errors.title}</div> : null}
                       />
                     </div>
-                    <div className="col-12">
-                      <div className="mb-3">
-                        <label htmlFor="instructions" className="form-label txt-dark-grey">
-                         Order Notes
-                        </label>
-                        <DefaultEditor placeholder='Enter the Order notes here' style={{minHeight: '150px'}} name="notes" value={formik.values.notes} onChange={formik.handleChange} />
-                      </div>
+                    <div className="col">
+                      <h6 className="txt-bold">Client Details</h6>
+                      <SelectAsync
+                        name={`customer`}
+                        label="Select Client"
+                        value={formik.values.customer}
+                        resource={{ name: 'customers', labelProp: 'fullName', valueProp: '_id'}}
+                        onChange={handleClientSelection}
+                        preload={true}
+                      />
+                      <ErrorMessage name={`customer.value`} />
+                      {clientDetails ? (
+                        <div className="row bg-grey m-0">
+                          <div className="col p-2 ps-4">
+                            <div className="txt-orange">{(clientDetails as any)?.fullName}</div>
+                            <div className="txt-bold">
+                              {(clientDetails as any)?.email} / {(clientDetails as any)?.phoneNumber}
+                            </div>
+                            <div className="txt-grey">
+                              {clientDetails?.address}
+                            </div>
+                          </div>
+                        </div>
+                      ) : null}
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
-            <div className="col pb-3">
-              <div className="card" style={{ height: '100%' }}>
-                <h6 className="txt-bold">Client Details</h6>
-                <SelectAsync
-                  name={`customer`}
-                  label="Select Client"
-                  value={formik.values.customer}
-                  resource={{ name: 'customers', labelProp: 'fullName', valueProp: '_id'}}
-                  onChange={handleClientSelection}
-                  preload={true}
-                />
-                <ErrorMessage name={`customer.value`} />
-                {clientDetails ? (
-                  <div className="row bg-grey m-0">
-                    <div className="col p-2 ps-4">
-                      <div className="txt-orange">{(clientDetails as any)?.fullName}</div>
-                      <div className="txt-bold">
-                        {(clientDetails as any)?.email} / {(clientDetails as any)?.phoneNumber}
-                      </div>
-                      <div className="txt-grey">
-                        {clientDetails?.address}
-                      </div>
-                    </div>
-                  </div>
-                ) : null}
               </div>
             </div>
           </div>
@@ -351,6 +341,16 @@ const OrderAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => {
                     ${' '}
                     {formik.values?.products?.length ? formik.values?.products.reduce((current, next) => (current += next.quantity * next.unitPrice), 0) : 0}
                   </h5>
+                </div>
+              </div>
+            </div>
+            <div className="col pb-3">
+              <div className="card" style={{ height: '100%' }}>
+                <div className="mb-3">
+                  <label htmlFor="instructions" className="form-label txt-dark-grey">
+                    Order Notes
+                  </label>
+                  <DefaultEditor placeholder='Enter the Order notes here' style={{minHeight: '150px'}} name="notes" value={formik.values.notes} onChange={formik.handleChange} />
                 </div>
               </div>
             </div>

@@ -163,8 +163,8 @@ const OrdersList = (props: any) => {
           return (
             <div className='row'>
               <div className='col-4' onClick={() => setSelectedOrder(row)}>
-                <object data={process.env.REACT_APP_API +'v1/customers/avatars/' + row.customer.photo} style={{'width': '100px'}}>
-                  <img src={DummyImage} alt="Stack Overflow logo and icons and such" style={{'width': '100px'}}/>
+                <object data={process.env.REACT_APP_API +'v1/customers/avatars/' + row.customer.photo} style={{'width': '72px'}}>
+                  <img src={DummyImage} alt="Stack Overflow logo and icons and such" style={{'width': '72px'}}/>
                 </object>
               </div>
               <div className='col-8'>
@@ -394,22 +394,27 @@ const OrdersList = (props: any) => {
                   </span>
                 </div>
               </div>
-              <div className="modal-body text-center">
+              <div className="modal-body">
                 <div className='row'>
-                  <div className='col-5'>
-                    <h6>Client Details</h6>
+                  <h6>Client Details</h6>
+                  <div className='col-3'>
                     <object data={process.env.REACT_APP_API +'v1/customers/avatars/' + selectedOrder?.customer.photo} style={{'width': '100px'}}>
                       <img src={DummyImage} alt="Stack Overflow logo and icons and such" style={{'width': '100px'}}/>
                     </object>
-                    <hr/>
+                  </div>
+                  <div className='col-9'>
                     <div>
                       <div><b>{selectedOrder?.customer.fullName}</b></div>
-                      <div>DOB: <b>{DateTime.fromISO(selectedOrder?.customer.dob).toFormat('yyyy-MM-dd')}</b></div>
+                      <div>Phone: <b>{DateTime.fromISO(selectedOrder?.customer.phoneNumber).toFormat('yyyy-MM-dd')}</b></div>
                       <div>Address: <b>{selectedOrder?.customer.address || 'Address not added.'}</b></div>
                     </div>
                   </div>
-                  <div className='col-7'>
-                    <h6>Order Details</h6>
+                </div>
+                <hr/>
+                <div className='row mt-3'>
+                  <h6>Order Details</h6>
+                  <div className='col-12'>
+                    <h6>Products:</h6>
                     <ol>
                       {selectedOrder?.products.map((product) => {
                         return <li>{product?.name} Qty. {product.quantity} Rate: Rs.{product.unitPrice} Total: Rs.{(+product.quantity) * (+product.unitPrice)}</li>;

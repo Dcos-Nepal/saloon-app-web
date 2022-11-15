@@ -71,6 +71,8 @@ const WorkSchedule = (props: any) => {
   const renderEventContent = (eventInfo: any) => {
     const meta = eventInfo.event.extendedProps?.meta;
 
+    if (!meta) {return <div></div>}
+
     // If we want to show completed visits
     if (!props.completedVisible && meta?.status?.status === 'COMPLETED') {
       return null;
@@ -87,7 +89,7 @@ const WorkSchedule = (props: any) => {
     return (
       <div className={backgroundClass}>
         <div title={eventInfo.event.title}>
-          <small>{meta.type}</small><br/>
+          <small>{meta?.type}</small><br/>
           <div>{eventInfo.event.title} - {meta?.fullName}</div>
         </div>
         <div>

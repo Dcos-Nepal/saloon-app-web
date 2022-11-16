@@ -13,6 +13,7 @@ import * as clientsActions from 'store/actions/clients.actions';
 import SelectField from 'common/components/form/Select';
 import { IOption } from 'common/types/form';
 import { DateTime } from 'luxon';
+import TextArea from 'common/components/form/TextArea';
 
 interface IProps {
   actions: {
@@ -38,6 +39,8 @@ const ClientForm: FC<IProps> = ({ id, isClientsLoading, actions, currentClient }
     dateOfBirth: '',
     referredBy: '',
     photo: '',
+    tags: '',
+    notes: ''
   });
 
   const opts: any = {
@@ -72,6 +75,8 @@ const ClientForm: FC<IProps> = ({ id, isClientsLoading, actions, currentClient }
       formData.append('gender', data.gender);
       formData.append('dateOfBirth', data.dateOfBirth);
       formData.append('referredBy', data.referredBy);
+      formData.append('tags', data.tags);
+      formData.append('notes', data.notes);
 
       if (id) {
         // Update client
@@ -272,6 +277,35 @@ const ClientForm: FC<IProps> = ({ id, isClientsLoading, actions, currentClient }
                       isRequired={true}
                     />
                   </div>
+                </div>
+                <div className="row">
+                  <SelectField
+                    label="Tags"
+                    name="tags"
+                    isMulti={true}
+                    value={[{label: 'VIP', value: 'VIP', isActive: true}, {label: 'REGULAR', value: 'REGULAR', isActive: true}, {label: 'MONTHLY', value: 'MONTHLY', isActive: true}].find((service) => formik.values.tags?.split(',').forEach((t) => t === service.value))}
+                    options={[{label: 'VIP', value: 'VIP', isActive: true}, {label: 'REGULAR', value: 'REGULAR', isActive: true}, {label: 'MONTHLY', value: 'MONTHLY', isActive: true}].filter((service) => service.isActive)}
+                    helperComponent={<ErrorMessage name="tags" />}
+                    handleChange={(selectedTag: IOption) => {
+                      formik.setFieldValue('tags', selectedTag.value);
+                    }}
+                    onBlur={formik.handleBlur}
+                  />
+                </div>
+
+                <div className='row'>
+                  <TextArea
+                    rows={5}
+                    label={'Client Notes:'}
+                    placeholder="Enter Notes"
+                    name="notes"
+                    value={formik.values.notes || ''}
+                    onChange={({ target }: { target: { value: string } }) => {
+                      if (target.value !== formik.values.notes) formik.setFieldValue('notes', target.value);
+                    }}
+                    helperComponent={<ErrorMessage name="notes" />}
+                    onBlur={formik.handleBlur}
+                  />
                 </div>
               </div>
             </div>

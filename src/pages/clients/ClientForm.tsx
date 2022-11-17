@@ -49,12 +49,12 @@ const ClientForm: FC<IProps> = ({ id, isClientsLoading, actions, currentClient }
     email: Yup.string().notRequired().email('Invalid email'),
     phoneNumber: Yup.string()
       .label('Phone Number')
-      .notRequired()
+      .required(' Phone Number is required.')
       .matches(/^(?:[0-9] ?){6,14}[0-9]$/, "Phone number must be at least 6 numbers to 14 numbers"),
-    address: Yup.string(),
-    gender: Yup.string(),
-    dateOfBirth: Yup.object().nullable(),
-    referredBy: Yup.object().nullable()
+    address: Yup.string().required('Address is required'),
+    gender: Yup.string().required('Gender is required'),
+    dateOfBirth: Yup.string().notRequired(),
+    referredBy: Yup.string().notRequired()
   }
 
   const ClientSchema = Yup.object().shape(opts);
@@ -204,6 +204,7 @@ const ClientForm: FC<IProps> = ({ id, isClientsLoading, actions, currentClient }
                     formik.setFieldValue('gender', selectedTag.value);
                   }}
                   onBlur={formik.handleBlur}
+                  isRequired={true}
                 />
               </div>
               <div className="col">
@@ -216,7 +217,7 @@ const ClientForm: FC<IProps> = ({ id, isClientsLoading, actions, currentClient }
                   helperComponent={formik.errors.dateOfBirth && formik.touched.dateOfBirth ? <div className="txt-red"><StopIcon size={14} /> {formik.errors.dateOfBirth}</div> : null}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
-                  isRequired={true}
+                  isRequired={false}
                 />
               </div>
               <div className="col">
@@ -290,6 +291,7 @@ const ClientForm: FC<IProps> = ({ id, isClientsLoading, actions, currentClient }
                       formik.setFieldValue('tags', selectedTags.map((t: any) => t.value).toString());
                     }}
                     onBlur={formik.handleBlur}
+                    isRequired={false}
                   />
                 </div>
 
@@ -305,6 +307,7 @@ const ClientForm: FC<IProps> = ({ id, isClientsLoading, actions, currentClient }
                     }}
                     helperComponent={<ErrorMessage name="notes" />}
                     onBlur={formik.handleBlur}
+                    isRequired={false}
                   />
                 </div>
               </div>

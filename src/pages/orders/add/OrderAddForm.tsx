@@ -299,7 +299,7 @@ const OrderAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => {
                             />
                           </div>
                           <div className="col mt-3 ps-1 text-center">
-                            <strong>{`$ ${formik.values.products[index].quantity * formik.values.products[index].unitPrice}`}</strong>
+                            <strong>{`${formik.values.products[index].quantity * formik.values.products[index].unitPrice}`}</strong>
                           </div>
                           <div className="col-1 mt-3 ps-1 pointer text-center">
                             <span
@@ -338,7 +338,7 @@ const OrderAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => {
               <div className="col txt-bold mt-3">
                 <div className="d-flex float-end">
                   <h5 className="txt-bold mt-2">
-                    ${' '}
+                    Rs.{' '}
                     {formik.values?.products?.length ? formik.values?.products.reduce((current, next) => (current += next.quantity * next.unitPrice), 0) : 0}
                   </h5>
                 </div>

@@ -283,11 +283,11 @@ const ClientForm: FC<IProps> = ({ id, isClientsLoading, actions, currentClient }
                     label="Tags"
                     name="tags"
                     isMulti={true}
-                    value={[{label: 'VIP', value: 'VIP', isActive: true}, {label: 'REGULAR', value: 'REGULAR', isActive: true}, {label: 'MONTHLY', value: 'MONTHLY', isActive: true}].find((service) => formik.values.tags?.split(',').forEach((t) => t === service.value))}
-                    options={[{label: 'VIP', value: 'VIP', isActive: true}, {label: 'REGULAR', value: 'REGULAR', isActive: true}, {label: 'MONTHLY', value: 'MONTHLY', isActive: true}].filter((service) => service.isActive)}
+                    value={[{label: 'VIP', value: 'VIP', isActive: true}, {label: 'REGULAR', value: 'REGULAR', isActive: true}, {label: 'MONTHLY', value: 'MONTHLY', isActive: true}, {label: '15 DAYS', value: '15 DAYS', isActive: true}].filter((tag) => formik.values?.tags?.split(',').find((t: string) => t === tag.value))}
+                    options={[{label: 'VIP', value: 'VIP', isActive: true}, {label: 'REGULAR', value: 'REGULAR', isActive: true}, {label: 'MONTHLY', value: 'MONTHLY', isActive: true}, {label: '15 DAYS', value: '15 DAYS', isActive: true}].filter((service) => service.isActive)}
                     helperComponent={<ErrorMessage name="tags" />}
-                    handleChange={(selectedTag: IOption) => {
-                      formik.setFieldValue('tags', selectedTag.value);
+                    handleChange={(selectedTags: IOption[]) => {
+                      formik.setFieldValue('tags', selectedTags.map((t: any) => t.value).toString());
                     }}
                     onBlur={formik.handleBlur}
                   />

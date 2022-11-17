@@ -10,7 +10,7 @@ export interface IClient {
   dateOfBirth?: string;
   photo?: object | string;
   photos?: string[];
-  tags?: string;
+  tags: string;
   notes?: string;
   referredBy?: string;
 }

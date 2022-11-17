@@ -30,6 +30,7 @@ export interface OrderStatus {
 
 export interface OrderProduct {
   name: any;
+  description: string;
   unitPrice: number;
   quantity: number;
   notes: string;
@@ -419,7 +420,10 @@ const OrdersList = (props: any) => {
                     <h6>Products:</h6>
                     <ol>
                       {selectedOrder?.products.map((product) => {
-                        return <li key={product.name}>{product?.name} Qty. {product.quantity} Rate: Rs.{product.unitPrice} Total: Rs.{(+product.quantity) * (+product.unitPrice)}</li>;
+                        return <li key={product.name}>
+                          {product?.name} Qty. {product.quantity} Rate: Rs.{product.unitPrice} Total: Rs.{(+product.quantity) * (+product.unitPrice)} <br/>
+                          {product?.description} 
+                        </li>;
                       })}
                     </ol>
                   </div>

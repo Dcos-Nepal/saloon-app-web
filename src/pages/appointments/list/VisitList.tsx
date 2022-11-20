@@ -17,8 +17,6 @@ import { TrashIcon } from '@primer/octicons-react';
 import { getCurrentUser } from 'utils';
 import { DateTime } from 'luxon';
 import DummyImage from '../../../assets/images/dummy.png';
-import pinterpolate from 'pinterpolate';
-import { endpoints } from 'common/config';
 import { useNavigate } from 'react-router-dom';
 
 interface IQuote {

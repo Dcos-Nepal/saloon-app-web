@@ -78,7 +78,7 @@ const AppointmentList = (props: any) => {
     setOffset(selectedPage + 1);
   };
 
-  const handleQuotesSearch = (event: any) => {
+  const handleQuotesSearch: any = (event: any) => {
     const query = event.target.value;
     setQuery(query);
   };

@@ -1,6 +1,5 @@
 import { Route, Routes } from 'react-router-dom';
 
-import { endpoints } from 'common/config';
 import Footer from 'common/components/layouts/footer';
 import SideNavbar from 'common/components/layouts/sidebar';
 import VisitList from './list/VisitList';

@@ -209,7 +209,7 @@ const OrderAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => {
                       <SelectAsync
                         name={`customer`}
                         label="Select Client"
-                        value={formik.values.customer}
+                        value={formik.values.customer.value}
                         resource={{ name: 'customers', labelProp: 'fullName', valueProp: '_id'}}
                         onChange={handleClientSelection}
                         preload={true}

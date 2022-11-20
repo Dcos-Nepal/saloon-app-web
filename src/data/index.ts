@@ -10,7 +10,7 @@ export const getServices = () => {
 
 export const getAppointmentTypes = () => {
   return [
-    { label: 'CONSULTATION', value: 'CONSULTATION', isActive: true },
+    { label: 'CONSULATION', value: 'CONSULATION', isActive: true },
     { label: 'TREATMENT', value: 'TREATMENT', isActive: true },
     { label: 'FOLLOW UP', value: 'FOLLOW UP', isActive: true },
     { label: 'MAINTAINANCE', value: 'MAINTAINANCE', isActive: true }

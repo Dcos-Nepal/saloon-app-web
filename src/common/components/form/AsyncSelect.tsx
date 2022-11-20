@@ -1,4 +1,5 @@
 import { AxiosResponse } from 'axios';
+import { IOption } from 'common/types/form';
 import { FC, useEffect, useState } from 'react';
 
 import AsyncSelect from 'react-select/async';
@@ -54,7 +55,7 @@ const SelectAsync: FC<any> = ({ name, label, customOption, placeholder, onChange
         name={name}
         closeMenuOnSelect={closeOnSelect}
         inputValue={query}
-        value={value}
+        value={defaultOptions.find((option: IOption) => option.value === value)}
         onChange={onChange}
         onInputChange={handleInputChange}
         loadOptions={loadOptions}

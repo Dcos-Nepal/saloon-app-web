@@ -5,16 +5,16 @@ import { useState } from 'react';
 
 const Appointments = () => {
   const Tabs = {
-    Consultation: 'Consultation',
+    Consulation: 'Consulation',
     Treatment: 'Treatment'
   };
 
-  const [tab, setTab] = useState(Tabs.Consultation);
+  const [tab, setTab] = useState(Tabs.Consulation);
 
   const TabContent = () => {
     switch (tab) {
-      case Tabs.Consultation:
-        return <Consultants />;
+      case Tabs.Consulation:
+        return <Consulation />;
       case Tabs.Treatment:
         return <Treatments />;
       default:
@@ -28,7 +28,7 @@ const Appointments = () => {
     }
   };
 
-  const Consultants = () => {
+  const Consulation = () => {
     return (
       <div className="row">
         <QuoteList appointmentType={'CONSULTATION'}/>
@@ -56,8 +56,8 @@ const Appointments = () => {
         </div>
         <div className="">
           <div className="row mt-3">
-            <div className={`col tab me-1 ${tab === Tabs.Consultation ? 'active-tab' : ''}`} onClick={() => setTab(Tabs.Consultation)}>
-              Consultations
+            <div className={`col tab me-1 ${tab === Tabs.Consulation ? 'active-tab' : ''}`} onClick={() => setTab(Tabs.Consulation)}>
+              Consulations
             </div>
             <div className={`col tab me-1 ${tab === Tabs.Treatment ? 'active-tab' : ''}`} onClick={() => setTab(Tabs.Treatment)}>
               Treatments

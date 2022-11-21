@@ -406,7 +406,7 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient }) => {
                       </div>
                       <div className="col">
                         <div className="txt-grey">Date Of Birth</div>
-                        <div className="">{DateTime.fromISO(currentClient.dateOfBirth as string).toFormat('yyyy-MM-dd') }</div>
+                        <div className="">{currentClient.dateOfBirth as string}</div>
                       </div>
                     </div>
                     <div className="row mt-4">

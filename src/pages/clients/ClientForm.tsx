@@ -14,6 +14,7 @@ import SelectField from 'common/components/form/Select';
 import { IOption } from 'common/types/form';
 import { DateTime } from 'luxon';
 import TextArea from 'common/components/form/TextArea';
+import { getClientTags } from 'data';
 
 interface IProps {
   actions: {
@@ -53,7 +54,7 @@ const ClientForm: FC<IProps> = ({ id, isClientsLoading, actions, currentClient }
       .matches(/^(?:[0-9] ?){6,14}[0-9]$/, "Phone number must be at least 6 numbers to 14 numbers"),
     address: Yup.string().required('Address is required'),
     gender: Yup.string().required('Gender is required'),
-    dateOfBirth: Yup.string().notRequired(),
+    dateOfBirth: Yup.string().nullable().notRequired(),
     referredBy: Yup.string().notRequired()
   }
 
@@ -119,7 +120,12 @@ const ClientForm: FC<IProps> = ({ id, isClientsLoading, actions, currentClient }
 
   useEffect(() => {
     if (currentClient && id) {
-      setInitialValues({...currentClient, dateOfBirth: DateTime.fromISO(currentClient.dateOfBirth as string).toFormat('yyyy-MM-dd')});
+      setInitialValues({
+        ...currentClient,
+        dateOfBirth: currentClient.dateOfBirth
+          ? DateTime.fromISO(currentClient.dateOfBirth as string).toFormat('yyyy-MM-dd')
+          : ''
+      });
     }
   }, [currentClient, id]);
 
@@ -214,7 +220,7 @@ const ClientForm: FC<IProps> = ({ id, isClientsLoading, actions, currentClient }
                   label="Date of Birth"
                   placeholder="Enter Date of Birth"
                   name="dateOfBirth"
-                  helperComponent={formik.errors.dateOfBirth && formik.touched.dateOfBirth ? <div className="txt-red"><StopIcon size={14} /> {formik.errors.dateOfBirth}</div> : null}
+                  helperComponent={<ErrorMessage name="dateOfBirth" />}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   isRequired={false}
@@ -284,8 +290,8 @@ const ClientForm: FC<IProps> = ({ id, isClientsLoading, actions, currentClient }
                     label="Tags"
                     name="tags"
                     isMulti={true}
-                    value={[{label: 'VIP', value: 'VIP', isActive: true}, {label: 'REGULAR', value: 'REGULAR', isActive: true}, {label: 'MONTHLY', value: 'MONTHLY', isActive: true}, {label: '15 DAYS', value: '15 DAYS', isActive: true}].filter((tag) => formik.values?.tags?.split(',').find((t: string) => t === tag.value))}
-                    options={[{label: 'VIP', value: 'VIP', isActive: true}, {label: 'REGULAR', value: 'REGULAR', isActive: true}, {label: 'MONTHLY', value: 'MONTHLY', isActive: true}, {label: '15 DAYS', value: '15 DAYS', isActive: true}].filter((service) => service.isActive)}
+                    value={getClientTags().filter((tag) => (formik.values?.tags)?.split(',').find((t: string) => t === tag.value))}
+                    options={getClientTags().filter((tag) => tag.isActive)}
                     helperComponent={<ErrorMessage name="tags" />}
                     handleChange={(selectedTags: IOption[]) => {
                       formik.setFieldValue('tags', selectedTags.map((t: any) => t.value).toString());

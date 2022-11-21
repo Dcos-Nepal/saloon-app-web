@@ -27,11 +27,20 @@ export const getAppoinmentVeriation = () => {
 
 export const getPhotoTypes = () => {
   return [
-    {label: 'Select Type', value: '', isActive: true},
-    {label: 'Left', value: 'Left', isActive: true},
-    {label: 'Right', value: 'Right', isActive: true},
-    {label: 'Front', value: 'Front', isActive: true},
-    {label: 'Back', value: 'Back', isActive: true},
-    {label: 'Other', value: 'Other', isActive: true}
+    { label: 'Select Type', value: '', isActive: true },
+    { label: 'Left', value: 'Left', isActive: true },
+    { label: 'Right', value: 'Right', isActive: true },
+    { label: 'Front', value: 'Front', isActive: true },
+    { label: 'Back', value: 'Back', isActive: true },
+    { label: 'Other', value: 'Other', isActive: true }
   ];
+}
+
+export const getClientTags = () => {
+  return [
+    { label: 'VIP', value: 'VIP', isActive: true },
+    { label: 'REGULAR', value: 'REGULAR', isActive: true },
+    { label: 'MONTHLY', value: 'MONTHLY', isActive: true },
+    { label: '15 DAYS', value: '15 DAYS', isActive: true }
+  ]
 }

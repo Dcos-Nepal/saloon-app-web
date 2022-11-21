@@ -139,7 +139,7 @@ const ClientsList = (props: any) => {
               <div className='col-8'>
                 <div className="cursor-pointer" onClick={() => navigate(pinterpolate(endpoints.admin.client.detail, { id: row._id }))}>
                   <div><b>{row.name}</b> ({row.gender})</div>
-                  <div>Date of Birth: <b>{DateTime.fromISO(row.dob).toFormat('yyyy-MM-dd')}</b></div>
+                  <div>Date of Birth: <b>{row.dob ? row.dob as string : 'N/A'}</b></div>
                   <div>Address: <b>{row.address || 'Address not added.'}</b></div>
                 </div>
               </div>

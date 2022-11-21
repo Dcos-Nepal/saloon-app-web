@@ -31,7 +31,6 @@ export const updateOrderApi = async (payload: any) => {
 };
 
 export const updateOrderStatusApi = async (payload: any) => {
-    debugger
     const url = `/v1/orders/${payload.id}`;
     return await http.patch(url, payload.data, { headers: { Accept: 'application/json' }});
 };

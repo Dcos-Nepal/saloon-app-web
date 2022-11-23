@@ -82,7 +82,7 @@ const SideNavbar: FC<IProps> = ({ active }) => {
                 <span className="mt-2">
                   <FileBadgeIcon size={'small'} />
                 </span>
-                <span className="ms-2 d-none d-sm-inline">Visits</span>
+                <span className="ms-2 d-none d-sm-inline">All Visits</span>
               </span>
             </li>
           ) : null}

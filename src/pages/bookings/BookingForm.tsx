@@ -10,6 +10,7 @@ import SelectField from 'common/components/form/Select';
 import { IOption } from 'common/types/form';
 import { getAppointmentTypes } from 'data';
 import SelectAsync from 'common/components/form/AsyncSelect';
+import { DateTime } from 'luxon';
 
 const BookingFrom = ({ closeModal, saveHandler }: { closeModal: () => void; saveHandler: (data: any) => any }) => {
   const initialValues = {
@@ -61,6 +62,7 @@ const BookingFrom = ({ closeModal, saveHandler }: { closeModal: () => void; save
     validateOnChange: true,
     onSubmit: async (data: any) => {
       setIsLoading(true);
+      data.bookingDate = new Date(data.bookingDate).toISOString();
       await saveHandler(data);
       setIsLoading(false);
     }

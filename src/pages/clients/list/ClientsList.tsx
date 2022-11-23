@@ -19,7 +19,6 @@ import DeleteConfirm from 'common/components/DeleteConfirm';
 import { getCurrentUser } from 'utils';
 import AppointmentAddForm from 'pages/appointments/add';
 import { createQuotesApi } from 'services/appointments.service';
-import { DateTime } from 'luxon';
 import DummyImage from '../../../assets/images/dummy.png';
 
 interface IClient {
@@ -40,6 +39,7 @@ const ClientsList = (props: any) => {
   const [clients, setClients] = useState<IClient[]>([]);
   const [deleteInProgress, setDeleteInProgress] = useState('');
   const [addLineItemOpen, setAddLineItemOpen] = useState<boolean>(false);
+  const [currUser,] = useState(getCurrentUser());
 
   const deleteClientHandler = async () => {
     try {
@@ -61,7 +61,6 @@ const ClientsList = (props: any) => {
   };
   
   const handleRefresh = () => {
-    const currUser = getCurrentUser();
     const clientQuery: { createdBy?: string; } = {};
 
     if (currUser.role === 'SHOP_ADMIN') clientQuery.createdBy = currUser.id;
@@ -129,7 +128,7 @@ const ClientsList = (props: any) => {
         accessor: (row: any) => {
           return (
             <div className='row'>
-              <div className='col-4'>
+              <div className='col-4 cursor-pointer' onClick={() => navigate(pinterpolate(endpoints.admin.client.detail, { id: row._id }))}>
                 {row.photo ? (
                   <object data={process.env.REACT_APP_API +'v1/customers/avatars/' + row.photo} style={{'width': '72px'}}>
                     <img src={DummyImage} alt="Profile Picture" style={{'width': '72px'}}/>
@@ -141,6 +140,7 @@ const ClientsList = (props: any) => {
                   <div><b>{row.name}</b> ({row.gender})</div>
                   <div>Date of Birth: <b>{row.dob ? row.dob as string : 'N/A'}</b></div>
                   <div>Address: <b>{row.address || 'Address not added.'}</b></div>
+                  <small>Created at: {new Date(row.createdAt).toLocaleString()}</small>
                 </div>
               </div>
             </div>
@@ -165,18 +165,18 @@ const ClientsList = (props: any) => {
         }
       },
       {
-        Header: 'CREATED DATE',
+        Header: '  ',
         accessor: (row: any) => (
-          <label className="txt-grey ms-2">
-            {new Date(row.createdAt).toLocaleString()}
-          </label>
+          <div className='mt-3 btn btn-primary btn-small' onClick={() => {setAddLineItemOpen(row)}}>
+            <ClockIcon /> Schedule
+          </div>
         )
       },
       {
         Header: ' ',
         maxWidth: 40,
         accessor: (row: any) => (
-          <div className="dropdown">
+          <div className="dropdown mt-4">
             <span role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
               <box-icon name="dots-vertical-rounded"></box-icon>
             </span>
@@ -245,7 +245,7 @@ const ClientsList = (props: any) => {
             <PersonAddIcon className='mt-1' />&nbsp;New client
           </div>
         </div>
-        <label className="txt-grey">Total {query ? `${clients.length} search results found!` : `${props?.clients?.data?.totalCount || 0} clients`}</label>
+        {(currUser.role === ('SHOP_ADMIN' || 'ADMIN')) ? <label className="txt-grey">Total {query ? `${clients.length} search results found!` : `${props?.clients?.data?.totalCount || 0} clients`}</label> : null}
       </div>
       <div className="card">
         <div className="row pt-2 m-1 rounded-top bg-grey">

@@ -55,7 +55,11 @@ const SelectAsync: FC<any> = ({ name, label, customOption, placeholder, onChange
         name={name}
         closeMenuOnSelect={closeOnSelect}
         inputValue={query}
-        value={defaultOptions.find((option: IOption) => option.value === value)}
+        value={
+          isMulti
+            ? defaultOptions.find((option: IOption) => value?.find((tag: string) => tag === option.value))
+            : defaultOptions.find((option: IOption) => option.value === value)
+        }
         onChange={onChange}
         onInputChange={handleInputChange}
         loadOptions={loadOptions}

@@ -1,12 +1,14 @@
 import SideNavbar from 'common/components/layouts/sidebar';
 import Footer from 'common/components/layouts/footer';
-import { QuoteList } from 'pages/appointments/list';
+import { AppointmentList } from 'pages/appointments/list';
 import { useState } from 'react';
 
 const Appointments = () => {
   const Tabs = {
     Consulation: 'Consulation',
-    Treatment: 'Treatment'
+    Treatment: 'Treatment',
+    Maintainance: 'Maintainance',
+    FollowUps: 'FollowUps'
   };
 
   const [tab, setTab] = useState(Tabs.Consulation);
@@ -17,6 +19,10 @@ const Appointments = () => {
         return <Consulation />;
       case Tabs.Treatment:
         return <Treatments />;
+      case Tabs.Maintainance:
+        return <Maintainances />;
+      case Tabs.FollowUps:
+        return <FollowUps />;
       default:
         return (
           <div className="row mt-4 border-bottom">
@@ -31,7 +37,7 @@ const Appointments = () => {
   const Consulation = () => {
     return (
       <div className="row">
-        <QuoteList appointmentType={'CONSULTATION'}/>
+        <AppointmentList appointmentType={'CONSULATION'}/>
       </div>
     );
   };
@@ -39,7 +45,23 @@ const Appointments = () => {
   const Treatments = () => {
     return (
       <div className="row">
-         <QuoteList appointmentType={'TREATMENT'}/>
+         <AppointmentList appointmentType={'TREATMENT'}/>
+      </div>
+    );
+  };
+
+  const Maintainances = () => {
+    return (
+      <div className="row">
+         <AppointmentList appointmentType={'MAINTAINANCE'}/>
+      </div>
+    );
+  };
+
+  const FollowUps = () => {
+    return (
+      <div className="row">
+         <AppointmentList appointmentType={'FOLLOW UP'}/>
       </div>
     );
   };
@@ -50,7 +72,7 @@ const Appointments = () => {
       <div className="col main-container" style={{ position: 'relative', minHeight: '700px' }}>
         <div className="row">
           <div className="col">
-            <h3 className="extra">Appointments</h3>
+            <h3 className="extra">Today's Clients</h3>
           </div>
           <label className="txt-grey">List of appontments scheduled so far. Both the consultations and treatments</label>
         </div>
@@ -61,6 +83,12 @@ const Appointments = () => {
             </div>
             <div className={`col tab me-1 ${tab === Tabs.Treatment ? 'active-tab' : ''}`} onClick={() => setTab(Tabs.Treatment)}>
               Treatments
+            </div>
+            <div className={`col tab me-1 ${tab === Tabs.Maintainance ? 'active-tab' : ''}`} onClick={() => setTab(Tabs.Maintainance)}>
+              Maintainance
+            </div>
+            <div className={`disabled col tab me-1 ${tab === Tabs.FollowUps ? 'active-tab' : ''}`} onClick={() => setTab(Tabs.FollowUps)}>
+              Follow Up
             </div>
           </div>
           {<TabContent />}

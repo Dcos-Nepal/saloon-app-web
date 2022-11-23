@@ -1,3 +1,4 @@
+import { IOption } from "common/types/form";
 import { FC } from "react";
 
 import Select from "react-select";
@@ -22,7 +23,11 @@ const SelectField: FC<any> = ({
       {label ? (<label htmlFor={name} className="form-label txt-dark-grey">{label}{isRequired ? (<span className='text-danger'>*</span>) : ''}</label>) : null}
       <Select
         id={name}
-        value={value}
+        value={
+          isMulti
+            ? options.find((option: IOption) => value?.find((tag: string) => tag === option.value))
+            : options.find((option: IOption) => option.value === value)
+        }
         onChange={handleChange}
         onBlur={handleBlur}
         name={name}

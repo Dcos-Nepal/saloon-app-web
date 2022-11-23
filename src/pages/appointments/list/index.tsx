@@ -1,4 +1,4 @@
-import QuoteList from "./QuoteList";
+import AppointmentList from "./AppointmentList";
 import VisitList from "./VisitList";
 
-export { VisitList, QuoteList };
+export { VisitList, AppointmentList };

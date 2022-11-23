@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { Column, useTable } from 'react-table';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import * as quotesActions from '../../../store/actions/quotes.actions';
+import * as appointmentsActions from '../../../store/actions/quotes.actions';
 
 import InputField from 'common/components/form/Input';
 import SelectField from 'common/components/form/Select';
@@ -22,8 +22,6 @@ import { DateTime } from 'luxon';
 import { calculateJobDuration } from 'utils/timer';
 import ReactTooltip from 'react-tooltip';
 import DummyImage from '../../../assets/images/dummy.png';
-import pinterpolate from 'pinterpolate';
-import { endpoints } from 'common/config';
 
 
 interface IAppointment {
@@ -41,7 +39,7 @@ interface IAppointment {
   updatedAt: string;
 }
 
-const quoteStatusOptions = [
+const appointmentStatusOptions = [
   { label: 'WAITING', value: 'WAITING' },
   { label: 'IN PROCESS', value: 'IN_PROGRESS' },
   { label: 'COMPLETED', value: 'COMPLETED' },
@@ -56,7 +54,7 @@ const AppointmentList = (props: any) => {
   const [itemsPerPage] = useState(10);
   const [offset, setOffset] = useState(1);
   const [pageCount, setPageCount] = useState(0);
-  const [quotes, setQuotes] = useState<IAppointment[]>([]);
+  const [appointments, setQuotes] = useState<IAppointment[]>([]);
   const [deleteInProgress, setDeleteInProgress] = useState('');
 
   const deleteQuoteHandler = async () => {
@@ -69,7 +67,7 @@ const AppointmentList = (props: any) => {
         props.actions.fetchQuotes({ q: query, page: offset, limit: itemsPerPage });
       }
     } catch (ex) {
-      toast.error('Failed to delete quote');
+      toast.error('Failed to delete appointment');
     }
   };
 
@@ -103,7 +101,7 @@ const AppointmentList = (props: any) => {
         <SelectField
           isDisabled={row.status.name === 'COMPLETED'}
           label=""
-          options={quoteStatusOptions}
+          options={appointmentStatusOptions}
           value={{ label: row.status.name, value: row.status.name }}
           placeholder="All"
           handleChange={(selected: { label: string; value: string }) => {
@@ -117,7 +115,7 @@ const AppointmentList = (props: any) => {
           <StatusChangeWithReason
             row={row}
             id={row.id}
-            status={quoteStatusOptions.find((statusLabelValue) => statusLabelValue.value === statusChangeInProgress)}
+            status={appointmentStatusOptions.find((statusLabelValue) => statusLabelValue.value === statusChangeInProgress)}
             onSave={handleStatusChange}
             closeModal={() => setStatusChangeInProgress('')}
           />
@@ -253,24 +251,24 @@ const AppointmentList = (props: any) => {
     []
   );
 
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({ columns, data: quotes });
+  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({ columns, data: appointments });
 
   useEffect(() => {
-    const quoteQuery: { q?: string; appointmentDate?: string; createdBy?: string;} = {}
+    const appointmentQuery: { q?: string; appointmentDate?: string; createdBy?: string;} = {}
 
     if (currentUser.role === 'SHOP_ADMIN') {
-      quoteQuery.createdBy = currentUser.id;
+      appointmentQuery.createdBy = currentUser.id;
     }
 
     if (queryDate) {
-      quoteQuery.appointmentDate = queryDate;
+      appointmentQuery.appointmentDate = queryDate;
     }
 
     if (query) {
-      quoteQuery.q = query;
+      appointmentQuery.q = query;
     }
 
-    props.actions.fetchQuotes({ ...quoteQuery, page: offset, limit: itemsPerPage });
+    props.actions.fetchQuotes({ ...appointmentQuery, page: offset, limit: itemsPerPage });
   }, [offset, itemsPerPage, query, queryDate, currentUser.id, currentUser.role]);
 
   useEffect(() => {
@@ -314,7 +312,7 @@ const AppointmentList = (props: any) => {
           <div className="col-4">
             <InputField type="date" value={queryDate} label="Search" placeholder="Search Date" className="search-input" onChange={handleQuotesFilter} />
           </div>
-          {!quotes.length ? (
+          {!appointments.length ? (
             <EmptyState />
           ) : (
             <table {...getTableProps()} className="table txt-dark-grey">
@@ -349,7 +347,7 @@ const AppointmentList = (props: any) => {
             </table>
           )}
         </div>
-        {quotes.length ? (
+        {appointments.length ? (
           <div className="row pt-2 m-1 rounded-top">
             <ReactPaginate
               previousLabel={'Previous'}
@@ -381,10 +379,10 @@ const mapStateToProps = (state: any) => {
 const mapDispatchToProps = (dispatch: any) => ({
   actions: {
     fetchQuotes: (payload: any) => {
-      dispatch(quotesActions.fetchQuotes(payload));
+      dispatch(appointmentsActions.fetchQuotes(payload));
     },
     updateQuoteStatus: (payload: any) => {
-      dispatch(quotesActions.updateQuoteStatus(payload.id, payload.data));
+      dispatch(appointmentsActions.updateQuoteStatus(payload.id, payload.data));
     }
   }
 });

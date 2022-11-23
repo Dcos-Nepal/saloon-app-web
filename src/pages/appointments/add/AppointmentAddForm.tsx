@@ -9,16 +9,17 @@ import SelectField from 'common/components/form/Select';
 import { IOption } from 'common/types/form';
 import { Loader } from 'common/components/atoms/Loader';
 import { getAppoinmentVeriation, getAppointmentTypes, getServices } from 'data';
+import { DateTime } from 'luxon';
 
 const AppointmentAddForm = ({ closeModal, client, saveHandler }: { client?: any; closeModal: () => void; saveHandler: (data: any) => any }) => {
   const initialValues = {
     customer: client._id,
     type: 'CONSULTATION',
     services: [],
-    appointmentDate: '',
-    appointmentTime: '',
+    appointmentDate: DateTime.fromJSDate(new Date()).toFormat('yyyy-MM-dd'),
+    appointmentTime: DateTime.fromJSDate(new Date()).toFormat('hh:mm'),
     notes: '',
-    session: '0',
+    session: 0,
     interval: 'REGULAR'
   };
 
@@ -45,7 +46,7 @@ const AppointmentAddForm = ({ closeModal, client, saveHandler }: { client?: any;
       .number()
       .when("type", {
         is: 'MAINTAINANCE',
-        then: Yup.string().nullable()
+        then: Yup.number().nullable()
       })
       .min(0, 'Session should be greater than 0')
       .required('Session is required'),
@@ -108,7 +109,7 @@ const AppointmentAddForm = ({ closeModal, client, saveHandler }: { client?: any;
                 label="Appointment Type"
                 name="type"
                 isMulti={false}
-                value={getAppointmentTypes().find((service) => formik.values.type === service.value)}
+                value={formik.values.type}
                 options={getAppointmentTypes().filter((service) => service.isActive)}
                 helperComponent={<ErrorMessage name="type" />}
                 handleChange={(selectedTag: IOption) => {
@@ -122,7 +123,7 @@ const AppointmentAddForm = ({ closeModal, client, saveHandler }: { client?: any;
                   label="Products or Services"
                   name="services"
                   isMulti={true}
-                  value={getServices().find((service) => formik.values.services?.find((tag: string) => tag === service.value))}
+                  value={formik.values.services}
                   options={getServices().filter((service) => service.isActive)}
                   helperComponent={<ErrorMessage name="services" />}
                   handleChange={(selectedTags: IOption[]) => {
@@ -140,7 +141,7 @@ const AppointmentAddForm = ({ closeModal, client, saveHandler }: { client?: any;
                   label="Appointment Interval"
                   name="interval"
                   isMulti={false}
-                  value={getAppoinmentVeriation().find((service) => formik.values.interval === service.value)}
+                  value={formik.values.interval}
                   options={getAppoinmentVeriation().filter((service) => service.isActive)}
                   helperComponent={<ErrorMessage name="interval" />}
                   handleChange={(selectedTags: IOption) => {

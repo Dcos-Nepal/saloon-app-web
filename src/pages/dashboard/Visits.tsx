@@ -31,7 +31,7 @@ const Summary = () => {
   const Consultants = () => {
     return (
       <div className="row">
-        <VisitList appointmentType={'CONSULTATION'}/>
+        <VisitList appointmentType={'CONSULATION'}/>
       </div>
     );
   };
@@ -50,7 +50,7 @@ const Summary = () => {
       <div className="col main-container" style={{ position: 'relative', minHeight: '700px' }}>
         <div className="row">
           <div className="col">
-            <h3 className="extra">Visits</h3>
+            <h3 className="extra">All Visit List</h3>
           </div>
           <label className="txt-grey">List of visits so far. Both the consultations and treatments</label>
         </div>

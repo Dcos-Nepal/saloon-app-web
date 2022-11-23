@@ -7,7 +7,6 @@ import { IClient } from 'common/types/client';
 import { Loader } from 'common/components/atoms/Loader';
 import * as clientsActions from 'store/actions/clients.actions';
 import { PencilIcon, StopIcon, UploadIcon, XCircleIcon } from '@primer/octicons-react';
-import { DateTime } from 'luxon';
 import { getIn, useFormik } from 'formik';
 import { deleteUserPhotoApi, uploadPhotosApi } from 'services/customers.service';
 import InputField from 'common/components/form/Input';
@@ -71,6 +70,7 @@ interface IProps {
 const ClientDetail: FC<IProps> = ({ actions, currentClient }) => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [selectedPicture, setSelectedPicture] = useState('');
 
   const Tabs = {
     ClientDetails: 'ClientDetails',
@@ -317,7 +317,7 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient }) => {
                 </div>
                 <div className="modal-body text-center">
                   {selectedPicture ? (
-                    <object data={process.env.REACT_APP_API +'v1/customers/avatars/' + selectedPicture} style={{'width': '72px'}}>
+                    <object data={process.env.REACT_APP_API +'v1/customers/avatars/' + selectedPicture} style={{'width': '300px'}}>
                       <img src={DummyImage} alt="Profile Picture" style={{'width': '72px'}}/>
                     </object>
                   ) : <img src={DummyImage} alt="Profile Picture" style={{'width': '72px'}}/>}
@@ -393,7 +393,7 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient }) => {
                 <div className="row mt-2">
                   <div className="col-4">
                     {currentClient.photo ? (
-                      <object data={process.env.REACT_APP_API +'v1/customers/avatars/' + currentClient.photo} style={{'width': '72px'}}>
+                      <object data={process.env.REACT_APP_API +'v1/customers/avatars/' + currentClient.photo} style={{'width': '72px'}} onClick={() => setSelectedPicture(currentClient.photo as string)}>
                         <img src={DummyImage} alt="Profile Picture" style={{'width': '72px'}}/>
                       </object>
                     ) : <img src={DummyImage} alt="Profile Picture" style={{'width': '72px'}}/>}
@@ -465,6 +465,34 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient }) => {
           <Loader />
         )}
       </div>
+      <Modal isOpen={!!selectedPicture} onRequestClose={() => setSelectedPicture('')}>
+        <div className={`modal fade show mt-5`} role="dialog" style={{ display: 'block' }}>
+          <div className="modal-dialog mt-5">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="col">View Photo</h5>
+                <div className="col">
+                  <span onClick={() => setSelectedPicture('')} className="pointer d-flex float-end">
+                    <box-icon name="x" />
+                  </span>
+                </div>
+              </div>
+              <div className="modal-body text-center">
+                {selectedPicture ? (
+                  <object data={process.env.REACT_APP_API +'v1/customers/avatars/' + selectedPicture} style={{'width': '300px'}}>
+                    <img src={DummyImage} alt="Profile Picture" style={{'width': '72px'}}/>
+                  </object>
+                ) : <img src={DummyImage} alt="Profile Picture" style={{'width': '72px'}}/>}
+              </div>
+              <div className="modal-footer">
+                <button onClick={() => setSelectedPicture('')} type="button" className="ms-2 btn btn-secondary" data-bs-dismiss="modal">
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Modal>
     </>
   );
 };

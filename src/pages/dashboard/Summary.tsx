@@ -1,6 +1,6 @@
 import SideNavbar from 'common/components/layouts/sidebar';
 import Footer from 'common/components/layouts/footer';
-import { QuoteList } from 'pages/appointments/list';
+import { AppointmentList } from 'pages/appointments/list';
 import { useState } from 'react';
 
 const Summary = () => {
@@ -31,7 +31,7 @@ const Summary = () => {
   const Consultants = () => {
     return (
       <div className="row">
-        <QuoteList appointmentType={'CONSULTATION'}/>
+        <AppointmentList appointmentType={'CONSULATION'}/>
       </div>
     );
   };
@@ -39,7 +39,7 @@ const Summary = () => {
   const Treatments = () => {
     return (
       <div className="row">
-         <QuoteList appointmentType={'TREATMENT'}/>
+         <AppointmentList appointmentType={'TREATMENT'}/>
       </div>
     );
   };
@@ -50,7 +50,7 @@ const Summary = () => {
       <div className="col main-container" style={{ position: 'relative', minHeight: '700px' }}>
         <div className="row">
           <div className="col">
-            <h3 className="extra">Appointments</h3>
+            <h3 className="extra">Today's Clients</h3>
           </div>
           <label className="txt-grey">List of appontments scheduled so far. Both the consultations and treatments</label>
         </div>

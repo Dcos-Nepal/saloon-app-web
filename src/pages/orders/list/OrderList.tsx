@@ -162,8 +162,8 @@ const OrdersList = (props: any) => {
           return (
             <div className='row' onClick={() => setSelectedOrder(row)}>
               <div className='col-4'>
-                {row.customer.photo ? (
-                  <object data={process.env.REACT_APP_API +'v1/customers/avatars/' + row.customer.photo} style={{'width': '72px'}}>
+                {row.customer?.photo ? (
+                  <object data={process.env.REACT_APP_API +'v1/customers/avatars/' + row.customer?.photo} style={{'width': '72px'}}>
                     <img src={DummyImage} alt="Profile Picture" style={{'width': '72px'}}/>
                   </object>
                 ) : <img src={DummyImage} alt="Profile Picture" style={{'width': '72px'}}/>}
@@ -399,8 +399,8 @@ const OrdersList = (props: any) => {
                 <div className='row'>
                   <h6>Client Details</h6>
                   <div className='col-3'>
-                    {selectedOrder?.customer.photo ? (
-                      <object data={process.env.REACT_APP_API +'v1/customers/avatars/' + selectedOrder?.customer.photo} style={{'width': '72px'}}>
+                    {selectedOrder?.customer?.photo ? (
+                      <object data={process.env.REACT_APP_API +'v1/customers/avatars/' + selectedOrder?.customer?.photo} style={{'width': '72px'}}>
                         <img src={DummyImage} alt="Profile Picture" style={{'width': '72px'}}/>
                       </object>
                     ) : <img src={DummyImage} alt="Profile Picture" style={{'width': '72px'}}/>}

@@ -28,16 +28,11 @@ interface IProps {
 
 const OrderAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => {
   const navigate = useNavigate();
-  const [clientDetails, setClientDetails] = useState<any>(null);
 
   const [initialValues, setInitialValues] = useState({
-    title: '',
     notes: '',
     orderDate: DateTime.fromJSDate(new Date()).toFormat('yyyy-MM-dd'),
-    customer: {
-      label: 'Search for Clients...',
-      value: ''
-    },
+    customer: '',
     products: [{
       name: '',
       description: '',
@@ -48,12 +43,8 @@ const OrderAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => {
   });
 
   const OrderSchema = Yup.object().shape({
-    title: Yup.string().required('Order title is required').min(3, 'Order title seems to be too short'),
     notes: Yup.string(),
-    customer: Yup.object().shape({
-      value: Yup.string().required('Client is required for this quote'),
-      label: Yup.string()
-    }),
+    customer: Yup.string().required('Client is required for this order'),
     products: Yup.array().of(
       Yup.object().shape({
         name: Yup.object().shape({
@@ -78,8 +69,7 @@ const OrderAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => {
       const orderPayload = { ...data };
 
       // Making properties compliant to Request payload
-      orderPayload.title = data.title;
-      orderPayload.customer = data.customer.value;
+      orderPayload.customer = data.customer;
       orderPayload.products = data.products.map((li: any) => {
         return {
           name: li.name.label,
@@ -102,7 +92,6 @@ const OrderAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => {
 
         // Reset form
         formik.resetForm();
-        setClientDetails(null);
       }
 
       // Navigate to the previous screen
@@ -124,9 +113,8 @@ const OrderAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => {
   /**
    * Handles Client selection
    */
-  const handleClientSelection = async ({ label, value, meta }: any) => {
-    formik.setFieldValue(`customer`, { label, value });
-    setClientDetails(meta);
+  const handleClientSelection = async ({ value }: any) => {
+    formik.setFieldValue(`customer`, value);
   };
 
   /**
@@ -159,12 +147,8 @@ const OrderAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => {
     if (currentItem && id) {
       setInitialValues({
         ...initialValues,
-        title: currentItem?.title,
         notes: currentItem?.notes,
-        customer: {
-          label: currentItem?.customer?.fullName,
-          value: currentItem?.customer?._id
-        },
+        customer: currentItem?.customer?._id,
         products: currentItem?.products?.map((item: { name: any; ref: any }) => {
           return {
             ...item,
@@ -175,8 +159,6 @@ const OrderAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => {
           };
         })
       });
-
-      setClientDetails(currentItem?.customer);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, currentItem]);
@@ -190,167 +172,140 @@ const OrderAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => {
           <div className="row mb-3">
             <div className="col pb-3">
               <div className="card" style={{ height: '100%' }}>
-                <div className="col">
+                <div className="row">
+                  <div className="col-4">
+                    <h6 className="txt-bold">Client Details</h6>
+                    <SelectAsync
+                      name={`customer`}
+                      label="Select Client"
+                      value={formik.values.customer}
+                      resource={{ name: 'customers', labelProp: 'fullName', valueProp: '_id'}}
+                      onChange={handleClientSelection}
+                      preload={true}
+                    />
+                    <ErrorMessage name={`customer.value`} />
+                  </div>
+                </div>
+                
+                <div className="row mt-2">
+                  <h6 className="txt-bold">Line items</h6>
                   <div className="row">
-                    <div className="col">
-                      <h6 className="txt-bold">Order Details</h6>
-                      <InputField
-                        label="Order Title"
-                        type="text"
-                        placeholder="Title"
-                        name={`title`}
-                        value={formik.values.title}
-                        onChange={formik.handleChange}
-                        helperComponent={formik.errors.title && formik.touched.title ? <div className="txt-red">{formik.errors.title}</div> : null}
-                      />
+                    <div className="col-5 p-2 ps-3">
+                      <div className="bg-light-grey txt-grey p-2 txt-bold">PRODUCT / SERVICE</div>
                     </div>
-                    <div className="col">
-                      <h6 className="txt-bold">Client Details</h6>
-                      <SelectAsync
-                        name={`customer`}
-                        label="Select Client"
-                        value={formik.values.customer.value}
-                        resource={{ name: 'customers', labelProp: 'fullName', valueProp: '_id'}}
-                        onChange={handleClientSelection}
-                        preload={true}
-                      />
-                      <ErrorMessage name={`customer.value`} />
-                      {clientDetails ? (
-                        <div className="row bg-grey m-0">
-                          <div className="col p-2 ps-4">
-                            <div className="txt-orange">{(clientDetails as any)?.fullName}</div>
-                            <div className="txt-bold">
-                              {(clientDetails as any)?.email} / {(clientDetails as any)?.phoneNumber}
-                            </div>
-                            <div className="txt-grey">
-                              {clientDetails?.address}
-                            </div>
-                          </div>
-                        </div>
-                      ) : null}
+                    <div className="col p-2 ps-3">
+                      <div className="bg-light-grey txt-grey p-2 txt-bold">QTY.</div>
+                    </div>
+                    <div className="col p-2 ps-3">
+                      <div className="bg-light-grey txt-grey p-2 txt-bold">UNIT PRICE</div>
+                    </div>
+                    <div className="col p-2 ps-3">
+                      <div className="bg-light-grey txt-grey p-2 txt-bold">TOTAL</div>
+                    </div>
+                    <div className="col-1 p-2 ps-3">
+                      <div className=""></div>
                     </div>
                   </div>
-                </div>
-              </div>
-            </div>
-          </div>
 
-          <div className="card">
-            <h6 className="txt-bold">Line items</h6>
-            <div className="row">
-              <div className="col-5 p-2 ps-3">
-                <div className="bg-light-grey txt-grey p-2 txt-bold">PRODUCT / SERVICE</div>
-              </div>
-              <div className="col p-2 ps-3">
-                <div className="bg-light-grey txt-grey p-2 txt-bold">QTY.</div>
-              </div>
-              <div className="col p-2 ps-3">
-                <div className="bg-light-grey txt-grey p-2 txt-bold">UNIT PRICE</div>
-              </div>
-              <div className="col p-2 ps-3">
-                <div className="bg-light-grey txt-grey p-2 txt-bold">TOTAL</div>
-              </div>
-              <div className="col-1 p-2 ps-3">
-                <div className=""></div>
-              </div>
-            </div>
-
-            <div className="row pb-3">
-              <FieldArray
-                name="products"
-                render={(arrayHelpers) => (
-                  <div>
-                    {formik.values.products.map((product, index: number) => (
-                      <Fragment key={`~${index}`}>
-                        <div className="row ps-1">
-                          <div className="col-5">
-                            <AsyncInputDataList
-                              name={`products[${index}].name`}
-                              placeholder="Search Products"
-                              value={formik.values.products[index].name}
-                              resource={{ name: 'products', labelProp: 'name', valueProp: '_id' }}
-                              onChange={(selected: any) => handleLineItemSelection(`products[${index}]`, selected)}
-                            />
-                            <ErrorMessage name={`products[${index}].name.label`} />
-                            <textarea
-                              name={`products[${index}].description`}
-                              value={formik.values.products[index].description}
-                              onChange={formik.handleChange}
-                              className={`form-control mb-3`}
-                              placeholder={"Line item's description..."}
-                            />
-                          </div>
-                          <div className="col">
-                            <InputField
-                              placeholder="Quantity"
-                              type="number"
-                              name={`products[${index}].quantity`}
-                              value={formik.values.products[index].quantity}
-                              onChange={formik.handleChange}
-                            />
-                          </div>
-                          <div className="col">
-                            <InputField
-                              type="number"
-                              placeholder="Unit Price"
-                              name={`products[${index}].unitPrice`}
-                              value={formik.values.products[index].unitPrice}
-                              onChange={formik.handleChange}
-                            />
-                          </div>
-                          <div className="col mt-3 ps-1 text-center">
-                            <strong>{`${formik.values.products[index].quantity * formik.values.products[index].unitPrice}`}</strong>
-                          </div>
-                          <div className="col-1 mt-3 ps-1 pointer text-center">
-                            <span
-                              className="mr-2"
-                              onClick={() =>
-                                arrayHelpers.push({
-                                  name: { label: '', value: '' },
-                                  description: '',
-                                  quantity: 0,
-                                  unitPrice: 0,
-                                  total: 0
-                                })
-                              }
-                            >
-                              <PlusCircleIcon size={20} />
-                            </span>
-                            &nbsp;&nbsp;
-                            {index !== 0 ? (
-                              <span onClick={() => arrayHelpers.remove(index)}>
-                                <XCircleIcon size={20} />
-                              </span>
-                            ) : null}
-                          </div>
+                  <div className="row pb-3">
+                    <FieldArray
+                      name="products"
+                      render={(arrayHelpers) => (
+                        <div>
+                          {formik.values.products.map((product, index: number) => (
+                            <Fragment key={`~${index}`}>
+                              <div className="row ps-1">
+                                <div className="col-5">
+                                  <AsyncInputDataList
+                                    name={`products[${index}].name`}
+                                    placeholder="Search Products"
+                                    value={formik.values.products[index].name}
+                                    resource={{ name: 'products', labelProp: 'name', valueProp: '_id' }}
+                                    onChange={(selected: any) => handleLineItemSelection(`products[${index}]`, selected)}
+                                  />
+                                  <ErrorMessage name={`products[${index}].name.label`} />
+                                  <textarea
+                                    name={`products[${index}].description`}
+                                    value={formik.values.products[index].description}
+                                    onChange={formik.handleChange}
+                                    className={`form-control mb-3`}
+                                    placeholder={"Line item's description..."}
+                                  />
+                                </div>
+                                <div className="col">
+                                  <InputField
+                                    placeholder="Quantity"
+                                    type="number"
+                                    name={`products[${index}].quantity`}
+                                    value={formik.values.products[index].quantity}
+                                    onChange={formik.handleChange}
+                                  />
+                                </div>
+                                <div className="col">
+                                  <InputField
+                                    type="number"
+                                    placeholder="Unit Price"
+                                    name={`products[${index}].unitPrice`}
+                                    value={formik.values.products[index].unitPrice}
+                                    onChange={formik.handleChange}
+                                  />
+                                </div>
+                                <div className="col mt-3 ps-1 text-center">
+                                  <strong>{`${formik.values.products[index].quantity * formik.values.products[index].unitPrice}`}</strong>
+                                </div>
+                                <div className="col-1 mt-3 ps-1 pointer text-center">
+                                  <span
+                                    className="mr-2"
+                                    onClick={() =>
+                                      arrayHelpers.push({
+                                        name: { label: '', value: '' },
+                                        description: '',
+                                        quantity: 0,
+                                        unitPrice: 0,
+                                        total: 0
+                                      })
+                                    }
+                                  >
+                                    <PlusCircleIcon size={20} />
+                                  </span>
+                                  &nbsp;&nbsp;
+                                  {index !== 0 ? (
+                                    <span onClick={() => arrayHelpers.remove(index)}>
+                                      <XCircleIcon size={20} />
+                                    </span>
+                                  ) : null}
+                                </div>
+                              </div>
+                            </Fragment>
+                          ))}
                         </div>
-                      </Fragment>
-                    ))}
+                      )}
+                    />
                   </div>
-                )}
-              />
-            </div>
 
-            <div className="row border-top">
-              <div className="col d-flex flex-row mt-3">
-                <h6 className="txt-bold mt-2">Order Total</h6>
-              </div>
-              <div className="col txt-bold mt-3">
-                <div className="d-flex float-end">
-                  <h5 className="txt-bold mt-2">
-                    Rs.{' '}
-                    {formik.values?.products?.length ? formik.values?.products.reduce((current, next) => (current += next.quantity * next.unitPrice), 0) : 0}
-                  </h5>
-                </div>
-              </div>
-            </div>
-            <div className="col pb-3">
-              <div className="card" style={{ height: '100%' }}>
-                <div className="mb-3">
-                  <label htmlFor="instructions" className="form-label txt-dark-grey">
-                    Order Notes
-                  </label>
-                  <DefaultEditor placeholder='Enter the Order notes here' style={{minHeight: '150px'}} name="notes" value={formik.values.notes} onChange={formik.handleChange} />
+                  <div className="row border-top">
+                    <div className="col d-flex flex-row mt-3">
+                      <h6 className="txt-bold mt-2">Order Total</h6>
+                    </div>
+                    <div className="col txt-bold mt-3">
+                      <div className="d-flex float-end">
+                        <h5 className="txt-bold mt-2">
+                          Rs.{' '}
+                          {formik.values?.products?.length ? formik.values?.products.reduce((current, next) => (current += next.quantity * next.unitPrice), 0) : 0}
+                        </h5>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col pb-3">
+                    <div className="" style={{ height: '100%' }}>
+                      <div className="mb-3">
+                        <label htmlFor="instructions" className="form-label txt-dark-grey">
+                          Order Notes
+                        </label>
+                        <DefaultEditor placeholder='Enter the Order notes here' style={{minHeight: '150px'}} name="notes" value={formik.values.notes} onChange={formik.handleChange} />
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

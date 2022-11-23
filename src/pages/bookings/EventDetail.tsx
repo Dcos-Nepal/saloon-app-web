@@ -1,3 +1,4 @@
+import { DateTime } from 'luxon';
 import { FC } from 'react';
 
 interface IProps {
@@ -74,7 +75,7 @@ const ScheduleEventDetail: FC<IProps> = ({ closeModal, event }) => {
               <div className="col">
                 <h5>Booking Date</h5>
                 <div>
-                  {new Date(meta.bookingDate).toLocaleDateString()}
+                  {DateTime.fromJSDate( new Date(meta.bookingDate)).toFormat('yyyy-MM-dd hh:mm a')}
                 </div>
               </div>
             </div>

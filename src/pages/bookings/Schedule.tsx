@@ -79,7 +79,7 @@ const BookingSchedule = (props: any) => {
           <div>{eventInfo.event.title} - {meta?.customer ? meta?.customer.fullName : meta?.fullName}</div>
         </div>
         <div>
-          <ClockIcon size={12} /> {JSON.stringify(eventInfo.event)}
+          <ClockIcon size={12} /> {DateTime.fromJSDate(eventInfo.event.start).toFormat('yyyy-MM-dd hh:mm')}
         </div>
       </div>
     );
@@ -90,7 +90,6 @@ const BookingSchedule = (props: any) => {
       const mappedEvents = props.schedules.rows
         .filter((event: any) => event.type === props.type)
         .map((event: any) => {
-          console.log(new Date(event.bookingDate))
           return {
             title: `Booking for ${event.customer ? event.customer.fullName : event.fullName}`,
             start: DateTime.fromISO(event.bookingDate).toFormat('yyyy-MM-dd hh:mm'),

@@ -13,6 +13,7 @@ const SelectField: FC<any> = ({
   value,
   className,
   isDisabled,
+  isClearable = true,
   helperComponent,
   customOption,
   isMulti = false,
@@ -34,6 +35,7 @@ const SelectField: FC<any> = ({
         menuPlacement="auto"
         options={options}
         isDisabled={isDisabled}
+        isClearable = {isClearable}
         classNamePrefix="form-control"
         placeholder={placeholder}
         isMulti={isMulti}

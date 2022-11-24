@@ -99,10 +99,11 @@ const AppointmentList = (props: any) => {
     return (
       <div style={{ minWidth: '150px' }}>
         <SelectField
-          isDisabled={row.status.name === 'COMPLETED'}
           label=""
+          isClearable= {false}
+          isDisabled={row.status.name === 'COMPLETED'}
           options={appointmentStatusOptions}
-          value={{ label: row.status.name, value: row.status.name }}
+          value={row.status.name}
           placeholder="All"
           handleChange={(selected: { label: string; value: string }) => {
             if (selected.value === 'IN_PROGRESS' || selected.value === 'COMPLETED') {

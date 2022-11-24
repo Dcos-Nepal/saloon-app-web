@@ -10,7 +10,6 @@ import SelectField from 'common/components/form/Select';
 import { IOption } from 'common/types/form';
 import { getAppointmentTypes } from 'data';
 import SelectAsync from 'common/components/form/AsyncSelect';
-import { DateTime } from 'luxon';
 
 const BookingFrom = ({ closeModal, saveHandler }: { closeModal: () => void; saveHandler: (data: any) => any }) => {
   const initialValues = {
@@ -71,8 +70,8 @@ const BookingFrom = ({ closeModal, saveHandler }: { closeModal: () => void; save
   /**
    * Handles Client selection
    */
-   const handleClientSelection = async ({ value }: any) => {
-    formik.setFieldValue(`customer`, value);
+   const handleClientSelection = async (event: any) => {
+    formik.setFieldValue(`customer`, event ? event.value : '');
   };
 
   /**

@@ -5,18 +5,24 @@ import { useState } from 'react';
 
 const Summary = () => {
   const Tabs = {
-    Consultation: 'Consultation',
-    Treatment: 'Treatment'
+    Consulation: 'Consulation',
+    Treatment: 'Treatment',
+    Maintainance: 'Maintainance',
+    FollowUp: 'FollowUp'
   };
 
-  const [tab, setTab] = useState(Tabs.Consultation);
+  const [tab, setTab] = useState(Tabs.Consulation);
 
   const TabContent = () => {
     switch (tab) {
-      case Tabs.Consultation:
+      case Tabs.Consulation:
         return <Consultants />;
       case Tabs.Treatment:
         return <Treatments />;
+      case Tabs.Maintainance:
+        return <Maintainances />;
+      case Tabs.FollowUp:
+        return <FollowUps />;
       default:
         return (
           <div className="row mt-4 border-bottom">
@@ -36,10 +42,27 @@ const Summary = () => {
     );
   };
 
+
+  const Maintainances = () => {
+    return (
+      <div className="row">
+        <VisitList appointmentType={'MAINTANANCE'}/>
+      </div>
+    );
+  };
+
   const Treatments = () => {
     return (
       <div className="row">
          <VisitList appointmentType={'TREATMENT'}/>
+      </div>
+    );
+  };
+
+  const FollowUps = () => {
+    return (
+      <div className="row">
+         <VisitList appointmentType={'FOLLOW UP'}/>
       </div>
     );
   };
@@ -56,11 +79,17 @@ const Summary = () => {
         </div>
         <div className="">
           <div className="row mt-3">
-            <div className={`col tab me-1 ${tab === Tabs.Consultation ? 'active-tab' : ''}`} onClick={() => setTab(Tabs.Consultation)}>
-              Consultations
+            <div className={`col tab me-1 ${tab === Tabs.Consulation ? 'active-tab' : ''}`} onClick={() => setTab(Tabs.Consulation)}>
+              Consulations
             </div>
             <div className={`col tab me-1 ${tab === Tabs.Treatment ? 'active-tab' : ''}`} onClick={() => setTab(Tabs.Treatment)}>
               Treatments
+            </div>
+            <div className={`col tab me-1 ${tab === Tabs.Maintainance ? 'active-tab' : ''}`} onClick={() => setTab(Tabs.Maintainance)}>
+              Maintainance
+            </div>
+            <div className={`col tab me-1 ${tab === Tabs.FollowUp ? 'active-tab' : ''}`} onClick={() => setTab(Tabs.FollowUp)}>
+              Follow Up
             </div>
           </div>
           {<TabContent />}

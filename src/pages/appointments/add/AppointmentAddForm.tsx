@@ -14,7 +14,7 @@ import { DateTime } from 'luxon';
 const AppointmentAddForm = ({ closeModal, client, saveHandler }: { client?: any; closeModal: () => void; saveHandler: (data: any) => any }) => {
   const initialValues = {
     customer: client._id,
-    type: 'CONSULTATION',
+    type: 'CONSULATION',
     services: [],
     appointmentDate: DateTime.fromJSDate(new Date()).toFormat('yyyy-MM-dd'),
     appointmentTime: DateTime.fromJSDate(new Date()).toFormat('hh:mm'),

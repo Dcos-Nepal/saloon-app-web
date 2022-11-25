@@ -135,7 +135,8 @@ const OrdersList = (props: any) => {
         <SelectField
           label=""
           options={orderStatusOptions}
-          value={{ label: row.status.name, value: row.status.name }}
+          isClearable={false}
+          value={row.status.name}
           placeholder="All"
           handleChange={(selected: { label: string; value: string }) => {
             setStatusChangeInProgress(selected.value);

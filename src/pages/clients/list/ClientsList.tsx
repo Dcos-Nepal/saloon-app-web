@@ -245,7 +245,7 @@ const ClientsList = (props: any) => {
             <PersonAddIcon className='mt-1' />&nbsp;New client
           </div>
         </div>
-        {(currUser.role === ('SHOP_ADMIN' || 'ADMIN')) ? <label className="txt-grey">Total {query ? `${clients.length} search results found!` : `${props?.clients?.data?.totalCount || 0} clients`}</label> : null}
+        {(currUser.role.includes('SHOP_ADMIN' || 'ADMIN')) ? <label className="txt-grey">Total {query ? `${clients.length} search results found!` : `${props?.clients?.data?.totalCount || 0} clients`}</label> : null}
       </div>
       <div className="card">
         <div className="row pt-2 m-1 rounded-top bg-grey">

@@ -56,6 +56,7 @@ const AppointmentList = (props: any) => {
   const [pageCount, setPageCount] = useState(0);
   const [appointments, setQuotes] = useState<IAppointment[]>([]);
   const [deleteInProgress, setDeleteInProgress] = useState('');
+  const [totalData, setTotalData] = useState(0);
 
   const deleteQuoteHandler = async () => {
     try {
@@ -269,14 +270,13 @@ const AppointmentList = (props: any) => {
       appointmentQuery.q = query;
     }
 
-    props.actions.fetchQuotes({ ...appointmentQuery, page: offset, limit: itemsPerPage });
-  }, [offset, itemsPerPage, query, queryDate, currentUser.id, currentUser.role]);
+    props.actions.fetchQuotes({ ...appointmentQuery, page: offset, limit: itemsPerPage, type: props?.appointmentType});
+  }, [offset, itemsPerPage, query, queryDate, currentUser.id, currentUser.role, props.appointmentType]);
 
   useEffect(() => {
     if (props.itemList?.data?.rows) {
       setQuotes(
         props.itemList.data?.rows
-          .filter((row: any) => props?.appointmentType ? props.appointmentType?.toLowerCase() === row.type?.toLowerCase() :  true)
           .map((row: IAppointment) => ({
             id: row.id,
             customer: row.customer,
@@ -293,6 +293,7 @@ const AppointmentList = (props: any) => {
           }))
       );
       setPageCount(Math.ceil(props.itemList.data.totalCount / itemsPerPage));
+      setTotalData(props.itemList?.data?.totalCount || 0)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.isLoading]);
@@ -302,7 +303,7 @@ const AppointmentList = (props: any) => {
       <div className="card">
         <div className="row">
           <div className="col">
-            <h5 className="extra">{props.appointmentType}</h5>
+            <h5 className="extra">{props.appointmentType} ({totalData})</h5>
           </div>
         </div>
         <div className="row pt-2 m-1 rounded-top bg-grey">

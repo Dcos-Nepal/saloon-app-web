@@ -94,7 +94,7 @@ const OrdersList = (props: any) => {
   const handleRefresh = () => {
     const orderQuery: { orderFor?: string; createdBy?: string;} = {}
 
-    if (currentUser.role === 'SHOP_ADMIN') {
+    if (currentUser.role.includes('SHOP_ADMIN')) {
       orderQuery.createdBy = currentUser.id;
     }
 
@@ -316,7 +316,7 @@ const OrdersList = (props: any) => {
         <div className="row pt-2 m-1 rounded-top bg-grey">
           <Loader isLoading={props.isLoading} />
           <div className="col-6">
-            <InputField label="Search" placeholder="Search orders" className="search-input" onChange={handleSearch} />
+            <InputField label="Search" placeholder="Search orders by name, phone number" className="search-input" onChange={handleSearch} />
           </div>
           <div className="col-3">
             <InputField label="Select Date" type="date" className="search-input" onChange={() => {}} />

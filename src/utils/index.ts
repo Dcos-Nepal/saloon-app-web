@@ -20,7 +20,7 @@ export const getCurrentUser = () => {
   const currentUser = getData('user');
 
   if (currentUser) {
-    return { id: currentUser._id, role: currentUser.roles[0] };
+    return { id: currentUser._id, role: currentUser.roles.toString() };
   }
 
   return { role: '', id: '' };

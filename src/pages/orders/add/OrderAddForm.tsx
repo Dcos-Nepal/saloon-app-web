@@ -28,6 +28,7 @@ interface IProps {
 
 const OrderAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => {
   const navigate = useNavigate();
+  const [clientDetails, setClientDetails] = useState(null);
 
   const [initialValues, setInitialValues] = useState({
     notes: '',
@@ -113,8 +114,9 @@ const OrderAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => {
   /**
    * Handles Client selection
    */
-  const handleClientSelection = async ({ value }: any) => {
-    formik.setFieldValue(`customer`, value);
+  const handleClientSelection = async (data: any) => {
+    formik.setFieldValue(`customer`, data?.value ? data.value : '');
+    setClientDetails(data ? data : '')
   };
 
   /**
@@ -173,16 +175,20 @@ const OrderAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => {
             <div className="col pb-3">
               <div className="card" style={{ height: '100%' }}>
                 <div className="row">
-                  <div className="col-4">
+                  <div className="col-12">
                     <h6 className="txt-bold">Client Details</h6>
                     <SelectAsync
                       name={`customer`}
-                      label="Select Client"
+                      label="Select client by their name"
                       value={formik.values.customer}
                       resource={{ name: 'customers', labelProp: 'fullName', valueProp: '_id'}}
                       onChange={handleClientSelection}
                       preload={true}
                     />
+                    {!!clientDetails
+                      ? (<div>Phone: {(clientDetails as any).meta.phoneNumber} &nbsp;|&nbsp; Address: {(clientDetails as any).meta.address}</div>)
+                      : null
+                    }
                     <ErrorMessage name={`customer.value`} />
                   </div>
                 </div>

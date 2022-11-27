@@ -47,7 +47,7 @@ const SideNavbar: FC<IProps> = ({ active }) => {
 
           <div className="hr mt-2 mb-2"></div>
 
-          {currUser.role === 'SHOP_ADMIN' || currUser.role === 'ADMIN' ? (
+          {currUser.role.includes('SHOP_ADMIN' || 'ADMIN') ? (
             <li>
               <span
                 onClick={() => navigate('/dashboard/' + endpoints.admin.client.list)}
@@ -73,7 +73,7 @@ const SideNavbar: FC<IProps> = ({ active }) => {
             </span>
           </li>
 
-          {currUser.role === 'SHOP_ADMIN' || currUser.role === 'ADMIN' ? (
+          {currUser.role.includes('SHOP_ADMIN' || 'ADMIN') ? (
             <li>
               <span
                 onClick={() => navigate('/dashboard/visits')}
@@ -87,7 +87,7 @@ const SideNavbar: FC<IProps> = ({ active }) => {
             </li>
           ) : null}
 
-          {currUser.role === 'SHOP_ADMIN' || currUser.role === 'ADMIN' ? (
+          {currUser.role.includes('SHOP_ADMIN' || 'ADMIN') ? (
             <li>
               <span
                 onClick={() => navigate('/dashboard/orders')}

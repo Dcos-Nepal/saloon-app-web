@@ -43,6 +43,7 @@ const VisitList = (props: any) => {
   const [pageCount, setPageCount] = useState(0);
   const [quotes, setQuotes] = useState<IQuote[]>([]);
   const [deleteInProgress, setDeleteInProgress] = useState('');
+  const [totalData, setTotalData] = useState(0);
 
   const deleteQuoteHandler = async () => {
     try {
@@ -139,7 +140,7 @@ const VisitList = (props: any) => {
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({ columns, data: quotes });
 
   useEffect(() => {
-    const quoteQuery: { q?: string; appointmentDate?: string; createdBy?: string; status?: string} = {}
+    const quoteQuery: { q?: string; appointmentDate?: string; createdBy?: string; status?: string} = {};
 
     if (queryDate) {
       quoteQuery.appointmentDate = queryDate;
@@ -151,14 +152,13 @@ const VisitList = (props: any) => {
 
     quoteQuery.status = 'COMPLETED'
 
-    props.actions.fetchQuotes({ ...quoteQuery, page: offset, limit: itemsPerPage });
-  }, [offset, itemsPerPage, props.actions, query, queryDate, currentUser.id, currentUser.role]);
+    props.actions.fetchQuotes({ ...quoteQuery, page: offset, limit: itemsPerPage, type: props.appointmentType });
+  }, [offset, itemsPerPage, props.actions, query, queryDate, currentUser.id, currentUser.role, props.appointmentType]);
 
   useEffect(() => {
     if (props.itemList?.data?.rows) {
       setQuotes(
         props.itemList.data?.rows
-          .filter((row: any) => props?.appointmentType ? props.appointmentType?.toLowerCase() === row.type?.toLowerCase() :  true)
           .map((row: IQuote) => ({
             id: row.id,
             customer: row.customer,
@@ -173,6 +173,7 @@ const VisitList = (props: any) => {
           }))
       );
       setPageCount(Math.ceil(props.itemList.data.totalCount / itemsPerPage));
+      setTotalData(props.itemList?.data?.totalCount);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.isLoading]);
@@ -182,7 +183,7 @@ const VisitList = (props: any) => {
       <div className="card">
         <div className="row">
           <div className="col">
-            <h5 className="extra">Today's Visiting List</h5>
+            <h5 className="extra">Today's Visiting List({totalData})</h5>
           </div>
         </div>
         <div className="row pt-2 m-1 rounded-top bg-grey">

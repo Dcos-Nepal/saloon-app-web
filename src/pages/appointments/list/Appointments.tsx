@@ -3,7 +3,7 @@ import Footer from 'common/components/layouts/footer';
 import { AppointmentList } from 'pages/appointments/list';
 import { useState } from 'react';
 
-const Appointments = () => {
+const Appointments = (props: any) => {
   const Tabs = {
     Consulation: 'Consulation',
     Treatment: 'Treatment',
@@ -68,7 +68,7 @@ const Appointments = () => {
 
   return (
     <>
-      <SideNavbar active="Quotes" />
+      <SideNavbar active={props.title} />
       <div className="col main-container" style={{ position: 'relative', minHeight: '700px' }}>
         <div className="row">
           <div className="col">

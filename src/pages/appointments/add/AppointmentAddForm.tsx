@@ -1,7 +1,7 @@
 import * as Yup from 'yup';
 import { useState } from 'react';
 import { getIn, useFormik } from 'formik';
-import { ClockIcon, StopIcon } from '@primer/octicons-react';
+import { ClockIcon, PencilIcon, StopIcon } from '@primer/octicons-react';
 
 import TextArea from 'common/components/form/TextArea';
 import InputField from 'common/components/form/Input';

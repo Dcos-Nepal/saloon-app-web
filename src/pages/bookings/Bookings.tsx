@@ -6,7 +6,7 @@ import EventActions from 'store/actions/events.actions';
 import Modal from 'common/components/atoms/Modal';
 import AddBookingForm from './AddBooking';
 import { toast } from 'react-toastify';
-import { addVisitApi } from 'services/visits.service';
+import { addVisitApi, updateVisitApi } from 'services/visits.service';
 import BookingSchedule from './Schedule';
 
 const Tabs = {
@@ -16,6 +16,7 @@ const Tabs = {
 
 const Bookings = (props: any) => {
     const [tab, setTab] = useState(Tabs.Consulation);
+    const [bookingDetails, setBookingDetails] = useState('');
     const [addLineItemOpen, setAddLineItemOpen] = useState<boolean>(false);
 
     const TabContent = () => {
@@ -29,10 +30,14 @@ const Bookings = (props: any) => {
         }
     };
 
+    const bookingHandler = (bookingData: any) => {
+        setBookingDetails(!!bookingData ? bookingData : '')
+    }
+
     const Consulation = () => {
         return (
             <div className="row">
-                <BookingSchedule type={'CONSULATION'}/>
+                <BookingSchedule type={'CONSULATION'} bookingHandler={bookingHandler}/>
             </div>
         );
     };
@@ -40,7 +45,7 @@ const Bookings = (props: any) => {
     const Treatments = () => {
         return (
             <div className="row">
-                <BookingSchedule type={'TREATMENT'}/>
+                <BookingSchedule type={'TREATMENT'} bookingHandler={bookingHandler}/>
             </div>
         );
     };
@@ -54,8 +59,25 @@ const Bookings = (props: any) => {
             await addVisitApi(data);
             toast.success('Booking added successfully');
             setAddLineItemOpen(false);
+            setBookingDetails('');
         } catch (ex) {
             toast.error('Failed to add Booking');
+        }
+    };
+
+    /**
+     * Update Booking Information
+     * @param id string
+     * @param data any
+     */
+    const updateBooking = async (id: string, data: any) => {
+        try {
+            await updateVisitApi(id, data);
+            toast.success('Booking updated successfully');
+            setAddLineItemOpen(false);
+            setBookingDetails('');
+        } catch (ex) {
+            toast.error('Failed to update Booking');
         }
     };
 
@@ -101,8 +123,14 @@ const Bookings = (props: any) => {
                 </div>
                 <Footer />
             </div>
-            <Modal isOpen={!!addLineItemOpen} onRequestClose={() => setAddLineItemOpen(false)}>
-                <AddBookingForm closeModal={() => setAddLineItemOpen(false)} saveHandler={addNewBooking}/>
+            <Modal isOpen={!!addLineItemOpen || !!bookingDetails} onRequestClose={() => setAddLineItemOpen(false)}>
+                <AddBookingForm closeModal={() => {
+                    setAddLineItemOpen(false);
+                    setBookingDetails('');
+                }}
+                saveHandler={addNewBooking}
+                updateHandler={updateBooking}
+                bookingDetails={bookingDetails}/>
             </Modal>
         </>
     );

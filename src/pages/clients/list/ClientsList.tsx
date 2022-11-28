@@ -11,7 +11,7 @@ import ReactPaginate from 'react-paginate';
 import { Loader } from 'common/components/atoms/Loader';
 import debounce from 'lodash/debounce';
 import EmptyState from 'common/components/EmptyState';
-import { ClockIcon, EyeIcon, PencilIcon, PersonAddIcon, SyncIcon, TrashIcon } from '@primer/octicons-react';
+import { ClockIcon, EyeIcon, PencilIcon, PersonAddIcon, PlusIcon, SyncIcon, TrashIcon } from '@primer/octicons-react';
 import Modal from 'common/components/atoms/Modal';
 import { deleteUserApi } from 'services/customers.service';
 import { toast } from 'react-toastify';
@@ -38,7 +38,8 @@ const ClientsList = (props: any) => {
   const [pageCount, setPageCount] = useState(0);
   const [clients, setClients] = useState<IClient[]>([]);
   const [deleteInProgress, setDeleteInProgress] = useState('');
-  const [addLineItemOpen, setAddLineItemOpen] = useState<boolean>(false);
+  const [addSchedule, setAddSchedule] = useState<boolean>(false);
+  const [addOrder, setAddOrder] = useState<boolean>(false);
   const [currUser,] = useState(getCurrentUser());
 
   const deleteClientHandler = async () => {
@@ -167,7 +168,7 @@ const ClientsList = (props: any) => {
       {
         Header: '  ',
         accessor: (row: any) => (
-          <div className='mt-3 btn btn-primary btn-small' onClick={() => {setAddLineItemOpen(row)}}>
+          <div className='mt-3 btn btn-primary btn-small' onClick={() => {setAddSchedule(row)}}>
             <ClockIcon /> Schedule
           </div>
         )
@@ -196,8 +197,11 @@ const ClientsList = (props: any) => {
                   <TrashIcon /> Delete
                 </span>
               </li>
-              <li onClick={() => {setAddLineItemOpen(row)}}>
+              <li onClick={() => {setAddSchedule(row)}}>
                 <span className="dropdown-item pointer"><ClockIcon /> Schedule</span>
+              </li>
+              <li onClick={() => {navigate('/dashboard/orders/add?client=' + row._id)}}>
+                <span className="dropdown-item pointer"><PlusIcon /> Add Order</span>
               </li>
             </ul>
           </div>
@@ -218,7 +222,7 @@ const ClientsList = (props: any) => {
     try {
       await createQuotesApi(data);
       toast.success('Appointment added successfully');
-      setAddLineItemOpen(false);
+      setAddSchedule(false);
     } catch (ex) {
       toast.error('Failed to add appointment');
     }
@@ -308,8 +312,9 @@ const ClientsList = (props: any) => {
       <Modal isOpen={!!deleteInProgress} onRequestClose={() => setDeleteInProgress('')}>
         <DeleteConfirm onDelete={deleteClientHandler} closeModal={() => setDeleteInProgress('')} />
       </Modal>
-      <Modal isOpen={!!addLineItemOpen} onRequestClose={() => setAddLineItemOpen(false)}>
-        <AppointmentAddForm client={addLineItemOpen} closeModal={() => setAddLineItemOpen(false)} saveHandler={scheduleHandler} />
+
+      <Modal isOpen={!!addSchedule} onRequestClose={() => setAddSchedule(false)}>
+        <AppointmentAddForm client={addSchedule} closeModal={() => setAddSchedule(false)} saveHandler={scheduleHandler} />
       </Modal>
     </>
   );

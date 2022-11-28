@@ -6,7 +6,7 @@ import { FieldArray, FormikProvider, useFormik, getIn } from 'formik';
 import { PlusCircleIcon, StopIcon, XCircleIcon } from '@primer/octicons-react';
 
 import { connect } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Loader } from 'common/components/atoms/Loader';
 
 import InputField from 'common/components/form/Input';
@@ -28,12 +28,14 @@ interface IProps {
 
 const OrderAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => {
   const navigate = useNavigate();
+  const search = useLocation().search;
   const [clientDetails, setClientDetails] = useState(null);
+  const client = new URLSearchParams(search).get('client');
 
   const [initialValues, setInitialValues] = useState({
     notes: '',
     orderDate: DateTime.fromJSDate(new Date()).toFormat('yyyy-MM-dd'),
-    customer: '',
+    customer: client ? client : '',
     products: [{
       name: '',
       description: '',

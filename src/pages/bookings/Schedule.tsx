@@ -33,6 +33,10 @@ const BookingSchedule = (props: any) => {
     }
   };
 
+  const handleEventEdit = (eventDetails: any) => {
+    props.bookingHandler(eventDetails);
+  }
+
   /**
    * Handlers that initiate reads/writes via the 'action' props
    * ------------------------------------------------------------------------------------------
@@ -135,8 +139,8 @@ const BookingSchedule = (props: any) => {
       {/* Modals Section */}
       <Modal isOpen={!!showEventDetail} onRequestClose={() => setShowEventDetail(null)}>
         {!!showEventDetail ? (
-          <ScheduleEventDetail  event={showEventDetail} closeModal={() => setShowEventDetail(null)} />
-        ) : (<></>)}
+          <ScheduleEventDetail  event={showEventDetail} closeModal={() => setShowEventDetail(null)} handleEventEdit={handleEventEdit} />
+        ) : (<div />)}
       </Modal>
     </div>
   );

@@ -20,7 +20,6 @@ import StatusChangeWithReason from './StatusChangeWithReason';
 import { EyeIcon, FileBadgeIcon, InfoIcon, PencilIcon, SyncIcon, TrashIcon } from '@primer/octicons-react';
 import { getCurrentUser } from 'utils';
 import DummyImage from '../../../assets/images/dummy.png';
-import { DateTime } from 'luxon';
 
 export interface OrderStatus {
   name: string;
@@ -41,7 +40,7 @@ export interface IOrder {
   id: string;
   title: string;
   customer: any;
-  orderNotes: string;
+  notes: string;
   status: OrderStatus;
   prevStatus: OrderStatus[];
   products: OrderProduct[];
@@ -187,7 +186,7 @@ const OrdersList = (props: any) => {
               <div>
                 <strong>{row.title}</strong>
               </div>
-              <div><i>{row.orderNotes}</i></div>
+              <div><i>{row.notes}</i></div>
             </div>
           );
         }
@@ -273,7 +272,7 @@ const OrdersList = (props: any) => {
         props.itemList.data?.rows.map((row: IOrder) => ({
           id: row.id,
           title: row.title,
-          description: row.orderNotes,
+          notes: row.notes,
           customer: row.customer,
           products: row.products,
           status: row.status,
@@ -417,16 +416,36 @@ const OrdersList = (props: any) => {
                 <hr/>
                 <div className='row mt-3'>
                   <h6>Order Details</h6>
+                  {!!selectedOrder?.notes ? (
+                    <div className='col-12 mb-3'>
+                      <div><strong>Order Notes:</strong></div>
+                      <div>{selectedOrder?.notes}</div>
+                    </div>
+                  ) : null}
                   <div className='col-12'>
                     <h6>Products:</h6>
-                    <ol>
-                      {selectedOrder?.products.map((product) => {
-                        return <li key={product.name}>
-                          {product?.name} Qty. {product.quantity} Rate: Rs.{product.unitPrice} Total: Rs.{(+product.quantity) * (+product.unitPrice)} <br/>
-                          {product?.description} 
-                        </li>;
-                      })}
-                    </ol>
+                    <table className="table">
+                      <thead>
+                        <th>SN</th>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Qty</th>
+                        <th>Rate</th>
+                        <th>Total</th>
+                      </thead>
+                      <tbody>
+                        {selectedOrder?.products.map((product, index) => {
+                          return <tr key={product.name}>
+                            <td>{index + 1}</td>
+                            <td>{product?.name}</td>
+                            <td><i>{product?.description}</i></td>
+                            <td>{product.quantity}</td>
+                            <td>Rs.{product.unitPrice}</td>
+                            <td>Rs.{(+product.quantity) * (+product.unitPrice)}</td>
+                          </tr>;
+                        })}
+                      </tbody>
+                    </table>
                   </div>
                 </div>
               </div>

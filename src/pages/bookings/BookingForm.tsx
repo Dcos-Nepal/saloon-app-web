@@ -3,17 +3,24 @@ import { useState } from 'react';
 import { getIn, useFormik } from 'formik';
 import { StopIcon } from '@primer/octicons-react';
 
+import SelectAsync from 'common/components/form/AsyncSelect';
 import TextArea from 'common/components/form/TextArea';
 import InputField from 'common/components/form/Input';
 import { Loader } from 'common/components/atoms/Loader';
 import SelectField from 'common/components/form/Select';
 import { IOption } from 'common/types/form';
 import { getAppointmentTypes } from 'data';
-import SelectAsync from 'common/components/form/AsyncSelect';
 
-const BookingFrom = ({ closeModal, saveHandler }: { closeModal: () => void; saveHandler: (data: any) => any }) => {
-  const initialValues = {
-    customer: null,
+interface IProps {
+  closeModal: () => void;
+  saveHandler: (data: any) => any;
+  updateHandler: (id: string, data: any) => any;
+  bookingDetails: any;
+}
+
+const BookingFrom = ({ closeModal, saveHandler, updateHandler, bookingDetails }: IProps) => {
+  const initialValues = !!bookingDetails ? bookingDetails : {
+    customer: '',
     fullName: '',
     phoneNumber: '',
     description: '',
@@ -62,7 +69,15 @@ const BookingFrom = ({ closeModal, saveHandler }: { closeModal: () => void; save
     onSubmit: async (data: any) => {
       setIsLoading(true);
       data.bookingDate = new Date(data.bookingDate).toISOString();
-      await saveHandler(data);
+
+      if (!data.customer) delete data.customer;
+
+      if (data?._id) {
+        await updateHandler(data?._id, data);
+      } else {
+        await saveHandler(data);
+      }
+
       setIsLoading(false);
     }
   });
@@ -172,11 +187,11 @@ const BookingFrom = ({ closeModal, saveHandler }: { closeModal: () => void; save
               label="Appointment Type"
               name="type"
               isMulti={false}
-              value={getAppointmentTypes().find((service) => formik.values.type === service.value)}
+              value={formik.values.type}
               options={getAppointmentTypes().filter((service) => service.isActive)}
               helperComponent={<ErrorMessage name="type" />}
               handleChange={(selectedTag: IOption) => {
-                formik.setFieldValue('type', selectedTag.value);
+                formik.setFieldValue('type', !!selectedTag ? selectedTag.value : '');
               }}getAppoinmentVeriation
               onBlur={formik.handleBlur}
             />

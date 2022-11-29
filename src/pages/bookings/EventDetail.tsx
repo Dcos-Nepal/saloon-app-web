@@ -138,7 +138,7 @@ const ScheduleEventDetail: FC<IProps> = ({ closeModal, event, handleEventEdit}) 
           </div>
           <div className="modal-footer">
             {meta.customer ? (
-              <button type="button" className="btn btn-secondary" onClick={() => {}}>
+              <button type="button"  disabled={true} className="btn btn-secondary" onClick={() => {}}>
                 Convert to Client 
               </button>
             ) : null}

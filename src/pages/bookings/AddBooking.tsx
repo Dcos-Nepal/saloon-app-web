@@ -12,13 +12,13 @@ const AddBookingForm: FC<IProps> = ({ closeModal, saveHandler, updateHandler, bo
   // format the booking object here
   const dt = new Date(bookingDetails?.bookingDate);
   const bookingObj = {
-    id: !!bookingDetails ? bookingDetails.id : '',
-    customer: !!bookingDetails.customer ? bookingDetails?.customer?.id : '',
+    id: !!bookingDetails ? bookingDetails?.id : '',
+    customer: !!bookingDetails?.customer ? bookingDetails?.customer?.id : '',
     fullName: bookingDetails?.fullName || '',
-    phoneNumber: bookingDetails.phoneNumber || '',
-    description: bookingDetails.description || '',
-    address: bookingDetails.address || '',
-    type: bookingDetails.type || '',
+    phoneNumber: bookingDetails?.phoneNumber || '',
+    description: bookingDetails?.description || '',
+    address: bookingDetails?.address || '',
+    type: bookingDetails?.type || '',
     bookingDate: !!dt ? `${dt.getFullYear()}-${`${dt.getMonth() +1}`.padStart(2,'0')}-${`${dt.getDate()}`.padStart(2,'0')}T${`${dt.getHours()}`.padStart(2,'0')}:${`${dt.getMinutes()}`.padStart(2, '0')}` : ''
   }
 

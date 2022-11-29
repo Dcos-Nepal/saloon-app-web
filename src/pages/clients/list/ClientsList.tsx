@@ -20,6 +20,8 @@ import { getCurrentUser } from 'utils';
 import AppointmentAddForm from 'pages/appointments/add';
 import { createQuotesApi } from 'services/appointments.service';
 import DummyImage from '../../../assets/images/dummy.png';
+import { addVisitApi, updateVisitApi } from 'services/visits.service';
+import AddBookingForm from 'pages/bookings/AddBooking';
 
 interface IClient {
   name: string;
@@ -39,8 +41,8 @@ const ClientsList = (props: any) => {
   const [clients, setClients] = useState<IClient[]>([]);
   const [deleteInProgress, setDeleteInProgress] = useState('');
   const [addSchedule, setAddSchedule] = useState<boolean>(false);
-  const [addOrder, setAddOrder] = useState<boolean>(false);
   const [currUser,] = useState(getCurrentUser());
+  const [bookingDetails, setBookingDetails] = useState<any>(null);
 
   const deleteClientHandler = async () => {
     try {
@@ -59,7 +61,7 @@ const ClientsList = (props: any) => {
     } catch (ex) {
       toast.error('Failed to delete client');
     }
-  };
+  }
   
   const handleRefresh = () => {
     const clientQuery: { createdBy?: string; } = {};
@@ -117,6 +119,36 @@ const ClientsList = (props: any) => {
   const handleClientSearch = (event: any) => {
     const query = event.target.value;
     setQuery(query);
+  };
+
+
+    /**
+     * Handles line item Save
+     * @param data 
+     */
+     const addNewBooking = async (data: any) => {
+      try {
+          await addVisitApi(data);
+          toast.success('Booking added successfully');
+          setBookingDetails(null);
+      } catch (ex) {
+          toast.error('Failed to add Booking');
+      }
+  };
+
+  /**
+   * Update Booking Information
+   * @param id string
+   * @param data any
+   */
+  const updateBooking = async (id: string, data: any) => {
+      try {
+          await updateVisitApi(id, data);
+          toast.success('Booking updated successfully');
+          setBookingDetails(null);
+      } catch (ex) {
+          toast.error('Failed to update Booking');
+      }
   };
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -202,6 +234,9 @@ const ClientsList = (props: any) => {
               </li>
               <li onClick={() => {navigate('/dashboard/orders/add?client=' + row._id)}}>
                 <span className="dropdown-item pointer"><PlusIcon /> Add Order</span>
+              </li>
+              <li onClick={() => {setBookingDetails({ customer: {id: row._id }})}}>
+                <span className="dropdown-item pointer"><PlusIcon /> Add Booking</span>
               </li>
             </ul>
           </div>
@@ -315,6 +350,13 @@ const ClientsList = (props: any) => {
 
       <Modal isOpen={!!addSchedule} onRequestClose={() => setAddSchedule(false)}>
         <AppointmentAddForm client={addSchedule} closeModal={() => setAddSchedule(false)} saveHandler={scheduleHandler} />
+      </Modal>
+
+      <Modal isOpen={!!bookingDetails} onRequestClose={() => setBookingDetails(null)}>
+        <AddBookingForm closeModal={() => setBookingDetails(null)}
+        saveHandler={addNewBooking}
+        updateHandler={updateBooking}
+        bookingDetails={bookingDetails}/>
       </Modal>
     </>
   );

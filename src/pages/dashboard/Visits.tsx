@@ -46,7 +46,7 @@ const Summary = () => {
   const Maintainances = () => {
     return (
       <div className="row">
-        <VisitList appointmentType={'MAINTANANCE'}/>
+        <VisitList appointmentType={'MAINTAINANCE'}/>
       </div>
     );
   };

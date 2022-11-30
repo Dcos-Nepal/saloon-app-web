@@ -13,11 +13,14 @@ import Modal from 'common/components/atoms/Modal';
 import { toast } from 'react-toastify';
 import DeleteConfirm from 'common/components/DeleteConfirm';
 import { deleteQuoteApi } from 'services/appointments.service';
-import { TrashIcon } from '@primer/octicons-react';
+import { ClockIcon, NoteIcon, PlusIcon, TrashIcon } from '@primer/octicons-react';
 import { getCurrentUser } from 'utils';
 import { DateTime } from 'luxon';
 import DummyImage from '../../../assets/images/dummy.png';
 import { useNavigate } from 'react-router-dom';
+import { addVisitApi, updateVisitApi } from 'services/visits.service';
+import AddBookingForm from 'pages/bookings/AddBooking';
+import ReactTooltip from 'react-tooltip';
 
 interface IQuote {
   id: string;
@@ -26,6 +29,7 @@ interface IQuote {
   type: any;
   status: any;
   session: string;
+  interval?: string;
   appointmentDate: string;
   appointmentTime: string;
   services: any[];
@@ -44,6 +48,7 @@ const VisitList = (props: any) => {
   const [quotes, setQuotes] = useState<IQuote[]>([]);
   const [deleteInProgress, setDeleteInProgress] = useState('');
   const [totalData, setTotalData] = useState(0);
+  const [bookingDetails, setBookingDetails] = useState<any>(null);
 
   const deleteQuoteHandler = async () => {
     try {
@@ -74,6 +79,35 @@ const VisitList = (props: any) => {
     setQueryDate(query);
   };
 
+  /**
+   * Handles line item Save
+   * @param data 
+   */
+  const addNewBooking = async (data: any) => {
+    try {
+      await addVisitApi(data);
+      toast.success('Booking added successfully');
+      setBookingDetails(null);
+    } catch (ex) {
+      toast.error('Failed to add Booking');
+    }
+  };
+
+  /**
+   * Update Booking Information
+   * @param id string
+   * @param data any
+   */
+  const updateBooking = async (id: string, data: any) => {
+    try {
+        await updateVisitApi(id, data);
+        toast.success('Booking updated successfully');
+        setBookingDetails(null);
+    } catch (ex) {
+        toast.error('Failed to update Booking');
+    }
+  };
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const handleSearch = useCallback(debounce(handleQuotesSearch, 300), []);
 
@@ -95,6 +129,7 @@ const VisitList = (props: any) => {
                 <div className="cursor-pointer"  onClick={() => navigate('/dashboard/clients/' + row.customer.id )}>
                   <div>{row.customer?.fullName || ' Not Entered '}</div>
                   <div>{row.customer?.phoneNumber}</div>
+                  <div>{row.customer?.address}</div>
                 </div>
               </div>
             </div>
@@ -105,14 +140,34 @@ const VisitList = (props: any) => {
         Header: 'APPOINTMENT DATE',
         accessor: (row: IQuote) => {
           return <>
-            <div>{row.appointmentDate} {DateTime.fromISO(row.appointmentTime).toFormat('h:mm a') }</div>
+            <div><strong>{row.appointmentDate} {DateTime.fromISO(row.appointmentTime).toFormat('h:mm a') }</strong></div>
             {row.type === 'TREATMENT' ? <div className='text-primary'>Services: {row.services.join(', ')}</div> : null}
+            <div>{row?.interval || null}</div>
           </>;
+        }
+      },
+      {
+        Header: 'SESSION INFO',
+        accessor: (row: IQuote) => {
+          return (<div>{row.session || ' -- --'}</div>);
         }
       },
       {
         Header: 'STATUS',
         accessor: (row: IQuote) => (<div>{row.status.name}</div>)
+      },
+      {
+        Header: 'Notes/Reasons',
+        accessor: ((row: IQuote) => {
+          return (<div className='row'>
+            <div className='col-2'>
+              <a data-tip data-for='notes'><NoteIcon /></a>
+              <ReactTooltip id='notes' aria-haspopup='true'>
+                <p>{row.notes}</p>
+              </ReactTooltip>
+            </div>
+          </div>)
+        })
       },
       {
         Header: ' ',
@@ -123,11 +178,12 @@ const VisitList = (props: any) => {
               <box-icon name="dots-vertical-rounded" />
             </span>
             <ul className="dropdown-menu" aria-labelledby="dropdownMenuLink">
-              {(currentUser.role === 'ADMIN' || currentUser.role === 'SHOP_ADMIN') ? (
-                <li onClick={() => setDeleteInProgress(row.id)}>
-                  <span className="dropdown-item cursor-pointer"><TrashIcon /> Delete</span>
-                </li>
-              ) : null}
+              <li onClick={() => setDeleteInProgress(row.id)}>
+                <span className="dropdown-item cursor-pointer"><TrashIcon /> Delete</span>
+              </li>
+              <li onClick={() => {setBookingDetails({ customer: {_id: row.customer._id }})}}>
+                <span className="dropdown-item pointer"><ClockIcon /> Add Booking</span>
+              </li>
             </ul>
           </div>
         )
@@ -153,7 +209,7 @@ const VisitList = (props: any) => {
     quoteQuery.status = 'COMPLETED'
 
     props.actions.fetchQuotes({ ...quoteQuery, page: offset, limit: itemsPerPage, type: props.appointmentType });
-  }, [offset, itemsPerPage, props.actions, query, queryDate, currentUser.id, currentUser.role, props.appointmentType]);
+  }, [offset, itemsPerPage, query, queryDate, currentUser.id, currentUser.role, props.appointmentType]);
 
   useEffect(() => {
     if (props.itemList?.data?.rows) {
@@ -164,7 +220,9 @@ const VisitList = (props: any) => {
             customer: row.customer,
             notes: row.notes,
             services: row?.services,
+            session: row.session,
             status: row.status,
+            interval: row.interval,
             type: row.type,
             appointmentDate: row.appointmentDate,
             appointmentTime: row.appointmentTime,
@@ -244,8 +302,17 @@ const VisitList = (props: any) => {
           </div>
         ) : null}
       </div>
+      {/* Booking Modals */}
       <Modal isOpen={!!deleteInProgress} onRequestClose={() => setDeleteInProgress('')}>
         <DeleteConfirm onDelete={deleteQuoteHandler} closeModal={() => setDeleteInProgress('')} />
+      </Modal>
+      
+      <Modal isOpen={!!bookingDetails} onRequestClose={() => setBookingDetails(null)}>
+        <AddBookingForm closeModal={() => setBookingDetails(null)}
+          saveHandler={addNewBooking}
+          updateHandler={updateBooking}
+          bookingDetails={bookingDetails}
+        />
       </Modal>
     </>
   );

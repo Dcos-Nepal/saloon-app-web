@@ -175,7 +175,7 @@ const AppointmentList = (props: any) => {
       {
         Header: 'SESSION INFO',
         accessor: (row: IAppointment) => {
-          return (<div>{row.session || 'N/A'}</div>);
+          return (<div>{row.session || '-- --'}</div>);
         }
       },
       {

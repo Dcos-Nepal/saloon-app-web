@@ -10,10 +10,11 @@ interface IProps {
 
 const AddBookingForm: FC<IProps> = ({ closeModal, saveHandler, updateHandler, bookingDetails }) => {
   // format the booking object here
-  const dt = new Date(bookingDetails?.bookingDate);
+  const dt = bookingDetails?.bookingDate ? new Date() : '';
+  debugger
   const bookingObj = {
     id: !!bookingDetails ? bookingDetails?.id : '',
-    customer: !!bookingDetails?.customer ? bookingDetails?.customer?.id : '',
+    customer: !!bookingDetails?.customer ? bookingDetails?.customer?._id : '',
     fullName: bookingDetails?.fullName || '',
     phoneNumber: bookingDetails?.phoneNumber || '',
     description: bookingDetails?.description || '',
@@ -27,7 +28,7 @@ const AddBookingForm: FC<IProps> = ({ closeModal, saveHandler, updateHandler, bo
       <div className="modal-dialog mt-5">
         <div className="modal-content">
           <div className="modal-header">
-            <h5 className="col">Add New Booking</h5>
+            <h5 className="col">{bookingObj?.id ? 'Update' : 'Add New'} Booking</h5>
             <div className="col">
               <span onClick={closeModal} className="pointer d-flex float-end">
                 <box-icon name="x" />

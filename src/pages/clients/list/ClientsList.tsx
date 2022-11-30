@@ -122,18 +122,18 @@ const ClientsList = (props: any) => {
   };
 
 
-    /**
-     * Handles line item Save
-     * @param data 
-     */
-     const addNewBooking = async (data: any) => {
-      try {
-          await addVisitApi(data);
-          toast.success('Booking added successfully');
-          setBookingDetails(null);
-      } catch (ex) {
-          toast.error('Failed to add Booking');
-      }
+  /**
+   * Handles line item Save
+   * @param data 
+   */
+  const addNewBooking = async (data: any) => {
+    try {
+        await addVisitApi(data);
+        toast.success('Booking added successfully');
+        setBookingDetails(null);
+    } catch (ex) {
+        toast.error('Failed to add Booking');
+    }
   };
 
   /**
@@ -171,7 +171,7 @@ const ClientsList = (props: any) => {
               <div className='col-8'>
                 <div className="cursor-pointer" onClick={() => navigate(pinterpolate(endpoints.admin.client.detail, { id: row._id }))}>
                   <div><b>{row.name}</b> ({row.gender})</div>
-                  <div>Date of Birth: <b>{row.dob ? row.dob as string : 'N/A'}</b></div>
+                  <div>Date of Birth: <b>{row.dob ? row.dob as string : '-- --'}</b></div>
                   <div>Address: <b>{row.address || 'Address not added.'}</b></div>
                   <small>Created at: {new Date(row.createdAt).toLocaleString()}</small>
                 </div>
@@ -235,7 +235,7 @@ const ClientsList = (props: any) => {
               <li onClick={() => {navigate('/dashboard/orders/add?client=' + row._id)}}>
                 <span className="dropdown-item pointer"><PlusIcon /> Add Order</span>
               </li>
-              <li onClick={() => {setBookingDetails({ customer: {id: row._id }})}}>
+              <li onClick={() => {setBookingDetails({ customer: {_id: row._id }})}}>
                 <span className="dropdown-item pointer"><PlusIcon /> Add Booking</span>
               </li>
             </ul>

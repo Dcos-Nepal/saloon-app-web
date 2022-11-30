@@ -285,7 +285,7 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient }) => {
                 label="Select Photo Type"
                 name="type"
                 isMulti={false}
-                value={getPhotoTypes().find((service) => formik.values.type === service.value)}
+                value={formik.values.type}
                 options={getPhotoTypes().filter((service) => service.isActive)}
                 helperComponent={<ErrorMessage name="type" />}
                 handleChange={(selectedTag: IOption) => {
@@ -427,6 +427,12 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient }) => {
                       <div className="col">
                         <div className="txt-grey">Client's Address</div>
                         <div className="">{currentClient?.address}</div>
+                      </div>
+                    </div>
+                    <div className="row mt-4">
+                      <div className="col">
+                        <div className="txt-grey">Description</div>
+                        <div className="">{currentClient.notes || '-- --'}</div>
                       </div>
                     </div>
                   </div>

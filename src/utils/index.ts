@@ -108,7 +108,7 @@ export const getJobAddress = (job: any) => {
  */
 export const formatTime = (time: string) => {
   if (!time) {
-    return 'N/A'
+    return '-- --'
   }
 
   return DateTime.fromISO(time).toFormat('h:mm a');

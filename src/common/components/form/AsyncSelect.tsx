@@ -10,7 +10,7 @@ const SelectAsync: FC<any> = ({ name, label, customOption, placeholder, onChange
   const [defaultOptions, setDefaultOptions] = useState([]);
 
   const loadOptions = async (inputValue: string) => {
-    return await filterApi(resource.name, { q: inputValue, ...(resource?.params ? resource.params : ''), page: 1, limit: 20 })
+    return await filterApi(resource.name, { q: inputValue, ...(resource?.params ? resource.params : ''), page: 1, limit: 5000 })
       .then((response: AxiosResponse) => {
         const {
           data: { data }

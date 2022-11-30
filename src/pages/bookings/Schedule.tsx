@@ -96,7 +96,7 @@ const BookingSchedule = (props: any) => {
         .map((event: any) => {
           return {
             title: `Booking for ${event.customer ? event.customer.fullName : event.fullName}`,
-            start: DateTime.fromISO(event.bookingDate).toFormat('yyyy-MM-dd hh:mm'),
+            start: DateTime.fromJSDate(new Date(event.bookingDate)).toFormat('yyyy-MM-dd HH:MM'),
             end: DateTime.fromISO(event.bookingDate).toFormat('yyyy-MM-dd hh:mm'),
             meta: {...event}
           };
@@ -119,7 +119,7 @@ const BookingSchedule = (props: any) => {
               right: 'dayGridMonth,timeGridWeek,timeGridDay'
             }}
             initialView="dayGridMonth"
-            // timeZone="Asia/Kathmandu"
+            timeZone="Asia/Kathmandu"
             editable={true}
             selectable={true}
             selectMirror={true}

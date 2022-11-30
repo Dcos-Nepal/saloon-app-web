@@ -172,6 +172,7 @@ const OrdersList = (props: any) => {
                 <div className="cursor-pointer" onClick={() => navigate('/dashboard/clients/' + row.customer.id )}>
                   <div>Name: {row.customer?.fullName}</div>
                   <div>Phone: {row.customer?.phoneNumber}</div>
+                  <div>Phone: {row.customer?.address}</div>
                 </div>
               </div>
             </div>
@@ -408,8 +409,8 @@ const OrdersList = (props: any) => {
                   <div className='col-9'>
                     <div>
                       <div><b>{selectedOrder?.customer.fullName}</b></div>
-                      <div>Phone: <b>{selectedOrder?.customer?.phoneNumber || 'N/A'}</b></div>
-                      <div>Address: <b>{selectedOrder?.customer.address || 'N/A'}</b></div>
+                      <div>Phone: <b>{selectedOrder?.customer?.phoneNumber || '-- --'}</b></div>
+                      <div>Address: <b>{selectedOrder?.customer.address || '-- --'}</b></div>
                     </div>
                   </div>
                 </div>

@@ -1,7 +1,7 @@
 import * as Yup from 'yup';
 import { useState } from 'react';
 import { getIn, useFormik } from 'formik';
-import { ClockIcon, PencilIcon, StopIcon } from '@primer/octicons-react';
+import { ClockIcon, StopIcon } from '@primer/octicons-react';
 
 import TextArea from 'common/components/form/TextArea';
 import InputField from 'common/components/form/Input';
@@ -14,7 +14,7 @@ import { DateTime } from 'luxon';
 const AppointmentAddForm = ({ closeModal, client, saveHandler }: { client?: any; closeModal: () => void; saveHandler: (data: any) => any }) => {
   const initialValues = {
     customer: client._id,
-    type: 'CONSULATION',
+    type: '',
     services: [],
     appointmentDate: DateTime.fromJSDate(new Date()).toFormat('yyyy-MM-dd'),
     appointmentTime: DateTime.fromJSDate(new Date()).toFormat('hh:mm'),
@@ -115,7 +115,7 @@ const AppointmentAddForm = ({ closeModal, client, saveHandler }: { client?: any;
                 options={getAppointmentTypes().filter((service) => service.isActive)}
                 helperComponent={<ErrorMessage name="type" />}
                 handleChange={(selectedTag: IOption) => {
-                  formik.setFieldValue('type', selectedTag.value);
+                  formik.setFieldValue('type', !!selectedTag ? selectedTag.value : '');
                 }}getAppoinmentVeriation
                 onBlur={formik.handleBlur}
               />
@@ -147,7 +147,7 @@ const AppointmentAddForm = ({ closeModal, client, saveHandler }: { client?: any;
                   options={getAppoinmentVeriation().filter((service) => service.isActive)}
                   helperComponent={<ErrorMessage name="interval" />}
                   handleChange={(selectedTags: IOption) => {
-                    formik.setFieldValue('interval', selectedTags.value);
+                    formik.setFieldValue('interval', !!selectedTags ? selectedTags.value : '');
                   }}
                   onBlur={formik.handleBlur}
                 />

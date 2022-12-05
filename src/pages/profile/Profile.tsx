@@ -6,14 +6,13 @@ import { getData } from 'utils/storage';
 import { endpoints } from 'common/config';
 import Footer from 'common/components/layouts/footer';
 import SideNavbar from 'common/components/layouts/sidebar';
-import { KeyIcon, PencilIcon, StopIcon } from '@primer/octicons-react';
+import { KeyIcon, PencilIcon } from '@primer/octicons-react';
 
 interface IProps {
   actions: {};
-  properties: any[];
 }
 
-const Profile: FC<IProps> = ({ properties }) => {
+const Profile: FC<IProps> = () => {
   const navigate = useNavigate();
   const currentUser = getData('user');
 
@@ -112,9 +111,7 @@ const Profile: FC<IProps> = ({ properties }) => {
 };
 
 const mapStateToProps = (state: any) => {
-  return {
-    properties: state.properties.properties || []
-  };
+  return {};
 };
 
 const mapDispatchToProps = (dispatch: any) => ({

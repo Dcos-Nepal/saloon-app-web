@@ -2,10 +2,13 @@ import * as Yup from 'yup';
 import { getIn, useFormik } from 'formik';
 import { StopIcon } from '@primer/octicons-react';
 import TextArea from 'common/components/form/TextArea';
+import InputField from 'common/components/form/Input';
 
-const StatusChangeWithReason = ({ id, status, onSave, closeModal }: any) => {
+const StatusChangeWithReason = ({ id, status, onSave, closeModal, statusData }: any) => {
+  const dt = statusData?.date ? new Date(statusData.date) : new Date();
   const InitialValues = {
-    reason: ''
+    reason: '',
+    date: `${dt.getFullYear()}-${`${dt.getMonth() +1}`.padStart(2,'0')}-${`${dt.getDate()}`.padStart(2,'0')}T${`${dt.getHours()}`.padStart(2,'0')}:${`${dt.getMinutes()}`.padStart(2, '0')}`
   };
 
   const StatusReasonSchema = Yup.object().shape({
@@ -21,7 +24,7 @@ const StatusChangeWithReason = ({ id, status, onSave, closeModal }: any) => {
       data.status = {
         status: status.value,
         reason: data.reason,
-        updatedAt: new Date().toISOString()
+        date: new Date(data.date).toISOString() || new Date().toISOString()
       };
 
       delete data.reason;
@@ -83,6 +86,16 @@ const StatusChangeWithReason = ({ id, status, onSave, closeModal }: any) => {
                   onBlur={formik.handleBlur}
                 />
               </div>
+              <InputField
+                label="Booking Date"
+                type="datetime-local"
+                placeholder="Enter booking date"
+                name={`date`}
+                value={formik.values.date}
+                onChange={formik.handleChange}
+                helperComponent={<ErrorMessage name="date" />}
+                isRequired={false}
+              />
             </div>
             <div className="modal-footer">
               <button type="submit" className="btn btn-primary">

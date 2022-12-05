@@ -61,6 +61,7 @@ const ScheduleEventDetail: FC<IProps> = ({ closeModal, event, handleEventEdit}) 
         <Modal isOpen={!!statusChangeInProgress} onRequestClose={() => setStatusChangeInProgress('')}>
           <StatusChangeWithReason
             id={obj.id}
+            statusData={obj.status}
             status={bookingStatusOptions.find((statusLabelValue) => statusLabelValue.value === statusChangeInProgress)}
             onSave={handleStatusChange}
             closeModal={() => setStatusChangeInProgress('')}
@@ -125,7 +126,7 @@ const ScheduleEventDetail: FC<IProps> = ({ closeModal, event, handleEventEdit}) 
               <div className="col">
                 <h5>Booking Date</h5>
                 <div>
-                  {DateTime.fromJSDate(new Date(meta.bookingDate)).toFormat('yyyy-MM-dd hh:mm a')}
+                  {DateTime.fromJSDate(new Date(meta.status.date)).toFormat('yyyy-MM-dd hh:mm a')}
                 </div>
               </div>
               <div className="col">

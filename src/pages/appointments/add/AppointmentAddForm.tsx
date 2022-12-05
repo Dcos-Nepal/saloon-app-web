@@ -34,7 +34,9 @@ const AppointmentAddForm = ({ closeModal, client, saveHandler }: { client?: any;
       .array()
       .when("type", {
         is: 'TREATMENT',
-        then: Yup.array().min(1).of(Yup.string()).required("Please select the services")
+        then: Yup.array()
+          .min(1, 'Please select at least 1 servce')
+          .of(Yup.string()).required("Please select the services")
       }),
     interval: Yup
       .string()

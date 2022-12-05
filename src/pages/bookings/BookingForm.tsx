@@ -68,12 +68,20 @@ const BookingFrom = ({ closeModal, saveHandler, updateHandler, bookingDetails }:
     validateOnChange: true,
     onSubmit: async (data: any) => {
       setIsLoading(true);
-      data.bookingDate = new Date(data.bookingDate).toISOString();
+      data.status = {
+        status: 'BOOKED',
+        date: new Date(data.bookingDate).toISOString(),
+        reason: '',
+        updatedBy: null,
+      }
 
       if (!data.customer) delete data.customer;
 
-      if (data?._id) {
-        await updateHandler(data?._id, data);
+      // Remove the booking date
+      delete data.bookingDate;
+
+      if (data?.id) {
+        await updateHandler(data?.id, data);
       } else {
         await saveHandler(data);
       }

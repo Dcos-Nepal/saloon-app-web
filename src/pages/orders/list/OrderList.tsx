@@ -172,22 +172,9 @@ const OrdersList = (props: any) => {
                 <div className="cursor-pointer" onClick={() => navigate('/dashboard/clients/' + row.customer.id )}>
                   <div>Name: {row.customer?.fullName}</div>
                   <div>Phone: {row.customer?.phoneNumber}</div>
-                  <div>Phone: {row.customer?.address}</div>
+                  <div>Address: {row.customer?.address}</div>
                 </div>
               </div>
-            </div>
-          );
-        }
-      },
-      {
-        Header: 'ORDER INFO',
-        accessor: (row: IOrder) => {
-          return (
-            <div className="cursor-pointer">
-              <div>
-                <strong>{row.title}</strong>
-              </div>
-              <div><i>{row.notes}</i></div>
             </div>
           );
         }
@@ -417,12 +404,10 @@ const OrdersList = (props: any) => {
                 <hr/>
                 <div className='row mt-3'>
                   <h6>Order Details</h6>
-                  {!!selectedOrder?.notes ? (
-                    <div className='col-12 mb-3'>
-                      <div><strong>Order Notes:</strong></div>
-                      <div>{selectedOrder?.notes}</div>
-                    </div>
-                  ) : null}
+                  <div className='col-12 mb-3'>
+                    <div><strong>Order Notes:</strong></div>
+                    <div>{selectedOrder?.notes ? selectedOrder?.notes : '----'}</div>
+                  </div>
                   <div className='col-12'>
                     <h6>Products:</h6>
                     <table className="table">

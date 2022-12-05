@@ -6,9 +6,9 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { IClient } from 'common/types/client';
 import { Loader } from 'common/components/atoms/Loader';
 import * as clientsActions from 'store/actions/clients.actions';
-import { PencilIcon, StopIcon, UploadIcon, XCircleIcon } from '@primer/octicons-react';
+import { AlertIcon, AppsIcon, BellIcon, PencilIcon, RepoCloneIcon, RepoPushIcon, StopIcon, UploadIcon, XCircleIcon } from '@primer/octicons-react';
 import { getIn, useFormik } from 'formik';
-import { deleteUserPhotoApi, uploadPhotosApi } from 'services/customers.service';
+import { deleteUserPhotoApi, updateUserApi, uploadPhotosApi } from 'services/customers.service';
 import InputField from 'common/components/form/Input';
 import DummyImage from '../../../assets/images/dummy.png';
 import SessionList from './Sessions';
@@ -18,45 +18,7 @@ import SelectField from 'common/components/form/Select';
 import { IOption } from 'common/types/form';
 import { getPhotoTypes } from 'data';
 import OrderList from 'pages/orders/list';
-
-interface IRequest {
-  id: string;
-  name: string;
-  description: string;
-  requestDate: string;
-  contact: string;
-  status: string;
-}
-
-interface IQuote {
-  id: string;
-  title: string;
-  description: string;
-  quoteFor: any;
-  property: any;
-  lineItems: any[];
-  status: { status: string; reason: string; updatedAt: string };
-  total: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface IInvoice {
-  id: string;
-  subject: string;
-  message: string;
-  dueOnReceipt: boolean;
-  isPaid: boolean;
-  isIssued: boolean;
-  invoiceFor: any;
-  refJob?: any;
-  refVisit?: any;
-  refProperty?: any;
-  lineItems: any[];
-  total: string;
-  createdAt: string;
-  updatedAt: string;
-}
+import TextArea from 'common/components/form/TextArea';
 
 interface IProps {
   id?: string;
@@ -73,14 +35,14 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient }) => {
   const [selectedPicture, setSelectedPicture] = useState('');
 
   const Tabs = {
-    ClientDetails: 'ClientDetails',
     Orders: 'Orders',
     Quotes: 'Quotes',
-    ClientPictures: 'ClientPictures',
-    Sessions: 'Sessions'
+    Sessions: 'Sessions',
+    Diagnosis: 'Diagnosis',
+    ClientPictures: 'ClientPictures'
   };
 
-  const [tab, setTab] = useState(Tabs.ClientDetails);
+  const [tab, setTab] = useState(Tabs.Diagnosis);
 
   const Quotes = () => {
     return (
@@ -108,11 +70,162 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient }) => {
     );
   };
 
-  const ClientDetails = () => {
+  const Diagnosis = () => {
+    const [isSaving, setIsSaving] = useState<boolean>(false);
+    const [diagnosis, setDiagnosis] = useState<any>(currentClient.diagnosis || []);
+    const [isDeleteInProgress, setIsDeleteInProgress] = useState<boolean>(false);
+
+    const [initialValues,] = useState<any>({
+      title: '',
+      description: ''
+    });
+
+    const ClientDiagnosisSchema = Yup.object().shape({
+      title: Yup.string().required(`Title is required.`),
+      description: Yup.string().required(`Description is required.`),
+    });
+  
+    const formik = useFormik({
+      enableReinitialize: true,
+      initialValues: initialValues,
+      validationSchema: ClientDiagnosisSchema,
+      onSubmit: async (data: any) => {
+        // Preparing FormData
+        data = {
+          ...data,
+          createdDate: new Date().toISOString()
+        };
+
+        // Update client
+        setIsSaving(true);
+        const created = await updateUserApi({id: id, data: {...currentClient, diagnosis: [...diagnosis, data]}});
+
+        if (!!created) {
+          setDiagnosis([...created.data.data.diagnosis]);
+          toast.success('Diagnosis updated successfully!')
+          setIsSaving(false);
+        }
+
+        formik.resetForm();
+      }
+    });
+
+    /**
+     * Custom Error Message
+     *
+     * @param param Props Object
+     * @returns JSX
+     */
+    const ErrorMessage = ({ name }: any) => {
+      if (!name) return <></>;
+
+      const error = getIn(formik.errors, name);
+      const touch = getIn(formik.touched, name);
+
+      return (touch && error) || error ? (
+        <div className="row txt-red">
+          <div className="col-1" style={{ width: '20px' }}>
+            <StopIcon size={14} />
+          </div>
+          <div className="col">{error}</div>
+        </div>
+      ) : null;
+    };
+
+    /**
+     * Remove Diagnosis
+     * @param id String
+     * @param fileId String
+     */
+    const removeDiagnosis = async (title: string) => {
+      setIsDeleteInProgress(true);
+      const updated = await updateUserApi({
+        id: id,
+        data: {
+          ...currentClient,
+          diagnosis: [...diagnosis.filter((d: any) => d.title !== title)]
+        }
+      });
+
+      if (!!updated) {
+        setDiagnosis([...updated.data.data.diagnosis]);
+        toast.success('Diagnosis updated successfully!')
+        setIsDeleteInProgress(false);
+      }
+    }
+
     return (
-      <div className="row mt-4">
-        <div className="col p-2 ps-4">
-          <div className="txt-grey">There are no info in this section.</div>
+      <div className=" row mt-3">
+        <div className='col-5'>
+          <form noValidate onSubmit={formik.handleSubmit} style={{'position': 'relative'}}>
+            <Loader isLoading={isSaving} />
+            <h6>New Diagnosis:</h6>
+            <div className="row">
+              <InputField
+                label="Title"
+                type="text"
+                placeholder="Enter Title"
+                name={`title`}
+                value={formik.values.title}
+                onChange={formik.handleChange}
+                helperComponent={<ErrorMessage name="title" />}
+              />
+            </div>
+            <div className="row">
+              <TextArea
+                rows={3}
+                label={'Description:'}
+                placeholder="Enter diagnosis details"
+                name="description"
+                value={formik.values.description || ''}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                helperComponent={<ErrorMessage name="description" />}
+              />
+            </div>
+            <div className="mb-2">
+              <button type="submit" className="btn btn-primary">
+                {id ? 'Update' : 'Save'} Diagnosis Info
+              </button>
+            </div>
+          </form>
+        </div>
+        <div className='col-7'>
+          <h6>Diagnosis List:</h6>
+          {diagnosis.length > 0 ? (
+            <table className="table">
+              <thead>
+                <th>SN</th>
+                <th>Title</th>
+                <th>Description</th>
+                <th style={{width: '40px'}}></th>
+              </thead>
+              <tbody>
+                {diagnosis.map((diagno: any, index: number) => {
+                  return <tr key={diagno.title}>
+                    <td>{index + 1}</td>
+                    <td>{diagno.title}</td>
+                    <td><i>{diagno.description}</i></td>
+                    <td style={{'position': 'relative'}}>
+                      {isDeleteInProgress ?
+                        (<div className="spinner-grow" role="status">
+                          <span className="sr-only">Loading...</span>
+                        </div>) : (<span
+                          style={{ 'position': 'absolute', 'right': '10px', 'top': '10px'}}
+                          onClick={() => {removeDiagnosis(diagno.title)}}
+                        >
+                          <XCircleIcon size={20} />
+                        </span>
+                      )}
+                    </td>
+                  </tr>;
+                })}
+              </tbody>
+            </table>
+          ) : null}
+          {diagnosis.length === 0 ? (<div className='row text-center mt-5'>
+            <small><AlertIcon /> There are no diagnosis added.</small>
+          </div>) : null}
         </div>
       </div>
     );
@@ -120,7 +233,7 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient }) => {
 
   const ClientPictures = () => {
     const [selectedPicture, setSelectedPicture] = useState('');
-    const [isFileUploading, setIsFileUploading] = useState<boolean>(false);
+    const [isSaving, setIsSaving] = useState<boolean>(false);
     const [isDeleteInProgress, setIsDeleteInProgress] = useState<boolean>(false);
     const [clientPictures, setClientPictures] = useState<any>(currentClient.photos || []);
     const [initialValues,] = useState<any>({
@@ -129,7 +242,7 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient }) => {
       data: ''
     });
 
-    const ClientPhotoSchema = Yup.object().shape({
+    const ClientPictureSchema = Yup.object().shape({
       caption: Yup.string().required(`Caption is required.`),
       type: Yup.string().required(`Type is required.`),
     });
@@ -137,7 +250,7 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient }) => {
     const formik = useFormik({
       enableReinitialize: true,
       initialValues: initialValues,
-      validationSchema: ClientPhotoSchema,
+      validationSchema: ClientPictureSchema,
       onSubmit: async (data: any) => {
         // Preparing FormData
         const formData = new FormData();
@@ -149,13 +262,13 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient }) => {
         !!data.photo && formData.append('file', data.photo);
   
         // Update client
-        setIsFileUploading(true);
+        setIsSaving(true);
         const uploaded = await uploadPhotosApi(id as string, formData);
 
         if (!!uploaded) {
           setClientPictures([...uploaded.data.data.photos]);
           toast.success('File uploaded successfully!')
-          setIsFileUploading(false);
+          setIsSaving(false);
         }
 
         formik.resetForm();
@@ -230,13 +343,11 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient }) => {
 
 
     return (
-      <div className="card mt-4">
-        {clientPictures.length !== 0 ? (<h6>Client Pictures:</h6>) : null}
-        <div className='row'>{renderPictures(clientPictures)}</div>
-        <div className='row'>
+      <div className="row mt-3">
+        <div className='col-5'>
           <form noValidate onSubmit={formik.handleSubmit} style={{'position': 'relative'}}>
-            <Loader isLoading={isFileUploading} />
-            <h6 className='mt-3'>Add new picture:</h6>
+            <Loader isLoading={isSaving} />
+            <h6>Add new picture:</h6>
             {(!!formik.values?.photo) ? (
               <div className="row mb-3 ps-1">
                 <div className="col-3 mt-2 pointer text-center">
@@ -295,14 +406,22 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient }) => {
               />
             </div>
 
-            <div className="mb-3 mt-2 m-1">
+            <div className="mb-3 mt-3">
               <button type="submit" className="btn btn-primary">
                 {id ? 'Update' : 'Save'} Client Info
               </button>
             </div>
           </form>
         </div>
+        <div className='col-7'>
+          <h6>Client Pictures:</h6>
+          {renderPictures(clientPictures)}
+          {clientPictures.length === 0 ? (<div className='pt-5 text-center'>
+            <small><AlertIcon /> There are no pictures uploaded.</small>
+          </div>) : null}
+        </div>
 
+        {/* Modals */}
         <Modal isOpen={!!selectedPicture} onRequestClose={() => setSelectedPicture('')}>
           <div className={`modal fade show mt-5`} role="dialog" style={{ display: 'block' }}>
             <div className="modal-dialog mt-5">
@@ -337,8 +456,8 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient }) => {
 
   const TabContent = () => {
     switch (tab) {
-      case Tabs.ClientDetails:
-        return <ClientDetails />;
+      case Tabs.Diagnosis:
+        return <Diagnosis />;
       case Tabs.Sessions:
         return <Sessions />;
       case Tabs.ClientPictures:
@@ -447,20 +566,20 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient }) => {
               </div>
               <div className="">
                 <div className="row mt-3">
-                  <div className={`col tab me-1 ${tab === Tabs.ClientDetails ? 'active-tab' : ''}`} onClick={() => setTab(Tabs.ClientDetails)}>
-                    Client's Details
+                  <div className={`col tab me-1 ${tab === Tabs.ClientPictures ? 'active-tab' : ''}`} onClick={() => setTab(Tabs.ClientPictures)}>
+                    <RepoPushIcon /> Client's Pictures
+                  </div>
+                  <div className={`col tab me-1 ${tab === Tabs.Diagnosis ? 'active-tab' : ''}`} onClick={() => setTab(Tabs.Diagnosis)}>
+                    <RepoCloneIcon /> Diagnosis Info
                   </div>
                   <div className={`col tab me-1 ${tab === Tabs.Sessions ? 'active-tab' : ''}`} onClick={() => setTab(Tabs.Sessions)}>
-                    Client's Sessions
-                  </div>
-                  <div className={`col tab me-1 ${tab === Tabs.ClientPictures ? 'active-tab' : ''}`} onClick={() => setTab(Tabs.ClientPictures)}>
-                    Client's Pictures
+                    <AlertIcon /> Sessions
                   </div>
                   <div className={`col tab me-1 ${tab === Tabs.Quotes ? 'active-tab' : ''}`} onClick={() => setTab(Tabs.Quotes)}>
-                    Client used Products
+                    <BellIcon /> Used Products
                   </div>
                   <div className={`col tab me-1 ${tab === Tabs.Orders ? 'active-tab' : ''}`} onClick={() => setTab(Tabs.Orders)}>
-                    Client's Orders
+                    <AppsIcon /> Orders
                   </div>
                 </div>
               </div>

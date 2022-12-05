@@ -16,13 +16,11 @@ import { toast } from 'react-toastify';
 import DeleteConfirm from 'common/components/DeleteConfirm';
 import { deleteQuoteApi } from 'services/appointments.service';
 import StatusChangeWithReason from './StatusChangeWithReason';
-import { EyeIcon, InfoIcon, NoteIcon, PencilIcon, TrashIcon } from '@primer/octicons-react';
+import { EyeIcon, PencilIcon, TrashIcon } from '@primer/octicons-react';
 import { getCurrentUser } from 'utils';
 import { DateTime } from 'luxon';
 import { calculateJobDuration } from 'utils/timer';
-import ReactTooltip from 'react-tooltip';
 import DummyImage from '../../../assets/images/dummy.png';
-
 
 interface IAppointment {
   id: string;
@@ -57,6 +55,7 @@ const AppointmentList = (props: any) => {
   const [appointments, setQuotes] = useState<IAppointment[]>([]);
   const [deleteInProgress, setDeleteInProgress] = useState('');
   const [totalData, setTotalData] = useState(0);
+  const [selectedAppointment, setSelectedAppoinment] = useState<IAppointment>();
 
   const deleteQuoteHandler = async () => {
     try {
@@ -102,21 +101,19 @@ const AppointmentList = (props: any) => {
         <SelectField
           label=""
           isClearable= {false}
-          isDisabled={row.status.name === 'COMPLETED'}
+          isDisabled={row.status.name === 'COMPLETED' || row.status.name === 'CANCELED'}
           options={appointmentStatusOptions}
           value={row.status.name}
           placeholder="All"
-          handleChange={(selected: { label: string; value: string }) => {
-            if (selected.value === 'IN_PROGRESS' || selected.value === 'COMPLETED') {
-              setStatusChangeInProgress(selected.value);
-            }
+          handleChange={(selected: {label: string; value: string}) => {
+            setStatusChangeInProgress(selected.value);
           }}
           helperComponent={<div className="">{''}</div>}
         />
         <Modal isOpen={!!statusChangeInProgress} onRequestClose={() => setStatusChangeInProgress('')}>
           <StatusChangeWithReason
-            row={row}
             id={row.id}
+            row={row}
             status={appointmentStatusOptions.find((statusLabelValue) => statusLabelValue.value === statusChangeInProgress)}
             onSave={handleStatusChange}
             closeModal={() => setStatusChangeInProgress('')}
@@ -181,8 +178,8 @@ const AppointmentList = (props: any) => {
       {
         Header: 'WAITING TIME',
         accessor: (row: IAppointment) => {
-          return row.status.name === 'COMPLETED'
-            ? <div>Completed on: <br/> <span style={{'fontSize': 16, 'fontWeight': 600}}>{DateTime.fromISO(row.status.date).toFormat('yyyy-MM-dd HH:mm a')}</span></div>
+          return row.status.name === 'COMPLETED' || row.status.name === 'CANCELED'
+            ? <div>Completed on: <br/> <span style={{'fontSize': 16, 'fontWeight': 600}}>{DateTime.fromISO(row.status.date).toFormat('yyyy-MM-dd h:mm a')}</span></div>
             : <>Currently {(row.status.name).toLowerCase().split('_').join(' ')} <br/> <Timer date={row.status.date} status={row.status.name}/></>;
         }
       },
@@ -191,32 +188,10 @@ const AppointmentList = (props: any) => {
         accessor: (row: IAppointment) => {
           return (<>
             Scheduled for: <br/>
-            <div style={{'fontSize': 16, 'fontWeight': 600}}>{row.appointmentDate} {DateTime.fromISO(row.appointmentTime).toFormat('h:mm a') }</div>
+            <div style={{'fontSize': 16, 'fontWeight': 600}}>{row.appointmentDate} {DateTime.fromISO(row.appointmentTime).toFormat('h:mm a')}</div>
             {row.type === 'TREATMENT' ? <div className='text-primary'>Services: {row.services.join(', ')}</div> : null}
           </>);
         }
-      },
-      {
-        Header: 'Notes/Reasons',
-        accessor: ((row: IAppointment) => {
-          return (<div className='row'>
-            <div className='col-2'>
-              <a data-tip data-for='notes'><NoteIcon /></a>
-              <ReactTooltip id='notes' aria-haspopup='true'>
-                <p>{row.notes}</p>
-              </ReactTooltip>
-            </div>
-            {(!!row.status?.reason) ? (
-              <div className='col-2'>
-                <a data-tip data-for='reason'><InfoIcon /></a>
-                <ReactTooltip id='reason' aria-haspopup='true'>
-                  <p>{row.status.reason}</p>
-                </ReactTooltip>
-              </div>
-            ): null}
-            
-          </div>)
-        })
       },
       {
         Header: 'STATUS',
@@ -231,7 +206,7 @@ const AppointmentList = (props: any) => {
               <box-icon name="dots-vertical-rounded" />
             </span>
             <ul className="dropdown-menu" aria-labelledby="dropdownMenuLink">
-              <li onClick={() => navigate(row.id)}>
+              <li onClick={() => setSelectedAppoinment(row)}>
                 <span className="dropdown-item cursor-pointer"><EyeIcon /> View Detail</span>
               </li>
               {(currentUser.role === 'ADMIN' || currentUser.role === 'SHOP_ADMIN') ? (
@@ -366,6 +341,68 @@ const AppointmentList = (props: any) => {
       </div>
       <Modal isOpen={!!deleteInProgress} onRequestClose={() => setDeleteInProgress('')}>
         <DeleteConfirm onDelete={deleteQuoteHandler} closeModal={() => setDeleteInProgress('')} />
+      </Modal>
+      <Modal isOpen={!!selectedAppointment} onRequestClose={() => setSelectedAppoinment(undefined)}>
+        <div className={`modal fade show`} role="dialog" style={{ display: 'block' }}>
+          <div className="modal-dialog mt-5">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="col">Appointment Detail</h5>
+                <div className="col">
+                  <span onClick={() => setSelectedAppoinment(undefined)} className="pointer d-flex float-end">
+                    <box-icon name="x" />
+                  </span>
+                </div>
+              </div>
+              <div className="modal-body">
+                <div className='row'>
+                  <h6>Client Details</h6>
+                  <div className='col-5'>
+                    {selectedAppointment?.customer?.photo ? (
+                      <object data={process.env.REACT_APP_API +'v1/customers/avatars/' + selectedAppointment?.customer?.photo} style={{'width': '72px'}}>
+                        <img src={DummyImage} alt="Profile Picture" style={{'width': '72px'}}/>
+                      </object>
+                    ) : <img src={DummyImage} alt="Profile Picture" style={{'width': '72px'}}/>}
+                  </div>
+                  <div className='col-7'>
+                    <div>
+                      <div><b>{selectedAppointment?.customer.fullName}</b></div>
+                      <div>Phone: <b>{selectedAppointment?.customer?.phoneNumber || '-- --'}</b></div>
+                      <div>Address: <b>{selectedAppointment?.customer.address || '-- --'}</b></div>
+                    </div>
+                  </div>
+                </div>
+                <hr/>
+                <div className='row mt-3'>
+                  <h6>Order Details</h6>
+                  <div className='row mb-3'>
+                    <div>Status: <b>{selectedAppointment?.status.name}</b></div>
+                    <div>Status Date: <b>{selectedAppointment ? DateTime.fromISO(selectedAppointment.status.date).toFormat('yyyy-MM-dd h:mm a') : 'N/A'}</b></div>
+                  </div>
+                  <div className='row'>
+                    <h6>Appointment Date:</h6>
+                    <div>{selectedAppointment ? DateTime.fromISO(selectedAppointment.appointmentTime).toFormat('yyyy-MM-dd h:mm a') : 'N/A'}</div>
+                  </div>
+                  <div className='row mt-3'>
+                    <div>
+                      <h6>Notes:</h6>
+                      <p>{selectedAppointment?.notes}</p>
+                    </div>
+                    <div>
+                      <h6>Reason:</h6>
+                      <p>{selectedAppointment?.status.reason}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button onClick={() => setSelectedAppoinment(undefined)} type="button" className="ms-2 btn btn-secondary" data-bs-dismiss="modal">
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       </Modal>
     </>
   );

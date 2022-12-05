@@ -10,8 +10,7 @@ interface IProps {
 
 const AddBookingForm: FC<IProps> = ({ closeModal, saveHandler, updateHandler, bookingDetails }) => {
   // format the booking object here
-  const dt = bookingDetails?.bookingDate ? new Date() : '';
-  debugger
+  const dt = bookingDetails?.status?.date ? new Date(bookingDetails?.status.date) : new Date();
   const bookingObj = {
     id: !!bookingDetails ? bookingDetails?.id : '',
     customer: !!bookingDetails?.customer ? bookingDetails?.customer?._id : '',
@@ -20,7 +19,7 @@ const AddBookingForm: FC<IProps> = ({ closeModal, saveHandler, updateHandler, bo
     description: bookingDetails?.description || '',
     address: bookingDetails?.address || '',
     type: bookingDetails?.type || '',
-    bookingDate: !!dt ? `${dt.getFullYear()}-${`${dt.getMonth() +1}`.padStart(2,'0')}-${`${dt.getDate()}`.padStart(2,'0')}T${`${dt.getHours()}`.padStart(2,'0')}:${`${dt.getMinutes()}`.padStart(2, '0')}` : ''
+    bookingDate: `${dt.getFullYear()}-${`${dt.getMonth() +1}`.padStart(2,'0')}-${`${dt.getDate()}`.padStart(2,'0')}T${`${dt.getHours()}`.padStart(2,'0')}:${`${dt.getMinutes()}`.padStart(2, '0')}`
   }
 
   return (

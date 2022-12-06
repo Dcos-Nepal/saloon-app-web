@@ -203,7 +203,7 @@ const ClientForm: FC<IProps> = ({ id, isClientsLoading, actions, currentClient }
                   label="Gender"
                   name="gender"
                   isMulti={false}
-                  value={[{label: 'Male', value: 'Male', isActive: true}, {label: 'Female', value: 'Female', isActive: true}].find((service) => formik.values.gender === service.value)}
+                  value={formik.values.gender}
                   options={[{label: 'Male', value: 'Male', isActive: true}, {label: 'Female', value: 'Female', isActive: true}].filter((service) => service.isActive)}
                   helperComponent={<ErrorMessage name="gender" />}
                   handleChange={(selectedTag: IOption) => {
@@ -290,7 +290,7 @@ const ClientForm: FC<IProps> = ({ id, isClientsLoading, actions, currentClient }
                     label="Tags"
                     name="tags"
                     isMulti={true}
-                    value={getClientTags().filter((tag) => (formik.values?.tags)?.split(',').find((t: string) => t === tag.value))}
+                    value={formik.values?.tags?.split(',')}
                     options={getClientTags().filter((tag) => tag.isActive)}
                     helperComponent={<ErrorMessage name="tags" />}
                     handleChange={(selectedTags: IOption[]) => {

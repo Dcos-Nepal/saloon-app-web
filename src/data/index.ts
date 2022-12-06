@@ -4,7 +4,8 @@ export const getServices = () => {
     { label: 'Acne Treatment', value: 'Acne Treatment', isActive: true },
     { label: 'Freckles', value: 'Freckles', isActive: true },
     { label: 'Microblading', value: 'Microblading', isActive: true },
-    { label: 'Hair Transplant', value: 'Hair Transplant', isActive: true }
+    { label: 'Hair Transplant', value: 'Hair Transplant', isActive: true },
+    { label: 'Wrinkles Treatment', value: 'Wrinkles Treatment', isActive: true }
   ];
 };
 

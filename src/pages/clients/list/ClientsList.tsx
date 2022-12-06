@@ -22,6 +22,9 @@ import { createQuotesApi } from 'services/appointments.service';
 import DummyImage from '../../../assets/images/dummy.png';
 import { addVisitApi, updateVisitApi } from 'services/visits.service';
 import AddBookingForm from 'pages/bookings/AddBooking';
+import SelectField from 'common/components/form/Select';
+import { getClientTags } from 'data';
+import { IOption } from 'common/types/form';
 
 interface IClient {
   name: string;
@@ -43,6 +46,7 @@ const ClientsList = (props: any) => {
   const [addSchedule, setAddSchedule] = useState<boolean>(false);
   const [currUser,] = useState(getCurrentUser());
   const [bookingDetails, setBookingDetails] = useState<any>(null);
+  const [selectedTags, setSelectedTags] = useState<string>('')
 
   const deleteClientHandler = async () => {
     try {
@@ -76,41 +80,6 @@ const ClientsList = (props: any) => {
     });
   }
 
-  useEffect(() => {
-    const currUser = getCurrentUser();
-    const clientQuery: { createdBy?: string; } = {}
-
-    if (currUser.role === 'WORKER') clientQuery.createdBy = currUser.id;
-
-    props.actions.fetchClients({
-      q: query,
-      ...clientQuery,
-      roles: 'CLIENT',
-      page: offset,
-      limit: itemsPerPage
-    });
-  }, [itemsPerPage, offset, props.actions, query]);
-
-  useEffect(() => {
-    if (props.clients?.data?.rows) {
-      setClients(
-        props.clients.data?.rows.map((row: any) => ({
-          name: row.fullName || `${row?.firstName} ${row?.lastName}`,
-          email: row.email,
-          address: row?.address,
-          contact: row.phoneNumber,
-          photo: row.photo,
-          gender: row.gender,
-          dob: row.dateOfBirth,
-          status: row.auth?.email?.verified,
-          createdAt: row.createdAt,
-          _id: row._id
-        }))
-      );
-      setPageCount(Math.ceil(props.clients.data.totalCount / itemsPerPage));
-    }
-  }, [itemsPerPage, props.clients]);
-
   const handlePageClick = (event: any) => {
     const selectedPage = event.selected;
     setOffset(selectedPage + 1);
@@ -120,7 +89,6 @@ const ClientsList = (props: any) => {
     const query = event.target.value;
     setQuery(query);
   };
-
 
   /**
    * Handles line item Save
@@ -263,6 +231,42 @@ const ClientsList = (props: any) => {
     }
   };
 
+  useEffect(() => {
+    const currUser = getCurrentUser();
+    const clientQuery: { createdBy?: string; } = {}
+
+    if (currUser.role === 'WORKER') clientQuery.createdBy = currUser.id;
+
+    props.actions.fetchClients({
+      q: query,
+      ...clientQuery,
+      tags: selectedTags,
+      roles: 'CLIENT',
+      page: offset,
+      limit: itemsPerPage
+    });
+  }, [itemsPerPage, offset, props.actions, query, selectedTags]);
+
+  useEffect(() => {
+    if (props.clients?.data?.rows) {
+      setClients(
+        props.clients.data?.rows.map((row: any) => ({
+          name: row.fullName || `${row?.firstName} ${row?.lastName}`,
+          email: row.email,
+          address: row?.address,
+          contact: row.phoneNumber,
+          photo: row.photo,
+          gender: row.gender,
+          dob: row.dateOfBirth,
+          status: row.auth?.email?.verified,
+          createdAt: row.createdAt,
+          _id: row._id
+        }))
+      );
+      setPageCount(Math.ceil(props.clients.data.totalCount / itemsPerPage));
+    }
+  }, [itemsPerPage, props.clients]);
+
   return (
     <>
       <div className="row">
@@ -289,8 +293,20 @@ const ClientsList = (props: any) => {
       <div className="card">
         <div className="row pt-2 m-1 rounded-top bg-grey">
           <Loader isLoading={props.isLoading} />
-          <div className="col-12">
+          <div className="col-9">
             <InputField label="Search" placeholder="Search clients" className="search-input" onChange={handleSearch} />
+          </div>
+          <div className="col-3">
+            <SelectField
+              label="Tags"
+              name="tags"
+              isMulti={false}
+              value={selectedTags}
+              options={getClientTags().filter((tag) => tag.isActive)}
+              handleChange={(selectedTag: IOption) => {
+                setSelectedTags(selectedTag ? selectedTag.value.toString() : '');
+              }}
+            />
           </div>
           {!clients.length ? (
             <EmptyState />

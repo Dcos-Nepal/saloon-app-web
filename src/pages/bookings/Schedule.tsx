@@ -94,9 +94,10 @@ const BookingSchedule = (props: any) => {
       const mappedEvents = props.schedules.rows
         .filter((event: any) => event.type === props.type)
         .map((event: any) => {
+          console.log(event)
           return {
             title: `Booking for ${event.customer ? event.customer.fullName : event.fullName}`,
-            start: DateTime.fromJSDate(new Date(event.status.date)).toFormat('yyyy-MM-dd HH:mm'),
+            start: DateTime.fromISO(event.status.date).toFormat('yyyy-MM-dd HH:mm'),
             end: DateTime.fromISO(event.status.date).toFormat('yyyy-MM-dd hh:mm'),
             meta: {...event}
           };

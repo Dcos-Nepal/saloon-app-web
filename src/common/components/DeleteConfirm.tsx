@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { Loader } from './atoms/Loader';
 
-const DeleteConfirm = ({ content, onDelete, closeModal }: { content?: string; onDelete: any; closeModal: () => void }) => {
+const DeleteConfirm = ({ content, onDelete, item, closeModal }: {item?: string; content?: string; onDelete: any; closeModal: () => void }) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const onDeleteHandler = async () => {
     setIsLoading(true);
 
-    await onDelete();
+    await item ? onDelete(item) : onDelete();
 
     setIsLoading(false);
   };
@@ -24,7 +24,7 @@ const DeleteConfirm = ({ content, onDelete, closeModal }: { content?: string; on
             <Loader isLoading={isLoading} />
             <div className="row">
               <div className="col">
-                <div>{content ? content : 'Deleting this data will mark it as deleted from the system.'}</div>
+                <div>{content ? content : 'Deleting this data will remove it from the system.'}</div>
               </div>
             </div>
           </div>

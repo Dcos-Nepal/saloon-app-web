@@ -19,6 +19,7 @@ import { IOption } from 'common/types/form';
 import { getPhotoTypes } from 'data';
 import OrderList from 'pages/orders/list';
 import TextArea from 'common/components/form/TextArea';
+import DeleteConfirm from 'common/components/DeleteConfirm';
 
 interface IProps {
   id?: string;
@@ -71,9 +72,9 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient }) => {
   };
 
   const Diagnosis = () => {
+    const [itemToDelete, setItemToDelete] = useState<string>('');
     const [isSaving, setIsSaving] = useState<boolean>(false);
     const [diagnosis, setDiagnosis] = useState<any>(currentClient.diagnosis || []);
-    const [isDeleteInProgress, setIsDeleteInProgress] = useState<boolean>(false);
 
     const [initialValues,] = useState<any>({
       title: '',
@@ -138,7 +139,6 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient }) => {
      * @param fileId String
      */
     const removeDiagnosis = async (title: string) => {
-      setIsDeleteInProgress(true);
       const updated = await updateUserApi({
         id: id,
         data: {
@@ -150,88 +150,87 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient }) => {
       if (!!updated) {
         setDiagnosis([...updated.data.data.diagnosis]);
         toast.success('Diagnosis updated successfully!')
-        setIsDeleteInProgress(false);
+        setItemToDelete('');
       }
     }
 
     return (
-      <div className=" row mt-3">
-        <div className='col-5'>
-          <form noValidate onSubmit={formik.handleSubmit} style={{'position': 'relative'}}>
-            <Loader isLoading={isSaving} />
-            <h6>New Diagnosis:</h6>
-            <div className="row">
-              <InputField
-                label="Title"
-                type="text"
-                placeholder="Enter Title"
-                name={`title`}
-                value={formik.values.title}
-                onChange={formik.handleChange}
-                helperComponent={<ErrorMessage name="title" />}
-              />
-            </div>
-            <div className="row">
-              <TextArea
-                rows={3}
-                label={'Description:'}
-                placeholder="Enter diagnosis details"
-                name="description"
-                value={formik.values.description || ''}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                helperComponent={<ErrorMessage name="description" />}
-              />
-            </div>
-            <div className="mb-2">
-              <button type="submit" className="btn btn-primary">
-                {id ? 'Update' : 'Save'} Diagnosis Info
-              </button>
-            </div>
-          </form>
-        </div>
-        <div className='col-7'>
-          <h6>Diagnosis List:</h6>
-          {diagnosis.length > 0 ? (
-            <table className="table">
-              <thead>
-                <th>SN</th>
-                <th>Title</th>
-                <th>Description</th>
-                <th style={{width: '40px'}}></th>
-              </thead>
-              <tbody>
-                {diagnosis.map((diagno: any, index: number) => {
-                  return <tr key={diagno.title}>
-                    <td>{index + 1}</td>
-                    <td>{diagno.title}</td>
-                    <td><i>{diagno.description}</i></td>
-                    <td style={{'position': 'relative'}}>
-                      {isDeleteInProgress ?
-                        (<div className="spinner-grow" role="status">
-                          <span className="sr-only">Loading...</span>
-                        </div>) : (<span
-                          style={{ 'position': 'absolute', 'right': '10px', 'top': '10px'}}
-                          onClick={() => {removeDiagnosis(diagno.title)}}
-                        >
+      <>
+        <div className=" row mt-3">
+          <div className='col-4'>
+            <form noValidate onSubmit={formik.handleSubmit} style={{'position': 'relative'}}>
+              <Loader isLoading={isSaving} />
+              <h6>New Diagnosis:</h6>
+              <div className="row">
+                <InputField
+                  label="Title"
+                  type="text"
+                  placeholder="Enter Title"
+                  name={`title`}
+                  value={formik.values.title}
+                  onChange={formik.handleChange}
+                  helperComponent={<ErrorMessage name="title" />}
+                />
+              </div>
+              <div className="row">
+                <TextArea
+                  rows={3}
+                  label={'Description:'}
+                  placeholder="Enter diagnosis details"
+                  name="description"
+                  value={formik.values.description || ''}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  helperComponent={<ErrorMessage name="description" />}
+                />
+              </div>
+              <div className="mb-2">
+                <button type="submit" className="btn btn-primary">
+                  {id ? 'Update' : 'Save'} Diagnosis Info
+                </button>
+              </div>
+            </form>
+          </div>
+          <div className='col-8'>
+            <h6>Diagnosis List:</h6>
+            {diagnosis.length > 0 ? (
+              <table className="table">
+                <thead>
+                  <th>SN</th>
+                  <th>Title</th>
+                  <th>Description</th>
+                  <th style={{width: '40px'}}></th>
+                </thead>
+                <tbody>
+                  {diagnosis.map((diagno: any, index: number) => {
+                    return <tr key={diagno.title}>
+                      <td>{index + 1}</td>
+                      <td>{diagno.title}</td>
+                      <td><i>{diagno.description}</i></td>
+                      <td style={{'position': 'relative'}}>
+                        <span onClick={() => {setItemToDelete(diagno.title)}} style={{ 'position': 'absolute', 'right': '10px', 'top': '10px'}}>
                           <XCircleIcon size={20} />
                         </span>
-                      )}
-                    </td>
-                  </tr>;
-                })}
-              </tbody>
-            </table>
-          ) : null}
-          {diagnosis.length === 0 ? (<div className='row text-center mt-5'>
-            <small><AlertIcon /> There are no diagnosis added.</small>
-          </div>) : null}
+                      </td>
+                    </tr>
+                  })}
+                </tbody>
+              </table>
+            ) : null}
+            {diagnosis.length === 0 ? (<div className='row text-center mt-5'>
+              <small><AlertIcon /> There are no diagnosis added.</small>
+            </div>) : null}
+          </div>
         </div>
-      </div>
+        <Modal isOpen={!!itemToDelete} onRequestClose={() => setItemToDelete('')}>
+          <DeleteConfirm onDelete={removeDiagnosis} item={itemToDelete} closeModal={() => setItemToDelete('')} />
+        </Modal>
+      </>
     );
   };
 
   const ClientPictures = () => {
+    const [itemToDelete, setItemToDelete] = useState<string>('');
     const [selectedPicture, setSelectedPicture] = useState('');
     const [isSaving, setIsSaving] = useState<boolean>(false);
     const [isDeleteInProgress, setIsDeleteInProgress] = useState<boolean>(false);
@@ -344,7 +343,7 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient }) => {
 
     return (
       <div className="row mt-3">
-        <div className='col-5'>
+        <div className='col-4'>
           <form noValidate onSubmit={formik.handleSubmit} style={{'position': 'relative'}}>
             <Loader isLoading={isSaving} />
             <h6>Add new picture:</h6>
@@ -413,7 +412,7 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient }) => {
             </div>
           </form>
         </div>
-        <div className='col-7'>
+        <div className='col-8'>
           <h6>Client Pictures:</h6>
           {renderPictures(clientPictures)}
           {clientPictures.length === 0 ? (<div className='pt-5 text-center'>

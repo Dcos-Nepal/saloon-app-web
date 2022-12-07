@@ -27,7 +27,7 @@ export const fetchJobOrderApi = async (payload: any) => {
 
 export const updateOrderApi = async (payload: any) => {
     const url = `/v1/orders/${payload.id}`;
-    return await http.put(url, payload.data, { headers: { Accept: 'application/json' } });
+    return await http.patch(url, payload.data, { headers: { Accept: 'application/json' } });
 };
 
 export const updateOrderStatusApi = async (payload: any) => {

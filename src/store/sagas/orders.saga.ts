@@ -53,24 +53,24 @@ function* fetchOrders(action: any): any {
  */
 function* addOrder(action: any): any {
     try {
-        const { data: quoteRequest } = yield call(
+        const { data: orderRequest } = yield call(
             createOrdersApi,
             action.payload
         );
-        if (quoteRequest?.data?.success) {
+        if (orderRequest?.data?.success) {
             yield put({
                 type: actionType.ADD_ORDER_SUCCESS,
-                payload: quoteRequest?.data?.data,
+                payload: orderRequest?.data?.data,
             });
 
-            return toast.success(getMessage(quoteRequest?.data?.message));
+            return toast.success(getMessage(orderRequest?.data?.message));
         }
         yield put({
             type: actionType.ADD_ORDER_ERROR,
-            payload: quoteRequest.data,
+            payload: orderRequest.data,
         });
 
-        return toast.error(getMessage(quoteRequest.data?.message));
+        return toast.error(getMessage(orderRequest.data?.message));
     } catch (err: any) {
         if (err.exception) toast.error(err.exception.message);
         yield put({ type: actionType.ADD_ORDER_ERROR, payload: err });
@@ -85,22 +85,23 @@ function* addOrder(action: any): any {
  */
 function* fetchOrder(action: any): any {
     try {
-        const { data: quoteRequest } = yield call(
+        const { data: orderRequest } = yield call(
             fetchJobOrderApi,
             action.payload
         );
-        if (quoteRequest?.data?.success) {
+
+        if (orderRequest?.success) {
             return yield put({
                 type: actionType.FETCH_ORDER_SUCCESS,
-                payload: quoteRequest?.data?.data,
+                payload: orderRequest?.data,
             });
         }
         yield put({
             type: actionType.FETCH_ORDER_ERROR,
-            payload: quoteRequest.data,
+            payload: orderRequest.data,
         });
 
-        return toast.error(getMessage(quoteRequest.data?.message));
+        return toast.error(getMessage(orderRequest.data?.message));
     } catch (err: any) {
         if (err.exception) toast.error(err.exception.message);
         yield put({ type: actionType.FETCH_ORDER_ERROR, payload: err });
@@ -115,23 +116,23 @@ function* fetchOrder(action: any): any {
  */
 function* updateOrderStatus(action: any): any {
     try {
-        const { data: quoteRequest } = yield call(
+        const { data: orderRequest } = yield call(
             updateOrderStatusApi,
             action.payload
         );
         
-        if (quoteRequest?.success) {
+        if (orderRequest?.success) {
             return yield put({
                 type: actionType.UPDATE_ORDER_STATUS_SUCCESS,
-                payload: quoteRequest?.data,
+                payload: orderRequest?.data,
             });
         }
         yield put({
             type: actionType.UPDATE_ORDER_STATUS_ERROR,
-            payload: quoteRequest.data,
+            payload: orderRequest.data,
         });
 
-        return toast.error(getMessage(quoteRequest.data?.message));
+        return toast.error(getMessage(orderRequest.data?.message));
     } catch (err: any) {
         if (err.exception) toast.error(err.exception.message);
         yield put({ type: actionType.UPDATE_ORDER_STATUS_ERROR, payload: err });
@@ -146,24 +147,24 @@ function* updateOrderStatus(action: any): any {
  */
 function* updateOrder(action: any): any {
     try {
-        const { data: quoteRequest } = yield call(
+        const { data: orderRequest } = yield call(
             updateOrderApi,
             action.payload
         );
-        if (quoteRequest?.data?.success) {
+        if (orderRequest?.success) {
             yield put({
                 type: actionType.UPDATE_ORDER_SUCCESS,
-                payload: quoteRequest?.data?.data,
+                payload: orderRequest?.data,
             });
 
-            return toast.success(getMessage(quoteRequest?.data?.message));
+            return toast.success(getMessage(orderRequest?.data?.message));
         }
         yield put({
             type: actionType.UPDATE_ORDER_ERROR,
-            payload: quoteRequest.data,
+            payload: orderRequest.data,
         });
 
-        return toast.error(getMessage(quoteRequest.data?.message));
+        return toast.error(getMessage(orderRequest.data?.message));
     } catch (err: any) {
         if (err.exception) toast.error(err.exception.message);
         yield put({ type: actionType.UPDATE_ORDER_ERROR, payload: err });

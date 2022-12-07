@@ -51,7 +51,6 @@ const ordersReducer = (state = initialState, action: any) => {
 
     case actionType.UPDATE_ORDER_SUCCESS: {
       state.isLoading = false;
-
       state.itemList.data.rows = state.itemList?.data?.rows.filter((item: any) => {
         if ((item as any)._id === action.payload._id) {
           item = action.payload;

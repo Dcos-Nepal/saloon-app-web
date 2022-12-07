@@ -209,7 +209,7 @@ const AppointmentList = (props: any) => {
               <li onClick={() => setSelectedAppoinment(row)}>
                 <span className="dropdown-item cursor-pointer"><EyeIcon /> View Detail</span>
               </li>
-              {(currentUser.role === 'ADMIN' || currentUser.role === 'SHOP_ADMIN') ? (
+              {(currentUser.role.includes('SHOP_ADMIN' || 'ADMIN')) ? (
                 <>
                   <li onClick={() => navigate(row.id + '/edit')}>
                     <span className="dropdown-item cursor-pointer"><PencilIcon /> Edit</span>
@@ -233,7 +233,7 @@ const AppointmentList = (props: any) => {
   useEffect(() => {
     const appointmentQuery: { q?: string; appointmentDate?: string; createdBy?: string;} = {}
 
-    if (currentUser.role === 'SHOP_ADMIN') {
+    if (currentUser.role.includes('SHOP_ADMIN')) {
       appointmentQuery.createdBy = currentUser.id;
     }
 

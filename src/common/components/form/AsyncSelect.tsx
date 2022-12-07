@@ -5,6 +5,8 @@ import { FC, useEffect, useState } from 'react';
 import AsyncSelect from 'react-select/async';
 import { filterApi } from 'services/common.service';
 
+(window as any).cache = {};
+
 const SelectAsync: FC<any> = ({ name, label, customOption, placeholder, onChange, value, resource, isDisabled, helperComponent, preload = false, closeOnSelect = true, isMulti = false, isClearable = true }) => {
   const [query, setQuery] = useState('');
   const [defaultOptions, setDefaultOptions] = useState([]);
@@ -28,7 +30,7 @@ const SelectAsync: FC<any> = ({ name, label, customOption, placeholder, onChange
 
   useEffect(() => {
     if (preload) {
-      filterApi(resource.name, { ...(resource?.params ? resource.params : ''), page: 1, limit: 20 })
+      filterApi(resource.name, { ...(resource?.params ? resource.params : ''), page: 1, limit: 5000 })
         .then((response: AxiosResponse) => {
           const {
             data: { data }

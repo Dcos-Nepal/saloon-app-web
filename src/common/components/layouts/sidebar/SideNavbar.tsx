@@ -10,7 +10,6 @@ import {
   LockIcon
 } from '@primer/octicons-react';
 import { useNavigate } from 'react-router-dom';
-import { getCurrentUser } from 'utils';
 import { clearData } from 'utils/storage';
 
 interface IProps {
@@ -19,7 +18,6 @@ interface IProps {
 
 const SideNavbar: FC<IProps> = ({ active }) => {
   const navigate = useNavigate();
-  const currUser: { role: string; id: string } = getCurrentUser();
 
   /**
    * Logs user out
@@ -44,23 +42,18 @@ const SideNavbar: FC<IProps> = ({ active }) => {
               <span className="ms-2 d-none d-sm-inline">Overview</span>
             </span>
           </li>
-
           <div className="hr mt-2 mb-2"></div>
-
-          {currUser.role.includes('SHOP_ADMIN' || 'ADMIN') ? (
-            <li>
-              <span
-                onClick={() => navigate('/dashboard/' + endpoints.admin.client.list)}
-                className={active === 'Clients' ? 'nav-link nav-link-active align-middle px-0' : 'nav-link align-middle px-0'}
-              >
-                <span className="mt-1">
-                  <PersonFillIcon size={'small'} />
-                </span>
-                <span className="ms-2 d-none d-sm-inline">Clients</span>
+          <li>
+            <span
+              onClick={() => navigate('/dashboard/' + endpoints.admin.client.list)}
+              className={active === 'Clients' ? 'nav-link nav-link-active align-middle px-0' : 'nav-link align-middle px-0'}
+            >
+              <span className="mt-1">
+                <PersonFillIcon size={'small'} />
               </span>
-            </li>
-          ) : null}
-
+              <span className="ms-2 d-none d-sm-inline">Clients</span>
+            </span>
+          </li>
           <li className="nav-item">
             <span
               onClick={() => navigate('/dashboard/' + endpoints.admin.quotes.list)}
@@ -72,35 +65,28 @@ const SideNavbar: FC<IProps> = ({ active }) => {
               <span className="ms-2 d-none d-sm-inline">Appointments</span>
             </span>
           </li>
-
-          {currUser.role.includes('SHOP_ADMIN' || 'ADMIN') ? (
-            <li>
-              <span
-                onClick={() => navigate('/dashboard/visits')}
-                className={active === 'Visits' ? 'nav-link nav-link-active align-middle px-0' : 'nav-link align-middle px-0'}
-              >
-                <span className="mt-2">
-                  <FileBadgeIcon size={'small'} />
-                </span>
-                <span className="ms-2 d-none d-sm-inline">All Visits</span>
+          <li>
+            <span
+              onClick={() => navigate('/dashboard/visits')}
+              className={active === 'Visits' ? 'nav-link nav-link-active align-middle px-0' : 'nav-link align-middle px-0'}
+            >
+              <span className="mt-2">
+                <FileBadgeIcon size={'small'} />
               </span>
-            </li>
-          ) : null}
-
-          {currUser.role.includes('SHOP_ADMIN' || 'ADMIN') ? (
-            <li>
-              <span
-                onClick={() => navigate('/dashboard/orders')}
-                className={active === 'Orders' ? 'nav-link nav-link-active align-middle px-0' : 'nav-link align-middle px-0'}
-              >
-                <span className="mt-2">
-                  <FileBadgeIcon size={'small'} />
-                </span>
-                <span className="ms-2 d-none d-sm-inline">Orders</span>
+              <span className="ms-2 d-none d-sm-inline">All Visits</span>
+            </span>
+          </li>
+          <li>
+            <span
+              onClick={() => navigate('/dashboard/orders')}
+              className={active === 'Orders' ? 'nav-link nav-link-active align-middle px-0' : 'nav-link align-middle px-0'}
+            >
+              <span className="mt-2">
+                <FileBadgeIcon size={'small'} />
               </span>
-            </li>
-          ) : null}
-
+              <span className="ms-2 d-none d-sm-inline">Orders</span>
+            </span>
+          </li>
           <li>
             <span
               onClick={() => navigate('/dashboard/' + endpoints.admin.schedules.calendar)}
@@ -112,7 +98,6 @@ const SideNavbar: FC<IProps> = ({ active }) => {
               <span className="ms-2 d-none d-sm-inline">Booking</span>
             </span>
           </li>
-
           <div className="hr mt-2 mb-2"></div>
           <li>
             <span onClick={() => logout()} className={'nav-link align-middle px-0'}>

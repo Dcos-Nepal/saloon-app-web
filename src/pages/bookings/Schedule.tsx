@@ -50,7 +50,7 @@ const BookingSchedule = (props: any) => {
     props.fetchJobSchedule({
       startDate: rangeInfo.start.toISOString(),
       endDate: rangeInfo.end.toISOString(),
-      limit: (currUser.role === ('ADMIN' || 'SHOP_ADMIN') ? 1000 : 300)
+      limit: (currUser.role.includes('SHOP_ADMIN' || 'ADMIN') ? 1000 : 300)
     });
   };
 

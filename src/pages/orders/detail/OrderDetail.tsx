@@ -22,7 +22,7 @@ const OrderDetail = () => {
             <h3 className="txt-bold extra">Order Detail</h3>
             <p className="text-secondary"><InfoIcon /> This is the Order Details view. In contains the all the information for the quote.</p>
           </div>
-          {currUser.role === 'ADMIN' || currUser.role === 'SHOP_ADMIN' ? (
+          {currUser.role.includes('SHOP_ADMIN' || 'ADMIN') ? (
             <div className="d-flex flex-row align-items-center mt-2">
               <button onClick={() => id && navigate(`edit`)} type="button" className="btn btn-primary d-flex float-end me-2">
                 <PencilIcon className="mt-1" />

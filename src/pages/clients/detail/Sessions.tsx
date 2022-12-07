@@ -102,7 +102,7 @@ const Sessions = (props: any) => {
               <box-icon name="dots-vertical-rounded" />
             </span>
             <ul className="dropdown-menu" aria-labelledby="dropdownMenuLink">
-              {(currentUser.role === 'ADMIN' || currentUser.role === 'SHOP_ADMIN') ? (
+              {currentUser.role.includes('SHOP_ADMIN' || 'ADMIN') ? (
                 <li onClick={() => setDeleteInProgress(row.id)}>
                   <span className="dropdown-item cursor-pointer"><TrashIcon /> Delete</span>
                 </li>

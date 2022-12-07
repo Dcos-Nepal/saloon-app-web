@@ -70,7 +70,7 @@ const ClientsList = (props: any) => {
   const handleRefresh = () => {
     const clientQuery: { createdBy?: string; } = {};
 
-    if (currUser.role === 'SHOP_ADMIN') clientQuery.createdBy = currUser.id;
+    if (currUser.role.includes('SHOP_ADMIN' || 'ADMIN')) clientQuery.createdBy = currUser.id;
 
     props.actions.fetchClients({
       q: query,

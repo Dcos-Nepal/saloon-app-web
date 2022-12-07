@@ -232,16 +232,12 @@ const ClientsList = (props: any) => {
   };
 
   useEffect(() => {
-    const currUser = getCurrentUser();
     const clientQuery: { createdBy?: string; } = {}
-
-    if (currUser.role === 'WORKER') clientQuery.createdBy = currUser.id;
 
     props.actions.fetchClients({
       q: query,
       ...clientQuery,
       tags: selectedTags,
-      roles: 'CLIENT',
       page: offset,
       limit: itemsPerPage
     });

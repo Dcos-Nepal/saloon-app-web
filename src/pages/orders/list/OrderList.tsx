@@ -70,6 +70,8 @@ const OrdersList = (props: any) => {
   const [orders, setOrders] = useState<IOrder[]>([]);
   const [selectedOrder, setSelectedOrder] = useState<IOrder>();
   const [deleteInProgress, setDeleteInProgress] = useState('');
+  const [status, setStatus] = useState('');
+  const [orderDate, setOrderDate] = useState('');
 
   const deleteOrderHandler = async () => {
     try {
@@ -223,16 +225,12 @@ const OrdersList = (props: any) => {
               <li onClick={() => setSelectedOrder(row)}>
                 <span className="dropdown-item cursor-pointer"><EyeIcon /> View Detail</span>
               </li>
-              {(currentUser.role === 'SHOP_ADMIN') ? (
-                <>
-                  <li onClick={() => navigate(row.id + '/edit')}>
-                    <span className="dropdown-item cursor-pointer"><PencilIcon /> Edit</span>
-                  </li>
-                  <li onClick={() => setDeleteInProgress(row.id)}>
-                    <span className="dropdown-item cursor-pointer"><TrashIcon /> Delete</span>
-                  </li>
-                </>
-              ) : null}
+              <li onClick={() => navigate(row.id + '/edit')}>
+                <span className="dropdown-item cursor-pointer"><PencilIcon /> Edit</span>
+              </li>
+              <li onClick={() => setDeleteInProgress(row.id)}>
+                <span className="dropdown-item cursor-pointer"><TrashIcon /> Delete</span>
+              </li>
             </ul>
           </div>
         )
@@ -245,14 +243,22 @@ const OrdersList = (props: any) => {
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({ columns, data: orders });
 
   useEffect(() => {
-    const orderQuery: { customer?: string; createdBy?: string;} = {}
+    const orderQuery: { customer?: string; createdBy?: string; status?: string; orderDate?: string;} = {}
 
     if (props.customer) {
       orderQuery.customer = props.customer;
-  } 
+    } 
+
+    if (status) {
+      orderQuery.status = status;
+    } 
+
+    if (orderDate) {
+      orderQuery.orderDate = orderDate
+    }
 
     props.actions.fetchOrders({ q: query, ...orderQuery, page: offset, limit: itemsPerPage });
-  }, [offset, itemsPerPage, props.actions, query, currentUser.id, currentUser.role]);
+  }, [offset, itemsPerPage, props.actions, query, currentUser.id, currentUser.role, status, orderDate]);
 
   useEffect(() => {
     if (props.itemList?.data?.rows) {
@@ -296,7 +302,7 @@ const OrdersList = (props: any) => {
               <FileBadgeIcon />&nbsp; New Order
             </div>
           </div>
-          <label className="txt-grey">There are {orders.length} no. of orders created so far.</label>
+          <label className="txt-grey">Total {query ? `${orders.length} search results found!` : `${props?.itemList?.data?.totalCount || 0} orders`}</label>
         </div>
       ) : null}
       <div className="card">
@@ -306,14 +312,18 @@ const OrdersList = (props: any) => {
             <InputField label="Search" placeholder="Search orders by name, phone number" className="search-input" onChange={handleSearch} />
           </div>
           <div className="col-3">
-            <InputField label="Select Date" type="date" className="search-input" onChange={() => {}} />
+            <InputField label="Select Date" value={orderDate} type="date" className="search-input" onChange={(event: any) => {
+              setOrderDate(event.target.value)
+            }} />
           </div>
           <div className="col-3">
             <SelectField
               label="Select Status"
               options={orderStatusOptions}
               placeholder="All"
-              handleChange={(selected: { label: string; value: string }) => {}}
+              handleChange={(selected: { label: string; value: string }) => {
+                setStatus(selected ? selected.value : '')
+              }}
             />
           </div>
           {!orders.length ? (
@@ -367,6 +377,7 @@ const OrdersList = (props: any) => {
         ) : null}
       </div>
 
+      {/* Modals */}
       <Modal isOpen={!!deleteInProgress} onRequestClose={() => setDeleteInProgress('')}>
         <DeleteConfirm onDelete={deleteOrderHandler} closeModal={() => setDeleteInProgress('')} />
       </Modal>

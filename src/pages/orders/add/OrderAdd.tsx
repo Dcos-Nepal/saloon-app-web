@@ -16,7 +16,7 @@ const QuoteAdd = () => {
           <span className="col">Back to previous</span>
         </div>
         <div className="d-flex flex-row mt-3">
-          <h3 className="extra">{id ? 'Edit' : 'Create'} a Quote</h3>
+          <h3 className="extra">{id ? 'Edit' : 'Create'} a Order</h3>
         </div>
       </div>
       <div>

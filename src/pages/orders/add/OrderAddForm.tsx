@@ -6,7 +6,7 @@ import { FieldArray, FormikProvider, useFormik, getIn } from 'formik';
 import { PlusCircleIcon, StopIcon, XCircleIcon } from '@primer/octicons-react';
 
 import { connect } from 'react-redux';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Loader } from 'common/components/atoms/Loader';
 
 import InputField from 'common/components/form/Input';
@@ -28,14 +28,12 @@ interface IProps {
 
 const OrderAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => {
   const navigate = useNavigate();
-  const search = useLocation().search;
   const [clientDetails, setClientDetails] = useState(null);
-  const client = new URLSearchParams(search).get('client');
 
   const [initialValues, setInitialValues] = useState({
     notes: '',
     orderDate: DateTime.fromJSDate(new Date()).toFormat('yyyy-MM-dd'),
-    customer: client ? client : '',
+    customer: '',
     products: [{
       name: '',
       description: '',
@@ -152,7 +150,7 @@ const OrderAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => {
       setInitialValues({
         ...initialValues,
         notes: currentItem?.notes,
-        customer: currentItem?.customer?._id,
+        customer: currentItem?.customer,
         products: currentItem?.products?.map((item: { name: any; ref: any }) => {
           return {
             ...item,
@@ -169,7 +167,6 @@ const OrderAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => {
 
   return (
     <>
-      {id ? <div className="txt-orange">Ref. #{currentItem?.refCode || 'XXXXX'}</div> : null}
       <form onSubmit={formik.handleSubmit} style={{ position: 'relative' }}>
         <Loader isLoading={isLoading} />
         <FormikProvider value={formik}>
@@ -335,8 +332,8 @@ const OrderAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => {
 
 const mapStateToProps = (state: any) => {
   return {
-    isLoading: state.quotes.isLoading,
-    currentItem: state.quotes.currentItem
+    isLoading: state.orders.isLoading,
+    currentItem: state.orders.currentItem
   };
 };
 

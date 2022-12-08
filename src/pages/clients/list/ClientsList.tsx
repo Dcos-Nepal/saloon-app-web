@@ -11,7 +11,7 @@ import ReactPaginate from 'react-paginate';
 import { Loader } from 'common/components/atoms/Loader';
 import debounce from 'lodash/debounce';
 import EmptyState from 'common/components/EmptyState';
-import { ClockIcon, EyeIcon, PencilIcon, PersonAddIcon, PlusIcon, SyncIcon, TrashIcon } from '@primer/octicons-react';
+import { CalendarIcon, ClockIcon, EyeIcon, ListOrderedIcon, PencilIcon, PersonAddIcon, SyncIcon, TrashIcon } from '@primer/octicons-react';
 import Modal from 'common/components/atoms/Modal';
 import { deleteUserApi } from 'services/customers.service';
 import { toast } from 'react-toastify';
@@ -201,10 +201,10 @@ const ClientsList = (props: any) => {
                 <span className="dropdown-item pointer"><ClockIcon /> Schedule</span>
               </li>
               <li onClick={() => {navigate('/dashboard/orders/add?client=' + row._id)}}>
-                <span className="dropdown-item pointer"><PlusIcon /> Add Order</span>
+                <span className="dropdown-item pointer"><ListOrderedIcon /> Add Order</span>
               </li>
               <li onClick={() => {setBookingDetails({ customer: {_id: row._id }})}}>
-                <span className="dropdown-item pointer"><PlusIcon /> Add Booking</span>
+                <span className="dropdown-item pointer"><CalendarIcon /> Add Booking</span>
               </li>
             </ul>
           </div>

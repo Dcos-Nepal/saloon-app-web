@@ -24,16 +24,17 @@ interface IProps {
   };
   isLoading: boolean;
   currentItem: any;
+  client?: string;
 }
 
-const OrderAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions }) => {
+const OrderAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions, client }) => {
   const navigate = useNavigate();
   const [clientDetails, setClientDetails] = useState(null);
 
   const [initialValues, setInitialValues] = useState({
     notes: '',
     orderDate: DateTime.fromJSDate(new Date()).toFormat('yyyy-MM-dd'),
-    customer: '',
+    customer: client ? client : '',
     products: [{
       name: '',
       description: '',

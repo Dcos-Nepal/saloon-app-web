@@ -1,10 +1,11 @@
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 
 import OrderAddForm from "./OrderAddForm";
 
 const QuoteAdd = () => {
   const navigate = useNavigate();
   const { id } = useParams();
+  const [searchParams] = useSearchParams();
 
   return (
     <>
@@ -20,7 +21,7 @@ const QuoteAdd = () => {
         </div>
       </div>
       <div>
-        <OrderAddForm id={id || ''}/>
+        <OrderAddForm id={id || ''} client={searchParams.get('client') || ''}/>
       </div>
     </>
   );

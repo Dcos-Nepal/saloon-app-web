@@ -2,6 +2,7 @@ import SideNavbar from 'common/components/layouts/sidebar';
 import Footer from 'common/components/layouts/footer';
 import { AppointmentList } from 'pages/appointments/list';
 import { useState } from 'react';
+import { FileBadgeIcon, FoldDownIcon, FoldUpIcon, ListOrderedIcon, UnfoldIcon } from '@primer/octicons-react';
 
 const Appointments = (props: any) => {
   const Tabs = {
@@ -79,16 +80,16 @@ const Appointments = (props: any) => {
         <div className="">
           <div className="row mt-3">
             <div className={`col tab me-1 ${tab === Tabs.Consulation ? 'active-tab' : ''}`} onClick={() => setTab(Tabs.Consulation)}>
-              Consulations
+              <FileBadgeIcon /> Consulations
             </div>
             <div className={`col tab me-1 ${tab === Tabs.Treatment ? 'active-tab' : ''}`} onClick={() => setTab(Tabs.Treatment)}>
-              Treatments
+              <ListOrderedIcon /> Treatments
             </div>
             <div className={`col tab me-1 ${tab === Tabs.Maintainance ? 'active-tab' : ''}`} onClick={() => setTab(Tabs.Maintainance)}>
-              Maintainance
+              <UnfoldIcon /> Maintainance
             </div>
             <div className={`disabled col tab me-1 ${tab === Tabs.FollowUps ? 'active-tab' : ''}`} onClick={() => setTab(Tabs.FollowUps)}>
-              Follow Up
+              <FoldUpIcon /> Follow Up
             </div>
           </div>
           {<TabContent />}

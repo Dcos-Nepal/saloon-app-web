@@ -20,6 +20,7 @@ import { getPhotoTypes } from 'data';
 import OrderList from 'pages/orders/list';
 import TextArea from 'common/components/form/TextArea';
 import DeleteConfirm from 'common/components/DeleteConfirm';
+import { getCurrentUser } from 'utils';
 
 interface IProps {
   id?: string;
@@ -72,18 +73,21 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient }) => {
   };
 
   const Diagnosis = () => {
+    const currentUser = getCurrentUser();
     const [itemToDelete, setItemToDelete] = useState<string>('');
     const [isSaving, setIsSaving] = useState<boolean>(false);
     const [diagnosis, setDiagnosis] = useState<any>(currentClient.diagnosis || []);
 
     const [initialValues,] = useState<any>({
       title: '',
-      description: ''
+      description: '',
+      isPrivate: false
     });
 
     const ClientDiagnosisSchema = Yup.object().shape({
       title: Yup.string().required(`Title is required.`),
       description: Yup.string().required(`Description is required.`),
+      isPrivate: Yup.boolean().required(`Is Private is required.`),
     });
   
     const formik = useFormik({
@@ -184,6 +188,20 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient }) => {
                   helperComponent={<ErrorMessage name="description" />}
                 />
               </div>
+              <div className="row mb-3">
+                <label>Private/Public?</label>
+                <div className='row'>
+                  <div className='col'>
+                    <input id="private" className="mt-2" type="radio" name="isPrivate" value="true" onChange={formik.handleChange} checked={formik.values.isPrivate === 'true'}/>
+                    &nbsp;<label htmlFor={'private'} className='form-label txt-dark-grey'>Private</label>
+                  </div>
+                  <div className='col'>
+                    <input id="public" className="mt-2" type="radio" name="isPrivate" value="false" onChange={formik.handleChange} checked={formik.values.isPrivate === 'false'}/>
+                    &nbsp;<label htmlFor={'public'} className='form-label txt-dark-grey'>Public</label>
+                  </div>
+                  <ErrorMessage name="isPrivate" />
+                </div>
+              </div>
               <div className="mb-2">
                 <button type="submit" className="btn btn-primary">
                   {id ? 'Update' : 'Save'} Diagnosis Info
@@ -199,21 +217,26 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient }) => {
                   <th>SN</th>
                   <th>Title</th>
                   <th>Description</th>
+                  <th>Access</th>
                   <th style={{width: '40px'}}></th>
                 </thead>
                 <tbody>
-                  {diagnosis.map((diagno: any, index: number) => {
-                    return <tr key={diagno.title}>
-                      <td>{index + 1}</td>
-                      <td>{diagno.title}</td>
-                      <td><i>{diagno.description}</i></td>
-                      <td style={{'position': 'relative'}}>
-                        <span onClick={() => {setItemToDelete(diagno.title)}} style={{ 'position': 'absolute', 'right': '10px', 'top': '10px'}}>
-                          <XCircleIcon size={20} />
-                        </span>
-                      </td>
-                    </tr>
-                  })}
+                  {diagnosis
+                    .filter((diag: any) => currentUser.role.includes('SHOP_ADMIN' || 'ADMIN') || (!diag.isPrivate && currentUser.role.includes('RECEPTION')))
+                    .map((diagno: any, index: number) => {
+                      return <tr key={diagno.title}>
+                        <td>{index + 1}</td>
+                        <td>{diagno.title}</td>
+                        <td><i>{diagno.description}</i></td>
+                        <td><i>{diagno.isPrivate ? 'Private' : 'Public'}</i></td>
+                        <td style={{'position': 'relative'}}>
+                          <span onClick={() => {setItemToDelete(diagno.title)}} style={{ 'position': 'absolute', 'right': '10px', 'top': '10px'}}>
+                            <XCircleIcon size={20} />
+                          </span>
+                        </td>
+                      </tr>
+                    })
+                  }
                 </tbody>
               </table>
             ) : null}

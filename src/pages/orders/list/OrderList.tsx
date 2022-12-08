@@ -258,7 +258,7 @@ const OrdersList = (props: any) => {
     }
 
     props.actions.fetchOrders({ q: query, ...orderQuery, page: offset, limit: itemsPerPage });
-  }, [offset, itemsPerPage, props.actions, query, currentUser.id, currentUser.role, status, orderDate]);
+  }, [offset, itemsPerPage, query, currentUser.id, currentUser.role, status, orderDate]);
 
   useEffect(() => {
     if (props.itemList?.data?.rows) {

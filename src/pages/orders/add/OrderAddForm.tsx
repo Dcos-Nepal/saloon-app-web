@@ -97,7 +97,9 @@ const OrderAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions, client 
       }
 
       // Navigate to the previous screen
-      navigate(-1);
+      setTimeout(() => {
+        navigate(-1);
+      }, 1000);
     }
   });
 

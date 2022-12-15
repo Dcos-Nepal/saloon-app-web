@@ -563,7 +563,8 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient }) => {
                     <div className="row mt-4">
                       <div className="col">
                         <div className="txt-grey">Phone</div>
-                        <div className="">{currentClient.phoneNumber || '[Phone Number not added]'}</div>
+                        <div className="">Primary: {currentClient.phoneNumber || '[Phone Number not added]'}</div>
+                        <div className="">Alternative: {currentClient.altPhoneNumber || '[Phone Number not added]'}</div>
                       </div>
                       <div className="col">
                         <div className="txt-grey">Client's Address</div>

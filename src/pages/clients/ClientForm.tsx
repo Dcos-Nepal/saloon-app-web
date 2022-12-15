@@ -35,6 +35,7 @@ const ClientForm: FC<IProps> = ({ id, isClientsLoading, actions, currentClient }
     lastName: '',
     email: '',
     phoneNumber: '',
+    altPhoneNumber: '',
     address: '',
     gender: '',
     dateOfBirth: '',
@@ -52,6 +53,10 @@ const ClientForm: FC<IProps> = ({ id, isClientsLoading, actions, currentClient }
       .label('Phone Number')
       .required(' Phone Number is required.')
       .matches(/^(?:[0-9] ?){6,14}[0-9]$/, "Phone number must be at least 6 numbers to 14 numbers"),
+    altPhoneNumber: Yup.string()
+      .label('Phone Number')
+      .matches(/^(?:[0-9] ?){6,14}[0-9]$/, "Phone number must be at least 6 numbers to 14 numbers")
+      .notRequired(),
     address: Yup.string().required('Address is required'),
     gender: Yup.string().required('Gender is required'),
     dateOfBirth: Yup.string().nullable().notRequired(),
@@ -72,6 +77,7 @@ const ClientForm: FC<IProps> = ({ id, isClientsLoading, actions, currentClient }
       formData.append('lastName', data.lastName);
       formData.append('email', data.email);
       formData.append('phoneNumber', data.phoneNumber);
+      formData.append('altPhoneNumber', data.altPhoneNumber);
       formData.append('address', data.address);
       formData.append('gender', data.gender);
       formData.append('dateOfBirth', data.dateOfBirth);
@@ -257,6 +263,22 @@ const ClientForm: FC<IProps> = ({ id, isClientsLoading, actions, currentClient }
                       isRequired={true}
                     />
                   </div>
+                  <div className="col">
+                    <InputField
+                      label={<label>Alt. Phone Number:</label>}
+                      placeholder="eg. 1234567890"
+                      name="altPhoneNumber"
+                      helperComponent={
+                        formik.errors.altPhoneNumber && formik.touched.altPhoneNumber ? <div className="txt-red"><StopIcon size={14} /> {formik.errors.altPhoneNumber}</div> : null
+                      }
+                      value={formik.values.altPhoneNumber}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      isRequired={true}
+                    />
+                  </div>
+                </div>
+                <div className='row'>
                   <div className='col'>
                     <InputField
                       label={<span>Email address</span>}
@@ -270,8 +292,6 @@ const ClientForm: FC<IProps> = ({ id, isClientsLoading, actions, currentClient }
                       isRequired={false}
                     />
                   </div>
-                </div>
-                <div className='row'>
                   <div className="col">
                     <InputField
                       label="Address/Location"
@@ -300,7 +320,6 @@ const ClientForm: FC<IProps> = ({ id, isClientsLoading, actions, currentClient }
                     isRequired={false}
                   />
                 </div>
-
                 <div className='row'>
                   <TextArea
                     rows={5}

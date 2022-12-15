@@ -101,22 +101,22 @@ const Bookings = () => {
                         </div>
                         <label className="txt-grey">List of bookings scheduled so far. Both the consultations and treatments</label>
                     </div>
-                    <div className='col-2 pt-2 row'>
-                        <div className='col'>
-                            <button type='button' onClick={() => setViewMode('CALENDAR')} className={ "btn" + (viewMode === 'CALENDAR' ? ' btn-primary' : '')}>
-                                <CalendarIcon size={18} className={'cursor-pointer'}/>
-                            </button>
-                        </div>
-                        <div className='col'>
-                            <button type='button' onClick={() => setViewMode('LIST')} className={ "btn" + (viewMode === 'LIST' ? ' btn-primary' : '')}>
-                                <ListOrderedIcon size={18} className={'cursor-pointer'}/>
-                            </button>
-                        </div>
-                    </div>
-                    <div className='col-3 pt-2'>
+                    <div className='col-4 pt-2'>
                         <button onClick={() => setAddLineItemOpen(true)} type="button" className="btn btn-primary d-flex float-end">
                             Add Booking
                         </button>
+                    </div>
+                    <div className='col-2 pt-2 row'>
+                        <div className='col'>
+                            <div className="btn-group d-flex float-right" role="group" aria-label="Basic example">
+                                <button type='button' onClick={() => setViewMode('CALENDAR')} className={ "btn" + (viewMode === 'CALENDAR' ? ' btn-primary' : '')}>
+                                    <CalendarIcon size={18} className={'cursor-pointer'}/>
+                                </button>
+                                <button type='button' onClick={() => setViewMode('LIST')} className={ "btn" + (viewMode === 'LIST' ? ' btn-primary' : '')}>
+                                    <ListOrderedIcon size={18} className={'cursor-pointer'}/>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div className="">

@@ -12,7 +12,7 @@ const customStyles = {
   content: {
     inset: "auto",
     padding: "0"
-  },
+  }
 };
 
 const Modal: FC<IProps> = ({ isOpen, children, onRequestClose, }) => {
@@ -24,7 +24,6 @@ const Modal: FC<IProps> = ({ isOpen, children, onRequestClose, }) => {
       style={customStyles}
       onRequestClose={onRequestClose}
     >
-
       {children}
     </ReactModal>
   );

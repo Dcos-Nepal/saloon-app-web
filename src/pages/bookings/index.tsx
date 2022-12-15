@@ -1,3 +1,3 @@
-import Schedule from "./Schedule";
+import ScheduleCalendar from "./Schedule.Calendar";
 
-export default Schedule;
+export default ScheduleCalendar;

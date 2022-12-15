@@ -7,14 +7,17 @@ import Modal from 'common/components/atoms/Modal';
 import AddBookingForm from './AddBooking';
 import { toast } from 'react-toastify';
 import { addVisitApi, updateVisitApi } from 'services/visits.service';
-import BookingSchedule from './Schedule';
+import BookingList from './Schedule.List';
+import BookingCalendar from './Schedule.Calendar';
+import { CalendarIcon, ListOrderedIcon } from '@primer/octicons-react';
 
 const Tabs = {
     Consulation: 'Consulation',
     Treatment: 'Treatment'
 };
 
-const Bookings = (props: any) => {
+const Bookings = () => {
+    const [viewMode, setViewMode] = useState('CALENDAR');
     const [tab, setTab] = useState(Tabs.Consulation);
     const [bookingDetails, setBookingDetails] = useState('');
     const [addLineItemOpen, setAddLineItemOpen] = useState<boolean>(false);
@@ -37,7 +40,10 @@ const Bookings = (props: any) => {
     const Consulation = () => {
         return (
             <div className="row">
-                <BookingSchedule type={'CONSULATION'} bookingHandler={bookingHandler}/>
+                { viewMode === 'LIST'
+                    ? <BookingList type={'CONSULATION'} bookingHandler={bookingHandler}/>
+                    : <BookingCalendar type={'CONSULATION'} bookingHandler={bookingHandler}/>
+                }
             </div>
         );
     };
@@ -45,7 +51,10 @@ const Bookings = (props: any) => {
     const Treatments = () => {
         return (
             <div className="row">
-                <BookingSchedule type={'TREATMENT'} bookingHandler={bookingHandler}/>
+                { viewMode === 'LIST'
+                    ? <BookingList type={'TREATMENT'} bookingHandler={bookingHandler}/>
+                    : <BookingCalendar type={'TREATMENT'} bookingHandler={bookingHandler}/>
+                }
             </div>
         );
     };
@@ -92,19 +101,19 @@ const Bookings = (props: any) => {
                         </div>
                         <label className="txt-grey">List of bookings scheduled so far. Both the consultations and treatments</label>
                     </div>
-                    <div className="col-2">
-                        <div className="form-group mt-3 d-flex float-end">
-                            <input type="checkbox" className="mt-1" id="toggle-completed" checked={props.completedVisible} onChange={props.toggleCompleted}></input>
-                            <label htmlFor="toggle-completed" className='pt-1'>&nbsp;Toggle Completed</label>
+                    <div className='col-2 pt-2 row'>
+                        <div className='col'>
+                            <button type='button' onClick={() => setViewMode('CALENDAR')} className={ "btn" + (viewMode === 'CALENDAR' ? ' btn-primary' : '')}>
+                                <CalendarIcon size={18} className={'cursor-pointer'}/>
+                            </button>
+                        </div>
+                        <div className='col'>
+                            <button type='button' onClick={() => setViewMode('LIST')} className={ "btn" + (viewMode === 'LIST' ? ' btn-primary' : '')}>
+                                <ListOrderedIcon size={18} className={'cursor-pointer'}/>
+                            </button>
                         </div>
                     </div>
-                    <div className="col-2">
-                        <div className="form-group mt-3 d-flex float-end">
-                            <input type="checkbox" className="mt-1" id="toggle-weekends" checked={props.weekendsVisible} onChange={props.toggleWeekends}></input>
-                            <label htmlFor="toggle-weekends" className='pt-1'>&nbsp;Toggle Weekends</label>
-                        </div>
-                    </div>
-                    <div className='col-2 pt-2'>
+                    <div className='col-3 pt-2'>
                         <button onClick={() => setAddLineItemOpen(true)} type="button" className="btn btn-primary d-flex float-end">
                             Add Booking
                         </button>
@@ -123,6 +132,8 @@ const Bookings = (props: any) => {
                 </div>
                 <Footer />
             </div>
+
+            {/* Booking Modal */}
             <Modal isOpen={!!addLineItemOpen || !!bookingDetails} onRequestClose={() => setAddLineItemOpen(false)}>
                 <AddBookingForm closeModal={() => {
                     setAddLineItemOpen(false);

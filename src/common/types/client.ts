@@ -5,6 +5,7 @@ export interface IClient {
   fullName?: string;
   email: string;
   phoneNumber: string;
+  altPhoneNumber?: string;
   address?: string;
   gender?: string;
   dateOfBirth?: string;

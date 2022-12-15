@@ -22,7 +22,8 @@ const bookingStatusOptions = [
 ];
 
 const ScheduleEventDetail: FC<IProps> = ({ closeModal, event, handleEventEdit}) => {
-  const [meta, setMeta] = useState(event.extendedProps?.meta);
+  debugger
+  const [meta, setMeta] = useState(event?.extendedProps?.meta || event.meta);
 
   const getCustomerInfo = (meta: any) => {
     if (meta.customer) {

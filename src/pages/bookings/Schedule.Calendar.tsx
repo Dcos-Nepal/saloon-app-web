@@ -17,7 +17,7 @@ import { toast } from 'react-toastify';
 import ScheduleEventDetail from './EventDetail';
 import { DateTime } from 'luxon';
 
-const BookingSchedule = (props: any) => {
+const BookingScheduleCalendar = (props: any) => {
   const isMounted = useMountedRef();
   const [events, setEvents] = useState([]);
   const [showEventDetail, setShowEventDetail] = useState<IEvent | null>();
@@ -161,4 +161,4 @@ function mapStateToProps() {
   };
 }
 
-export default connect(mapStateToProps, { ...eventActions, fetchJobSchedule })(BookingSchedule);
+export default connect(mapStateToProps, { ...eventActions, fetchJobSchedule })(BookingScheduleCalendar);

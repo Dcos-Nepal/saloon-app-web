@@ -45,3 +45,14 @@ export const getClientTags = () => {
     { label: '15 DAYS', value: '15 DAYS', isActive: true }
   ]
 }
+
+export const getBookingStatus = () => {
+  return [
+    { label: 'BOOKED', value: 'BOOKED', isActive: true },
+    { label: 'RE_SCHEDULED', value: 'RE_SCHEDULED', isActive: true },
+    { label: 'VISITED', value: 'VISITED', isActive: true },
+    { label: 'NOT_VISITED', value: 'NOT_VISITED', isActive: true },
+    { label: 'PNR', value: 'PNR', isActive: true },
+    { label: 'CANCELLED', value: 'CANCELLED', isActive: true }
+  ]
+}

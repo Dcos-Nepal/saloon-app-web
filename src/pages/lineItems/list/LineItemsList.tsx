@@ -21,7 +21,7 @@ interface IProps {
 }
 
 const LineItemsList = (props: IProps) => {
-  const [itemsPerPage] = useState(10);
+  const [itemsPerPage] = useState(15);
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [lineItems, setLineItems] = useState<any[]>([]);

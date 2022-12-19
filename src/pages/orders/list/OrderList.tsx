@@ -64,7 +64,7 @@ const OrdersList = (props: any) => {
   const navigate = useNavigate();
   const currentUser = getCurrentUser();
   const [query, setQuery] = useState('');
-  const [itemsPerPage] = useState(10);
+  const [itemsPerPage] = useState(15);
   const [offset, setOffset] = useState(1);
   const [pageCount, setPageCount] = useState(0);
   const [orders, setOrders] = useState<IOrder[]>([]);

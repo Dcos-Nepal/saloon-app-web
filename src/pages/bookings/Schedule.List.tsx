@@ -10,6 +10,8 @@ import { DateTime } from 'luxon';
 import { Column, useTable } from 'react-table';
 import EmptyState from 'common/components/EmptyState';
 import ReactPaginate from 'react-paginate';
+import SelectField from 'common/components/form/Select';
+import { getBookingStatus } from 'data';
 import InputField from 'common/components/form/Input';
 
 interface  IBooking {
@@ -20,10 +22,11 @@ interface  IBooking {
 }
 
 const BookingList = (props: any) => {
-  const [itemsPerPage] = useState(10);
+  const [itemsPerPage] = useState(50);
   const [offset, setOffset] = useState(1);
   const [events, setEvents] = useState([]);
   const [pageCount, setPageCount] = useState(0);
+  const [status, setStatus] = useState('');
   const [showEventDetail, setShowEventDetail] = useState<IEvent | null>();
 
   const handlePageClick = (event: any) => {
@@ -85,12 +88,18 @@ const BookingList = (props: any) => {
   }
 
   useEffect(() => {
-    props.fetchJobSchedule({
+    const queryOptions: any  = {
       type: props.type,
       page: offset,
       limit: itemsPerPage
-    });
-  }, [offset, itemsPerPage])
+    };
+
+    if (status) {
+      queryOptions.status = status;
+    }
+
+    props.fetchJobSchedule(queryOptions);
+  }, [offset, itemsPerPage, status])
   
   useEffect(() => {
     if (props.schedules?.rows?.length > 0) {
@@ -112,6 +121,24 @@ const BookingList = (props: any) => {
 
   return (
     <div className=''>
+      <div className="row pt-2 m-1 rounded-top bg-grey">
+        <div className="col-6">
+          <InputField disabled={true} label="Search" placeholder="Search orders by name, phone number" className="search-input" onChange={() => {}} />
+        </div>
+        <div className="col-3">
+          <InputField label="Select Date" disabled={true} value={''} type="date" className="search-input" onChange={() => {}} />
+        </div>
+        <div className="col-3">
+          <SelectField
+            label="Filter by Status"
+            options={getBookingStatus()}
+            placeholder="All"
+            handleChange={(selected: { label: string; value: string }) => {
+              setStatus(selected ? selected.value : '')
+            }}
+          />
+        </div>
+      </div>
       <div>
         {!events.length ? (
             <EmptyState />

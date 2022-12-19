@@ -37,7 +37,7 @@ interface IClient {
 
 const ClientsList = (props: any) => {
   const navigate = useNavigate();
-  const [itemsPerPage] = useState(10);
+  const [itemsPerPage] = useState(15);
   const [query, setQuery] = useState('');
   const [offset, setOffset] = useState(1);
   const [pageCount, setPageCount] = useState(0);

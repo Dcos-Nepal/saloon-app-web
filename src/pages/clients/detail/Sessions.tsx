@@ -35,7 +35,7 @@ const Sessions = (props: any) => {
   const currentUser = getCurrentUser();
   const [query, setQuery] = useState('');
   const [queryDate, setQueryDate] = useState('');
-  const [itemsPerPage] = useState(10);
+  const [itemsPerPage] = useState(15);
   const [offset, setOffset] = useState(1);
   const [pageCount, setPageCount] = useState(0);
   const [quotes, setQuotes] = useState<IQuote[]>([]);

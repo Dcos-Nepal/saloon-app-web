@@ -6,7 +6,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { IClient } from 'common/types/client';
 import { Loader } from 'common/components/atoms/Loader';
 import * as clientsActions from 'store/actions/clients.actions';
-import { AlertIcon, AppsIcon, BellIcon, PencilIcon, RepoCloneIcon, RepoPushIcon, StopIcon, UploadIcon, XCircleIcon } from '@primer/octicons-react';
+import { AlertIcon, AppsIcon, BellIcon, PencilIcon, RepoCloneIcon, RepoPushIcon, StarIcon, StopIcon, UploadIcon, XCircleIcon } from '@primer/octicons-react';
 import { getIn, useFormik } from 'formik';
 import { deleteUserPhotoApi, updateUserApi, uploadPhotosApi } from 'services/customers.service';
 import InputField from 'common/components/form/Input';
@@ -21,6 +21,7 @@ import OrderList from 'pages/orders/list';
 import TextArea from 'common/components/form/TextArea';
 import DeleteConfirm from 'common/components/DeleteConfirm';
 import { getCurrentUser } from 'utils';
+import SelectAsync from 'common/components/form/AsyncSelect';
 
 interface IProps {
   id?: string;
@@ -41,10 +42,11 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient }) => {
     Quotes: 'Quotes',
     Sessions: 'Sessions',
     Diagnosis: 'Diagnosis',
-    ClientPictures: 'ClientPictures'
+    ClientPictures: 'ClientPictures',
+    Suggestions: 'Suggestions'
   };
 
-  const [tab, setTab] = useState(Tabs.Diagnosis);
+  const [tab, setTab] = useState(Tabs.ClientPictures);
 
   const Quotes = () => {
     return (
@@ -61,6 +63,210 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient }) => {
       <div className="row mt-4">
         <OrderList customer={currentClient?._id}/>
       </div>
+    );
+  };
+
+  const Suggestions = () => {
+    const [itemToDelete, setItemToDelete] = useState<string>('');
+    const [isSaving, setIsSaving] = useState<boolean>(false);
+    const [suggestions, setSuggestions] = useState<any>(currentClient.productSuggestions || []);
+
+    const [initialValues,] = useState<any>({
+      title: '',
+      product: {
+        label: '',
+        value: ''
+      },
+      description: ''
+    });
+
+    const SuggestionsSchema = Yup.object().shape({
+      title: Yup.string().required(`Title is required.`),
+      product: Yup.object().shape({
+        value: Yup.string(),
+        label: Yup.string()
+      }).required('Please select a product.'),
+      description: Yup.string().required(`Description is required.`),
+    });
+  
+    const formik = useFormik({
+      enableReinitialize: true,
+      initialValues: initialValues,
+      validationSchema: SuggestionsSchema,
+      onSubmit: async (formData: any) => {
+        // Preparing FormData
+        const data = { ...formData, product: formData.product.value, createdDate: new Date().toISOString()};
+
+        // Update client
+        setIsSaving(true);
+        const created = await updateUserApi({
+          id: id,
+          data: {
+            ...currentClient,
+            productSuggestions: [...suggestions, data]
+          }
+        });
+
+        if (!!created) {
+          setSuggestions([
+            ...created.data.data.productSuggestions
+              .map((s: any) => ({
+                ...s,
+                product: {
+                  _id: formData.product.value,
+                  name: formData.product.label,
+                  description: ''
+                }
+              }))
+          ]);
+          toast.success('Product suggestion updated successfully!')
+          setIsSaving(false);
+        }
+
+        formik.resetForm();
+      }
+    });
+
+    /**
+     * Custom Error Message
+     *
+     * @param param Props Object
+     * @returns JSX
+     */
+    const ErrorMessage = ({ name }: any) => {
+      if (!name) return <></>;
+
+      const error = getIn(formik.errors, name);
+      const touch = getIn(formik.touched, name);
+
+      return (touch && error) || error ? (
+        <div className="row txt-red">
+          <div className="col-1" style={{ width: '20px' }}>
+            <StopIcon size={14} />
+          </div>
+          <div className="col">{error}</div>
+        </div>
+      ) : null;
+    };
+
+    /**
+     * Remove Diagnosis
+     * @param id String
+     * @param fileId String
+     */
+    const removeSuggestion = async (title: string) => {
+      const newSuggestions = suggestions.filter((d: any) => d.title !== title)
+      const updated = await updateUserApi({
+        id: id,
+        data: {
+          ...currentClient,
+          productSuggestions: [...newSuggestions]
+        }
+      });
+
+      if (!!updated) {
+        setSuggestions([...updated.data.data.productSuggestions]);
+        toast.success('Product suggestion removed successfully!')
+        setItemToDelete('');
+      }
+    }
+
+    /**
+     * Handles Line Item selection
+     * @param key String
+     * @param selected { value: string; key: string; meta: any }
+     */
+    const handleProductSelection = (key: string, { label, value }: any) => {
+      formik.setFieldValue(key, {label, value});
+    };
+
+    return (
+      <>
+        <div className=" row mt-3">
+          <div className='col-4'>
+            <form noValidate onSubmit={formik.handleSubmit} style={{'position': 'relative'}}>
+              <Loader isLoading={isSaving} />
+              <h6>New Product Suggestion:</h6>
+              <div className="row">
+                <InputField
+                  label="Title"
+                  type="text"
+                  placeholder="Enter Title"
+                  name={`title`}
+                  value={formik.values.title}
+                  onChange={formik.handleChange}
+                  helperComponent={<ErrorMessage name="title" />}
+                />
+              </div>
+              <SelectAsync
+                name={`product`}
+                label=""
+                value={formik.values.product.value}
+                resource={{ name: 'products', labelProp: 'name', valueProp: '_id' }}
+                onChange={(selected: any) => handleProductSelection(`product`, selected)}
+                helperComponent={<ErrorMessage name="product" />}
+                preload={true}
+              />
+              <div className="row">
+                <TextArea
+                  rows={3}
+                  label={'Description:'}
+                  placeholder="Enter diagnosis details"
+                  name="description"
+                  value={formik.values.description || ''}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  helperComponent={<ErrorMessage name="description" />}
+                />
+              </div>
+              <div className="mb-2">
+                <button type="submit" className="btn btn-primary">
+                  {id ? 'Update' : 'Save'} Suggestion Info
+                </button>
+              </div>
+            </form>
+          </div>
+          <div className='col-8'>
+            <h6>Suggestion List:</h6>
+            {suggestions.length > 0 ? (
+              <table className="table">
+                <thead>
+                  <tr>
+                    <th>SN</th>
+                    <th>Title</th>
+                    <th>Product</th>
+                    <th>Description</th>
+                    <th style={{width: '40px'}}></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {suggestions
+                    .map((diagno: any, index: number) => {
+                      return <tr key={`~${diagno.title}_${index + ''}`}>
+                        <td>{index + 1}</td>
+                        <td>{diagno.title}</td>
+                        <td><i>{diagno.product?.name || 'No Product Name'}</i></td>
+                        <td><i>{diagno.description}</i></td>
+                        <td style={{'position': 'relative'}}>
+                          <span className='cursor-pointer' onClick={() => {setItemToDelete(diagno.title)}} style={{ 'position': 'absolute', 'right': '10px', 'top': '10px'}}>
+                            <XCircleIcon size={20} />
+                          </span>
+                        </td>
+                      </tr>
+                    })
+                  }
+                </tbody>
+              </table>
+            ) : null}
+            {suggestions.length === 0 ? (<div className='row text-center mt-5'>
+              <small><AlertIcon /> There are no Product Suggestions so far.</small>
+            </div>) : null}
+          </div>
+        </div>
+        <Modal isOpen={!!itemToDelete} onRequestClose={() => setItemToDelete('')}>
+          <DeleteConfirm onDelete={removeSuggestion} item={itemToDelete} closeModal={() => setItemToDelete('')} />
+        </Modal>
+      </>
     );
   };
 
@@ -214,11 +420,13 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient }) => {
             {diagnosis.length > 0 ? (
               <table className="table">
                 <thead>
-                  <th>SN</th>
-                  <th>Title</th>
-                  <th>Description</th>
-                  <th>Access</th>
-                  <th style={{width: '40px'}}></th>
+                  <tr>
+                    <th>SN</th>
+                    <th>Title</th>
+                    <th>Description</th>
+                    <th>Access</th>
+                    <th style={{width: '40px'}}></th>
+                  </tr>
                 </thead>
                 <tbody>
                   {diagnosis
@@ -230,7 +438,7 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient }) => {
                         <td><i>{diagno.description}</i></td>
                         <td><i>{diagno.isPrivate ? 'Private' : 'Public'}</i></td>
                         <td style={{'position': 'relative'}}>
-                          <span onClick={() => {setItemToDelete(diagno.title)}} style={{ 'position': 'absolute', 'right': '10px', 'top': '10px'}}>
+                          <span className='cursor-pointer' onClick={() => {setItemToDelete(diagno.title)}} style={{ 'position': 'absolute', 'right': '10px', 'top': '10px'}}>
                             <XCircleIcon size={20} />
                           </span>
                         </td>
@@ -253,7 +461,6 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient }) => {
   };
 
   const ClientPictures = () => {
-    const [itemToDelete, setItemToDelete] = useState<string>('');
     const [selectedPicture, setSelectedPicture] = useState('');
     const [isSaving, setIsSaving] = useState<boolean>(false);
     const [isDeleteInProgress, setIsDeleteInProgress] = useState<boolean>(false);
@@ -488,6 +695,8 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient }) => {
         return <Quotes />;
       case Tabs.Orders:
         return <Orders />;
+      case Tabs.Suggestions:
+        return <Suggestions />;
 
       default:
         return (
@@ -603,6 +812,9 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient }) => {
                   </div>
                   <div className={`col tab me-1 ${tab === Tabs.Orders ? 'active-tab' : ''}`} onClick={() => setTab(Tabs.Orders)}>
                     <AppsIcon /> Orders
+                  </div>
+                  <div className={`col tab me-1 ${tab === Tabs.Suggestions ? 'active-tab' : ''}`} onClick={() => setTab(Tabs.Suggestions)}>
+                    <StarIcon /> Product Suggestion
                   </div>
                 </div>
               </div>

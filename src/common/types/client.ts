@@ -12,6 +12,7 @@ export interface IClient {
   photo?: object | string;
   photos?: string[];
   diagnosis?: any[];
+  productSuggestions?: any[];
   tags: string;
   notes?: string;
   referredBy?: string;

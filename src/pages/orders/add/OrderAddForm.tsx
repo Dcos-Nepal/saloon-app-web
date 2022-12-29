@@ -36,7 +36,10 @@ const OrderAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions, client 
     orderDate: DateTime.fromJSDate(new Date()).toFormat('yyyy-MM-dd'),
     customer: client ? client : '',
     products: [{
-      name: '',
+      name: {
+        value: '',
+        label: ''
+      },
       description: '',
       quantity: 0,
       unitPrice: 0,
@@ -52,7 +55,7 @@ const OrderAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions, client 
         name: Yup.object().shape({
           value: Yup.string(),
           label: Yup.string().required('Please select a line item.')
-        }).nullable(),
+        }),
         description: Yup.string(),
         quantity: Yup.number(),
         unitPrice: Yup.number(),
@@ -74,7 +77,7 @@ const OrderAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions, client 
       orderPayload.customer = data.customer;
       orderPayload.products = data.products.map((li: any) => {
         return {
-          name: li.name.label,
+          name: li.name.value,
           description: li.description,
           quantity: li.quantity,
           unitPrice: li.unitPrice,
@@ -224,13 +227,21 @@ const OrderAddForm: FC<IProps> = ({ id, isLoading, currentItem, actions, client 
                             <Fragment key={`~${index}`}>
                               <div className="row ps-1">
                                 <div className="col-5">
-                                  <AsyncInputDataList
+                                  <SelectAsync
+                                    name={`products[${index}].name`}
+                                    label=""
+                                    value={formik.values.products[index].name.value}
+                                    resource={{ name: 'products', labelProp: 'name', valueProp: 'name' }}
+                                    onChange={(selected: any) => handleLineItemSelection(`products[${index}]`, selected)}
+                                    preload={true}
+                                  />
+                                  {/* <AsyncInputDataList
                                     name={`products[${index}].name`}
                                     placeholder="Search Products"
                                     value={formik.values.products[index].name}
                                     resource={{ name: 'products', labelProp: 'name', valueProp: '_id' }}
                                     onChange={(selected: any) => handleLineItemSelection(`products[${index}]`, selected)}
-                                  />
+                                  /> */}
                                   <ErrorMessage name={`products[${index}].name.label`} />
                                   <textarea
                                     name={`products[${index}].description`}

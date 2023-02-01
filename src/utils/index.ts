@@ -20,10 +20,10 @@ export const getCurrentUser = () => {
   const currentUser = getData('user');
 
   if (currentUser) {
-    return { id: currentUser._id, role: currentUser.roles.toString() };
+    return { id: currentUser._id, role: currentUser.roles.toString(), fullName: currentUser.firstName + ' ' + currentUser.lastName };
   }
 
-  return { role: '', id: '' };
+  return { role: '', id: '', fullName: ''};
 }
 
 export const isDateBefore =(date1: Date | string, date2: Date | string) => {

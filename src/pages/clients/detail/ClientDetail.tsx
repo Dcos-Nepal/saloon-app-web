@@ -22,6 +22,7 @@ import TextArea from 'common/components/form/TextArea';
 import DeleteConfirm from 'common/components/DeleteConfirm';
 import { getCurrentUser } from 'utils';
 import SelectAsync from 'common/components/form/AsyncSelect';
+import { DateTime } from 'luxon';
 
 interface IProps {
   id?: string;
@@ -67,25 +68,28 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient }) => {
   };
 
   const Suggestions = () => {
+    const currentUser = getCurrentUser();
     const [itemToDelete, setItemToDelete] = useState<string>('');
     const [isSaving, setIsSaving] = useState<boolean>(false);
     const [suggestions, setSuggestions] = useState<any>(currentClient.productSuggestions || []);
 
     const [initialValues,] = useState<any>({
       title: '',
-      product: {
+      products: [{
         label: '',
         value: ''
-      },
-      description: ''
+      }],
+      description: '',
     });
 
     const SuggestionsSchema = Yup.object().shape({
       title: Yup.string().required(`Title is required.`),
-      product: Yup.object().shape({
-        value: Yup.string(),
-        label: Yup.string()
-      }).required('Please select a product.'),
+      products: Yup.array().of(
+        Yup.object().shape({
+          value: Yup.string(),
+          label: Yup.string()
+        }).required('Please select multiple products.'),
+      ),
       description: Yup.string().required(`Description is required.`),
     });
   
@@ -95,7 +99,12 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient }) => {
       validationSchema: SuggestionsSchema,
       onSubmit: async (formData: any) => {
         // Preparing FormData
-        const data = { ...formData, product: formData.product.value, createdDate: new Date().toISOString()};
+        const data = {
+          ...formData,
+          products: formData.products.map((p: any) => p.value),
+          createdDate: new Date().toISOString(),
+          addedBy: currentUser.id
+        };
 
         // Update client
         setIsSaving(true);
@@ -108,17 +117,13 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient }) => {
         });
 
         if (!!created) {
-          setSuggestions([
-            ...created.data.data.productSuggestions
-              .map((s: any) => ({
-                ...s,
-                product: {
-                  _id: formData.product.value,
-                  name: formData.product.label,
-                  description: ''
-                }
-              }))
-          ]);
+          const existingSuggestions = suggestions;
+          existingSuggestions.push({ ...data, products: formData.products.map((p: any) => ({ _id: p.value, name: p.label })), addedBy: {
+            _id: currentUser.id,
+            fullName: currentUser.fullName
+          }})
+
+          setSuggestions(existingSuggestions);
           toast.success('Product suggestion updated successfully!')
           setIsSaving(false);
         }
@@ -165,20 +170,11 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient }) => {
       });
 
       if (!!updated) {
-        setSuggestions([...updated.data.data.productSuggestions]);
+        setSuggestions([...newSuggestions]);
         toast.success('Product suggestion removed successfully!')
         setItemToDelete('');
       }
     }
-
-    /**
-     * Handles Line Item selection
-     * @param key String
-     * @param selected { value: string; key: string; meta: any }
-     */
-    const handleProductSelection = (key: string, { label, value }: any) => {
-      formik.setFieldValue(key, {label, value});
-    };
 
     return (
       <>
@@ -199,12 +195,15 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient }) => {
                 />
               </div>
               <SelectAsync
-                name={`product`}
+                name={`products`}
                 label=""
-                value={formik.values.product.value}
+                isMulti={true}
+                value={formik.values.products.map((p: any) => p)}
                 resource={{ name: 'products', labelProp: 'name', valueProp: '_id' }}
-                onChange={(selected: any) => handleProductSelection(`product`, selected)}
-                helperComponent={<ErrorMessage name="product" />}
+                onChange={(products: IOption[]) => {
+                  formik.setFieldValue('products', products.map((tagOption) => tagOption));
+                }}
+                helperComponent={<ErrorMessage name="products" />}
                 preload={true}
               />
               <div className="row">
@@ -236,6 +235,8 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient }) => {
                     <th>Title</th>
                     <th>Product</th>
                     <th>Description</th>
+                    <th>Created Date</th>
+                    <th>Suggested By</th>
                     <th style={{width: '40px'}}></th>
                   </tr>
                 </thead>
@@ -245,8 +246,10 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient }) => {
                       return <tr key={`~${diagno.title}_${index + ''}`}>
                         <td>{index + 1}</td>
                         <td>{diagno.title}</td>
-                        <td><i>{diagno.product?.name || 'No Product Name'}</i></td>
+                        <td><i>{diagno.products?.map((p:any) => p.name).join(', ') || 'No Products selected'}</i></td>
                         <td><i>{diagno.description}</i></td>
+                        <td><i>{DateTime.fromISO(diagno.createdDate).toFormat('yyyy-MM-dd hh:mm a')}</i></td>
+                        <td><i>{diagno.addedBy?.fullName}</i></td>
                         <td style={{'position': 'relative'}}>
                           <span className='cursor-pointer' onClick={() => {setItemToDelete(diagno.title)}} style={{ 'position': 'absolute', 'right': '10px', 'top': '10px'}}>
                             <XCircleIcon size={20} />

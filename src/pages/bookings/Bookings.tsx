@@ -13,7 +13,9 @@ import { CalendarIcon, ListOrderedIcon } from '@primer/octicons-react';
 
 const Tabs = {
     Consulation: 'Consulation',
-    Treatment: 'Treatment'
+    Treatment: 'Treatment',
+    Maintainanace: 'Maintainanace',
+
 };
 
 const Bookings = () => {
@@ -28,6 +30,8 @@ const Bookings = () => {
                 return <Consulation />;
             case Tabs.Treatment:
                 return <Treatments />;
+            case Tabs.Maintainanace:
+                return <Maintainances />;
             default:
                 return <div />
         }
@@ -52,8 +56,19 @@ const Bookings = () => {
         return (
             <div className="row">
                 { viewMode === 'LIST'
-                    ? <BookingList type={'TREATMENT'} bookingHandler={bookingHandler}/>
+                    ? <BookingList type={'Maintainanace'} bookingHandler={bookingHandler}/>
                     : <BookingCalendar type={'TREATMENT'} bookingHandler={bookingHandler}/>
+                }
+            </div>
+        );
+    };
+
+    const Maintainances = () => {
+        return (
+            <div className="row">
+                { viewMode === 'LIST'
+                    ? <BookingList type={'MAINTAINANCE'} bookingHandler={bookingHandler}/>
+                    : <BookingCalendar type={'MAINTAINANCE'} bookingHandler={bookingHandler}/>
                 }
             </div>
         );
@@ -126,6 +141,9 @@ const Bookings = () => {
                         </div>
                         <div className={`col tab me-1 ${tab === Tabs.Treatment ? 'active-tab' : ''}`} onClick={() => setTab(Tabs.Treatment)}>
                             Treatments
+                        </div>
+                        <div className={`col tab me-1 ${tab === Tabs.Maintainanace ? 'active-tab' : ''}`} onClick={() => setTab(Tabs.Maintainanace)}>
+                            Maintainances
                         </div>
                     </div>
                     {<TabContent />}

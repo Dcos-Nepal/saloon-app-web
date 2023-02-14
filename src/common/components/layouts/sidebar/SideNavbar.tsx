@@ -54,6 +54,17 @@ const SideNavbar: FC<IProps> = ({ active }) => {
               <span className="ms-2 d-none d-sm-inline">Clients</span>
             </span>
           </li>
+          <li>
+            <span
+              onClick={() => navigate('/dashboard/' + endpoints.admin.packageClient.list)}
+              className={active === 'Package Clients' ? 'nav-link nav-link-active align-middle px-0' : 'nav-link align-middle px-0'}
+            >
+              <span className="mt-1">
+                <PersonFillIcon size={'small'} />
+              </span>
+              <span className="ms-2 d-none d-sm-inline">Package Clients</span>
+            </span>
+          </li>
           <li className="nav-item">
             <span
               onClick={() => navigate('/dashboard/' + endpoints.admin.quotes.list)}

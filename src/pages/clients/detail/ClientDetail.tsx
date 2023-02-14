@@ -307,7 +307,7 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient }) => {
         // Preparing FormData
         data = {
           ...data,
-          createdDate: new Date().toISOString()
+          createdDate: new Date().toISOString(),
         };
 
         // Update client
@@ -428,6 +428,8 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient }) => {
                     <th>Title</th>
                     <th>Description</th>
                     <th>Access</th>
+                    <th>Created Date</th>
+                    <th>Created By</th>
                     <th style={{width: '40px'}}></th>
                   </tr>
                 </thead>
@@ -440,6 +442,8 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient }) => {
                         <td>{diagno.title}</td>
                         <td><i>{diagno.description}</i></td>
                         <td><i>{diagno.isPrivate ? 'Private' : 'Public'}</i></td>
+                        <td><i>{DateTime.fromISO(diagno.createdDate).toFormat('yyyy-MM-dd hh:mm a')}</i></td>
+                        <td><i>{diagno.addedBy?.fullName}</i></td>
                         <td style={{'position': 'relative'}}>
                           <span className='cursor-pointer' onClick={() => {setItemToDelete(diagno.title)}} style={{ 'position': 'absolute', 'right': '10px', 'top': '10px'}}>
                             <XCircleIcon size={20} />
@@ -801,9 +805,6 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient }) => {
               </div>
               <div className="">
                 <div className="row mt-3">
-                  <div className={`col tab me-1 ${tab === Tabs.ClientPictures ? 'active-tab' : ''}`} onClick={() => setTab(Tabs.ClientPictures)}>
-                    <RepoPushIcon /> Client's Pictures
-                  </div>
                   <div className={`col tab me-1 ${tab === Tabs.Diagnosis ? 'active-tab' : ''}`} onClick={() => setTab(Tabs.Diagnosis)}>
                     <RepoCloneIcon /> Diagnosis Info
                   </div>
@@ -814,10 +815,13 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient }) => {
                     <BellIcon /> Used Products
                   </div>
                   <div className={`col tab me-1 ${tab === Tabs.Orders ? 'active-tab' : ''}`} onClick={() => setTab(Tabs.Orders)}>
-                    <AppsIcon /> Orders
+                    <AppsIcon /> Order List
                   </div>
                   <div className={`col tab me-1 ${tab === Tabs.Suggestions ? 'active-tab' : ''}`} onClick={() => setTab(Tabs.Suggestions)}>
                     <StarIcon /> Product Suggestion
+                  </div>
+                  <div className={`col tab me-1 ${tab === Tabs.ClientPictures ? 'active-tab' : ''}`} onClick={() => setTab(Tabs.ClientPictures)}>
+                    <RepoPushIcon /> Client's Pictures
                   </div>
                 </div>
               </div>

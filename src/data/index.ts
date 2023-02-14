@@ -18,6 +18,15 @@ export const getAppointmentTypes = () => {
   ];
 };
 
+
+export const getPaymentTypes = () => {
+  return [
+    { label: 'CASH', value: 'CASH', isActive: true },
+    { label: 'CHEQUE', value: 'CHEQUE', isActive: true },
+    { label: 'ONLINE', value: 'ONLINE', isActive: true }
+  ];
+};
+
 export const getAppoinmentVeriation = () => {
   return [
     { label: 'REGULAR', value: 'REGULAR', isActive: true },

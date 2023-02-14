@@ -2,42 +2,35 @@ import pinterpolate from 'pinterpolate';
 import { useNavigate } from 'react-router-dom';
 import { Column, useTable } from 'react-table';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import * as clientsActions from '../../../store/actions/clients.actions';
 
 import { endpoints } from 'common/config';
 import InputField from 'common/components/form/Input';
-import { connect } from 'react-redux';
 import ReactPaginate from 'react-paginate';
 import { Loader } from 'common/components/atoms/Loader';
 import debounce from 'lodash/debounce';
 import EmptyState from 'common/components/EmptyState';
-import { CalendarIcon, ClockIcon, EyeIcon, ListOrderedIcon, PencilIcon, PersonAddIcon, SyncIcon, TrashIcon } from '@primer/octicons-react';
+import { EyeIcon, PencilIcon, PersonAddIcon, SyncIcon, TrashIcon } from '@primer/octicons-react';
 import Modal from 'common/components/atoms/Modal';
 import { deleteUserApi } from 'services/customers.service';
 import { toast } from 'react-toastify';
 import DeleteConfirm from 'common/components/DeleteConfirm';
 import { getCurrentUser } from 'utils';
-import AppointmentAddForm from 'pages/appointments/add';
-import { createQuotesApi } from 'services/appointments.service';
-import DummyImage from '../../../assets/images/dummy.png';
-import { addVisitApi, updateVisitApi } from 'services/visits.service';
-import AddBookingForm from 'pages/bookings/AddBooking';
 import SelectField from 'common/components/form/Select';
 import { getClientTags } from 'data';
 import { IOption } from 'common/types/form';
-import { addPackageClientApi, updatePackageClientApi } from 'services/package-client.service';
+import { addPackageClientApi, fetchPackageClientsApi, updatePackageClientApi } from 'services/package-client.service';
 import AddPackageClient from '../add/AddPackageClient';
 
 interface IClient {
   name: string;
-  email: string;
-  address: string;
-  contact: string;
-  status: boolean;
+  paymentType: string;
+  description: string;
+  packagePaidDate: string;
+  createdAt: string;
   updatedAt: string;
 }
 
-const ClientsList = (props: any) => {
+const PackageClientList = (props: any) => {
   const navigate = useNavigate();
   const [itemsPerPage] = useState(15);
   const [query, setQuery] = useState('');
@@ -45,11 +38,9 @@ const ClientsList = (props: any) => {
   const [pageCount, setPageCount] = useState(0);
   const [clients, setClients] = useState<IClient[]>([]);
   const [deleteInProgress, setDeleteInProgress] = useState('');
-  const [addSchedule, setAddSchedule] = useState<boolean>(false);
   const [currUser,] = useState(getCurrentUser());
-  const [bookingDetails, setBookingDetails] = useState<any>(null);
+  const [selectedTags, setSelectedTags] = useState<string>('');
   const [packageClient, setPackageClient] = useState<any>(null);
-  const [selectedTags, setSelectedTags] = useState<string>('')
 
   const deleteClientHandler = async () => {
     try {
@@ -75,12 +66,7 @@ const ClientsList = (props: any) => {
 
     if (currUser.role.includes('SHOP_ADMIN' || 'ADMIN')) clientQuery.createdBy = currUser.id;
 
-    props.actions.fetchClients({
-      q: query,
-      ...clientQuery,
-      page: offset,
-      limit: itemsPerPage
-    });
+    fetchPackageClients(itemsPerPage, offset, query);
   }
 
   const handlePageClick = (event: any) => {
@@ -93,26 +79,13 @@ const ClientsList = (props: any) => {
     setQuery(query);
   };
 
-  /**
-   * Handles line item Save
-   * @param data 
-   */
-  const addNewBooking = async (data: any) => {
-    try {
-      await addVisitApi(data);
-      toast.success('Booking added successfully');
-      setBookingDetails(null);
-    } catch (ex) {
-      toast.error('Failed to add Booking');
-    }
-  };
-
   const addNewPackageClient = async (data: any) => {
     console.log(data)
     try {
       await addPackageClientApi(data);
       toast.success('Package Client added successfully');
-      setBookingDetails(null);
+      setPackageClient(null);
+      fetchPackageClients(itemsPerPage, offset, query);
     } catch (ex) {
       toast.error('Failed to add package client');
     }
@@ -122,28 +95,11 @@ const ClientsList = (props: any) => {
     try {
       await updatePackageClientApi(id, data);
       toast.success('Package client updated successfully');
-      setBookingDetails(null);
+      setPackageClient(null);
     } catch (ex) {
       toast.error('Failed to update Package Client');
     }
   };
-
-
-  /**
-   * Update Booking Information
-   * @param id string
-   * @param data any
-   */
-  const updateBooking = async (id: string, data: any) => {
-    try {
-      await updateVisitApi(id, data);
-      toast.success('Booking updated successfully');
-      setBookingDetails(null);
-    } catch (ex) {
-      toast.error('Failed to update Booking');
-    }
-  };
-
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const handleSearch = useCallback(debounce(handleClientSearch, 300), []);
 
@@ -154,19 +110,9 @@ const ClientsList = (props: any) => {
         accessor: (row: any) => {
           return (
             <div className='row'>
-              <div className='col-4 cursor-pointer' onClick={() => navigate(pinterpolate(endpoints.admin.client.detail, { id: row._id }))}>
-                {row.photo ? (
-                  <object data={process.env.REACT_APP_API + 'v1/customers/avatars/' + row.photo} style={{ 'width': '72px' }}>
-                    <img src={DummyImage} alt="Profile Picture" style={{ 'width': '72px' }} />
-                  </object>
-                ) : <img src={DummyImage} alt="Profile Picture" style={{ 'width': '72px' }} />}
-              </div>
               <div className='col-8'>
                 <div className="cursor-pointer" onClick={() => navigate(pinterpolate(endpoints.admin.client.detail, { id: row._id }))}>
-                  <div><b>{row.name}</b> ({row.gender})</div>
-                  <div>Date of Birth: <b>{row.dob ? row.dob as string : '-- --'}</b></div>
-                  <div>Address: <b>{row.address || 'Address not added.'}</b></div>
-                  <small>Created at: {new Date(row.createdAt).toLocaleString()}</small>
+                  <div>{row.name}</div>
                 </div>
               </div>
             </div>
@@ -174,29 +120,46 @@ const ClientsList = (props: any) => {
         }
       },
       {
-        Header: 'CONTACT',
+        Header: 'Payment Type',
         accessor: (row: any) => {
           return (
-            <div>
-              <div>
-                Phone: <b>{row.contact}</b>
-                {!row.contact ? <label><i>[Phone Number not added]</i></label> : null}
-              </div>
-              <div>
-                Email: <b>{row.email}</b>
-                {!row.email ? <label><i>[Email not added]</i></label> : null}
+            <div className='row'>
+              <div className='col-8'>
+                <div className="cursor-pointer">
+                  <div>{row.paymentType}</div>
+                </div>
               </div>
             </div>
           );
         }
       },
       {
-        Header: '  ',
-        accessor: (row: any) => (
-          <div className='mt-3 btn btn-primary btn-small' onClick={() => { setAddSchedule(row) }}>
-            <ClockIcon /> Schedule
-          </div>
-        )
+        Header: 'Payment Date',
+        accessor: (row: any) => {
+          return (
+            <div className='row'>
+              <div className='col-8'>
+                <div className="cursor-pointer">
+                  <div>{new Date(row.packagePaidDate).toLocaleString()}</div>
+                </div>
+              </div>
+            </div>
+          );
+        }
+      },
+      {
+        Header: 'Notes',
+        accessor: (row: any) => {
+          return (
+            <div className='row'>
+              <div className='col-8'>
+                <div className="cursor-pointer">
+                  <div>{row.description}</div>
+                </div>
+              </div>
+            </div>
+          );
+        }
       },
       {
         Header: ' ',
@@ -222,18 +185,6 @@ const ClientsList = (props: any) => {
                   <TrashIcon /> Delete
                 </span>
               </li>
-              <li onClick={() => { setAddSchedule(row) }}>
-                <span className="dropdown-item pointer"><ClockIcon /> Schedule</span>
-              </li>
-              <li onClick={() => { navigate('/dashboard/orders/add?client=' + row._id) }}>
-                <span className="dropdown-item pointer"><ListOrderedIcon /> Add Order</span>
-              </li>
-              <li onClick={() => { setBookingDetails({ customer: { _id: row._id } }) }}>
-                <span className="dropdown-item pointer"><CalendarIcon /> Add Booking</span>
-              </li>
-              <li onClick={() => { setPackageClient({ customer: { _id: row._id } }) }}>
-                <span className="dropdown-item pointer"><CalendarIcon /> Add to Package Clients</span>
-              </li>
             </ul>
           </div>
         )
@@ -245,57 +196,37 @@ const ClientsList = (props: any) => {
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({ columns, data: clients });
 
-  /**
-   * Handles Appointment Save
-   * @param data 
-   */
-  const scheduleHandler = async (data: any) => {
-    try {
-      await createQuotesApi(data);
-      toast.success('Appointment added successfully');
-      setAddSchedule(false);
-    } catch (ex) {
-      toast.error('Failed to add appointment');
-    }
-  };
-
-  useEffect(() => {
-    const clientQuery: { createdBy?: string; } = {}
-
-    props.actions.fetchClients({
+  const fetchPackageClients = async (itemsPerPage: any, offset: any,  query: any) => {
+    const clients = await fetchPackageClientsApi({
       q: query,
-      ...clientQuery,
-      tags: selectedTags,
       page: offset,
       limit: itemsPerPage
     });
-  }, [itemsPerPage, offset, props.actions, query, selectedTags]);
 
-  useEffect(() => {
-    if (props.clients?.data?.rows) {
+    if (clients?.data?.data.data.rows) {
       setClients(
-        props.clients.data?.rows.map((row: any) => ({
-          name: row.fullName || `${row?.firstName} ${row?.lastName}`,
-          email: row.email,
-          address: row?.address,
-          contact: row.phoneNumber,
-          photo: row.photo,
-          gender: row.gender,
-          dob: row.dateOfBirth,
-          status: row.auth?.email?.verified,
-          createdAt: row.createdAt,
-          _id: row._id
+        clients.data?.data.data.rows.map((row: any) => ({
+          _id: row._id,
+          name: row.customer.fullName || `${row?.customer.firstName} ${row?.customer.lastName}`,
+          paymentType: row.paymentType,
+          description: row.description,
+          isApproved: row.isApproved,
+          packagePaidDate: row.packagePaidDate,
         }))
       );
-      setPageCount(Math.ceil(props.clients.data.totalCount / itemsPerPage));
+      setPageCount(Math.ceil(props.clients.data?.data.data.totalCount / itemsPerPage));
     }
-  }, [itemsPerPage, props.clients]);
+  }
+
+  useEffect(() => {
+    fetchPackageClients(itemsPerPage, offset, query)
+  }, [itemsPerPage, offset, props.actions, query]);
 
   return (
     <>
       <div className="row">
         <div className="col-9 d-flex flex-row">
-          <h3 className="extra">Clients</h3>
+          <h3 className="extra">Package Clients</h3>
         </div>
         <div className="col-3 d-flex flex-row-reverse">
           <div
@@ -306,7 +237,7 @@ const ClientsList = (props: any) => {
           </div>
           &nbsp;&nbsp;
           <div
-            onClick={() => { navigate(endpoints.admin.client.add); }}
+            onClick={() => { setPackageClient({ customer: { _id: '' } }) }}
             className="btn btn-primary d-flex float-end"
           >
             <PersonAddIcon className='mt-1' />&nbsp;New client
@@ -388,17 +319,6 @@ const ClientsList = (props: any) => {
         <DeleteConfirm onDelete={deleteClientHandler} closeModal={() => setDeleteInProgress('')} />
       </Modal>
 
-      <Modal isOpen={!!addSchedule} onRequestClose={() => setAddSchedule(false)}>
-        <AppointmentAddForm client={addSchedule} closeModal={() => setAddSchedule(false)} saveHandler={scheduleHandler} />
-      </Modal>
-
-      <Modal isOpen={!!bookingDetails} onRequestClose={() => setBookingDetails(null)}>
-        <AddBookingForm closeModal={() => setBookingDetails(null)}
-          saveHandler={addNewBooking}
-          updateHandler={updateBooking}
-          bookingDetails={bookingDetails} />
-      </Modal>
-
       <Modal isOpen={!!packageClient} onRequestClose={() => setPackageClient(null)}>
         <AddPackageClient
           closeModal={() => setPackageClient(null)}
@@ -411,19 +331,4 @@ const ClientsList = (props: any) => {
   );
 };
 
-const mapStateToProps = (state: any) => {
-  return {
-    clients: state.clients.clients,
-    isLoading: state.clients.isLoading
-  };
-};
-
-const mapDispatchToProps = (dispatch: any) => ({
-  actions: {
-    fetchClients: (payload: any) => {
-      dispatch(clientsActions.fetchClients(payload));
-    }
-  }
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(ClientsList);
+export default PackageClientList;

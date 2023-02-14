@@ -736,7 +736,7 @@ input, textarea {
 
 /* Tab views */
 .tab {
-    font-size: 1rem;
+    font-size: 0.5rem;
     color: #959FAE;
     background: #F9F9F9;
     font-weight: bold;
@@ -765,4 +765,8 @@ input, textarea {
 
 .pac-container {
     z-index: 9999;
+}
+
+.tab {
+    font-size: 12px;
 }

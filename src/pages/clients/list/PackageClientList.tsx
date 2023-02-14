@@ -11,15 +11,15 @@ import debounce from 'lodash/debounce';
 import EmptyState from 'common/components/EmptyState';
 import { EyeIcon, PencilIcon, PersonAddIcon, SyncIcon, TrashIcon } from '@primer/octicons-react';
 import Modal from 'common/components/atoms/Modal';
-import { deleteUserApi } from 'services/customers.service';
 import { toast } from 'react-toastify';
 import DeleteConfirm from 'common/components/DeleteConfirm';
 import { getCurrentUser } from 'utils';
 import SelectField from 'common/components/form/Select';
 import { getClientTags } from 'data';
 import { IOption } from 'common/types/form';
-import { addPackageClientApi, fetchPackageClientsApi, updatePackageClientApi } from 'services/package-client.service';
+import { addPackageClientApi, deletePackageClientApi, fetchPackageClientsApi, updatePackageClientApi } from 'services/package-client.service';
 import AddPackageClient from '../add/AddPackageClient';
+import { DateTime } from 'luxon';
 
 interface IClient {
   name: string;
@@ -39,22 +39,15 @@ const PackageClientList = (props: any) => {
   const [clients, setClients] = useState<IClient[]>([]);
   const [deleteInProgress, setDeleteInProgress] = useState('');
   const [currUser,] = useState(getCurrentUser());
-  const [selectedTags, setSelectedTags] = useState<string>('');
   const [packageClient, setPackageClient] = useState<any>(null);
 
   const deleteClientHandler = async () => {
     try {
       if (deleteInProgress) {
-        await deleteUserApi(deleteInProgress);
-        toast.success('Client deleted successfully');
+        await deletePackageClientApi(deleteInProgress);
+        toast.success('Package Client deleted successfully');
+        fetchPackageClients(itemsPerPage, offset, query);
         setDeleteInProgress('');
-
-        props.actions.fetchClients({
-          q: query,
-          roles: 'CLIENT',
-          page: offset,
-          limit: itemsPerPage
-        });
       }
     } catch (ex) {
       toast.error('Failed to delete client');
@@ -95,6 +88,7 @@ const PackageClientList = (props: any) => {
     try {
       await updatePackageClientApi(id, data);
       toast.success('Package client updated successfully');
+      fetchPackageClients(itemsPerPage, offset, query);
       setPackageClient(null);
     } catch (ex) {
       toast.error('Failed to update Package Client');
@@ -112,7 +106,7 @@ const PackageClientList = (props: any) => {
             <div className='row'>
               <div className='col-8'>
                 <div className="cursor-pointer" onClick={() => navigate(pinterpolate(endpoints.admin.client.detail, { id: row._id }))}>
-                  <div>{row.name}</div>
+                  <div>{row.customer?.fullName}</div>
                 </div>
               </div>
             </div>
@@ -140,7 +134,21 @@ const PackageClientList = (props: any) => {
             <div className='row'>
               <div className='col-8'>
                 <div className="cursor-pointer">
-                  <div>{new Date(row.packagePaidDate).toLocaleString()}</div>
+                  <div>{DateTime.fromISO(row.packagePaidDate).toFormat('yyyy-MM-dd')}</div>
+                </div>
+              </div>
+            </div>
+          );
+        }
+      },
+      {
+        Header: 'Is Approved?',
+        accessor: (row: any) => {
+          return (
+            <div className='row'>
+              <div className='col-8'>
+                <div className="cursor-pointer">
+                  <div>{row.isApproved ? 'Yes' : 'No'}</div>
                 </div>
               </div>
             </div>
@@ -165,17 +173,12 @@ const PackageClientList = (props: any) => {
         Header: ' ',
         maxWidth: 40,
         accessor: (row: any) => (
-          <div className="dropdown mt-4">
+          <div className="dropdown">
             <span role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
               <box-icon name="dots-vertical-rounded"></box-icon>
             </span>
             <ul className="dropdown-menu" aria-labelledby="dropdownMenuLink">
-              <li onClick={() => navigate(pinterpolate(endpoints.admin.client.detail, { id: row._id }))}>
-                <span className="dropdown-item cursor-pointer" >
-                  <EyeIcon /> View Detail
-                </span>
-              </li>
-              <li onClick={() => navigate(pinterpolate(endpoints.admin.client.edit, { id: row._id }))}>
+              <li onClick={() => setPackageClient({...row})}>
                 <span className="dropdown-item cursor-pointer">
                   <PencilIcon /> Edit
                 </span>
@@ -207,7 +210,8 @@ const PackageClientList = (props: any) => {
       setClients(
         clients.data?.data.data.rows.map((row: any) => ({
           _id: row._id,
-          name: row.customer.fullName || `${row?.customer.firstName} ${row?.customer.lastName}`,
+          id: row._id,
+          customer: row.customer,
           paymentType: row.paymentType,
           description: row.description,
           isApproved: row.isApproved,
@@ -225,10 +229,10 @@ const PackageClientList = (props: any) => {
   return (
     <>
       <div className="row">
-        <div className="col-9 d-flex flex-row">
+        <div className="col-8 d-flex flex-row">
           <h3 className="extra">Package Clients</h3>
         </div>
-        <div className="col-3 d-flex flex-row-reverse">
+        <div className="col-4 d-flex flex-row-reverse">
           <div
             onClick={() => handleRefresh()}
             className="btn btn-secondary d-flex float-end"
@@ -236,11 +240,8 @@ const PackageClientList = (props: any) => {
             <SyncIcon className='mt-1' />&nbsp;Refresh
           </div>
           &nbsp;&nbsp;
-          <div
-            onClick={() => { setPackageClient({ customer: { _id: '' } }) }}
-            className="btn btn-primary d-flex float-end"
-          >
-            <PersonAddIcon className='mt-1' />&nbsp;New client
+          <div onClick={() => { setPackageClient({ customer: { _id: '' } }) }} className="btn btn-primary d-flex float-end">
+            <PersonAddIcon className='mt-1' />&nbsp;Add Package client
           </div>
         </div>
         {(currUser.role.includes('SHOP_ADMIN' || 'ADMIN')) ? <label className="txt-grey">Total {query ? `${clients.length} search results found!` : `${props?.clients?.data?.totalCount || 0} clients`}</label> : null}
@@ -248,20 +249,8 @@ const PackageClientList = (props: any) => {
       <div className="card">
         <div className="row pt-2 m-1 rounded-top bg-grey">
           <Loader isLoading={props.isLoading} />
-          <div className="col-9">
-            <InputField label="Search" placeholder="Search clients" className="search-input" onChange={handleSearch} />
-          </div>
-          <div className="col-3">
-            <SelectField
-              label="Tags"
-              name="tags"
-              isMulti={false}
-              value={selectedTags}
-              options={getClientTags().filter((tag) => tag.isActive)}
-              handleChange={(selectedTag: IOption) => {
-                setSelectedTags(selectedTag ? selectedTag.value.toString() : '');
-              }}
-            />
+          <div className="col-4">
+            <InputField label="Search" placeholder="Search package clients" className="search-input" onChange={handleSearch} />
           </div>
           {!clients.length ? (
             <EmptyState />

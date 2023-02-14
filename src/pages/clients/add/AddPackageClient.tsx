@@ -15,7 +15,8 @@ const AddPackageClient: FC<IProps> = ({ closeModal, saveHandler, updateHandler, 
     customer: !!packageClient?.customer ? packageClient?.customer?._id : '',
     paymentType: packageClient?.type || 'CASH',
     isApproved: packageClient?.isApproved,
-    bookingDate: `${dt.getFullYear()}-${`${dt.getMonth() +1}`.padStart(2,'0')}-${`${dt.getDate()}`.padStart(2,'0')}T${`${dt.getHours()}`.padStart(2,'0')}:${`${dt.getMinutes()}`.padStart(2, '0')}`
+    description: packageClient?.description,
+    packagePaidDate: `${dt.getFullYear()}-${`${dt.getMonth() +1}`.padStart(2,'0')}-${`${dt.getDate()}`.padStart(2,'0')}T${`${dt.getHours()}`.padStart(2,'0')}:${`${dt.getMinutes()}`.padStart(2, '0')}`
   }
 
   return (

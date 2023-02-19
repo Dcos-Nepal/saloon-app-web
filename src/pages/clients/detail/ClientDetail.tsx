@@ -47,7 +47,7 @@ const ClientDetail: FC<IProps> = ({ actions, currentClient }) => {
     Suggestions: 'Suggestions'
   };
 
-  const [tab, setTab] = useState(Tabs.ClientPictures);
+  const [tab, setTab] = useState(Tabs.Diagnosis);
 
   const Quotes = () => {
     return (

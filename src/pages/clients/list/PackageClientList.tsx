@@ -9,14 +9,11 @@ import ReactPaginate from 'react-paginate';
 import { Loader } from 'common/components/atoms/Loader';
 import debounce from 'lodash/debounce';
 import EmptyState from 'common/components/EmptyState';
-import { EyeIcon, PencilIcon, PersonAddIcon, SyncIcon, TrashIcon } from '@primer/octicons-react';
+import { AlertFillIcon, CheckCircleIcon, PencilIcon, PersonAddIcon, SyncIcon, TrashIcon } from '@primer/octicons-react';
 import Modal from 'common/components/atoms/Modal';
 import { toast } from 'react-toastify';
 import DeleteConfirm from 'common/components/DeleteConfirm';
 import { getCurrentUser } from 'utils';
-import SelectField from 'common/components/form/Select';
-import { getClientTags } from 'data';
-import { IOption } from 'common/types/form';
 import { addPackageClientApi, deletePackageClientApi, fetchPackageClientsApi, updatePackageClientApi } from 'services/package-client.service';
 import AddPackageClient from '../add/AddPackageClient';
 import { DateTime } from 'luxon';
@@ -32,6 +29,7 @@ interface IClient {
 
 const PackageClientList = (props: any) => {
   const navigate = useNavigate();
+  const currentUser = getCurrentUser();
   const [itemsPerPage] = useState(15);
   const [query, setQuery] = useState('');
   const [offset, setOffset] = useState(1);
@@ -94,6 +92,18 @@ const PackageClientList = (props: any) => {
       toast.error('Failed to update Package Client');
     }
   };
+
+  const approvePackageClient = async (id: string, data: any) => {
+    try {
+      await updatePackageClientApi(id, data);
+      toast.success('Package client approved successfully');
+      fetchPackageClients(itemsPerPage, offset, query);
+      setPackageClient(null);
+    } catch (ex) {
+      toast.error('Failed to approve Package Client');
+    }
+  };
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const handleSearch = useCallback(debounce(handleClientSearch, 300), []);
 
@@ -156,6 +166,20 @@ const PackageClientList = (props: any) => {
         }
       },
       {
+        Header: 'Sessions',
+        accessor: (row: any) => {
+          return (
+            <div className='row'>
+              <div className='col-8'>
+                <div className="cursor-pointer">
+                  <div>{row.noOfSessions}</div>
+                </div>
+              </div>
+            </div>
+          );
+        }
+      },
+      {
         Header: 'Notes',
         accessor: (row: any) => {
           return (
@@ -178,7 +202,7 @@ const PackageClientList = (props: any) => {
               <box-icon name="dots-vertical-rounded"></box-icon>
             </span>
             <ul className="dropdown-menu" aria-labelledby="dropdownMenuLink">
-              <li onClick={() => setPackageClient({...row})}>
+              <li onClick={() => setPackageClient({ ...row })}>
                 <span className="dropdown-item cursor-pointer">
                   <PencilIcon /> Edit
                 </span>
@@ -188,6 +212,30 @@ const PackageClientList = (props: any) => {
                   <TrashIcon /> Delete
                 </span>
               </li>
+
+              {!row.isApproved && currentUser.role.includes('SHOP_ADMIN' || 'ADMIN')
+                ? (<li onClick={() => approvePackageClient(row._id, {
+                  ...row,
+                  customer: row.customer._id,
+                  isApproved: true
+                })}>
+                  <span className="dropdown-item cursor-pointer">
+                    <CheckCircleIcon /> Approve
+                  </span>
+                </li>) : null
+              }
+
+              {row.isApproved && currentUser.role.includes('SHOP_ADMIN' || 'ADMIN')
+                ? (<li onClick={() => approvePackageClient(row._id, {
+                  ...row,
+                  customer: row.customer._id,
+                  isApproved: false
+                })}>
+                  <span className="dropdown-item cursor-pointer">
+                    <AlertFillIcon /> Reject
+                  </span>
+                </li>) : null}
+
             </ul>
           </div>
         )
@@ -199,7 +247,7 @@ const PackageClientList = (props: any) => {
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({ columns, data: clients });
 
-  const fetchPackageClients = async (itemsPerPage: any, offset: any,  query: any) => {
+  const fetchPackageClients = async (itemsPerPage: any, offset: any, query: any) => {
     const clients = await fetchPackageClientsApi({
       q: query,
       page: offset,
@@ -215,6 +263,7 @@ const PackageClientList = (props: any) => {
           paymentType: row.paymentType,
           description: row.description,
           isApproved: row.isApproved,
+          noOfSessions: row.noOfSessions,
           packagePaidDate: row.packagePaidDate,
         }))
       );

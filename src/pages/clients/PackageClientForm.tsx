@@ -9,7 +9,7 @@ import InputField from 'common/components/form/Input';
 import { Loader } from 'common/components/atoms/Loader';
 import SelectField from 'common/components/form/Select';
 import { IOption } from 'common/types/form';
-import { getAppointmentTypes, getPaymentTypes } from 'data';
+import { getPaymentTypes } from 'data';
 
 interface IProps {
   closeModal: () => void;
@@ -22,7 +22,8 @@ const PackageClientForm = ({ closeModal, saveHandler, updateHandler, packageClie
   const initialValues = !!packageClient ? packageClient : {
     customer: '',
     paymentType: 'CASH',
-    packagePaidDate: ''
+    packagePaidDate: '',
+    noOfSessions: 0
   };
 
   const [isLoading, setIsLoading] = useState(false);
@@ -36,6 +37,7 @@ const PackageClientForm = ({ closeModal, saveHandler, updateHandler, packageClie
         is: (customer: string) => !customer,
         then: Yup.string().required('Payment Type is required'),
       }),
+    noOfSessions: Yup.number().required('No of sessions is required'),
     packagePaidDate: Yup
       .string()
       .when("customer", {
@@ -65,7 +67,7 @@ const PackageClientForm = ({ closeModal, saveHandler, updateHandler, packageClie
   /**
    * Handles Client selection
    */
-   const handleClientSelection = async (event: any) => {
+  const handleClientSelection = async (event: any) => {
     formik.setFieldValue(`customer`, event ? event.value : '');
   };
 
@@ -99,7 +101,7 @@ const PackageClientForm = ({ closeModal, saveHandler, updateHandler, packageClie
             name={`customer`}
             label="Select Client"
             value={formik.values.customer}
-            resource={{ name: 'customers', labelProp: 'fullName', valueProp: '_id'}}
+            resource={{ name: 'customers', labelProp: 'fullName', valueProp: '_id' }}
             onChange={handleClientSelection}
             preload={true}
           />
@@ -128,7 +130,7 @@ const PackageClientForm = ({ closeModal, saveHandler, updateHandler, packageClie
               helperComponent={<ErrorMessage name="paymentType" />}
               handleChange={(selectedTag: IOption) => {
                 formik.setFieldValue('paymentType', !!selectedTag ? selectedTag.value : '');
-              }}getAppoinmentVeriation
+              }} getAppoinmentVeriation
               onBlur={formik.handleBlur}
             />
           </div>
@@ -146,6 +148,18 @@ const PackageClientForm = ({ closeModal, saveHandler, updateHandler, packageClie
             }}
             helperComponent={<ErrorMessage name="description" />}
             onBlur={formik.handleBlur}
+          />
+        </div>
+
+        <div className='row'>
+          <InputField
+            label="Recommended Sessions"
+            type="number"
+            placeholder="Enter no. of sessions"
+            name={`noOfSessions`}
+            value={formik.values.noOfSessions}
+            onChange={formik.handleChange}
+            helperComponent={<ErrorMessage name="noOfSessions" />}
           />
         </div>
       </div>

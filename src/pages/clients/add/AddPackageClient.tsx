@@ -14,6 +14,7 @@ const AddPackageClient: FC<IProps> = ({ closeModal, saveHandler, updateHandler, 
     id: !!packageClient ? packageClient?.id : '',
     customer: !!packageClient?.customer ? packageClient?.customer?._id : '',
     paymentType: packageClient?.type || 'CASH',
+    noOfSessions: packageClient?.noOfSessions || 0,
     isApproved: packageClient?.isApproved,
     description: packageClient?.description,
     packagePaidDate: `${dt.getFullYear()}-${`${dt.getMonth() +1}`.padStart(2,'0')}-${`${dt.getDate()}`.padStart(2,'0')}T${`${dt.getHours()}`.padStart(2,'0')}:${`${dt.getMinutes()}`.padStart(2, '0')}`

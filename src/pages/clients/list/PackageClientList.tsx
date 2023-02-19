@@ -115,7 +115,7 @@ const PackageClientList = (props: any) => {
           return (
             <div className='row'>
               <div className='col-8'>
-                <div className="cursor-pointer" onClick={() => navigate(pinterpolate(endpoints.admin.client.detail, { id: row._id }))}>
+                <div className="cursor-pointer" onClick={() => navigate(pinterpolate(endpoints.admin.client.detail, { id: row.customer._id }))}>
                   <div>{row.customer?.fullName}</div>
                 </div>
               </div>

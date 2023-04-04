@@ -1,14 +1,20 @@
+import { getData } from "utils/storage";
+
+export const DCosmoSkinCare = '64291e3f63f813458cbad76e';
+export const DCosmoHairCare = '6429202863f813458cbad76f';
+
 export const getServices = () => {
+  const currentShopId = getData('shopId') || null
   return [
-    { label: 'Melasma Treatment', value: 'Melasma Treatment', isActive: true },
-    { label: 'Acne Treatment', value: 'Acne Treatment', isActive: true },
-    { label: 'Freckles', value: 'Freckles', isActive: true },
-    { label: 'Microblading', value: 'Microblading', isActive: true },
-    { label: 'Hair Transplant', value: 'Hair Transplant', isActive: true },
-    { label: 'Wrinkles Treatment', value: 'Wrinkles Treatment', isActive: true },
-    { label: 'Hair Transplant', value: 'Hair Transplant', isActive: true },
-    { label: 'Hydrafacial', value: 'Hydrafacial', isActive: true }
-  ];
+    { shopId: DCosmoSkinCare, label: 'Melasma Treatment', value: 'Melasma Treatment', isActive: true },
+    { shopId: DCosmoSkinCare, label: 'Acne Treatment', value: 'Acne Treatment', isActive: true },
+    { shopId: DCosmoSkinCare, label: 'Freckles', value: 'Freckles', isActive: true },
+    { shopId: DCosmoSkinCare, label: 'Microblading', value: 'Microblading', isActive: true },
+    { shopId: DCosmoSkinCare, label: 'Hair Transplant', value: 'Hair Transplant', isActive: true },
+    { shopId: DCosmoSkinCare, label: 'Wrinkles Treatment', value: 'Wrinkles Treatment', isActive: true },
+    { shopId: DCosmoSkinCare, label: 'Hair Transplant', value: 'Hair Transplant', isActive: true },
+    { shopId: DCosmoSkinCare, label: 'Hydrafacial', value: 'Hydrafacial', isActive: true }
+  ].filter((s) => s.shopId === currentShopId);
 };
 
 export const getAppointmentTypes = () => {
@@ -67,3 +73,10 @@ export const getBookingStatus = () => {
     { label: 'CANCELLED', value: 'CANCELLED', isActive: true }
   ]
 }
+
+export const getShopsOptions = () => {
+  return [
+    { label: 'DCosmo - Skin Care', value: DCosmoSkinCare, isActive: true },
+    { label: 'DCosmo - Hair Care', value: DCosmoHairCare, isActive: true },
+  ];
+};

@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import jwt_decode from "jwt-decode";
 
 import * as Yup from "yup";
-import { useFormik } from "formik";
+import { getIn, useFormik } from "formik";
 
 import { endpoints } from 'common/config';
 import { getData, setData } from 'utils/storage';
@@ -12,6 +13,10 @@ import LogoFull from 'assets/images/LogoFull.svg';
 import { Loader } from 'common/components/atoms/Loader';
 import InputField from 'common/components/form/Input';
 import { toast } from 'react-toastify';
+import { getShopsOptions } from 'data';
+import { StopIcon } from '@primer/octicons-react';
+import SelectField from 'common/components/form/Select';
+import { IOption } from 'common/types/form';
 
 const Signin = () => {
   const navigate = useNavigate();
@@ -19,6 +24,7 @@ const Signin = () => {
   const currentUser = getData('user');
 
   const InitSignIn = {
+    shopId: "",
     email: "",
     password: "",
     deviceType: "WEB",
@@ -26,6 +32,7 @@ const Signin = () => {
   };
 
   const SignInSchema = Yup.object().shape({
+    shopId: Yup.string().required("Please select Shop."),
     email: Yup.string()
       .required("Please provide an email.")
       .email("Invalid email provided"),
@@ -56,6 +63,11 @@ const Signin = () => {
           setData('accessToken', accessToken);
           setData('refreshToken', refreshToken);
 
+          // Decode token and save in storage
+          const decoded: any = jwt_decode(accessToken);
+
+          setData('shopId', decoded.shopId ?? '');
+
           // Display success message
           toast.success('Welcome! Login successful.');
           return setIsLoading(false);
@@ -71,6 +83,27 @@ const Signin = () => {
     },
     validationSchema: SignInSchema,
   });
+
+  /**
+   * Custom Error Message
+   * @param param0 Props Object
+   * @returns JSX
+   */
+  const ErrorMessage = ({ name }: any) => {
+    if (!name) return <></>;
+
+    const error = getIn(formik.errors, name);
+    const touch = getIn(formik.touched, name);
+
+    return (touch && error) || error ? (
+      <div className="row txt-red">
+        <div className="col-1" style={{ width: '20px' }}>
+          <StopIcon size={14} />
+        </div>
+        <div className="col">{error}</div>
+      </div>
+    ) : null;
+  };
 
   useEffect(() => {
     if (currentUser?._id) {
@@ -101,6 +134,22 @@ const Signin = () => {
             </div>
 
             <form noValidate onSubmit={formik.handleSubmit}>
+              <div className="row mt-3">
+                <div className="col">
+                  <SelectField
+                    label="Select Shop"
+                    name="shopId"
+                    isMulti={false}
+                    value={formik.values.shopId}
+                    options={getShopsOptions().filter((service) => service.isActive)}
+                    helperComponent={<ErrorMessage name="shopId" />}
+                    handleChange={(selectedTag: IOption) => {
+                      formik.setFieldValue('shopId', !!selectedTag ? selectedTag.value : '');
+                    }}getAppoinmentVeriation
+                    onBlur={formik.handleBlur}
+                  />
+                </div>
+              </div>
               <div className="row mt-3">
                 <div className="col">
                   <InputField

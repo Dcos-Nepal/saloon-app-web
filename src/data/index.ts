@@ -1,19 +1,31 @@
 import { getData } from "utils/storage";
 
-export const DCosmoSkinCare = '64291e3f63f813458cbad76e';
-export const DCosmoHairCare = '6429202863f813458cbad76f';
+export const DCosmoSkin = '64291e3f63f813458cbad76e';
+export const DCosmoHair = '6429202863f813458cbad76f';
 
 export const getServices = () => {
   const currentShopId = getData('shopId') || null
   return [
-    { shopId: DCosmoSkinCare, label: 'Melasma Treatment', value: 'Melasma Treatment', isActive: true },
-    { shopId: DCosmoSkinCare, label: 'Acne Treatment', value: 'Acne Treatment', isActive: true },
-    { shopId: DCosmoSkinCare, label: 'Freckles', value: 'Freckles', isActive: true },
-    { shopId: DCosmoSkinCare, label: 'Microblading', value: 'Microblading', isActive: true },
-    { shopId: DCosmoSkinCare, label: 'Hair Transplant', value: 'Hair Transplant', isActive: true },
-    { shopId: DCosmoSkinCare, label: 'Wrinkles Treatment', value: 'Wrinkles Treatment', isActive: true },
-    { shopId: DCosmoSkinCare, label: 'Hair Transplant', value: 'Hair Transplant', isActive: true },
-    { shopId: DCosmoSkinCare, label: 'Hydrafacial', value: 'Hydrafacial', isActive: true }
+    { shopId: DCosmoSkin, label: 'Melasma Treatment', value: 'Melasma Treatment', isActive: true },
+    { shopId: DCosmoSkin, label: 'Acne Treatment', value: 'Acne Treatment', isActive: true },
+    { shopId: DCosmoSkin, label: 'Freckles', value: 'Freckles', isActive: true },
+    { shopId: DCosmoSkin, label: 'Microblading', value: 'Microblading', isActive: true },
+    { shopId: DCosmoSkin, label: 'Hair Transplant', value: 'Hair Transplant', isActive: true },
+    { shopId: DCosmoSkin, label: 'Wrinkles Treatment', value: 'Wrinkles Treatment', isActive: true },
+    { shopId: DCosmoSkin, label: 'Hair Transplant', value: 'Hair Transplant', isActive: true },
+    { shopId: DCosmoSkin, label: 'Hydrafacial', value: 'Hydrafacial', isActive: true },
+    { shopId: DCosmoSkin, label: 'Depigmentation', value: 'Depigmentation', isActive: true },
+
+    { shopId: DCosmoHair, label: 'PRP', value: 'PRP', isActive: true },
+    { shopId: DCosmoHair, label: 'GFC', value: 'GFC', isActive: true },
+    { shopId: DCosmoHair, label: 'Hair Transplant', value: 'Hair Transplant', isActive: true },
+    { shopId: DCosmoHair, label: 'Botox', value: 'Botox', isActive: true },
+    { shopId: DCosmoHair, label: 'Filler', value: 'Filler', isActive: true },
+    { shopId: DCosmoHair, label: 'Laser Hair Removal', value: 'Laser Hair Removal', isActive: true },
+    { shopId: DCosmoHair, label: 'Whitening Treatment', value: 'Whitening Treatment', isActive: true },
+    { shopId: DCosmoHair, label: 'Minor OT', value: 'Minor OT', isActive: true },
+    { shopId: DCosmoHair, label: 'Thread Lifting', value: 'Thread Lifting', isActive: true },
+    { shopId: DCosmoHair, label: 'Low-Level Laser (Light) Therapy', value: 'Low-Level Laser (Light) Therapy', isActive: true }
   ].filter((s) => s.shopId === currentShopId);
 };
 
@@ -76,7 +88,7 @@ export const getBookingStatus = () => {
 
 export const getShopsOptions = () => {
   return [
-    { label: 'DCosmo - Skin Care', value: DCosmoSkinCare, isActive: true },
-    { label: 'DCosmo - Hair Care', value: DCosmoHairCare, isActive: true },
+    { label: 'Skin', value: DCosmoSkin, isActive: true },
+    { label: 'Hair', value: DCosmoHair, isActive: true },
   ];
 };

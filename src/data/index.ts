@@ -12,7 +12,6 @@ export const getServices = () => {
     { shopId: DCosmoSkin, label: 'Microblading', value: 'Microblading', isActive: true },
     { shopId: DCosmoSkin, label: 'Hair Transplant', value: 'Hair Transplant', isActive: true },
     { shopId: DCosmoSkin, label: 'Wrinkles Treatment', value: 'Wrinkles Treatment', isActive: true },
-    { shopId: DCosmoSkin, label: 'Hair Transplant', value: 'Hair Transplant', isActive: true },
     { shopId: DCosmoSkin, label: 'Hydrafacial', value: 'Hydrafacial', isActive: true },
     { shopId: DCosmoSkin, label: 'Depigmentation', value: 'Depigmentation', isActive: true },
 

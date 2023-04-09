@@ -7,7 +7,9 @@ import {
   CalendarIcon,
   FileBadgeIcon,
   PersonFillIcon,
-  LockIcon
+  LockIcon,
+  PeopleIcon,
+  ReportIcon
 } from '@primer/octicons-react';
 import { useNavigate } from 'react-router-dom';
 import { clearData } from 'utils/storage';
@@ -49,20 +51,9 @@ const SideNavbar: FC<IProps> = ({ active }) => {
               className={active === 'Clients' ? 'nav-link nav-link-active align-middle px-0' : 'nav-link align-middle px-0'}
             >
               <span className="mt-1">
-                <PersonFillIcon size={'small'} />
+                <PeopleIcon size={'small'} />
               </span>
               <span className="ms-2 d-none d-sm-inline">Clients</span>
-            </span>
-          </li>
-          <li>
-            <span
-              onClick={() => navigate('/dashboard/' + endpoints.admin.packageClient.list)}
-              className={active === 'Package Clients' ? 'nav-link nav-link-active align-middle px-0' : 'nav-link align-middle px-0'}
-            >
-              <span className="mt-1">
-                <PersonFillIcon size={'small'} />
-              </span>
-              <span className="ms-2 d-none d-sm-inline">Package Clients</span>
             </span>
           </li>
           <li className="nav-item">
@@ -107,6 +98,28 @@ const SideNavbar: FC<IProps> = ({ active }) => {
                 <CalendarIcon size={'small'} />
               </span>
               <span className="ms-2 d-none d-sm-inline">Booking</span>
+            </span>
+          </li>
+          <li>
+            <span
+              onClick={() => navigate('/dashboard/' + endpoints.admin.packageClient.list)}
+              className={active === 'Package Clients' ? 'nav-link nav-link-active align-middle px-0' : 'nav-link align-middle px-0'}
+            >
+              <span className="mt-1">
+                <PeopleIcon size={'small'} />
+              </span>
+              <span className="ms-2 d-none d-sm-inline">Package Clients</span>
+            </span>
+          </li>
+          <li>
+            <span
+              onClick={() => alert('Report Section is under construction.')}
+              className={active === 'Reports' ? 'nav-link nav-link-active align-middle px-0' : 'nav-link align-middle px-0'}
+            >
+              <span className="mt-1">
+                <ReportIcon size={'small'} />
+              </span>
+              <span className="ms-2 d-none d-sm-inline">Reports</span>
             </span>
           </li>
           <div className="hr mt-2 mb-2"></div>

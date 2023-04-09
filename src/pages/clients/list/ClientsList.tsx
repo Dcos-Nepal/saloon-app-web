@@ -108,7 +108,6 @@ const ClientsList = (props: any) => {
   };
 
   const addNewPackageClient = async (data: any) => {
-    console.log(data)
     try {
       await addPackageClientApi(data);
       toast.success('Package Client added successfully');

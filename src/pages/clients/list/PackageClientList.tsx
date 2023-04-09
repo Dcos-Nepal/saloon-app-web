@@ -17,6 +17,7 @@ import { getCurrentUser } from 'utils';
 import { addPackageClientApi, deletePackageClientApi, fetchPackageClientsApi, updatePackageClientApi } from 'services/package-client.service';
 import AddPackageClient from '../add/AddPackageClient';
 import { DateTime } from 'luxon';
+import DummyImage from '../../../assets/images/dummy.png';
 
 interface IClient {
   name: string;
@@ -114,9 +115,19 @@ const PackageClientList = (props: any) => {
         accessor: (row: any) => {
           return (
             <div className='row'>
+              <div className='col-4 cursor-pointer' onClick={() => navigate(pinterpolate(endpoints.admin.client.detail, { id: row.customer._id }))}>
+                {row.customer.photo ? (
+                  <object data={process.env.REACT_APP_API + 'v1/customers/avatars/' + row.customer.photo} style={{ 'width': '72px' }}>
+                    <img src={DummyImage} alt="Profile Picture" style={{ 'width': '72px' }} />
+                  </object>
+                ) : <img src={DummyImage} alt="Profile Picture" style={{ 'width': '72px' }} />}
+              </div>
               <div className='col-8'>
                 <div className="cursor-pointer" onClick={() => navigate(pinterpolate(endpoints.admin.client.detail, { id: row.customer._id }))}>
-                  <div>{row.customer?.fullName}</div>
+                  <div><b>{row.customer.fullName}</b> ({row.customer.gender})</div>
+                  <div>Date of Birth: <b>{row.customer.dateOfBirth ? row.customer.dateOfBirth as string : '-- --'}</b></div>
+                  <div>Address: <b>{row.customer.address || 'Address not added.'}</b></div>
+                  <small>Created at: {new Date(row.customer.createdAt).toLocaleString()}</small>
                 </div>
               </div>
             </div>

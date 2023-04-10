@@ -259,15 +259,15 @@ const PackageClientList = (props: any) => {
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({ columns, data: clients });
 
   const fetchPackageClients = async (itemsPerPage: any, offset: any, query: any) => {
-    const clients = await fetchPackageClientsApi({
+    const clientsResponse = await fetchPackageClientsApi({
       q: query,
       page: offset,
       limit: itemsPerPage
     });
 
-    if (clients?.data?.data.data.rows) {
+    if (clientsResponse.data.data.data?.rows) {
       setClients(
-        clients.data?.data.data.rows.map((row: any) => ({
+        clientsResponse.data.data.data?.rows.map((row: any) => ({
           _id: row._id,
           id: row._id,
           customer: row.customer,
@@ -278,7 +278,7 @@ const PackageClientList = (props: any) => {
           packagePaidDate: row.packagePaidDate,
         }))
       );
-      setPageCount(Math.ceil(props.clients.data?.data.data.totalCount / itemsPerPage));
+      setPageCount(Math.ceil(clientsResponse.data.data.data?.totalCount / itemsPerPage));
     }
   }
 
